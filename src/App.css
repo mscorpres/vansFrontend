@@ -1,0 +1,63 @@
+.ag-theme-quartz {
+  --ag-header-height: 30px;
+  --ag-header-foreground-color: white;
+  --ag-header-background-color: black;
+  --ag-header-cell-hover-background-color: rgb(80, 40, 140);
+  --ag-header-cell-moving-background-color: rgb(80, 40, 140);
+  border: none;
+}
+.ag-theme-quartz .ag-header {
+  font-family: cursive;
+  background-color: #e0f2f1;
+}
+.ag-theme-quartz .ag-header-group-cell {
+  font-weight: normal;
+  font-size: 22px;
+}
+.ag-theme-quartz .ag-header-cell {
+  font-size: 15px;
+}
+.ag-theme-quartz .ag-root-wrapper {
+  border-radius: 0;
+}
+/* Applies a thin scrollbar */
+.ag-theme-quartz .ag-root-wrapper::-webkit-scrollbar {
+  width: 6px; /* For vertical scrollbars */
+  height: 6px; /* For horizontal scrollbars */
+}
+
+/* Applies the thumb color */
+.ag-theme-quartz .ag-body-horizontal-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #155e75; /* Equivalent to cyan-800 */
+}
+
+.ag-theme-quartz .ag-row {
+  background-color: #fff;
+  height: 60px;
+}
+.ag-theme-quartz .ag-row:hover {
+  background-color: #fff;
+}
+.ag-theme-quartz .ag-cell {
+  outline: none;
+  border: none;
+  padding: 0;
+  padding: 0 5px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 0;
+  text-overflow: ellipsis;
+  white-space: normal !important;
+  line-height: 1.5 !important;
+}
+.ag-theme-quartz .ag-cell:focus {
+  outline: none;
+  border: none;
+}
+.centered-cell {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100%; /* Ensure full height for vertical centering */
+}
