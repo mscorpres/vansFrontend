@@ -1,5 +1,11 @@
 import { BellRing } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,7 +13,12 @@ import { useRef, useState } from "react";
 import { FaLightbulb } from "react-icons/fa";
 import { FaCircleUser } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa6";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import styled from "styled-components";
 import { FavoriteMenuLinkListType, MainUIStateType } from "@/types/MainLayout";
 import SidebarMenues from "@/components/shared/SidebarMenues";
@@ -25,7 +36,9 @@ function MainLayout(props: { children: React.ReactNode }) {
   const [logotAlert, setLogotAlert] = useState<boolean>(false);
   const [helpModel, setHelpModel] = useState<boolean>(false);
   const [notificationSheet, setNotificationSheet] = useState<boolean>(false);
-  const [favoriteLinkList, setFavoriteLinkList] = useState<FavoriteMenuLinkListType[]>([]);
+  const [favoriteLinkList, setFavoriteLinkList] = useState<
+    FavoriteMenuLinkListType[]
+  >([]);
   const modalRef = useRef<HTMLDivElement>(null);
   const sidebaref = useRef<HTMLDivElement>(null);
   const favoriteref = useRef<HTMLDivElement>(null);
@@ -52,12 +65,18 @@ function MainLayout(props: { children: React.ReactNode }) {
 
   return (
     <Wrapper className="">
-      <HelpAndSupportModel uiState={uiState}/>
+      <HelpAndSupportModel uiState={uiState} />
       {/* alert disalogs start=============== */}
       <MainLayoutPopovers uiState={uiState} />
       {/* alert disalogs start=============== */}
       {/* sidebars=========================== */}
-      <div className={`sheetone absolute  h-[100vh] z-10 top-0 w-full transition-all  ${sheetOpen || sheet2Open || favoriteSheet ? "bg-[#00000081]" : "left-[-100%]"}`}></div>
+      <div
+        className={`sheetone absolute  h-[100vh] z-10 top-0 w-full transition-all  ${
+          sheetOpen || sheet2Open || favoriteSheet
+            ? "bg-[#00000081]"
+            : "left-[-100%]"
+        }`}
+      ></div>
       <FavoriteSidebar uiState={uiState} />
       <SidebarMenues uiState={uiState} />
       <ProfileSidebar uiState={uiState} />
@@ -65,20 +84,29 @@ function MainLayout(props: { children: React.ReactNode }) {
       <div>
         <nav className="flex items-center justify-between h-[50px] px-[20px] fixed top-0 left-[50px] w-[calc(100vw-50px)]  bg-neutral-300">
           <div className="flex gap-[20px] items-center">
-            <div className="text-slate-700 font-[600] logo">Spigen</div>
+            <div className="text-slate-700 font-[600] logo">VANS</div>
             <div className="date">
               <Select>
                 <SelectTrigger className="w-[180px] bg-white border-0 text-slate-700">
                   <SelectValue placeholder="Session" />
                 </SelectTrigger>
                 <SelectContent className="bg-white ">
-                  <SelectItem value="2024-2025" className="text-slate-700 focus:text-white focus:bg-cyan-600">
+                  <SelectItem
+                    value="2024-2025"
+                    className="text-slate-700 focus:text-white focus:bg-cyan-600"
+                  >
                     2024-2025
                   </SelectItem>
-                  <SelectItem value="2023-2024" className="text-slate-700 focus:text-white focus:bg-cyan-600">
+                  <SelectItem
+                    value="2023-2024"
+                    className="text-slate-700 focus:text-white focus:bg-cyan-600"
+                  >
                     2023-2024
                   </SelectItem>
-                  <SelectItem value="2022-2023" className="text-slate-700 focus:text-white focus:bg-cyan-600">
+                  <SelectItem
+                    value="2022-2023"
+                    className="text-slate-700 focus:text-white focus:bg-cyan-600"
+                  >
                     2022-2023
                   </SelectItem>
                 </SelectContent>
@@ -98,9 +126,14 @@ function MainLayout(props: { children: React.ReactNode }) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <div className="relative flex items-center justify-center bg-white cursor-pointer notification max-w-max p-[5px] rounded-md" onClick={() => setNotificationSheet(true)}>
+                  <div
+                    className="relative flex items-center justify-center bg-white cursor-pointer notification max-w-max p-[5px] rounded-md"
+                    onClick={() => setNotificationSheet(true)}
+                  >
                     <BellRing className="h-[25px] w-[25px] text-slate-600" />
-                    <Badge className="bg-yellow-600 hover:bg-yellow-600 h-[15px] w-[15px] rounded-full p-0 flex justify-center items-center absolute top-[-2px] right-[-2px]">0</Badge>
+                    <Badge className="bg-yellow-600 hover:bg-yellow-600 h-[15px] w-[15px] rounded-full p-0 flex justify-center items-center absolute top-[-2px] right-[-2px]">
+                      0
+                    </Badge>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="bg-cyan-700">
@@ -116,7 +149,11 @@ function MainLayout(props: { children: React.ReactNode }) {
           <div className="flex flex-col items-center gap-[20px]">
             <div className="flex items-center justify-center">
               <Link to="/">
-                <img src="/spigenlogo2.png" alt="" className="h-[35px] w-[35px] " />
+                <img
+                  src="/spigenlogo2.png"
+                  alt=""
+                  className="h-[35px] w-[35px] "
+                />
               </Link>
             </div>
             <div>
@@ -167,7 +204,10 @@ function MainLayout(props: { children: React.ReactNode }) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <FaLightbulb className="h-[25px] w-[25px] text-white" onClick={() => setHelpModel(true)} />
+                  <FaLightbulb
+                    className="h-[25px] w-[25px] text-white"
+                    onClick={() => setHelpModel(true)}
+                  />
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-cyan-700">
                   <p>Explore All Features</p>
