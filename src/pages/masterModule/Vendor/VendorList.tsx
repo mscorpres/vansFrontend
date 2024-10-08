@@ -23,7 +23,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit2, EyeIcon, Filter, GitFork, Plus, Trash } from "lucide-react";
+import {
+  Download,
+  Edit2,
+  EyeIcon,
+  Filter,
+  GitFork,
+  Plus,
+  Trash,
+} from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
 import { Input } from "@/components/ui/input";
@@ -38,7 +46,7 @@ import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
 import { RootState } from "@/store";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ActionCellRenderer from "./ActionCellRenderer";
 import {
@@ -52,6 +60,12 @@ import {
   listOfUom,
   serviceList,
   servicesaddition,
+  vendoradd,
+  vendorGetAllBranchList,
+  vendorGetAllDetailsFromSelectedBranch,
+  vendorUpdatedetails,
+  vendorUpdateSave,
+  vendorUpdateSelectedBranch,
 } from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
 import {
@@ -66,21 +80,43 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { add } from "lodash";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   wise: z.string().optional(),
+  branch: z.string().optional(),
+  label: z.string().optional(),
+  mobile: z.string().optional(),
+  gstin: z.string().optional(),
+  city: z.string().optional(),
+  pin: z.string().optional(),
+  email: z.string().optional(),
+  address: z.string().optional(),
+  fax: z.string().optional(),
+  vendorCode: z.string().optional(),
+  addressCode: z.string().optional(),
+  state: z.string().optional(),
+  vendorName: z.string().optional(),
+  cin: z.string().optional(),
+  pan: z.string().optional(),
 });
 
 const VendorList = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
   const [stateList, setStateList] = useState([]);
+  const [viewAllBranch, setViewAllBranch] = useState([]);
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
   const [sheetOpenView, setSheetOpenView] = useState<boolean>(false);
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const [sheetOpenBranch, setSheetOpenBranch] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+  const thebranch = form.watch("branch");
+  console.log("thebranch", thebranch);
+
   const { execFun, loading: loading1 } = useApi();
   const fetchVendorList = async (formData: z.infer<typeof FormSchema>) => {
     // return;
@@ -134,6 +170,7 @@ const VendorList = () => {
       value: "SGF",
     },
   ];
+
   useEffect(() => {
     fetchVendorList();
     getStateList();
@@ -169,12 +206,12 @@ const VendorList = () => {
       field: "action",
       headerName: "ACTION",
       flex: 1,
-      cellRenderer: () => {
+      cellRenderer: (params: any) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
             <Button
               onClick={() => {
-                setSheetOpenView(true);
+                setSheetOpenView(params);
               }}
               className="rounded h-[25px] w-[25px] felx justify-center items-center p-0 bg-cyan-500 hover:bg-cyan-600"
             >
@@ -183,7 +220,7 @@ const VendorList = () => {
             <Button
               className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"
               onClick={() => {
-                setSheetOpenEdit(true);
+                setSheetOpenEdit(params);
               }}
             >
               <Edit2 className="h-[15px] w-[15px] text-white" />
@@ -191,7 +228,7 @@ const VendorList = () => {
             <Button
               className="bg-yellow-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-yellow-600"
               onClick={() => {
-                setSheetOpenBranch(true);
+                setSheetOpenBranch(params.data.vendor_code);
               }}
             >
               {/* <Trash className="h-[15px] w-[15px] text-white" /> */}
@@ -202,6 +239,255 @@ const VendorList = () => {
       },
     },
   ];
+  const getBranchList = async (id) => {
+    // setLoading(true);
+
+    const response = await execFun(() => vendorGetAllBranchList(id), "fetch");
+    console.log("response", response);
+    if (response.data.code == 200) {
+      const { data } = response;
+      let arr = data.data.final;
+      let a = arr.map((r) => {
+        return {
+          label: r.text,
+          value: r.id,
+        };
+      });
+      setViewAllBranch(a);
+    }
+  };
+  const getDetailsFromBranchList = async (id) => {
+    setLoading(true);
+
+    const response = await execFun(
+      () => vendorGetAllDetailsFromSelectedBranch(id),
+      "fetch"
+    );
+    console.log("response", response);
+    if (response.data.code == 200) {
+      const { data } = response;
+      let r = data?.data?.final[0];
+      let a = {
+        state: { label: r.statename, value: r.statecode },
+        label: r.label,
+        city: r.city,
+        gstin: r.gstin,
+        pin: r.pincode,
+        email: r.email_id,
+        mobile: r.mobile_no,
+        address: r.address,
+        fax: r.fax,
+        vendorCode: r.vendor_code,
+        addressCode: r.address_code,
+      };
+
+      console.log("a", a);
+
+      form.setValue("label", a.label);
+      form.setValue("mobile", a.mobile);
+      form.setValue("city", a.city);
+      form.setValue("gstin", a.gstin);
+      form.setValue("pin", a.pin);
+      form.setValue("email", a.email);
+      form.setValue("address", a.address);
+      form.setValue("fax", a.fax);
+      form.setValue("vendorCode", a.vendorCode);
+      form.setValue("addressCode", a.addressCode);
+      form.setValue("state", a.state?.value);
+      setLoading(false);
+    }
+    setLoading(true);
+  };
+  const updateViewBranch = async (data) => {
+    console.log("Submitted Data from s:", data);
+
+    let p = {
+      label: data?.label,
+      state: data?.state,
+      city: data?.city,
+      address: data?.address,
+      pincode: data?.pin,
+      fax: data?.fax,
+      email: data?.email,
+      mobile: data?.mobile,
+      gstid: data?.gstin,
+      address_code: data?.addressCode,
+      vendor_code: data?.vendorCode,
+    };
+
+    const response = await execFun(
+      () => vendorUpdateSelectedBranch(p),
+      "fetch"
+    );
+    console.log("response", response);
+    if (response.data.code == 200) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      setSheetOpenView(false);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  const updateVendor = async (data) => {
+    console.log("Submitted Data from s:", data);
+
+    let p = {
+      cinno: data?.cin,
+      panno: data?.pan,
+      vendorcode: data?.vendorCode,
+      vendorname: data?.vendorName,
+    };
+
+    const response = await execFun(() => vendorUpdateSave(p), "fetch");
+    console.log("response", response);
+    if (response.data.code == 200) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      setSheetOpenView(false);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  const createNewBranch = async (data) => {
+    console.log("Submitted Data from s:", data);
+
+    let p = {
+      vendor: {
+        vendorname: sheetOpenBranch,
+      },
+      branch: {
+        branch: data.label,
+        address: data.address,
+        state: data.state,
+        city: data.city,
+        pincode: data.pin,
+        fax: data.fax,
+        mobile: data.mobile,
+        email: data.email,
+        gstin: data.gstin,
+      },
+    };
+
+    const response = await execFun(() => vendorUpdateSave(p), "fetch");
+    console.log("response", response);
+    if (response.data.code == 200) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      setSheetOpenView(false);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  const addVendor = async (data) => {
+    console.log("Submitted Data from s:", data);
+
+    let p = {
+      vendor: {
+        vendorname: data.label,
+        panno: data.pan,
+        cinno: data.cin,
+      },
+      branch: {
+        branch: data.label,
+        address: data.address,
+        state: data.state,
+        city: data.city,
+        pincode: data.pin,
+        fax: data.fax,
+        mobile: data.mobile,
+        email: data.email,
+        gstin: data.gstin,
+      },
+    };
+    const response = await execFun(() => vendoradd(p), "fetch");
+    console.log("response", response);
+    if (response.data.code == 200) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      setSheetOpenView(false);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  const getupdateDetails = async (id) => {
+    // setLoading(true);
+
+    const response = await execFun(() => vendorUpdatedetails(id), "fetch");
+    console.log("response", response);
+    if (response.data.code == 200) {
+      const { data } = response;
+      let arr = data.data[0];
+      let obj = {
+        vendorName: arr.vendor_name,
+        pan: arr.vendor_pan,
+        cin: arr.vendor_cin,
+        cin: arr.vendor_cin,
+        vendorCode: arr.vendor_code,
+      };
+      console.log("obj", obj);
+
+      form.setValue("vendorName", obj.vendorName);
+      form.setValue("pan", obj.pan);
+      form.setValue("cin", obj.cin);
+      form.setValue("vendorCode", obj.vendorCode);
+      // let a = arr.map((r) => {
+      //   return {
+      //     label: r.text,
+      //     value: r.id,
+      //   };
+      // });
+      // setViewAllBranch(a);
+    }
+  };
+
+  useEffect(() => {
+    getBranchList(sheetOpenView?.data?.vendor_code);
+  }, [sheetOpenView]);
+
+  useEffect(() => {
+    getDetailsFromBranchList(thebranch);
+  }, [thebranch]);
+  useEffect(() => {
+    console.log("sheetOpenBranch", sheetOpenEdit.data?.vendor_code);
+
+    getupdateDetails(sheetOpenEdit.data?.vendor_code);
+  }, [sheetOpenEdit]);
+
+  useEffect(() => {
+    if (sheetOpenView == false) {
+      form.setValue("label", "");
+      form.setValue("mobile", " ");
+      form.setValue("city", "");
+      form.setValue("gstin", "");
+      form.setValue("pin", "");
+      form.setValue("email", "");
+      form.setValue("address", "");
+      form.setValue("fax", "");
+      form.setValue("vendorCode", "");
+      form.setValue("addressCode", "");
+      form.setValue("state", "");
+    }
+  }, [sheetOpenView]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -217,39 +503,20 @@ const VendorList = () => {
             // onSubmit={form.handleSubmit(fetchBOMList)}
             className="space-y-6 overflow-hidden p-[10px] h-[170px]"
           >
-            <FormField
-              control={form.control}
-              name="wise"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Select
-                      styles={customStyles}
-                      components={{ DropdownIndicator }}
-                      placeholder="Select Type"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
-                      options={type}
-                      onChange={(e: any) => form.setValue("wise", e.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>{" "}
+            <div className="grid grid-cols-2 gap-[20px]">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSheetOpen(true);
+                }}
+              >
+                Add Vendor
+              </Button>
+              <Download className="text-slate-600 w-[25px] h-[35px] cursor-pointer" />
+            </div>
             {/* <CustomTooltip
               message="Add Address"
               side="top"
@@ -275,16 +542,11 @@ const VendorList = () => {
             }}
           >
             <SheetHeader className={modelFixHeaderStyle}>
-              <SheetTitle className="text-slate-600">
-                Add Shipping Address
-              </SheetTitle>
+              <SheetTitle className="text-slate-600">Add Vendor</SheetTitle>
             </SheetHeader>
             <div>
               <Form {...form}>
-                <form
-                  //   onSubmit={form.handleSubmit(onSubmit)}
-                  className=""
-                >
+                <form onSubmit={form.handleSubmit(addVendor)} className="">
                   <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
                     <div className="grid grid-cols-2 gap-[20px]">
                       <FormField
@@ -305,27 +567,7 @@ const VendorList = () => {
                             <FormMessage />
                           </FormItem>
                         )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="company"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Company Name
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Company Name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
+                      />{" "}
                       <FormField
                         control={form.control}
                         name="pan"
@@ -337,7 +579,7 @@ const VendorList = () => {
                             <FormControl>
                               <Input
                                 className={InputStyle}
-                                placeholder="Enter Pan Number"
+                                placeholder="Enter pan Number"
                                 {...field}
                               />
                             </FormControl>
@@ -347,31 +589,14 @@ const VendorList = () => {
                       />
                       <FormField
                         control={form.control}
-                        name="gstin"
+                        name="cin"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>GSTIN</FormLabel>
+                            <FormLabel className={LableStyle}>CIN</FormLabel>
                             <FormControl>
                               <Input
                                 className={InputStyle}
-                                placeholder="Enter GSTIN Number"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="state"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter State"
+                                placeholder="Enter CIN"
                                 {...field}
                               />
                             </FormControl>
@@ -380,147 +605,9 @@ const VendorList = () => {
                         )}
                       />
                     </div>
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>Address</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              className={InputStyle}
-                              placeholder="Enter Complete Address"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="addressLine1"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>
-                            Address Line 1
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              className={InputStyle}
-                              placeholder="Enter Complete Address"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="addressLine2"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>
-                            Address Line 2
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              className={InputStyle}
-                              placeholder="Enter Complete Address"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className={modelFixFooterStyle}>
-                    <Button
-                      variant={"outline"}
-                      className="shadow-slate-300 mr-[10px] border-slate-400 border"
-                      onClick={(e: any) => {
-                        setOpen(true);
-                        e.preventDefault();
-                      }}
-                    >
-                      Back
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="bg-cyan-700 hover:bg-cyan-600"
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </div>
-          </SheetContent>
-        </Sheet>
-        {/* ---//////////////View */}
-        <Sheet open={sheetOpenView} onOpenChange={setSheetOpenView}>
-          <SheetTrigger></SheetTrigger>
-          <SheetContent
-            className="min-w-[50%] p-0"
-            onInteractOutside={(e: any) => {
-              e.preventDefault();
-            }}
-          >
-            <SheetHeader className={modelFixHeaderStyle}>
-              <SheetTitle className="text-slate-600">
-                Listing Branch & Modification
-              </SheetTitle>
-            </SheetHeader>
-            <div>
-              <Form {...form}>
-                <form
-                  //   onSubmit={form.handleSubmit(onSubmit)}
-                  className=""
-                >
-                  <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
+                    <Divider />
                     <div className="grid grid-cols-2 gap-[20px]">
                       <FormField
-                        control={form.control}
-                        name="label"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Address label
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Address Label"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="label"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Address label
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Address Label"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      {/* <FormField
                         control={form.control}
                         name="company"
                         render={({ field }) => (
@@ -538,7 +625,7 @@ const VendorList = () => {
                             <FormMessage />
                           </FormItem>
                         )}
-                      /> */}{" "}
+                      />
                       <FormField
                         control={form.control}
                         name="state"
@@ -658,7 +745,25 @@ const VendorList = () => {
                           </FormItem>
                         )}
                       />
-                    </div>
+                      <FormField
+                        control={form.control}
+                        name="fax"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>Fax</FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Enter Fax"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>{" "}
+                    <div className="grid grid-cols-2 gap-[20px]"></div>
                     <FormField
                       control={form.control}
                       name="address"
@@ -676,7 +781,221 @@ const VendorList = () => {
                         </FormItem>
                       )}
                     />{" "}
+                  </div>
+                  <div className={modelFixFooterStyle}>
+                    <Button
+                      variant={"outline"}
+                      className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                      onClick={(e: any) => {
+                        setOpen(true);
+                        e.preventDefault();
+                      }}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="bg-cyan-700 hover:bg-cyan-600"
+                    >
+                      Register
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </div>
+          </SheetContent>
+        </Sheet>
+        {/* ---//////////////View */}
+        <Sheet open={sheetOpenView} onOpenChange={setSheetOpenView}>
+          <SheetTrigger></SheetTrigger>
+          <SheetContent
+            className="min-w-[50%] p-0"
+            onInteractOutside={(e: any) => {
+              e.preventDefault();
+            }}
+          >
+            <SheetHeader className={modelFixHeaderStyle}>
+              <SheetTitle className="text-slate-600">
+                {`Listing Branch & Modification of ${form.getValues(
+                  "vendorCode"
+                )}`}
+              </SheetTitle>
+            </SheetHeader>
+            <div>
+              {/* {loading1("fetch") && <FullPageLoading />} */}
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(updateViewBranch)}
+                  className=""
+                >
+                  <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
+                    <FormField
+                      control={form.control}
+                      name="branch"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Address Branch
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
+                              placeholder="Branch"
+                              className="border-0 basic-single"
+                              classNamePrefix="select border-0"
+                              isDisabled={false}
+                              isClearable={true}
+                              isSearchable={true}
+                              options={viewAllBranch}
+                              onChange={(e: any) =>
+                                form.setValue("branch", e?.value)
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <div className="grid grid-cols-2 gap-[20px]">
+                      <FormField
+                        control={form.control}
+                        name="label"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Address label
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Enter Address Label"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="state"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>State</FormLabel>
+                            <FormControl>
+                              <Select
+                                styles={customStyles}
+                                components={{ DropdownIndicator }}
+                                placeholder="State"
+                                className="border-0 basic-single"
+                                classNamePrefix="select border-0"
+                                isDisabled={false}
+                                isClearable={true}
+                                isSearchable={true}
+                                options={stateList}
+                                // onChange={(e) => console.log(e)}
+                                // value={
+                                //   data.clientDetails
+                                //     ? {
+                                //         label: data.clientDetails.city.name,
+                                //         value: data.clientDetails.city.name,
+                                //       }
+                                //     : null
+                                // }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="city"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>City</FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Enter City"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />{" "}
+                      <FormField
+                        control={form.control}
+                        name="gstin"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>GSTIN</FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Enter GSTIN Number"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="pin"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Pin No.
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Enter Pin Number"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>Email</FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Enter Email"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="mobile"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>Mobile</FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Enter Mobile"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />{" "}
                       <FormField
                         control={form.control}
                         name="fax"
@@ -695,6 +1014,24 @@ const VendorList = () => {
                         )}
                       />
                     </div>
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>Address</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className={InputStyle}
+                              placeholder="Enter Complete Address"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />{" "}
+                    <div className="grid grid-cols-2 gap-[20px]"></div>
                   </div>
                   <div className={modelFixFooterStyle}>
                     <Button
@@ -708,7 +1045,7 @@ const VendorList = () => {
                       Back
                     </Button>
                     <Button
-                      type="submit"
+                      onClick={() => updateViewBranch()}
                       className="bg-cyan-700 hover:bg-cyan-600"
                     >
                       Update
@@ -729,12 +1066,14 @@ const VendorList = () => {
             }}
           >
             <SheetHeader className={modelFixHeaderStyle}>
-              <SheetTitle className="text-slate-600">Add Branch</SheetTitle>
+              <SheetTitle className="text-slate-600">
+                {` Add Branch ${sheetOpenBranch}`}
+              </SheetTitle>
             </SheetHeader>
             <div>
               <Form {...form}>
                 <form
-                  //   onSubmit={form.handleSubmit(onSubmit)}
+                  onSubmit={form.handleSubmit(createNewBranch)}
                   className=""
                 >
                   <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
@@ -967,14 +1306,15 @@ const VendorList = () => {
             }}
           >
             <SheetHeader className={modelFixHeaderStyle}>
-              <SheetTitle className="text-slate-600">Update Vendor</SheetTitle>
+              <SheetTitle className="text-slate-600">{`Update Vendor ${form.getValues(
+                "vendorCode"
+              )}`}</SheetTitle>
             </SheetHeader>
             <div>
+              {" "}
+              {loading1("fetch") && <FullPageLoading />}
               <Form {...form}>
-                <form
-                  //   onSubmit={form.handleSubmit(onSubmit)}
-                  className=""
-                >
+                <form onSubmit={form.handleSubmit(updateVendor)} className="">
                   <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
                     {/* <div className="grid grid-cols-2 gap-[20px]"> */}
                     <FormField
@@ -1048,7 +1388,7 @@ const VendorList = () => {
                       type="submit"
                       className="bg-cyan-700 hover:bg-cyan-600"
                     >
-                      Rectify & Safe
+                      Update
                     </Button>
                   </div>
                 </form>

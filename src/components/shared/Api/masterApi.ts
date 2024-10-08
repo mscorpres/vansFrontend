@@ -291,6 +291,12 @@ export const getComponentDetailsForServices = async (payload) => {
   });
   return response;
 };
+export const getProductDetailsForEdit = async (payload) => {
+  const response = await spigenAxios.post("/products/getProductForUpdate", {
+    product_key: payload,
+  });
+  return response;
+};
 export const getListOFViewCustomers = async (payload) => {
   const response = await spigenAxios.get("/client/viewclients", {
     componentKey: payload,
@@ -321,5 +327,54 @@ export const updateComponentofMaterial = async (payload) => {
 };
 export const saveComponentMap = async (payload) => {
   const response = await spigenAxios.post("/component/saveMapVen", payload);
+  return response;
+};
+export const saveProductDetails = async (payload) => {
+  const response = await spigenAxios.post("/products/updateProduct", payload);
+  return response;
+};
+export const saveGroups = async (payload) => {
+  const response = await spigenAxios.post("/groups/insert", payload);
+  return response;
+};
+export const vendorGetAllBranchList = async (payload) => {
+  const response = await spigenAxios.post("/vendor/getAllBranchList", {
+    vendor_id: payload,
+  });
+  return response;
+};
+export const vendorGetAllDetailsFromSelectedBranch = async (payload) => {
+  const response = await spigenAxios.post("/vendor/getBranchDetails", {
+    addresscode: payload,
+  });
+  return response;
+};
+export const vendorUpdateSelectedBranch = async (payload) => {
+  const response = await spigenAxios.post(
+    "/vendor/updateBranchDetails",
+    payload
+  );
+  return response;
+};
+export const vendorUpdatedetails = async (payload) => {
+  const response = await spigenAxios.post("/vendor/getVendor", {
+    vendor_id: payload,
+  });
+  return response;
+};
+export const vendorUpdateSave = async (payload) => {
+  const response = await spigenAxios.post("/vendor/updateVendor", payload);
+  return response;
+};
+export const vendoradd = async (payload) => {
+  const response = await spigenAxios.post("/vendor/addVendor", payload);
+  return response;
+};
+export const addClient = async (payload) => {
+  const response = await spigenAxios.post("/client/createclient", payload);
+  return response;
+};
+export const addbranchToClient = async (payload) => {
+  const response = await spigenAxios.post("/client/addBranch", payload);
   return response;
 };

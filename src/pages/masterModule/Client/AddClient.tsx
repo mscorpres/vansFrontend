@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/form";
 import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
 import {
+  addClient,
   fetchCountryList,
   fetchState,
 } from "@/components/shared/Api/masterApi";
@@ -60,17 +61,29 @@ interface Props {
   setTab: Dispatch<SetStateAction<string>>;
   setPayloadData: Dispatch<SetStateAction<any>>;
 }
-type CreateSalesOrderForm = z.infer<typeof createSalesFormSchema>;
+const FormSchema = z.object({
+  name: z.string().optional(),
+  salesPerson: z.string().optional(),
+  address: z.string().optional(),
+  mobile: z.string().optional(),
+  phone: z.string().optional(),
+  gst: z.string().optional(),
+  city: z.string().optional(),
+  zip: z.string().optional(),
+  email: z.string().optional(),
+  website: z.string().optional(),
+  country: z.string().optional(),
+  state: z.string().optional(),
+  pan: z.string().optional(),
+});
 const AddClient: React.FC<Props> = ({
   setTabvalue,
   setTab,
   setPayloadData,
 }: any) => {
-  const form = useForm<z.infer<typeof createSalesFormSchema>>({
-    resolver: zodResolver(createSalesFormSchema),
-    mode: "onBlur",
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
   });
-
   const { execFun, loading: loading1 } = useApi();
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
@@ -184,14 +197,26 @@ const AddClient: React.FC<Props> = ({
       setStateList(arr);
     }
   };
-  const onSubmit = (data: CreateSalesOrderForm) => {
+  const onSubmit = async (data: CreateSalesOrderForm) => {
     console.log("Submitted Data from CreateSalesOrder:", data); // Debugging log
-    if (data) {
-      setPayloadData(data);
-      setTabvalue("add"); // Switch to AddSalesOrder tab
-    } else {
-      console.error("Data is null or undefined");
-    }
+    let payload = {
+      name: data.name,
+      gst: data.gst,
+      salesperson: data.salesPerson,
+      panno: data.pan,
+      address: data.address,
+      country: data.country,
+      state: data.state,
+      state2: data.state,
+      city: data.city,
+      zipcode: data.gst,
+      phone: data.phone,
+      mobile: data.mobile,
+      email: data.email,
+      website: data.website,
+    };
+    const response = await execFun(() => addClient(payload), "fetch");
+    console.log("response", response);
   };
   useEffect(() => {
     getCountryList();
@@ -343,6 +368,9 @@ const AddClient: React.FC<Props> = ({
                                 isClearable={true}
                                 isSearchable={true}
                                 options={countryList}
+                                onChange={(value: any) =>
+                                  form.setValue("country", value)
+                                }
                                 // onChange={(e) => console.log(e)}
                                 // value={
                                 //   data.clientDetails
@@ -370,13 +398,16 @@ const AddClient: React.FC<Props> = ({
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
-                                placeholder="Branch"
+                                placeholder="state"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
                                 options={stateList}
+                                onChange={(value: any) =>
+                                  form.setValue("state", value.value)
+                                }
                                 // onChange={(e) => console.log(e)}
                                 // value={
                                 //   data.clientDetails
@@ -526,12 +557,12 @@ const AddClient: React.FC<Props> = ({
           </div>
           <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300">
             <Button
-              onClick={() => setTab("add")}
+              // onClick={() => setTab("add")}
               className={`${primartButtonStyle} flex gap-[10px]`}
               type="submit"
             >
-              Next
-              <FaArrowRightLong className="" />
+              Submit
+              {/* <FaArrowRightLong className="" /> */}
             </Button>
           </div>
         </form>

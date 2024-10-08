@@ -52,6 +52,7 @@ import {
 } from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import EditProduct from "./EditProduct";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -66,6 +67,7 @@ const FormSchema = z.object({
 const Product = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
+  const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -130,10 +132,21 @@ const Product = () => {
       width: 190,
     },
     {
-      headerName: "Actions",
-      cellRendererFramework: "ActionCellRenderer",
-      width: 150,
-      suppressMenu: true, // Optionally, hide the menu icon in this column
+      field: "action",
+      headerName: "Action",
+      flex: 1,
+      cellRenderer: (e) => {
+        return (
+          <div className="flex gap-[5px] items-center justify-center h-full">
+            <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600">
+              <Edit2
+                className="h-[15px] w-[15px] text-white"
+                onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+              />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 
@@ -250,7 +263,11 @@ const Product = () => {
               Submit
             </Button>
           </form>
-        </Form>
+        </Form>{" "}
+        <EditProduct
+          sheetOpenEdit={sheetOpenEdit}
+          setSheetOpenEdit={setSheetOpenEdit}
+        />
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact

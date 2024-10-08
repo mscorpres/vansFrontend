@@ -15,7 +15,6 @@ import {
   primartButtonStyle,
 } from "@/constants/themeContants";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -24,7 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Edit2, Filter, Group } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Row, Space } from "antd";
+import { DatePicker, Row, Space, Form } from "antd";
 import { Input } from "@/components/ui/input";
 import {
   SelectContent,
@@ -47,10 +46,22 @@ import {
   getGroupList,
   getProductList,
   listOfUom,
+  saveGroups,
   serviceList,
   servicesaddition,
 } from "@/components/shared/Api/masterApi";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { spigenAxios } from "@/axiosIntercepter";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -65,9 +76,13 @@ const FormSchema = z.object({
 const Groups = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  // const form = useForm<z.infer<typeof FormSchema>>({
+  //   resolver: zodResolver(FormSchema),
+  // });
+  const [form] = Form.useForm();
+  const { toast } = useToast();
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => getGroupList(), "fetch");
@@ -92,6 +107,32 @@ const Groups = () => {
       //   });
     }
   };
+  const createEntry = async () => {
+    const values = await form.validateFields();
+    setLoading(true);
+    console.log("values", values);
+    let payload = {
+      group_name: values.groupName,
+    };
+    const response = await execFun(() => saveGroups(payload), "fetch");
+    console.log("response", response);
+    const { data } = response;
+    if (data.code === 200) {
+      setLoading(false);
+      toast({
+        title: data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+    } else {
+      setLoading(false);
+      toast({
+        title: data.message || "Failed to Create Group",
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+    setLoading(false);
+    fetchProductList();
+  };
 
   useEffect(() => {
     fetchProductList();
@@ -108,43 +149,54 @@ const Groups = () => {
       headerName: "Group Name",
       field: "group_name",
       filter: "agTextColumnFilter",
-      width: 490,
+      width: 750,
     },
     {
       headerName: "Insert Date",
       field: "group_insert_dt",
       filter: "agTextColumnFilter",
-      width: 490,
+      width: 250,
     },
   ];
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+      {" "}
+      {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
-        <Form {...form}>
+        {" "}
+        <AlertDialog open={open} onOpenChange={setOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to submit the form?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => createEntry()}
+                className="bg-[#0E7490] hover:bg-[#0E7490]"
+              >
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6 overflow-hidden p-[10px]"
           >
-            <div className="">
-              <FormField
-                control={form.control}
-                name="groupName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LableStyle}>Product</FormLabel>
-                    <FormControl>
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Group Name"
-                        // {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            {" "}
+            <Form.Item name="groupName" label="Group Name">
+              <Input
+                className={InputStyle}
+                placeholder="Enter Group Name"
+                // {...field}
               />
-            </div>{" "}
+            </Form.Item>
             <Row justify="space-between">
               {" "}
               <Button
@@ -154,7 +206,10 @@ const Groups = () => {
                 Reset
               </Button>
               <Button
-                type="submit"
+                onClick={(e: any) => {
+                  setOpen(true);
+                  e.preventDefault();
+                }}
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               >
                 Submit

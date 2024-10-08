@@ -46,6 +46,8 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         sacCode: arr.sac,
         uom: { label: arr.uomname, value: arr.uomid },
       };
+      console.log("obj", obj);
+
       form.setFieldsValue(obj);
     } else {
       toast({
