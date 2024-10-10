@@ -18,6 +18,7 @@ import { transformOptionData } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 
 import { toast } from "@/components/ui/use-toast";
+import { Filter } from "lucide-react";
 const ComponentMap = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
@@ -67,14 +68,23 @@ const ComponentMap = () => {
   }, []);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]  overflow-hidden">
       <div className="bg-[#fff]">
-        <Form form={form} layout="vertical">
+        {" "}
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <Filter className="h-[20px] w-[20px]" />
+          Filter
+        </div>
+        <Form
+          form={form}
+          layout="vertical"
+          className="space-y-6 overflow-hidden p-[10px] h-[500px]"
+        >
           {/* <form
             onSubmit={form.handleSubmit(createEntry)}
             className="space-y-6 overflow-hidden p-[10px] h-[500px]"
           > */}
-          <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
+          <div className="grid grid-cols-2 gap-[40px] ">
             <div className="">
               <Form.Item name="partName" label="Part Name">
                 <ReusableAsyncSelect

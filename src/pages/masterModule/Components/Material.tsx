@@ -224,16 +224,21 @@ const Material = () => {
     },
   ];
 
-
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
+        {" "}
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <Filter className="h-[20px] w-[20px]" />
+          Filter
+        </div>
+        <div className="p-[10px]"></div>
         <Form {...form}>
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 overflow-hidden p-[10px] "
+            className="space-y-6 overflow-hidden p-[10px] h-[500px]"
           >
-            <div className="grid grid-cols-3 gap-[40px] mt-[30px]">
+            <div className="grid grid-cols-3 gap-[40px] ">
               <div className="">
                 <FormField
                   control={form.control}

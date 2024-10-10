@@ -224,14 +224,14 @@ const AddClient: React.FC<Props> = ({
   }, []);
 
   return (
-    <div className="h-[calc(100vh-150px)]">
+    <div className="h-[calc(100vh-250px)]">
       {data.loading && <FullPageLoading />}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
+          <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
             <div className="grid grid-cols-1 gap-[30px]">
               <Card className="rounded shadow bg-[#fff]">
-                <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                <CardHeader className=" bg-[#e0f2f1]  flex justify-center px-[10px] ">
                   <h3 className="text-[17px] font-[600] text-slate-600">
                     Client Details
                   </h3>

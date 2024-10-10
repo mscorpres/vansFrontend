@@ -2,13 +2,26 @@ import CustomTooltip from "@/components/shared/CustomTooltip";
 import { Button } from "@/components/ui/button";
 import { columnDefs } from "@/config/agGrid/mastermodule/ShippingAddressTable";
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Download, Plus } from "lucide-react";
 
@@ -20,7 +33,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { createShippingAddress } from "@/features/shippingAddress/shippingAdressSlice";
-import { InputStyle, LableStyle, modelFixFooterStyle, modelFixHeaderStyle } from "@/constants/themeContants";
+import {
+  InputStyle,
+  LableStyle,
+  modelFixFooterStyle,
+  modelFixHeaderStyle,
+} from "@/constants/themeContants";
 import GoBackConfermationModel from "@/components/GoBackConfermationModel";
 
 const schema = z.object({
@@ -104,44 +122,161 @@ const MasterShippingAddressPage: React.FC = () => {
   };
   return (
     <>
-    <GoBackConfermationModel open={open} setOpen={setOpen} goBack={setSheetOpen}/>
-    <div className="h-[calc(100vh-100px)]">
-      <div className="h-[50px] flex items-center justify-end px-[10px] bg-white gap-[10px]">
-        <CustomTooltip message="Download Excel Report" side="top" className="bg-yellow-700">
-          <Button className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500">
-            <Download className="h-[20px] w-[20px]" />
-          </Button>
-        </CustomTooltip>
-        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-          <SheetTrigger>
-            <CustomTooltip message="Add Address" side="top" className="bg-yellow-700">
-              <Button className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500">
-                <Plus className="h-[20px] w-[20px]" />
-              </Button>
-            </CustomTooltip>
-          </SheetTrigger>
-          <SheetContent
-            className="min-w-[50%] p-0"
-            onInteractOutside={(e: any) => {
-              e.preventDefault();
-            }}
+      <GoBackConfermationModel
+        open={open}
+        setOpen={setOpen}
+        goBack={setSheetOpen}
+      />
+      <div className="h-[calc(100vh-100px)]">
+        <div className="h-[50px] flex items-center justify-end px-[10px] bg-white gap-[10px]">
+          <CustomTooltip
+            message="Download Excel Report"
+            side="top"
+            className="bg-yellow-700"
           >
-            <SheetHeader className={modelFixHeaderStyle}>
-              <SheetTitle className="text-slate-600">Add Shipping Address</SheetTitle>
-            </SheetHeader>
-            <div>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="">
-                  <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
-                    <div className="grid grid-cols-2 gap-[20px]">
+            <Button className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500">
+              <Download className="h-[20px] w-[20px]" />
+            </Button>
+          </CustomTooltip>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+            <SheetTrigger>
+              <CustomTooltip
+                message="Add Address"
+                side="top"
+                className="bg-yellow-700"
+              >
+                <Button className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500">
+                  <Plus className="h-[20px] w-[20px]" />
+                </Button>
+              </CustomTooltip>
+            </SheetTrigger>
+            <SheetContent
+              className="min-w-[50%] p-0"
+              onInteractOutside={(e: any) => {
+                e.preventDefault();
+              }}
+            >
+              <SheetHeader className={modelFixHeaderStyle}>
+                <SheetTitle className="text-slate-600">
+                  Add Shipping Address
+                </SheetTitle>
+              </SheetHeader>
+              <div>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="">
+                    <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
+                      <div className="grid grid-cols-2 gap-[20px]">
+                        <FormField
+                          control={form.control}
+                          name="label"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                Address label
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter Address Lable"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="company"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                Company Name
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter Company Name"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="pan"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                Pan No.
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter Pan Number"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="gstin"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                GSTIN
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter GSTIN Number"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="state"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                State
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter State"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                       <FormField
                         control={form.control}
-                        name="label"
+                        name="address"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Address label</FormLabel>
+                            <FormLabel className={LableStyle}>
+                              Address
+                            </FormLabel>
                             <FormControl>
-                              <Input className={InputStyle} placeholder="Enter Address Lable" {...field} />
+                              <Textarea
+                                className={InputStyle}
+                                placeholder="Enter Complete Address"
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -149,12 +284,18 @@ const MasterShippingAddressPage: React.FC = () => {
                       />
                       <FormField
                         control={form.control}
-                        name="company"
+                        name="addressLine1"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Company Name</FormLabel>
+                            <FormLabel className={LableStyle}>
+                              Address Line 1
+                            </FormLabel>
                             <FormControl>
-                              <Input className={InputStyle} placeholder="Enter Company Name" {...field} />
+                              <Textarea
+                                className={InputStyle}
+                                placeholder="Enter Complete Address"
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -163,110 +304,58 @@ const MasterShippingAddressPage: React.FC = () => {
 
                       <FormField
                         control={form.control}
-                        name="pan"
+                        name="addressLine2"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Pan No.</FormLabel>
+                            <FormLabel className={LableStyle}>
+                              Address Line 2
+                            </FormLabel>
                             <FormControl>
-                              <Input className={InputStyle} placeholder="Enter Pan Number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="gstin"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>GSTIN</FormLabel>
-                            <FormControl>
-                              <Input className={InputStyle} placeholder="Enter GSTIN Number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="state"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
-                            <FormControl>
-                              <Input className={InputStyle} placeholder="Enter State" {...field} />
+                              <Textarea
+                                className={InputStyle}
+                                placeholder="Enter Complete Address"
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>Address</FormLabel>
-                          <FormControl>
-                            <Textarea className={InputStyle} placeholder="Enter Complete Address" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="addressLine1"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>Address Line 1</FormLabel>
-                          <FormControl>
-                            <Textarea className={InputStyle} placeholder="Enter Complete Address" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="addressLine2"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>Address Line 2</FormLabel>
-                          <FormControl>
-                            <Textarea className={InputStyle} placeholder="Enter Complete Address" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className={modelFixFooterStyle}>
-                    <Button
-                      variant={"outline"}
-                      className="shadow-slate-300 mr-[10px] border-slate-400 border"
-                      onClick={(e: any) => {
-                        setOpen(true);
-                        e.preventDefault();
-                      }}
-                    >
-                      Back
-                    </Button>
-                    <Button type="submit" className="bg-cyan-700 hover:bg-cyan-600">
-                      Submit
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </div>
-          </SheetContent>
-        </Sheet>
+                    <div className={modelFixFooterStyle}>
+                      <Button
+                        variant={"outline"}
+                        className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                        onClick={(e: any) => {
+                          setOpen(true);
+                          e.preventDefault();
+                        }}
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="bg-cyan-700 hover:bg-cyan-600"
+                      >
+                        Submit
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+        <div className="ag-theme-quartz h-[calc(100vh-150px)]">
+          <ReusableTable
+            heigth="h-[calc(100vh-150px)]"
+            endpoint="/shippingAddress/getAll"
+            columns={columnDefs}
+            transform={transformBillingTable}
+            method="get"
+          />
+        </div>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-150px)]">
-        <ReusableTable heigth="h-[calc(100vh-100px)]" endpoint="/shippingAddress/getAll" columns={columnDefs} transform={transformBillingTable} method="get" />
-      </div>
-    </div>
     </>
   );
 };

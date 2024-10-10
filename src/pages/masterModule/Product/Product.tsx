@@ -151,14 +151,19 @@ const Product = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
+        {" "}
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <Filter className="h-[20px] w-[20px]" />
+          Filter
+        </div>
         <Form {...form}>
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 overflow-hidden p-[10px] h-[800px]"
+            className="space-y-6 overflow-hidden p-[10px] h-[1000px]"
           >
-            <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+            <div className="grid grid-cols-2 gap-[40px] ">
               <div className="">
                 <FormField
                   control={form.control}

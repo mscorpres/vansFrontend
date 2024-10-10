@@ -378,3 +378,25 @@ export const addbranchToClient = async (payload) => {
   const response = await spigenAxios.post("/client/addBranch", payload);
   return response;
 };
+export const fetchHSN = async (payload) => {
+  const response = await spigenAxios.post("/backend/fetchHsn", {
+    component: payload,
+  });
+  return response;
+};
+export const fetchEdditBomStage2 = async (payload) => {
+  const response = await spigenAxios.post(
+    "/bom/fetchComponentsInBomForUpdate",
+    {
+      subject_id: payload,
+    }
+  );
+  return response;
+};
+
+export const fetchbomComponents = async (payload) => {
+  const response = await spigenAxios.post("/bom/bomComponents", {
+    subject_id: payload,
+  });
+  return response;
+};

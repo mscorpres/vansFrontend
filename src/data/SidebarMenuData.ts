@@ -130,7 +130,7 @@ export const materialmenu = [
       },
       { name: "Component Map", path: "/master/componentMap/map" },
       { name: "Products", path: "/master/product" },
-      { name: "HSN map", path: "/not-permission" },
+      { name: "HSN map", path: "/master/hsn" },
       { name: "Groups", path: "/master/groups" },
       { name: "Locations", path: "/master/location" },
       { name: "Billing address", path: "/master/billing-address" },

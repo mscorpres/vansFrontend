@@ -24,7 +24,10 @@ import { AppDispatch } from "@/store";
 import { createClient } from "@/features/client/clientSlice";
 import styled from "styled-components";
 import { AgGridReact } from "ag-grid-react";
-import { addbranchToClient, getListOFViewCustomers } from "@/components/shared/Api/masterApi";
+import {
+  addbranchToClient,
+  getListOFViewCustomers,
+} from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import { EyeIcon } from "lucide-react";
 import Select from "react-select";
@@ -215,11 +218,11 @@ const MasterCustomerPage: React.FC = () => {
       //   });
     }
   };
-  const createNewBranch=async()=>{
+  const createNewBranch = async () => {
     console.log("paylo");
-    
+
     const response = await execFun(() => addbranchToClient(), "fetch");
-  }
+  };
   useEffect(() => {
     fetchList();
   }, []);
@@ -228,7 +231,7 @@ const MasterCustomerPage: React.FC = () => {
     <Wrapper>
       {" "}
       {loading1("fetch") && <FullPageLoading />}
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
         <Sheet open={addBranch} onOpenChange={setAddBranch}>
           <SheetTrigger></SheetTrigger>
           <SheetContent
@@ -332,7 +335,7 @@ const MasterCustomerPage: React.FC = () => {
                             placeholder="Enter GST Number"
                           />
                         </Form.Item>
-                        <Form.Item name="address1" label="Address Line 1">
+                        <Form.Item name="" label="Address Line 1">
                           {" "}
                           <Input
                             className={InputStyle}
@@ -360,13 +363,13 @@ const MasterCustomerPage: React.FC = () => {
                     </CardHeader>
                     <CardContent className="mt-[30px]">
                       <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                        <Form.Item name="label" label="Label">
+                        <Form.Item name="shipLabel" label="Label">
                           <Input
                             className={InputStyle}
                             placeholder="Enter Label"
                           />
                         </Form.Item>
-                        <Form.Item name="country" label="Country">
+                        <Form.Item name="labelCountry" label="Country">
                           <Select
                             styles={customStyles}
                             components={{ DropdownIndicator }}
@@ -391,7 +394,7 @@ const MasterCustomerPage: React.FC = () => {
                             // }
                           />
                         </Form.Item>
-                        <Form.Item name="State" label="State">
+                        <Form.Item name="shipState" label="State">
                           <Select
                             styles={customStyles}
                             components={{ DropdownIndicator }}
@@ -403,7 +406,7 @@ const MasterCustomerPage: React.FC = () => {
                             isSearchable={true}
                             options={countryList}
                             onChange={(value: any) =>
-                              form.setValue("country", value)
+                              form.setValue("shipState", value)
                             }
                             // onChange={(e) => console.log(e)}
                             // value={
@@ -416,35 +419,35 @@ const MasterCustomerPage: React.FC = () => {
                             // }
                           />
                         </Form.Item>
-                        <Form.Item name="pincode" label="Pincode">
+                        <Form.Item name="shipPincode" label="Pincode">
                           {" "}
                           <Input
                             className={InputStyle}
                             placeholder="Enter Pincode"
                           />
                         </Form.Item>
-                        <Form.Item name="phone" label="Phone Number">
+                        <Form.Item name="shipPhone" label="Phone Number">
                           {" "}
                           <Input
                             className={InputStyle}
                             placeholder="Enter Phone Number"
                           />
                         </Form.Item>
-                        <Form.Item name="gst" label="GST Number">
+                        <Form.Item name="shipGst" label="GST Number">
                           {" "}
                           <Input
                             className={InputStyle}
                             placeholder="Enter GST Number"
                           />
                         </Form.Item>
-                        <Form.Item name="address1" label="Address Line 1">
+                        <Form.Item name="shipAddress1" label="Address Line 1">
                           {" "}
                           <Input
                             className={InputStyle}
                             placeholder="Enter Address Line 1"
                           />
                         </Form.Item>
-                        <Form.Item name="address2" label="Address Line 2">
+                        <Form.Item name="shipAddress2" label="Address Line 2">
                           {" "}
                           <Input
                             className={InputStyle}
@@ -467,7 +470,11 @@ const MasterCustomerPage: React.FC = () => {
                 >
                   Back
                 </Button>
-                <Button type="submit" className="bg-cyan-700 hover:bg-cyan-600" onClick={()=>createNewBranch()}>
+                <Button
+                  type="submit"
+                  className="bg-cyan-700 hover:bg-cyan-600"
+                  onClick={() => createNewBranch()}
+                >
                   Update
                 </Button>
               </div>

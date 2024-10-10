@@ -64,6 +64,8 @@ import R5 from "./pages/ReportsModule/R5";
 import R4 from "./pages/ReportsModule/R4";
 import R3 from "./pages/ReportsModule/R3";
 import R6 from "./pages/ReportsModule/R6";
+import ClientLayout from "./layouts/Master/ClientLayout";
+import Hsn from "./pages/masterModule/HSN/Hsn";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -168,6 +170,16 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/master/location",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <Hsn />
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/hsn",
   },
   {
     element: (
@@ -594,7 +606,9 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <AddClient />
+          <ClientLayout>
+            <AddClient />{" "}
+          </ClientLayout>
         </MainLayout>
       </Protected>
     ),
@@ -604,7 +618,9 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <MasterCustomerPage />
+          <ClientLayout>
+            <MasterCustomerPage />
+          </ClientLayout>
         </MainLayout>
       </Protected>
     ),

@@ -7,6 +7,10 @@ export const clientFormSchema = z.object({
   email: z.string().email().optional(),
   mobileNo: z.string().min(1, { message: "Mobile Number is required" }),
   website: z.string().url().optional(),
+  pinCode: z.string().length(6, "Pin Code must be exactly 6 characters long"),
+  address2: z.string().length(10, "Address must be at least 10 characters."),
+  address1: z.string().length(10, "Address must be at least 10 characters."),
+  gst: z.string().length(15, "Pin Code must be at least 15 characters."),
 });
 
 export const clientEditFormSchema = z.object({
@@ -17,25 +21,21 @@ export const clientEditFormSchema = z.object({
   salePerson: z.string().optional(),
   website: z.string().url("Invalid URL").optional(),
   clientTDS: z.array(z.string()).optional(),
-clientTCS: z.array(z.string()).optional(),
+  clientTCS: z.array(z.string()).optional(),
   active: z.boolean().optional(),
 });
 
 export const branchAddressSchema = z.object({
- 
   country: z.string().min(1, "Country is required"),
   state: z.string().min(1, "State is required"),
   city: z.string().min(1, "City is required"),
   pinCode: z.string().min(1, "Pin Code is required"),
-  address:z.string().min(1, "Address is required"),
-  addressLine1:z.string().min(1, "Address is required"),
-  addressLine2:z.string().min(1, "Address is required"),
+  address: z.string().min(1, "Address is required"),
+  addressLine1: z.string().min(1, "Address is required"),
+  addressLine2: z.string().min(1, "Address is required"),
   phoneNo: z.string().min(1, "Phone Number is required"),
   gst: z.string().min(1, "GST Number is required"),
-
 });
-
-
 
 export const updateBranchSchema = z.object({
   country: z.string().min(1, "Country is required"),

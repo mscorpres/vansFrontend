@@ -166,19 +166,19 @@ const Locations = () => {
       headerName: "Locations Name",
       field: "name",
       filter: "agTextColumnFilter",
-      width: 220,
+      width: 320,
     },
     {
       headerName: "Parent Location",
       field: "parentLocation",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 320,
     },
     {
       headerName: "Is Blocked",
       field: "status",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 250,
     },
   ];
   const locType = [
@@ -197,8 +197,13 @@ const Locations = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr]">
       <div className="bg-[#fff]">
+        {" "}
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <Filter className="h-[20px] w-[20px]" />
+          Filter
+        </div>
         <Form {...form}>
           <form
             // onSubmit={form.handleSubmit(onSubmit)}

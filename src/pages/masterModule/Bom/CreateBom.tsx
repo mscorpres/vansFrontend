@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Edit2, Filter } from "lucide-react";
+import { Edit2, EyeIcon, Filter, Trash2 } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
 import { Input } from "@/components/ui/input";
@@ -51,6 +51,8 @@ import {
   servicesaddition,
 } from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
+import EditBom from "./EditBom";
+import ViewBom from "./ViewBom";
 const FormSchema = z.object({
   wise: z.string().optional(),
 });
@@ -58,6 +60,8 @@ const FormSchema = z.object({
 const CreateBom = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
+  const [openView, setSheetOpenView] = useState([]);
+  const [sheetOpenEdit, setSheetOpenEdit] = useState([]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -118,19 +122,19 @@ const CreateBom = () => {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
-      width: 90,
+      width: 70,
     },
     {
       headerName: "BOM Name & SKU",
       field: "bom_product_sku",
       filter: "agTextColumnFilter",
-      width: 220,
+      width: 200,
     },
     {
       headerName: "Customer",
       field: "client_name",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 300,
     },
     {
       headerName: "Customer Code",
@@ -140,15 +144,37 @@ const CreateBom = () => {
     },
 
     {
-      headerName: "Actions",
-      cellRendererFramework: "ActionCellRenderer",
-      width: 150,
-      suppressMenu: true, // Optionally, hide the menu icon in this column
+      field: "action",
+      headerName: "ACTION",
+      flex: 1,
+      cellRenderer: (params: any) => {
+        return (
+          <div className="flex gap-[5px] items-center justify-center h-full">
+            <Button
+              onClick={() => {
+                setSheetOpenView(params.data?.subject_id);
+              }}
+              className="rounded h-[25px] w-[25px] felx justify-center items-center p-0 bg-cyan-500 hover:bg-cyan-600"
+            >
+              <EyeIcon className="h-[15px] w-[15px] text-white" />
+            </Button>
+            <Button
+              className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"
+              onClick={() => {
+                setSheetOpenEdit(params.data?.subject_id);
+              }}
+            >
+              <Edit2 className="h-[15px] w-[15px] text-white" />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
+  console.log("sheetOpenEdit", sheetOpenEdit);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -297,6 +323,15 @@ const CreateBom = () => {
           paginationAutoPageSize={true}
         />
       </div>
+      {sheetOpenEdit && (
+        <EditBom
+          sheetOpenEdit={sheetOpenEdit}
+          setSheetOpenEdit={setSheetOpenEdit}
+        />
+      )}
+      {openView && (
+        <ViewBom openView={openView} setSheetOpenView={setSheetOpenView} />
+      )}
     </Wrapper>
   );
 };

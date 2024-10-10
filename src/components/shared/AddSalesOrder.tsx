@@ -39,6 +39,8 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
     setResetModel,
   };
 
+
+
   const addNewRow = () => {
     const newRow: RowData = {
       type: "products",

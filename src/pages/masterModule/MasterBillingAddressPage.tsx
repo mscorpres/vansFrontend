@@ -2,13 +2,26 @@ import CustomTooltip from "@/components/shared/CustomTooltip";
 import { Button } from "@/components/ui/button";
 import { columnDefs } from "@/config/agGrid/mastermodule/BillingAddressTable";
 import { Plus } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import React, { useState } from "react";
 import { createBillingAddress } from "@/features/billingAddress/billingAdressSlice";
@@ -17,7 +30,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { AppDispatch } from "@/store";
 import ReusableTable from "@/components/shared/ReusableTable";
 import { transformBillingTable } from "@/helper/TableTransformation";
-import { InputStyle, LableStyle, modelFixFooterStyle, modelFixHeaderStyle } from "@/constants/themeContants";
+import {
+  InputStyle,
+  LableStyle,
+  modelFixFooterStyle,
+  modelFixHeaderStyle,
+} from "@/constants/themeContants";
 import GoBackConfermationModel from "@/components/GoBackConfermationModel";
 
 const schema = z.object({
@@ -107,13 +125,24 @@ const MasterBillingAddressPage: React.FC = () => {
 
   return (
     <>
-      <GoBackConfermationModel open={open} setOpen={setOpen} goBack={setSheetOpen} />
-      <div className="h-[calc(100vh-100px)]">
+      <GoBackConfermationModel
+        open={open}
+        setOpen={setOpen}
+        goBack={setSheetOpen}
+      />
+      <div className="h-[calc(100vh-150px)]">
         <div className="h-[50px] flex items-center justify-end px-[10px] bg-white">
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger>
-              <CustomTooltip message="Add Address" side="top" className="bg-yellow-700">
-                <Button onClick={() => setSheetOpen(true)} className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500">
+              <CustomTooltip
+                message="Add Address"
+                side="top"
+                className="bg-yellow-700"
+              >
+                <Button
+                  onClick={() => setSheetOpen(true)}
+                  className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
+                >
                   <Plus className="h-[20px] w-[20px]" />
                 </Button>
               </CustomTooltip>
@@ -125,11 +154,16 @@ const MasterBillingAddressPage: React.FC = () => {
               }}
             >
               <SheetHeader className={modelFixHeaderStyle}>
-                <SheetTitle className="text-slate-600">Add Billing Address</SheetTitle>
+                <SheetTitle className="text-slate-600">
+                  Add Billing Address
+                </SheetTitle>
               </SheetHeader>
               <div>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-8 "
+                  >
                     <div className=" h-[calc(100vh-100px)] overflow-y-auto p-[20px] space-y-8 ">
                       <div className="grid grid-cols-2 gap-[25px]">
                         <FormField
@@ -137,9 +171,15 @@ const MasterBillingAddressPage: React.FC = () => {
                           name="label"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>Label</FormLabel>
+                              <FormLabel className={LableStyle}>
+                                Label
+                              </FormLabel>
                               <FormControl>
-                                <Input className={InputStyle} placeholder="Enter Label" {...field} />
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter Label"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -150,9 +190,15 @@ const MasterBillingAddressPage: React.FC = () => {
                           name="company"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>Company Name</FormLabel>
+                              <FormLabel className={LableStyle}>
+                                Company Name
+                              </FormLabel>
                               <FormControl>
-                                <Input className={InputStyle} placeholder="Enter Company Name" {...field} />
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter Company Name"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -164,9 +210,15 @@ const MasterBillingAddressPage: React.FC = () => {
                           name="pan"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>Pan No.</FormLabel>
+                              <FormLabel className={LableStyle}>
+                                Pan No.
+                              </FormLabel>
                               <FormControl>
-                                <Input className={InputStyle} placeholder="Enter Pan Number" {...field} />
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter Pan Number"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -177,9 +229,15 @@ const MasterBillingAddressPage: React.FC = () => {
                           name="gstin"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>GST No.</FormLabel>
+                              <FormLabel className={LableStyle}>
+                                GST No.
+                              </FormLabel>
                               <FormControl>
-                                <Input className={InputStyle} placeholder="Enter GST Number" {...field} />
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter GST Number"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -190,9 +248,15 @@ const MasterBillingAddressPage: React.FC = () => {
                           name="cin"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>Cin No.</FormLabel>
+                              <FormLabel className={LableStyle}>
+                                Cin No.
+                              </FormLabel>
                               <FormControl>
-                                <Input className={InputStyle} placeholder="Enter CIN Number" {...field} />
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter CIN Number"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -203,9 +267,15 @@ const MasterBillingAddressPage: React.FC = () => {
                           name="state"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>State</FormLabel>
+                              <FormLabel className={LableStyle}>
+                                State
+                              </FormLabel>
                               <FormControl>
-                                <Input className={InputStyle} placeholder="Enter State" {...field} />
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter State"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -216,9 +286,15 @@ const MasterBillingAddressPage: React.FC = () => {
                           name="address"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>Address</FormLabel>
+                              <FormLabel className={LableStyle}>
+                                Address
+                              </FormLabel>
                               <FormControl>
-                                <Input className={InputStyle} placeholder="Enter Address" {...field} />
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter Address"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -229,9 +305,15 @@ const MasterBillingAddressPage: React.FC = () => {
                           name="addressLine1"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>Address Line 1</FormLabel>
+                              <FormLabel className={LableStyle}>
+                                Address Line 1
+                              </FormLabel>
                               <FormControl>
-                                <Input className={InputStyle} placeholder="Enter Address" {...field} />
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Enter Address"
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -243,9 +325,15 @@ const MasterBillingAddressPage: React.FC = () => {
                         name="addressLine2"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Address Line 2</FormLabel>
+                            <FormLabel className={LableStyle}>
+                              Address Line 2
+                            </FormLabel>
                             <FormControl>
-                              <Textarea className={InputStyle} placeholder="Enter Address " {...field} />
+                              <Textarea
+                                className={InputStyle}
+                                placeholder="Enter Address "
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -263,7 +351,10 @@ const MasterBillingAddressPage: React.FC = () => {
                       >
                         Back
                       </Button>
-                      <Button type="submit" className="bg-cyan-700 hover:bg-cyan-600">
+                      <Button
+                        type="submit"
+                        className="bg-cyan-700 hover:bg-cyan-600"
+                      >
                         Submit
                       </Button>
                     </div>
@@ -273,8 +364,14 @@ const MasterBillingAddressPage: React.FC = () => {
             </SheetContent>
           </Sheet>
         </div>
-        <div className="ag-theme-quartz h-[calc(100vh-150px)]">
-          <ReusableTable heigth="h-[calc(100vh-100px)]" endpoint="/billingAddress/getAll" columns={columnDefs} transform={transformBillingTable} method="get" />
+        <div className="ag-theme-quartz h-[calc(100vh-300px)]">
+          <ReusableTable
+            heigth="h-[calc(100vh-150px)]"
+            endpoint="/billingAddress/getAll"
+            columns={columnDefs}
+            transform={transformBillingTable}
+            method="get"
+          />
         </div>
       </div>
     </>
