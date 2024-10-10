@@ -542,6 +542,6 @@
 //   }
 
 //   return <span>{value}</span>;
-// };
+// }; 
 
 // export default TextInputCellRenderer;
