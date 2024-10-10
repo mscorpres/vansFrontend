@@ -78,7 +78,7 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-slate-600">Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>This action cannot be undone. This will permanently delete your account and remove your data from our servers.</AlertDialogDescription>
+            <AlertDialogDescription>Are you want to go back?</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="shadow-slate-300">Cancel</AlertDialogCancel>
@@ -95,7 +95,7 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-slate-600">Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>This action cannot be undone. This will permanently delete your account and remove your data from our servers.</AlertDialogDescription>
+            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

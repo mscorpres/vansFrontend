@@ -9,34 +9,29 @@ const SOLayout = (props: { children: React.ReactNode }) => {
         <ul className="group flex items-center  h-[50px] ">
           <li className="h-[50px]">
             <NavLink to={"/sales/order/create"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
-              Create
+            Create Sales Order
             </NavLink>
           </li>
           <li className="h-[50px]">
             <NavLink to={"/sales/order/register"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
-              Register
-            </NavLink>
-          </li>
-          <li className="h-[50px]">
-            <NavLink to={"/sales/order/shipments"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
-              Shipment
+            Sales Order Register
             </NavLink>
           </li>
           <li className="h-[50px]">
             <NavLink to={"/sales/order/invoice"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
-              Invoice
+            Invoice Register
             </NavLink>
           </li>
-          <li className="h-[50px]">
+          {/* <li className="h-[50px]">
             <NavLink to={"/sales/order/allocated"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
               Allocated Invoice
             </NavLink>
-          </li>
+          </li>*/}
           <li className="h-[50px]">
             <NavLink to={"/sales/order/e-transaction-register"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
               E Transaction Register
             </NavLink>
-          </li>
+          </li> 
         </ul>
       </div>
       <div className="h-[calc(100vh-100px)] bg-transparent overflow-y-auto ">{props.children}</div>

@@ -2,7 +2,7 @@ import { ChevronRight, Star } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { MdHome } from "react-icons/md";
 import { IoGrid } from "react-icons/io5";
-import { FaUserPen } from "react-icons/fa6";
+// import { FaUserPen } from "react-icons/fa6";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 // import { PiListStarBold } from "react-icons/pi";
@@ -92,7 +92,7 @@ const SidebarMenues: React.FC<Props> = ({ uiState }) => {
             </div>
           </div>
         </li>
-        <li className="group">
+        {/* <li className="group">
           <div className={" flex justify-between items-center py-[10px] hover:bg-cyan-800 group-hover:bg-cyan-800 p-[10px] rounded-md cursor-pointer"}>
             <span className="flex gap-[10px] items-center cursor-pointer">
               <FaUserPen className="h-[20px] w-[20px]" />
@@ -123,7 +123,7 @@ const SidebarMenues: React.FC<Props> = ({ uiState }) => {
               </ul>
             </div>
           </div>
-        </li>
+        </li> */}
       </ul>
     </div>
   );
