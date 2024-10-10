@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="username" {...field} />
+                  <Input placeholder="Username" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -76,7 +76,7 @@ const LoginPage: React.FC = () => {
                   </Link>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="password" {...field} type="password" />
+                  <Input placeholder="password" {...field} type="Password" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
