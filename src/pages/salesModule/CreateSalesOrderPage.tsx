@@ -8,17 +8,19 @@ const CreateSalesOrderPage = () => {
   // const [data, setData] = useState<any>();
   const [payloadData, setPayloadData] = useState<any>(null);
 
-  console.log("formdata", payloadData);
+  // console.log("formdata", payloadData);
 
   return (
     <div>
       <Tabs value={tabvalue} onValueChange={setTabvalue}>
         <TabsContent value="create" className="p-0 m-0">
-          <CreateSalesOrder setTab={setTabvalue} setPayloadData={setPayloadData} />
+          <CreateSalesOrder
+            setTab={setTabvalue}
+            setPayloadData={setPayloadData}
+          />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">
-          <AddSalesOrder setTab={setTabvalue}  payloadData={payloadData}/>
-          
+          <AddSalesOrder setTab={setTabvalue} payloadData={payloadData} />
         </TabsContent>
       </Tabs>
     </div>
