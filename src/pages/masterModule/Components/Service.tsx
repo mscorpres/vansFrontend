@@ -1,6 +1,5 @@
 import React from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,11 +7,7 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import { InputStyle, LableStyle } from "@/constants/themeContants";
 import {
   Form,
   FormControl,
@@ -21,35 +16,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space, Typography } from "antd";
 import { Input } from "@/components/ui/input";
 
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+
 import useApi from "@/hooks/useApi";
 import {
-  componentList,
-  getComponentDetailsForServices,
-  listOfUom,
   serviceList,
   servicesaddition,
 } from "@/components/shared/Api/masterApi";
@@ -139,17 +114,18 @@ const Service = () => {
       cellRenderer: (e) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
-            <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600">
-              <Edit2
-                className="h-[15px] w-[15px] text-white"
-                onClick={() => setSheetOpenEdit(e?.data?.component_key)}
-              />
-            </Button>
+            {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+            <Edit2
+              className="h-[20px] w-[20px] text-cyan-700 "
+              onClick={() => setSheetOpenEdit(e?.data?.component_key)}
+            />
+            {/* </Button> */}
           </div>
         );
       },
     },
   ];
+  console.log("sheetOpenEdit", sheetOpenEdit);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr] overflow-hidden">
@@ -228,11 +204,11 @@ const Service = () => {
                 name="compName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LableStyle}>Component name</FormLabel>
+                    <FormLabel className={LableStyle}>Component Name</FormLabel>
                     <FormControl>
                       <Input
                         className={InputStyle}
-                        placeholder="Component name"
+                        placeholder="Component Name"
                         // {...field}
                       />
                     </FormControl>
@@ -269,11 +245,13 @@ const Service = () => {
               Submit
             </Button>
           </form>
-        </Form>{" "}
-        <EditService
-          sheetOpenEdit={sheetOpenEdit}
-          setSheetOpenEdit={setSheetOpenEdit}
-        />
+        </Form>
+        {sheetOpenEdit?.length > 0 && (
+          <EditService
+            sheetOpenEdit={sheetOpenEdit}
+            setSheetOpenEdit={setSheetOpenEdit}
+          />
+        )}
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact

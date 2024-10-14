@@ -11,7 +11,7 @@ import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
-import { Card, Form, Typography } from "antd";
+import { Form, Typography } from "antd";
 import { Input } from "@/components/ui/input";
 import {
   InputStyle,
@@ -30,7 +30,7 @@ import {
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
-import { CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -207,7 +207,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     }
   }, [sheetOpenEdit]);
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]">
+    <div className="h-[calc(100vh-100px)] ">
       {loading1("fetch") && <FullPageLoading />}
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
@@ -254,7 +254,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           Basic Details :
                         </h3>
                         <p className="text-slate-600 text-[13px]">
-                          Type Name or Code of the Client
+                          {/* Type Name or Code of the Client */}
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
@@ -362,7 +362,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           Tax Details :
                         </h3>
                         <p className="text-slate-600 text-[13px]">
-                          Type Name or Code of the Client
+                          {/* Type Name or Code of the Client */}
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
@@ -422,7 +422,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           Advance Details :
                         </h3>
                         <p className="text-slate-600 text-[13px]">
-                          Type Name or Code of the Client
+                          {/* Type Name or Code of the Client */}
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
@@ -481,7 +481,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           Production Plan and Costing :
                         </h3>
                         <p className="text-slate-600 text-[13px]">
-                          Type Name or Code of the Client
+                          {/* Type Name or Code of the Client */}
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
@@ -685,7 +685,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
           </div>
         </SheetContent>
       </Sheet>
-    </Wrapper>
+    </div>
   );
 };
 

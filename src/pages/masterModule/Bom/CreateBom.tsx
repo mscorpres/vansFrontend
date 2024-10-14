@@ -1,6 +1,4 @@
-import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,7 +6,7 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
+import { MoreOutlined } from "@ant-design/icons";
 import {
   InputStyle,
   LableStyle,
@@ -24,33 +22,13 @@ import {
 } from "@/components/ui/form";
 import { Edit2, EyeIcon, Filter, Trash2 } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
+import { DatePicker, Divider, Dropdown, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import {
-  componentList,
-  componentMapList,
-  fetchBomTypeWise,
-  getComponentsByNameAndNo,
-  getProductList,
-  listOfUom,
-  serviceList,
-  servicesaddition,
-} from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
+import { fetchBomTypeWise } from "@/components/shared/Api/masterApi";
 import EditBom from "./EditBom";
 import ViewBom from "./ViewBom";
 const FormSchema = z.object({
@@ -116,8 +94,66 @@ const CreateBom = () => {
   useEffect(() => {
     fetchBOMList();
   }, []);
+  const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
+    const menu = (
+      <Menu>
+        <Menu.Item
+          key="View"
+          onClick={() => {
+            setSheetOpenView(row.data?.subject_id);
+          }}
+        >
+          View
+        </Menu.Item>
+        <Menu.Item
+          key="Edit"
+          onClick={() => {
+            setSheetOpenEdit(row.data?.subject_id);
+          }}
+        >
+          Edit
+        </Menu.Item>
+      </Menu>
+    );
+    return (
+      <>
+        <Dropdown overlay={menu} trigger={["click"]}>
+          {/* <Button icon={<Badge />} /> */}
+          <MoreOutlined />
+        </Dropdown>
+      </>
+    );
+  };
 
   const columnDefs: ColDef<rowData>[] = [
+    {
+      field: "action",
+      headerName: "ACTION",
+      flex: 1,
+      cellRenderer: (params: any) => <ActionMenu row={params} />,
+      // cellRenderer: (params: any) => {
+      // return (
+      //     <div className="flex gap-[5px] items-center justify-center h-full">
+      //       <Button
+      //         onClick={() => {
+      //           setSheetOpenView(params.data?.subject_id);
+      //         }}
+      //         className="rounded h-[25px] w-[25px] felx justify-center items-center p-0 bg-cyan-500 hover:bg-cyan-600"
+      //       >
+      //         <EyeIcon className="h-[15px] w-[15px] text-white" />
+      //       </Button>
+      //       {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+      //       <Edit2
+      //         className="h-[20px] w-[20px] text-cyan-700 "
+      //         onClick={() => {
+      //           setSheetOpenEdit(params.data?.subject_id);
+      //         }}
+      //       />
+      //       {/* </Button> */}
+      //     </div>
+      //   );
+      // },
+    },
     {
       headerName: "ID",
       field: "id",
@@ -142,35 +178,8 @@ const CreateBom = () => {
       filter: "agTextColumnFilter",
       width: 190,
     },
-
-    {
-      field: "action",
-      headerName: "ACTION",
-      flex: 1,
-      cellRenderer: (params: any) => {
-        return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
-            <Button
-              onClick={() => {
-                setSheetOpenView(params.data?.subject_id);
-              }}
-              className="rounded h-[25px] w-[25px] felx justify-center items-center p-0 bg-cyan-500 hover:bg-cyan-600"
-            >
-              <EyeIcon className="h-[15px] w-[15px] text-white" />
-            </Button>
-            <Button
-              className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"
-              onClick={() => {
-                setSheetOpenEdit(params.data?.subject_id);
-              }}
-            >
-              <Edit2 className="h-[15px] w-[15px] text-white" />
-            </Button>
-          </div>
-        );
-      },
-    },
   ];
+
   console.log("sheetOpenEdit", sheetOpenEdit);
 
   return (

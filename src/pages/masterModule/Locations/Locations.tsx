@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -24,35 +23,15 @@ import {
 } from "@/components/ui/form";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Space } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
 import {
-  componentList,
-  componentMapList,
   fetchLocationList,
-  getComponentsByNameAndNo,
   getParentLocationOptions,
-  getProductList,
-  listOfUom,
-  serviceList,
-  servicesaddition,
 } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
-import { convertSelectOptions } from "@/lib/utils";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -197,7 +176,7 @@ const Locations = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr]">
+    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[550px_1fr]">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -331,7 +310,7 @@ const Locations = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

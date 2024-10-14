@@ -6,11 +6,28 @@ import { Props } from "@/types/AddPOTypes";
 import { ZodError } from "zod";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
 
 const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
-  const { excelModel, setExcelModel, setRowData, resetModel, setResetModel, backModel, setBackModel } = uiState;
+  const {
+    excelModel,
+    setExcelModel,
+    setRowData,
+    resetModel,
+    setResetModel,
+    backModel,
+    setBackModel,
+  } = uiState;
   const { toast } = useToast();
   const navigate = useNavigate();
   const handleImport = (data: any[]) => {
@@ -35,9 +52,13 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
-          description: "The imported data does not match the required format. Please check your file and try again.",
+          description:
+            "The imported data does not match the required format. Please check your file and try again.",
           action: (
-            <ToastAction altText="Try again" onClick={() => setExcelModel(true)}>
+            <ToastAction
+              altText="Try again"
+              onClick={() => setExcelModel(true)}
+            >
               Try again
             </ToastAction>
           ),
@@ -59,14 +80,39 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
             <ExcelImportButton onImport={handleImport} />
           </div>
           <div>
-            <h2 className="text-[16px] font-[600] text-slate-600">Instructions</h2>
+            <h2 className="text-[16px] font-[600] text-slate-600">
+              Instructions
+            </h2>
             <ol className="text-slate-500 text-[14px] ml-[10px] list-decimal">
               <li> Don't Edit columns colored as red.</li>
               <li>Don't change order of columns.</li>
               <li>Custom Fields columns with bold headers are mandatory.</li>
-              <li>In unit column, just enter unit name, and that should exactly match with the product units. (eg. for Litre, 'litre' is incorrect).</li>
-              <li>In unit column, just enter unit name, and that should exactly match with the product units. (eg. for Litre, 'litre' is incorrect).</li>
-              <li>To apply absolute discount in document currency, keep 'Discount Type' column blank, whereas to apply percentage discount enter '%' in 'Discount Type' column.</li>
+              <li>
+                In unit column, just enter unit name, and that should exactly
+                match with the product units. (eg. for Litre, 'litre' is
+                incorrect).
+              </li>
+              <li>
+                In unit column, just enter unit name, and that should exactly
+                match with the product units. (eg. for Litre, 'litre' is
+                incorrect).
+              </li>
+              <li>
+                To apply absolute discount in document currency, keep 'Discount
+                Type' column blank, whereas to apply percentage discount enter
+                '%' in 'Discount Type' column.
+              </li>{" "}
+              <li className="p-1">
+                Download<span> </span>
+                <a
+                  href="https://spigen.mscapi.live/files/excel/Sales%20Order%20Sample.xlsx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-teal-500 hover:underline"
+                >
+                  Sample File
+                </a>
+              </li>
             </ol>
           </div>
         </DialogContent>
@@ -77,12 +123,21 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
       <AlertDialog open={backModel} onOpenChange={setBackModel}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-600">Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>Are you want to go back?</AlertDialogDescription>
+            <AlertDialogTitle className="text-slate-600">
+              Are you absolutely sure?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you want to go back?
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="shadow-slate-300">Cancel</AlertDialogCancel>
-            <AlertDialogAction className="shadow bg-cyan-700 hover:bg-cyan-800 shadow-slate-500" onClick={() => navigate("/create-po")}>
+            <AlertDialogCancel className="shadow-slate-300">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="shadow bg-cyan-700 hover:bg-cyan-800 shadow-slate-500"
+              onClick={() => navigate("/create-po")}
+            >
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -94,12 +149,19 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-600">Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle className="text-slate-600">
+              Are you absolutely sure?
+            </AlertDialogTitle>
             {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500" onClick={()=>setRowData([])}>Continue</AlertDialogAction>
+            <AlertDialogAction
+              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
+              onClick={() => setRowData([])}
+            >
+              Continue
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

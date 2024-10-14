@@ -13,11 +13,7 @@ import {
 } from "@/constants/themeContants";
 import { Form, Typography } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import { InputStyle } from "@/constants/themeContants";
 import Select from "react-select";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
@@ -26,6 +22,7 @@ import { getComponentDetailsForServices } from "@/components/shared/Api/masterAp
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
@@ -77,7 +74,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       <Sheet open={sheetOpenEdit} onOpenChange={setSheetOpenEdit}>
         <SheetTrigger></SheetTrigger>
         <SheetContent
-          className="min-w-[100%] p-0"
+          className="min-w-[80%] p-0"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}
@@ -92,106 +89,143 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 className=""
               >
                 <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
-                  <div className="grid grid-cols-4 gap-[20px]">
-                    <Form.Item name="serviceCode" label="Service Code">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Service Code"
-                      />
-                    </Form.Item>
-                    <Form.Item name="serviceName" label="Service Name">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Service Name"
-                      />
-                    </Form.Item>
+                  <div className="grid grid-cols-1 gap-[30px]">
+                    <Card className="rounded shadow bg-[#fff]">
+                      <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                        <h3 className="text-[17px] font-[600] text-slate-600">
+                          Basic Details :
+                        </h3>
+                        <p className="text-slate-600 text-[13px]">
+                          {/* Type Name or Code of the Client */}
+                        </p>
+                      </CardHeader>
+                      <CardContent className="mt-[30px]">
+                        {" "}
+                        <div className="grid grid-cols-3 gap-[20px]">
+                          <Form.Item name="serviceCode" label="Service Code">
+                            <Input
+                              className={InputStyle}
+                              placeholder="Enter Service Code"
+                            />
+                          </Form.Item>
+                          <Form.Item name="serviceName" label="Service Name">
+                            <Input
+                              className={InputStyle}
+                              placeholder="Enter Service Name"
+                            />
+                          </Form.Item>
+                          <Form.Item name="uom" label="UOM">
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
+                              placeholder="Select UOM"
+                              className="border-0 basic-single "
+                              classNamePrefix="select border-0"
+                              isDisabled={false}
+                              isClearable={true}
+                              isSearchable={true}
+                              // options={type}
+                              onChange={(e: any) =>
+                                form.setValue("wise", e.value)
+                              }
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            name="serviceCategory"
+                            label="Service Category"
+                          >
+                            <Input
+                              className={InputStyle}
+                              placeholder="Enter Service Category"
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            className="w-full"
+                            name="enabled"
+                            label="Enabled"
+                          >
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
+                              placeholder="Select Enabled"
+                              className="border-0 basic-single"
+                              classNamePrefix="select border-0"
+                              isDisabled={false}
+                              isClearable={true}
+                              isSearchable={true}
+                              // options={type}
+                              onChange={(e: any) =>
+                                form.setValue("wise", e.value)
+                              }
+                            />
+                          </Form.Item>
+                          <Form.Item name="description" label="Description">
+                            <Input
+                              className={InputStyle}
+                              placeholder="Enter Component Description"
+                            />
+                          </Form.Item>
+                        </div>{" "}
+                      </CardContent>
+                    </Card>
+                    <Card className="rounded shadow bg-[#fff]">
+                      <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                        <h3 className="text-[17px] font-[600] text-slate-600">
+                          Tax Details :
+                        </h3>
+                        <p className="text-slate-600 text-[13px]">
+                          {/* Type Name or Code of the Client */}
+                        </p>
+                      </CardHeader>
+                      <CardContent className="mt-[30px]">
+                        {" "}
+                        <div className="grid grid-cols-3 gap-[20px]">
+                          <Form.Item label="Tax Type" name="taxType">
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
+                              placeholder="Select Tax Type"
+                              className="border-0 basic-single"
+                              classNamePrefix="select border-0"
+                              isDisabled={false}
+                              isClearable={true}
+                              isSearchable={true}
+                              // options={type}
+                              onChange={(e: any) =>
+                                form.setValue("wise", e.value)
+                              }
+                            />
+                          </Form.Item>
 
-                    <Form.Item name="uom" label="UOM">
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select UOM"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
+                          <Form.Item label="GST Tax Rate" name="gstTaxRate">
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
+                              placeholder="Select GST Tax Rate"
+                              className="border-0 basic-single"
+                              classNamePrefix="select border-0"
+                              isDisabled={false}
+                              isClearable={true}
+                              isSearchable={true}
+                              // options={type}
+                              onChange={(e: any) =>
+                                form.setValue("wise", e.value)
+                              }
+                            />
+                          </Form.Item>
 
-                    <Form.Item name="serviceCategory" label="Service Category">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Service Category"
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      className="w-full"
-                      name="enabled"
-                      label="Enabled"
-                    >
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select Enabled"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item name="description" label="Description">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Component Description"
-                      />
-                    </Form.Item>
-                  </div>{" "}
-                  <div className="grid grid-cols-1 gap-[20px]">
-                    <Typography.Title level={3}>Tax Details :</Typography.Title>
+                          <Form.Item label="SAC Code" name="sacCode">
+                            <Input
+                              className={InputStyle}
+                              placeholder="Enter SAC"
+                            />
+                          </Form.Item>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
-                  <div className="grid grid-cols-4 gap-[20px]">
-                    <Form.Item label="Tax Type" name="taxType">
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select Tax Type"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
 
-                    <Form.Item label="GST Tax Rate" name="gstTaxRate">
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select GST Tax Rate"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="SAC Code" name="sacCode">
-                      <Input className={InputStyle} placeholder="Enter SAC" />
-                    </Form.Item>
-                  </div>
+                  <div className="grid grid-cols-4 gap-[20px]"></div>
                 </div>
                 <div className={modelFixFooterStyle}>
                   <Button

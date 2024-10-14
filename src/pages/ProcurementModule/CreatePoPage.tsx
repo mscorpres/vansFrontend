@@ -56,7 +56,7 @@ const CreatePoPage: React.FC<Props> = ({ setTab, setPayloadData }) => {
                     Vendor Details
                   </h3>
                   <p className="text-slate-600 text-[13px]">
-                    Type Name or Code of the vendor
+                    {/* Type Name or Code of the vendor */}
                   </p>
                 </CardHeader>
                 <CardContent className="mt-[10px]">
@@ -149,7 +149,7 @@ const CreatePoPage: React.FC<Props> = ({ setTab, setPayloadData }) => {
                     PO Terms & Other
                   </h3>
                   <p className="text-slate-600 text-[13px]">
-                    Provide the bill and ship information
+                    {/* Provide the bill and ship information */}
                   </p>
                   {/* <Switch className="flex items-center gap-[10px]">
                 <label className="switch">
@@ -219,7 +219,7 @@ const CreatePoPage: React.FC<Props> = ({ setTab, setPayloadData }) => {
                   <h3 className="text-[17px] font-[600] text-slate-600">
                     Invoicing Details
                   </h3>
-                  <p className="text-slate-600 text-[13px]">Bill To -</p>
+                  {/* <p className="text-slate-600 text-[13px]">Bill To -</p> */}
                 </CardHeader>
                 <CardContent className="mt-[30px]">
                   <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
@@ -266,7 +266,7 @@ const CreatePoPage: React.FC<Props> = ({ setTab, setPayloadData }) => {
                   <h3 className="text-[17px] font-[600] text-slate-600">
                     Invoicing Details
                   </h3>
-                  <p className="text-slate-600 text-[13px]">Ship To -</p>
+                  {/* <p className="text-slate-600 text-[13px]">Ship To -</p> */}
                 </CardHeader>
                 <CardContent className="mt-[30px]">
                   <div className="grid grid-cols-2 gap-[40px] mt-[30px]">

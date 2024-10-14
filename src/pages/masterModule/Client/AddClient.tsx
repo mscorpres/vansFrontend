@@ -5,7 +5,6 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { Badge } from "@/components/ui/badge";
 import styled from "styled-components";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,13 +17,7 @@ import {
   fetchProjectDescription,
   fetchStates,
 } from "@/features/salesmodule/createSalesOrderSlice";
-// import { fetchBillingAddressList } from "../../features/salesmodule/createSalesOrderSlice";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
-import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
@@ -45,7 +38,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
 import {
   addClient,
   fetchCountryList,
@@ -236,7 +228,7 @@ const AddClient: React.FC<Props> = ({
                     Client Details
                   </h3>
                   <p className="text-slate-600 text-[13px]">
-                    Type Name or Code of the Client
+                    {/* Type Name or Code of the Client */}
                   </p>
                 </CardHeader>
                 <CardContent className="mt-[30px]">

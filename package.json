@@ -46,7 +46,7 @@
     "@tanstack/react-table": "^8.17.3",
     "ag-grid-community": "^32.0.2",
     "ag-grid-enterprise": "^32.0.2",
-    "ag-grid-react": "^32.0.2",
+    "ag-grid-react": "^32.2.2",
     "antd": "^5.19.2",
     "axios": "^1.7.2",
     "chart.js": "^4.4.3",

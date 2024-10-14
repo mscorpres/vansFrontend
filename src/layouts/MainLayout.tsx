@@ -29,6 +29,7 @@ import QuickLinks from "@/components/shared/QuickLinks";
 import DownloadIndecator from "@/components/shared/DownloadIndecator";
 import { BiSupport } from "react-icons/bi";
 import HelpAndSupportModel from "@/components/shared/HelpAndSupportModel";
+import { Typography } from "antd";
 function MainLayout(props: { children: React.ReactNode }) {
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
   const [sheet2Open, setSheet2Open] = useState<boolean>(false);
@@ -42,7 +43,8 @@ function MainLayout(props: { children: React.ReactNode }) {
   const modalRef = useRef<HTMLDivElement>(null);
   const sidebaref = useRef<HTMLDivElement>(null);
   const favoriteref = useRef<HTMLDivElement>(null);
-
+  const userData = localStorage.getItem("loggedInUser");
+  const user = userData ? JSON.parse(userData) : null;
   const uiState: MainUIStateType = {
     sheetOpen,
     setSheetOpen,
@@ -86,11 +88,11 @@ function MainLayout(props: { children: React.ReactNode }) {
           <div className="flex gap-[20px] items-center">
             <div className="text-slate-700 font-[600] logo">VANS</div>
             <div className="date">
-              <Select>
+              <Select value="2024-2025">
                 <SelectTrigger className="w-[180px] bg-white border-0 text-slate-700">
-                  <SelectValue placeholder="Session" />
+                  <SelectValue placeholder="Session" value="2024-2025" />
                 </SelectTrigger>
-                <SelectContent className="bg-white ">
+                <SelectContent className="bg-white " value="2024-2025">
                   <SelectItem
                     value="2024-2025"
                     className="text-slate-700 focus:text-white focus:bg-cyan-600"
@@ -147,7 +149,7 @@ function MainLayout(props: { children: React.ReactNode }) {
       <div className="mt-[50px] ">
         <div className="w-[60px] h-[100vh] bg-cyan-950 fixed left-0 top-0 pt-[20px] pb-[10px] flex items-center justify-between flex-col z-[50] border-r border-slate-600">
           <div className="flex flex-col items-center gap-[20px]">
-            <div className="flex items-center justify-center">
+            {/* <div className="flex items-center justify-center">
               <Link to="/">
                 <img
                   src="/spigenlogo2.png"
@@ -155,7 +157,8 @@ function MainLayout(props: { children: React.ReactNode }) {
                   className="h-[35px] w-[35px] "
                 />
               </Link>
-            </div>
+            </div> */}
+            <Typography.Text className="text-white">Vans</Typography.Text>
             <div>
               <TooltipProvider>
                 <Tooltip>

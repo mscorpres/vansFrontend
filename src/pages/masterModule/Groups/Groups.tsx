@@ -1,55 +1,24 @@
 import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
+
 import {
   InputStyle,
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Edit2, Filter, Group } from "lucide-react";
+
 import styled from "styled-components";
 import { DatePicker, Row, Space, Form } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
+
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ActionCellRenderer from "./ActionCellRenderer";
-import {
-  componentList,
-  componentMapList,
-  getComponentsByNameAndNo,
-  getGroupList,
-  getProductList,
-  listOfUom,
-  saveGroups,
-  serviceList,
-  servicesaddition,
-} from "@/components/shared/Api/masterApi";
+import { getGroupList, saveGroups } from "@/components/shared/Api/masterApi";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,7 +29,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { spigenAxios } from "@/axiosIntercepter";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   dateRange: z
@@ -160,7 +128,7 @@ const Groups = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr]">
       {" "}
       {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
@@ -218,7 +186,7 @@ const Groups = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

@@ -68,7 +68,7 @@ const ComponentMap = () => {
   }, []);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]  overflow-hidden">
+    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[450px_1fr]  overflow-hidden">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -100,7 +100,7 @@ const ComponentMap = () => {
 
             <Form.Item name="vendorName" label="Vendor Name">
               <ReusableAsyncSelect
-                placeholder="Part Name"
+                placeholder="Vendor Name"
                 endpoint="/backend/vendorList"
                 transform={transformOptionData}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
@@ -129,7 +129,7 @@ const ComponentMap = () => {
           {/* </form> */}
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz">
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

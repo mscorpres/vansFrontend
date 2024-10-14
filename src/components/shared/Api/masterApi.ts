@@ -303,6 +303,23 @@ export const getListOFViewCustomers = async (payload) => {
   });
   return response;
 };
+
+export const getListOFbranchDetails = async (payload) => {
+  const response = await spigenAxios.get(
+    `/client/branchDetails?addressID=${payload}`,
+    {
+      componentKey: payload,
+    }
+  );
+  return response;
+};
+
+
+
+export const getListOFViewCustomersOfSelected = async (payload) => {
+  const response = await spigenAxios.get(`/client/viewBranch?client=${payload}`);
+  return response;
+};
 export const getListFgIn = async (payload) => {
   const response = await spigenAxios.post("/fgIN/getFGs", payload);
   return response;

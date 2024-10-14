@@ -1,58 +1,20 @@
 import React from "react";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
 
-import TextInputCellRenderer from "@/config/agGrid/TextInputCellRenderer";
+import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import { transformOptionData } from "@/helper/transform";
 import { Edit2, Filter, Plus, Trash2 } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Form, Space } from "antd";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
+
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+
 import useApi from "@/hooks/useApi";
-import {
-  componentList,
-  fetchHSN,
-  getdetailsOfUpdateComponent,
-  listOfUom,
-} from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
-import {
-  modelFixFooterStyle,
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import FullPageLoading from "@/components/shared/FullPageLoading";
+import { componentList, fetchHSN } from "@/components/shared/Api/masterApi";
+
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { FaFileExcel } from "react-icons/fa";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
@@ -77,7 +39,7 @@ const Hsn = () => {
   const [formValues, setFormValues] = useState({ compCode: "" });
   const { execFun, loading: loading1 } = useApi();
   const addNewRow = () => {
-    const newRow: RowData = {
+    const newRow = {
       asinNumber: "B01N1SE4EP",
 
       gstRate: 18,
@@ -214,6 +176,13 @@ const Hsn = () => {
       width: 90,
     },
     {
+      headerName: "",
+      valueGetter: "node.rowIndex + 1",
+      cellRenderer: "textInputCellRenderer",
+      maxWidth: 100,
+      field: "delete",
+    },
+    {
       headerName: "HSN/SAC Code",
       field: "hsnCodeselect",
       editable: false,
@@ -231,27 +200,27 @@ const Hsn = () => {
       minWidth: 200,
     },
 
-    {
-      field: "action",
-      headerName: "",
-      flex: 1,
-      cellRenderer: (e) => {
-        return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
-            <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600">
-              <Trash2
-                className="h-[15px] w-[15px] text-white"
-                onClick={() => setSheetOpenEdit(e?.data?.product_key)}
-              />
-            </Button>{" "}
-          </div>
-        );
-      },
-    },
+    // {
+    //   field: "action",
+    //   headerName: "",
+    //   flex: 1,
+    //   cellRenderer: (e) => {
+    //     return (
+    //       <div className="flex gap-[5px] items-center justify-center h-full">
+    //         <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600">
+    //           <Trash2
+    //             className="h-[15px] w-[15px] text-white"
+    //             onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+    //           />
+    //         </Button>{" "}
+    //       </div>
+    //     );
+    //   },
+    // },
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr] overflow-hidden">
+    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[450px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -278,12 +247,12 @@ const Hsn = () => {
               </Form.Item>
             </div>{" "}
           </div>
-          <Button
+          {/* <Button
             type="submit"
             className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
           >
             Submit
-          </Button>
+          </Button> */}
           {/* </form> */}
         </Form>{" "}
       </div>{" "}
@@ -292,8 +261,8 @@ const Hsn = () => {
         {loading1("fetch") && <FullPageLoading />}
       
       </div> */}
-      <div className="max-h-[calc(100vh-100px)]  bg-white">
-        <div className="flex items-center w-full gap-[20px] h-[60px] px-[10px] justify-between">
+      <div className="h-[calc(100vh-80px)]  ">
+        <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
           <Button
             onClick={() => {
               addNewRow();
@@ -303,30 +272,7 @@ const Hsn = () => {
             <Plus className="font-[600]" /> Add Item
           </Button>{" "}
         </div>
-        <div className="ag-theme-quartz h-[calc(100vh-220px)] w-full">
-          {/* <AgGridReact
-            loadingCellRenderer={loadingCellRenderer}
-            rowData={rowData}
-            columnDefs={columnDefs}
-            defaultColDef={{ filter: true, sortable: true }}
-            pagination={true}
-            paginationPageSize={10}
-            paginationAutoPageSize={true}
-          /> */}
-          {/* <AgGridReact
-            ref={gridRef}
-            rowData={rowData}
-            columnDefs={columnDefs}
-            defaultColDef={defaultColDef}
-            statusBar={statusBar}
-            components={components}
-            pagination={true}
-            paginationPageSize={10}
-            animateRows={true}
-            gridOptions={commonAgGridConfig}
-            suppressCellFocus={false}
-            suppressRowClickSelection={false}
-          /> */}
+        <div className="ag-theme-quartz h-[calc(100vh-150px)] w-full">
           <AgGridReact
             ref={gridRef}
             rowData={rowData}

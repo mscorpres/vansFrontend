@@ -1,7 +1,25 @@
 // clientSlice.ts
 
 import { spigenAxios } from "@/axiosIntercepter";
-import { BillingAddress, BillingAddressListItem, BillingAddressListResponse, BillingAddressResponse, Client, ClientAddressDetail, ClientAddressDetailResponse, ClientResponse, ClientState, ComponentDetail, ComponentDetailResponse, Country2, CountryResponse, ProjectDescription, ProjectDescriptionResponse, State2, StateResponse } from "@/types/createSlaesOrderTypes";
+import {
+  BillingAddress,
+  BillingAddressListItem,
+  BillingAddressListResponse,
+  BillingAddressResponse,
+  Client,
+  ClientAddressDetail,
+  ClientAddressDetailResponse,
+  ClientResponse,
+  ClientState,
+  ComponentDetail,
+  ComponentDetailResponse,
+  Country2,
+  CountryResponse,
+  ProjectDescription,
+  ProjectDescriptionResponse,
+  State2,
+  StateResponse,
+} from "@/types/createSlaesOrderTypes";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const initialState: ClientState = {
@@ -12,31 +30,42 @@ const initialState: ClientState = {
   states: null,
   billingAddressList: null,
   clientAddressDetail: null,
-  componentDetails:null,
+  componentDetails: null,
   loading: false,
   error: null,
 };
 // Define the async thunk for fetching client details
-export const fetchClientDetails = createAsyncThunk<Client, string>("client/fetchClientDetails", async (clientCode: string) => {
-  try {
-    const response = await spigenAxios.get<ClientResponse>(`/client/branches?clientCode=${clientCode}`);
-    if (response.data.status !== "success") {
-      throw new Error("Failed to fetch client details");
+export const fetchClientDetails = createAsyncThunk<Client, string>(
+  "client/fetchClientDetails",
+  async (clientCode: string) => {
+    try {
+      const response = await spigenAxios.get<ClientResponse>(
+        `/client/branches?clientCode=${clientCode}`
+      );
+      if (response.data.status !== "success") {
+        throw new Error("Failed to fetch client details");
+      }
+      // Assuming there is only one client in the data array
+      return response.data.data[0];
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
     }
-    // Assuming there is only one client in the data array
-    return response.data.data[0];
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw new Error("An unknown error occurred");
   }
-});
+);
 
 // Define the async thunk for fetching project description
-export const fetchProjectDescription = createAsyncThunk<ProjectDescription, { project_name: string }>("client/fetchProjectDescription", async ({ project_name }) => {
+export const fetchProjectDescription = createAsyncThunk<
+  ProjectDescription,
+  { project_name: string }
+>("client/fetchProjectDescription", async ({ project_name }) => {
   try {
-    const response = await spigenAxios.post<ProjectDescriptionResponse>("/backend/projectDescription", { project_name });
+    const response = await spigenAxios.post<ProjectDescriptionResponse>(
+      "/backend/projectDescription",
+      { project_name }
+    );
     if (response.data.status !== "success") {
       throw new Error("Failed to fetch project description");
     }
@@ -49,9 +78,15 @@ export const fetchProjectDescription = createAsyncThunk<ProjectDescription, { pr
   }
 });
 
-export const fetchBillingAddress = createAsyncThunk<BillingAddress, { billing_code: string }>("client/fetchBillingAddress", async ({ billing_code }) => {
+export const fetchBillingAddress = createAsyncThunk<
+  BillingAddress,
+  { billing_code: string }
+>("client/fetchBillingAddress", async ({ billing_code }) => {
   try {
-    const response = await spigenAxios.post<BillingAddressResponse>("/backend/billingAddress", { billing_code });
+    const response = await spigenAxios.post<BillingAddressResponse>(
+      "/backend/billingAddress",
+      { billing_code }
+    );
     if (response.data.code !== 200) {
       throw new Error("Failed to fetch billing address");
     }
@@ -64,35 +99,51 @@ export const fetchBillingAddress = createAsyncThunk<BillingAddress, { billing_co
   }
 });
 // Define the async thunk for fetching countries
-export const fetchCountries = createAsyncThunk<Country2[], void>("client/fetchCountries", async () => {
-  try {
-    const response = await spigenAxios.get<CountryResponse>("/tally/backend/countries");
-    return response.data.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
+export const fetchCountries = createAsyncThunk<Country2[], void>(
+  "client/fetchCountries",
+  async () => {
+    try {
+      const response = await spigenAxios.get<CountryResponse>(
+        "/tally/backend/countries"
+      );
+      return response.data.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
     }
-    throw new Error("An unknown error occurred");
   }
-});
+);
 
 // Define the async thunk for fetching states
-export const fetchStates = createAsyncThunk<State2[], void>("client/fetchStates", async () => {
-  try {
-    const response = await spigenAxios.get<StateResponse>("/tally/backend/states");
-    return response.data.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
+export const fetchStates = createAsyncThunk<State2[], void>(
+  "client/fetchStates",
+  async () => {
+    try {
+      const response = await spigenAxios.get<StateResponse>(
+        "/tally/backend/states"
+      );
+      return response.data.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
     }
-    throw new Error("An unknown error occurred");
   }
-});
+);
 
 // Define the async thunk for fetching billing address list
-export const fetchBillingAddressList = createAsyncThunk<BillingAddressListItem[], { search: string }>("client/fetchBillingAddressList", async ({ search }) => {
+export const fetchBillingAddressList = createAsyncThunk<
+  BillingAddressListItem[],
+  { search: string }
+>("client/fetchBillingAddressList", async ({ search }) => {
   try {
-    const response = await spigenAxios.post<BillingAddressListResponse>("/backend/billingAddressList", { search });
+    const response = await spigenAxios.post<BillingAddressListResponse>(
+      "/backend/billingAddressList",
+      { search }
+    );
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
@@ -102,37 +153,45 @@ export const fetchBillingAddressList = createAsyncThunk<BillingAddressListItem[]
   }
 });
 
-
 // Define the async thunk for fetching client address detail
-export const fetchClientAddressDetail = createAsyncThunk<ClientAddressDetail, { addressID: string }>(
-    'client/fetchClientAddressDetail',
-    async ({ addressID }) => {
-      try {
-        const response = await spigenAxios.get<ClientAddressDetailResponse>(`/client/getClientDetail?addressID=${addressID}`);
-        return response.data[0];
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new Error(error.message);
-        }
-        throw new Error('An unknown error occurred');
-      }
+export const fetchClientAddressDetail = createAsyncThunk<
+  ClientAddressDetail,
+  { addressID: string }
+>("client/fetchClientAddressDetail", async ({ addressID }) => {
+  try {
+    const response = await spigenAxios.get<ClientAddressDetailResponse>(
+      `/client/getClientDetail?addressID=${addressID}`
+    );
+    return response.data[0];
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unknown error occurred");
+  }
+});
+// Define the async thunk for fetching component details
+export const fetchComponentDetail = createAsyncThunk<
+  ComponentDetail[],
+  { search: string }
+>("client/fetchComponentDetail", async ({ search }) => {
+  const response = await spigenAxios.post<ComponentDetailResponse>(
+    `/backend/getComponentByNameAndNo`,
+    {
+      search: search,
     }
   );
-  // Define the async thunk for fetching component details
-export const fetchComponentDetail = createAsyncThunk<ComponentDetail[], {search:string}>(
-  'client/fetchComponentDetail',
-  async ({ search }) => {
-    const response = await spigenAxios.post<ComponentDetailResponse>(`/backend/getComponentByNameAndNo`, {
-      params: { search }
-    });
-    if (response.data.success) {
-      return response.data.data;
-    } else {
-      // Redux Toolkit will automatically handle the error
-      throw new Error(response.data.message || 'Failed to fetch component details');
-    }
+  console.log("response", response);
+
+  if (response.status == 200) {
+    return response.data;
+  } else {
+    // Redux Toolkit will automatically handle the error
+    throw new Error(
+      response.data.message || "Failed to fetch component details"
+    );
   }
-);
+});
 // Create the slice
 const clientSlice = createSlice({
   name: "client",
@@ -176,7 +235,8 @@ const clientSlice = createSlice({
       })
       .addCase(fetchProjectDescription.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch project description";
+        state.error =
+          action.error.message || "Failed to fetch project description";
       })
       // Handling country actions
       .addCase(fetchCountries.pending, (state) => {
@@ -215,7 +275,8 @@ const clientSlice = createSlice({
       })
       .addCase(fetchBillingAddressList.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch billing address list";
+        state.error =
+          action.error.message || "Failed to fetch billing address list";
       })
       // Handling client address detail actions
       .addCase(fetchClientAddressDetail.pending, (state) => {
@@ -228,10 +289,11 @@ const clientSlice = createSlice({
       })
       .addCase(fetchClientAddressDetail.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch client address detail';
+        state.error =
+          action.error.message || "Failed to fetch client address detail";
       })
-       // Handling component detail actions
-       .addCase(fetchComponentDetail.pending, (state) => {
+      // Handling component detail actions
+      .addCase(fetchComponentDetail.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -241,7 +303,8 @@ const clientSlice = createSlice({
       })
       .addCase(fetchComponentDetail.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch component details';
+        state.error =
+          action.error.message || "Failed to fetch component details";
       });
   },
 });

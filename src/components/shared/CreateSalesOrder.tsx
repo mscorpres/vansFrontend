@@ -168,7 +168,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     Client Details
                   </h3>
                   <p className="text-slate-600 text-[13px]">
-                    Type Name or Code of the Client
+                    {/* Type Name or Code of the Client */}
                   </p>
                 </CardHeader>
                 <CardContent className="mt-[30px]">
@@ -326,7 +326,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     SO Terms
                   </h3>
                   <p className="text-slate-600 text-[13px]">
-                    Provide SO terms and other information
+                    {/* Provide SO terms and other information */}
                   </p>
                 </CardHeader>
                 <CardContent className="mt-[10px]">
@@ -518,7 +518,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     Dispatch from
                   </h3>
                   <p className="text-slate-600 text-[13px]">
-                    Provide billing information
+                    {/* Provide billing information */}
                   </p>
                 </CardHeader>
                 <CardContent className="mt-[10px]">
@@ -650,7 +650,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     Ship To
                   </h3>
                   <p className="text-slate-600 text-[13px]">
-                    Provide shipping information
+                    {/* Provide shipping information */}
                   </p>
                   <Switch className="flex items-center gap-[10px]">
                     <label className="switch">

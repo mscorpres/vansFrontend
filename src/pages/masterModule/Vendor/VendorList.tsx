@@ -33,7 +33,7 @@ import {
   Trash,
 } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
+import { DatePicker, Divider, Dropdown, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import {
   SelectContent,
@@ -49,6 +49,7 @@ import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer
 import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ActionCellRenderer from "./ActionCellRenderer";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import {
   componentList,
   componentMapList,
@@ -82,6 +83,7 @@ import {
 } from "@/components/ui/sheet";
 import { add } from "lodash";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { MoreOutlined } from "@ant-design/icons";
 const FormSchema = z.object({
   wise: z.string().optional(),
   branch: z.string().optional(),
@@ -116,7 +118,48 @@ const VendorList = () => {
   });
   const thebranch = form.watch("branch");
   console.log("thebranch", thebranch);
+  const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
+    const dispatch = useDispatch<AppDispatch>();
 
+    const menu = (
+      <Menu>
+        <Menu.Item
+          key="AddBranch"
+          onClick={() => {
+            setSheetOpenView(row);
+          }}
+          // disabled={isDisabled}
+        >
+          View
+        </Menu.Item>
+        <Menu.Item
+          key=" ViewBranch"
+          onClick={() => {
+            setSheetOpenEdit(row);
+          }}
+        >
+          Edit
+        </Menu.Item>
+        <Menu.Item
+          key=" Branch"
+          onClick={() => {
+            setSheetOpenBranch(row.data.vendor_code);
+          }}
+        >
+          Branches
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <>
+        <Dropdown overlay={menu} trigger={["click"]}>
+          {/* <Button icon={<Badge />} /> */}
+          <MoreOutlined />
+        </Dropdown>
+      </>
+    );
+  };
   const { execFun, loading: loading1 } = useApi();
   const fetchVendorList = async (formData: z.infer<typeof FormSchema>) => {
     // return;
@@ -177,66 +220,67 @@ const VendorList = () => {
   }, []);
 
   const columnDefs: ColDef<rowData>[] = [
+    // {
+    //   headerName: "ID",
+    //   field: "id",
+    //   filter: "agNumberColumnFilter",
+    //   width: 90,
+    // },
     {
-      headerName: "ID",
-      field: "id",
-      filter: "agNumberColumnFilter",
-      width: 90,
+      field: "action",
+      headerName: "",
+      width: 150,
+      cellRenderer: (params: any) => <ActionMenu row={params} />,
+      // cellRenderer: (params: any) => {
+      //   return (
+      //     <div className="flex gap-[5px] items-center justify-center h-full">
+      //       <Button
+      //         onClick={() => {
+      //           setSheetOpenView(params);
+      //         }}
+      //         className="rounded h-[25px] w-[25px] felx justify-center items-center p-0 bg-cyan-500 hover:bg-cyan-600"
+      //       >
+      //         <EyeIcon className="h-[15px] w-[15px] text-white" />
+      //       </Button>
+      //       {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+      //       <Edit2
+      //         className="h-[20px] w-[20px] text-cyan-700"
+      //         onClick={() => {
+      //           setSheetOpenEdit(params);
+      //         }}
+      //       />
+      //       {/* </Button> */}
+      //       <Button
+      //         className="bg-yellow-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-yellow-600"
+      //         onClick={() => {
+      //           setSheetOpenBranch(params.data.vendor_code);
+      //         }}
+      //       >
+      //         {/* <Trash className="h-[15px] w-[15px] text-white" /> */}
+      //         <GitFork />
+      //       </Button>
+      //     </div>
+      //   );
+      // },
     },
     {
-      headerName: "Nam",
+      headerName: "Name",
       field: "vendor_name",
       filter: "agTextColumnFilter",
-      width: 220,
+      width: 350,
     },
     {
       headerName: "Code",
       field: "vendor_code",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 250,
+      cellRenderer: CopyCellRenderer,
     },
     {
       headerName: "PAN No.",
       field: "vendor_pan",
       filter: "agTextColumnFilter",
-      width: 190,
-    },
-
-    {
-      field: "action",
-      headerName: "ACTION",
-      flex: 1,
-      cellRenderer: (params: any) => {
-        return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
-            <Button
-              onClick={() => {
-                setSheetOpenView(params);
-              }}
-              className="rounded h-[25px] w-[25px] felx justify-center items-center p-0 bg-cyan-500 hover:bg-cyan-600"
-            >
-              <EyeIcon className="h-[15px] w-[15px] text-white" />
-            </Button>
-            <Button
-              className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"
-              onClick={() => {
-                setSheetOpenEdit(params);
-              }}
-            >
-              <Edit2 className="h-[15px] w-[15px] text-white" />
-            </Button>
-            <Button
-              className="bg-yellow-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-yellow-600"
-              onClick={() => {
-                setSheetOpenBranch(params.data.vendor_code);
-              }}
-            >
-              {/* <Trash className="h-[15px] w-[15px] text-white" /> */}
-              <GitFork />
-            </Button>
-          </div>
-        );
-      },
+      width: 250,
     },
   ];
   const getBranchList = async (id) => {
@@ -490,7 +534,7 @@ const VendorList = () => {
   }, [sheetOpenView]);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -1398,7 +1442,7 @@ const VendorList = () => {
         </Sheet>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
