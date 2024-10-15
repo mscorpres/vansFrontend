@@ -9,15 +9,23 @@ import { transformOptionData } from "@/helper/transform";
 import { Edit2, Filter, Plus, Trash2 } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Form, Space } from "antd";
-
+import { searchingHsn } from "@/features/client/clientSlice";
+import { toast } from "@/components/ui/use-toast";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 
 import useApi from "@/hooks/useApi";
-import { componentList, fetchHSN } from "@/components/shared/Api/masterApi";
+import {
+  componentList,
+  fetchHSN,
+  mapHSN,
+} from "@/components/shared/Api/masterApi";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { FaFileExcel } from "react-icons/fa";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
+import { useDispatch, useSelector } from "react-redux";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -35,8 +43,16 @@ const Hsn = () => {
   const [asyncOptions, setAsyncOptions] = useState([]);
   const [suomOtions, setSuomOtions] = useState([]);
   const [grpOtions, setGrpOtions] = useState([]);
+  const [callreset, setCallReset] = useState(false);
+  const [search, setSearch] = useState("");
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const [formValues, setFormValues] = useState({ compCode: "" });
+  const dispatch = useDispatch<AppDispatch>();
+  //   const { upda, currency } = useSelector(
+  //     (state: RootState) => state.createSalesOrder
+  //   );
+  const { hsnlist } = useSelector((state: RootState) => state.client);
+
   const { execFun, loading: loading1 } = useApi();
   const addNewRow = () => {
     const newRow = {
@@ -44,7 +60,7 @@ const Hsn = () => {
 
       gstRate: 18,
 
-      hsnCode: "",
+      hsnSearch: "",
       isNew: true,
     };
     setRowData((prevData) => [...prevData, newRow]);
@@ -76,27 +92,6 @@ const Hsn = () => {
     },
   ];
 
-  const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
-  const listOfComponentList = async () => {
-    const response = await execFun(() => componentList(), "fetch");
-    console.log("here in api", response);
-    let { data } = response;
-    if (response.status == 200) {
-      let comp = data.data;
-      console.log("comp", comp);
-
-      let arr = comp?.map((r, index) => {
-        return {
-          id: index + 1,
-          //   ...r,
-          gstRate: r.hsntax,
-          hsnCode: { label: r.hsnlabel, value: r.hsncode },
-        };
-      });
-      console.log("arr---", arr);
-      setRowData((prevData) => [...prevData, newRow]);
-    }
-  };
   console.log("here in api", rowData);
   const getTheListHSN = async (value) => {
     const response = await execFun(() => fetchHSN(value), "fetch");
@@ -108,7 +103,7 @@ const Hsn = () => {
           id: index + 1,
           //   ...r,
           gstRate: r.hsntax,
-          hsnCodeselect: r.hsncode,
+          hsnSearch: { text: r.hsnlabel, value: r.hsncode },
           isNew: true,
         };
       });
@@ -116,9 +111,25 @@ const Hsn = () => {
       setRowData(arr);
     }
   };
+  const handleSearch = (searchKey: string, type: any) => {
+    console.log("searchKey", searchKey);
+    if (searchKey) {
+      let p = { searchTerm: searchKey };
+      dispatch(searchingHsn(p));
+    }
+  };
   const components = useMemo(
     () => ({
-      textInputCellRenderer: TextInputCellRenderer,
+      textInputCellRenderer: (props: any) => (
+        <TextInputCellRenderer
+          {...props}
+          setRowData={setRowData}
+          setSearch={handleSearch}
+          search={search}
+          onSearch={handleSearch}
+          componentDetails={hsnlist}
+        />
+      ),
     }),
     []
   );
@@ -168,13 +179,45 @@ const Hsn = () => {
       console.log("arr", arr);
     }
   };
+  const handleSubmit = async () => {
+    const value = form.getFieldsValue();
+
+    let payload = {
+      component: value.partName.value,
+      hsn: rowData.map((r) => r.hsnCodeselect),
+      tax: rowData.map((r) => r.gstRate),
+    };
+
+    const response = await execFun(() => mapHSN(payload), "fetch");
+
+    let { data } = response;
+    if (response.data.code == 200) {
+      console.log("response,", response.data.message);
+
+      toast({
+        title: data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      fetchComponentMap();
+      form.reset({
+        partName: "",
+      });
+      setRowData([]);
+    } else {
+      toast({
+        title: data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
   const columnDefs: ColDef<rowData>[] = [
-    {
-      headerName: "ID",
-      field: "id",
-      filter: "agNumberColumnFilter",
-      width: 90,
-    },
+    // {
+    // {
+    //   headerName: "ID",
+    //   field: "id",
+    //   filter: "agNumberColumnFilter",
+    //   width: 90,
+    // },
     {
       headerName: "",
       valueGetter: "node.rowIndex + 1",
@@ -184,7 +227,7 @@ const Hsn = () => {
     },
     {
       headerName: "HSN/SAC Code",
-      field: "hsnCodeselect",
+      field: "hsnSearch",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -218,11 +261,16 @@ const Hsn = () => {
     //   },
     // },
   ];
+  const handleReset = () => {
+    form.resetFields();
+    setRowData([]);
+    setCallReset(false);
+  };
 
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[450px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
-        {" "}
+        {loading1("fetch") && <FullPageLoading />}{" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -261,6 +309,15 @@ const Hsn = () => {
         {loading1("fetch") && <FullPageLoading />}
       
       </div> */}
+      {callreset == true && (
+        <CommonModal
+          isDialogVisible={callreset}
+          handleOk={handleReset}
+          handleCancel={() => setCallReset(false)}
+          title="Reset Details"
+          description={"Are you sure you want to remove this entry?"}
+        />
+      )}
       <div className="h-[calc(100vh-80px)]  ">
         <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
           <Button
@@ -290,7 +347,10 @@ const Hsn = () => {
             checkboxSelection={true}
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Button className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]">
+            <Button
+              className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+              onClick={() => setCallReset(true)}
+            >
               Reset
             </Button>
             <Button
@@ -301,7 +361,7 @@ const Hsn = () => {
             </Button>
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-              //   onClick={handleSubmit}
+              onClick={() => handleSubmit()}
             >
               Submit
             </Button>

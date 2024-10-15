@@ -33,6 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { AppDispatch, RootState } from "@/store";
 import { updateBomComponent } from "@/features/masterModule/ProductFg&Sfg";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const EditBom = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [form] = Form.useForm();
   const gridRef = useRef<AgGridReact<RowData>>(null);
@@ -114,7 +115,7 @@ const EditBom = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       let arr = response.data.data.map((r) => {
         return {
           orderQty: r.requiredQty,
-          material: { label: " r.component", value: " r.component" },
+          material: { text:  r.component, value:  r.component },
           bomCategory:
             r.category == "P"
               ? "Part"
@@ -177,6 +178,7 @@ const EditBom = ({ sheetOpenEdit, setSheetOpenEdit }) => {
           setSearch={handleSearch}
           search={search}
           onSearch={handleSearch}
+          setRowData={setRowData}
         />
       ),
     };
@@ -250,7 +252,7 @@ const EditBom = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     {
       headerName: "Material",
       field: "material",
-      editable: true,
+      editable: false,
       flex: 4,
       cellRenderer: "textInputCellRenderer",
       minWidth: 500,
@@ -384,17 +386,33 @@ const EditBom = ({ sheetOpenEdit, setSheetOpenEdit }) => {
           <div className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] ">
             <div className="bg-[#fff]">
               {" "}
-              <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+              {/* <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
                 <Filter className="h-[20px] w-[20px]" />
                 Filter
+              </div> */}
+              <div className="p-[10px]">
+                {" "}
+                <Card className="rounded-sm shadow-sm shadow-slate-500">
+                  <CardHeader className="flex flex-row items-center justify-between p-[10px] font-weight-[800] bg-[#e0f2f1]">
+                    {" "}
+                    Bom Detail
+                  </CardHeader>
+                  <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
+                    <h3 className="font-[500]">BOM</h3>
+                    <p className="text-[14px]">{form.getFieldValue("bom")}</p>
+                    <h3 className="font-[500]">Product Name</h3>
+                    <p className="text-[14px]">{form.getFieldValue("name")}</p>
+                    <h3 className="font-[500]">SKU</h3>
+                    <p className="text-[14px]">{form.getFieldValue("sku")}</p>
+                  </CardContent>
+                </Card>
               </div>
-              <div className="p-[10px]"></div>
               <Form
                 form={form}
                 layout="vertical"
                 className="space-y-1  p-[10px] h-[400px]"
               >
-                <div className="grid grid-cols-3 gap-[10px] ">
+                {/* <div className="grid grid-cols-3 gap-[10px] ">
                   <div className="col-span-3 ">
                     <Form.Item name="bom" label="BOM">
                       <Input disabled />
@@ -406,8 +424,9 @@ const EditBom = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                       <Input disabled />
                     </Form.Item>
                   </div>{" "}
-                  <div className="col-span-3 "></div>{" "}
-                </div>
+                  <div className="col-span-3 "></div>{" "} */}
+                {/* </div> */}
+                <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]"></div>
                 {/* <Button
                   type="submit"
                   className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"

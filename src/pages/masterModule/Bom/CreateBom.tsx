@@ -31,6 +31,7 @@ import useApi from "@/hooks/useApi";
 import { fetchBomTypeWise } from "@/components/shared/Api/masterApi";
 import EditBom from "./EditBom";
 import ViewBom from "./ViewBom";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   wise: z.string().optional(),
 });
@@ -185,7 +186,7 @@ const CreateBom = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
-        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter

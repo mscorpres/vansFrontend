@@ -27,6 +27,19 @@ export const serviceList = async () => {
 
   return response;
 };
+export const saveService = async (payload) => {
+  const response = await spigenAxios.post("/component/addServices", payload);
+
+  return response;
+};
+export const saveEditedService = async (payload) => {
+  const response = await spigenAxios.post(
+    "/component/updateServiceComponent",
+    payload
+  );
+
+  return response;
+};
 export const hsnList = async (search) => {
   const response = await spigenAxios.post("backend/searchHsn", {
     searchTerm: search,
@@ -314,10 +327,10 @@ export const getListOFbranchDetails = async (payload) => {
   return response;
 };
 
-
-
 export const getListOFViewCustomersOfSelected = async (payload) => {
-  const response = await spigenAxios.get(`/client/viewBranch?client=${payload}`);
+  const response = await spigenAxios.get(
+    `/client/viewBranch?client=${payload}`
+  );
   return response;
 };
 export const getListFgIn = async (payload) => {
@@ -399,6 +412,10 @@ export const fetchHSN = async (payload) => {
   const response = await spigenAxios.post("/backend/fetchHsn", {
     component: payload,
   });
+  return response;
+};
+export const mapHSN = async (payload) => {
+  const response = await spigenAxios.post("/backend/mapHsn", payload);
   return response;
 };
 export const fetchEdditBomStage2 = async (payload) => {

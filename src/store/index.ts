@@ -13,25 +13,21 @@ import salesTransactionSlice from "@/features/salesmodule/salesTransactionSlice"
 import salesShipmentSlice from "@/features/salesmodule/salesShipmentSlice";
 import salesInvoiceSlice from "@/features/salesmodule/salesInvoiceSlice";
 
-
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     select: selectReducer,
-    aggrid:gridReducer,
-    createSalesOrder:createSalesOrderReducer,
-    prod:productSlice,
-    billing:billingAdressSlice,
-    shipping:shippingAdressSlice,
-    client:clientSlice,
-    branch:branchSlice,
-    sellRequest:SalesSlice,
-    sellShipment:salesShipmentSlice,
-    sellInvoice:salesInvoiceSlice,
-    invoice:salesTransactionSlice,
-    
-    
-    
+    aggrid: gridReducer,
+    createSalesOrder: createSalesOrderReducer,
+    prod: productSlice,
+    billing: billingAdressSlice,
+    shipping: shippingAdressSlice,
+    client: clientSlice,
+    branch: branchSlice,
+    sellRequest: SalesSlice,
+    sellShipment: salesShipmentSlice,
+    sellInvoice: salesInvoiceSlice,
+    invoice: salesTransactionSlice,
   },
 });
 export type RootState = ReturnType<typeof store.getState>;

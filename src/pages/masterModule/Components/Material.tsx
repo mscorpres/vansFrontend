@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,15 +11,16 @@ import {
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Edit2, Filter } from "lucide-react";
+import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
+// import {
+//   Form,
+//   FormControl,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from "@/components/ui/form";
+import { Edit2, Filter, Plus } from "lucide-react";
 import styled from "styled-components";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
@@ -31,6 +32,10 @@ import { spigenAxios } from "@/axiosIntercepter";
 
 import EditMaterial from "./EditMaterial";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { Form } from "antd";
+import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
+import { searchingHsn } from "@/features/client/clientSlice";
+import { useDispatch } from "react-redux";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -41,37 +46,65 @@ const FormSchema = z.object({
     }),
   soWise: z.string().optional(),
   compCode: z.string().optional(),
+  partCode: z.string().optional(),
+  uom: z.string().optional(),
+  suom: z.string().optional(),
+  soq: z.string().optional(),
+  moq: z.string().optional(),
+  maker: z.string().optional(),
+  specifiction: z.string().optional(),
+  group: z.string().optional(),
+  type: z.string().optional(),
+  smt: z.string().optional(),
 });
 
 const Material = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const [hsnrowData, setHsnRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
   const [suomOtions, setSuomOtions] = useState([]);
   const [grpOtions, setGrpOtions] = useState([]);
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
+  const [search, setSearch] = useState("");
   const [formValues, setFormValues] = useState({ compCode: "" });
   const { execFun, loading: loading1 } = useApi();
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
+  const gridRef = useRef<AgGridReact<RowData>>(null);
+
+  const dispatch = useDispatch<AppDispatch>();
+  // const form = useForm<z.infer<typeof FormSchema>>({
+  //   resolver: zodResolver(FormSchema),
+  // });
+  const [form] = Form.useForm();
+  const addNewRow = () => {
+    const newRow = {
+      asinNumber: "B01N1SE4EP",
+
+      gstRate: 18,
+
+      hsnSearch: "",
+      isNew: true,
+    };
+    setHsnRowData((prevData) => [...prevData, newRow]);
+  };
   const typeOption = [
     {
       label: "Component",
       value: "Component",
     },
     {
-      text: "Other",
+      label: "Other",
       value: "Other",
     },
   ];
+
   const smtOption = [
     {
       label: "Yes",
-      value: "yes",
+      value: "Y",
     },
     {
       label: "No",
-      value: "no",
+      value: "N",
     },
   ];
 
@@ -102,7 +135,7 @@ const Material = () => {
     if (response.status == 200) {
       let arr = data.data.map((r, index) => {
         return {
-          text: r.units_name,
+          label: r.units_name,
           value: r.units_id,
         };
       });
@@ -202,304 +235,389 @@ const Material = () => {
       },
     },
   ];
-  console.log("sheetOpenEdit", sheetOpenEdit);
+  const onSubmit = async () => {
+    const values = await form.validateFields();
 
+    let payload = {
+      part: values.compName,
+      uom: values.uom.value,
+      soq: values.suom,
+      soqqty: values.soq,
+      moqqty: values.moq,
+      component: values.compName,
+
+      c_category: values.type,
+      notes: values.specifiction,
+      hsns: hsnrowData.map((r) => r.hsnSearch),
+      taxs: hsnrowData.map((r) => r.gstRate),
+      group: values.group.value,
+      isSmt: values.smt.value,
+      c_make: values.maker,
+      //  doubtfull
+      // c_group: "GRP100220210910171321",
+      // comp_type: values.type,
+    };
+    // try {
+    //   const resultAction = await dispatch(
+    //     createBranch({
+    //       endpoint: "/client/addBranch",
+    //       payload: {
+    //         ...values,
+    //         clientCode: clientId,
+    //       },
+    //     })
+    //   ).unwrap();
+    //   if (resultAction.message) {
+    //     toast({
+    //       title: "Branch created successfully",
+    //       className: "bg-green-600 text-white items-center",
+    //     });
+    //   } else {
+    //     toast({
+    //       title: resultAction.message || "Failed to Create Branch",
+    //       className: "bg-red-600 text-white items-center",
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.error("An error occurred:", error);
+    // }
+  };
+  const handleSearch = (searchKey: string, type: any) => {
+    console.log("searchKey", searchKey);
+    if (searchKey) {
+      let p = { searchTerm: searchKey };
+      dispatch(searchingHsn(p));
+    }
+  };
+  const defaultColDef = useMemo<ColDef>(() => {
+    return {
+      floatingFilter: false,
+      editable: false,
+    };
+  }, []);
+  const statusBar = useMemo<{
+    statusPanels: StatusPanelDef[];
+  }>(() => {
+    return {
+      statusPanels: [
+        { statusPanel: "agFilteredRowCountComponent", align: "right" },
+        { statusPanel: "agSelectedRowCountComponent", align: "right" },
+        { statusPanel: "agAggregationComponent", align: "right" },
+      ],
+    };
+  }, []);
+  const components = useMemo(
+    () => ({
+      textInputCellRenderer: (props: any) => (
+        <TextInputCellRenderer
+          {...props}
+          setRowData={hsnrowData}
+          setSearch={handleSearch}
+          search={search}
+          onSearch={handleSearch}
+        />
+      ),
+    }),
+    []
+  );
+
+  const HsncolumnDefs: ColDef<rowData>[] = [
+    // {
+    // {
+    //   headerName: "ID",
+    //   field: "id",
+    //   filter: "agNumberColumnFilter",
+    //   width: 90,
+    // },
+    {
+      headerName: "",
+      valueGetter: "node.rowIndex + 1",
+      cellRenderer: "textInputCellRenderer",
+      maxWidth: 100,
+      field: "delete",
+    },
+    {
+      headerName: "HSN/SAC Code",
+      field: "hsnSearch",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+
+    {
+      headerName: "Tax (%) Percentage",
+      field: "gstRate",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+
+    // {
+    //   field: "action",
+    //   headerName: "",
+    //   flex: 1,
+    //   cellRenderer: (e) => {
+    //     return (
+    //       <div className="flex gap-[5px] items-center justify-center h-full">
+    //         <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600">
+    //           <Trash2
+    //             className="h-[15px] w-[15px] text-white"
+    //             onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+    //           />
+    //         </Button>{" "}
+    //       </div>
+    //     );
+    //   },
+    // },
+  ];
   return (
     <>
-      <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
+      <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[630px_1fr] overflow-hidden">
         <div className="bg-[#fff]">
           {" "}
           <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
             <Filter className="h-[20px] w-[20px]" />
-            Filter
+            Add
           </div>
-          <div className="p-[10px]"></div>
-          <Form {...form}>
+          <Form form={form} layout="vertical">
             <form
               // onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 overflow-hidden p-[10px] h-[500px]"
+              className="space-y-6 overflow-y-scroll p-[10px] h-[calc(100vh-150px)]"
             >
-              <div className="grid grid-cols-3 gap-[40px] ">
+              <div className="grid grid-cols-3 gap-[40px] py-[-10px] ">
                 <div className="">
-                  <FormField
-                    control={form.control}
-                    name="partCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}>Part Code</FormLabel>
-                        <FormControl>
-                          <Input
-                            className={InputStyle}
-                            placeholder="Part Code"
-                            // {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <Form.Item name="partCode" label="Part Code">
+                    <Input
+                      className={InputStyle}
+                      placeholder="Part Code"
+                      // {...field}
+                    />
+                  </Form.Item>
                 </div>
                 <div className="">
-                  <FormField
-                    control={form.control}
-                    name="uom"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}>UOM</FormLabel>
-                        <FormControl>
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            placeholder="UOM"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
-                            options={asyncOptions}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {" "}
+                  <Form.Item name="uom" label="UOM">
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="UoM"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false}
+                      isClearable={true}
+                      isSearchable={true}
+                      options={asyncOptions}
+                      //   onChange={(e) => console.log(e)}
+                      //   value={
+                      //     data.clientDetails
+                      //       ? {
+                      //           label: data.clientDetails.city.name,
+                      //           value: data.clientDetails.city.name,
+                      //         }
+                      //       : null
+                      //   }
+                    />
+                  </Form.Item>
                 </div>
                 <div className="">
-                  <FormField
-                    control={form.control}
-                    name="suom"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}>S Uom</FormLabel>
-                        <FormControl>
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            placeholder="S Uom"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
-                            options={suomOtions}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {" "}
+                  <Form.Item name="suom" label="S UoM">
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="S UoM"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false}
+                      isClearable={true}
+                      isSearchable={true}
+                      options={suomOtions}
+                      //   onChange={(e) => console.log(e)}
+                      //   value={
+                      //     data.clientDetails
+                      //       ? {
+                      //           label: data.clientDetails.city.name,
+                      //           value: data.clientDetails.city.name,
+                      //         }
+                      //       : null
+                      //   }
+                    />
+                  </Form.Item>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="compName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}>
-                          Component Name
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className={InputStyle}
-                            placeholder="Component Name"
-                            // {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <div className="grid grid-cols-4 gap-[40px]  py-[-10px]">
+                <div className="col-span-2">
+                  {" "}
+                  <Form.Item name="compName" label="Component Name">
+                    <Input
+                      className={InputStyle}
+                      placeholder="Component Name"
+                      // {...field}
+                    />
+                  </Form.Item>
                 </div>
                 <div className="">
-                  <FormField
-                    control={form.control}
-                    name="soq"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}>SOQ</FormLabel>
-                        <FormControl>
-                          <Input
-                            className={InputStyle}
-                            placeholder="SOQ"
-                            // {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {" "}
+                  <Form.Item name="soq" label="SOQ">
+                    <Input
+                      className={InputStyle}
+                      placeholder="SOQ Qty"
+                      // {...field}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  {" "}
+                  <Form.Item name="moq" label="MOQ">
+                    <Input
+                      className={InputStyle}
+                      placeholder="MOQ Qty"
+                      // {...field}
+                    />
+                  </Form.Item>
                 </div>
               </div>{" "}
-              <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+              <div className="grid grid-cols-3 gap-[40px] py-[-10px]">
                 <div className="">
-                  <FormField
-                    control={form.control}
-                    name="Maker"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}>Maker</FormLabel>
-                        <FormControl>
-                          <Input
-                            className={InputStyle}
-                            placeholder="Maker"
-                            // {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>{" "}
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="Specifiction"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}>
-                          Specifiction
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className={InputStyle}
-                            placeholder="Specifiction"
-                            // {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-[40px] mt-[30px]">
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="group"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}> Group</FormLabel>
-                        <FormControl>
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            placeholder="Group"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
-                            options={grpOtions}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {" "}
+                  <Form.Item name="group" label="Group">
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="Group"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false}
+                      isClearable={true}
+                      isSearchable={true}
+                      options={grpOtions}
+                      //   onChange={(e) => console.log(e)}
+                      //   value={
+                      //     data.clientDetails
+                      //       ? {
+                      //           label: data.clientDetails.city.name,
+                      //           value: data.clientDetails.city.name,
+                      //         }
+                      //       : null
+                      //   }
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="">
-                  <FormField
-                    control={form.control}
-                    name="type"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}> Type</FormLabel>
-                        <FormControl>
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            placeholder="Type"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
-                            options={typeOption}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {" "}
+                  <Form.Item name="type" label="Type">
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="Type"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false}
+                      isClearable={true}
+                      isSearchable={true}
+                      options={typeOption}
+                      //   onChange={(e) => console.log(e)}
+                      //   value={
+                      //     data.clientDetails
+                      //       ? {
+                      //           label: data.clientDetails.city.name,
+                      //           value: data.clientDetails.city.name,
+                      //         }
+                      //       : null
+                      //   }
+                    />
+                  </Form.Item>
                 </div>
                 <div className="">
-                  <FormField
-                    control={form.control}
-                    name="smt"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel className={LableStyle}> SMT</FormLabel>
-                        <FormControl>
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            placeholder="SMT"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
-                            options={smtOption}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {" "}
+                  <Form.Item name="smt" label="SMT">
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="SMT"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false}
+                      isClearable={true}
+                      isSearchable={true}
+                      options={smtOption}
+                      //   onChange={(e) => console.log(e)}
+                      //   value={
+                      //     data.clientDetails
+                      //       ? {
+                      //           label: data.clientDetails.city.name,
+                      //           value: data.clientDetails.city.name,
+                      //         }
+                      //       : null
+                      //   }
+                    />
+                  </Form.Item>
                 </div>
               </div>
+              <div className="grid grid-cols-2 gap-[40px] py-[-10px]">
+                <div className="">
+                  {" "}
+                  <Form.Item name="maker" label="Maker">
+                    <Input
+                      className={InputStyle}
+                      placeholder="Maker"
+                      // {...field}
+                    />
+                  </Form.Item>
+                </div>{" "}
+                <div className="">
+                  {" "}
+                  <Form.Item name="specifiction" label="Specifiction">
+                    <Input
+                      className={InputStyle}
+                      placeholder="Specifiction"
+                      // {...field}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="h-[calc(100vh-400px)]  ">
+                <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
+                  <Button
+                    onClick={(e: any) => {
+                      e.preventDefault();
+                      addNewRow();
+                    }}
+                    className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+                  >
+                    <Plus className="font-[600]" /> Add Item
+                  </Button>{" "}
+                </div>
+                <div className="ag-theme-quartz h-[320px] w-full">
+                  <AgGridReact
+                    ref={gridRef}
+                    rowData={hsnrowData}
+                    columnDefs={HsncolumnDefs as (ColDef | ColGroupDef)[]}
+                    defaultColDef={defaultColDef}
+                    statusBar={statusBar}
+                    components={components}
+                    pagination={true}
+                    // paginationPageSize={10}
+                    animateRows={true}
+                    gridOptions={commonAgGridConfig}
+                    suppressCellFocus={false}
+                    suppressRowClickSelection={false}
+                    rowSelection="multiple"
+                    checkboxSelection={true}
+                  />{" "}
+                </div>{" "}
+              </div>{" "}
               <Button
                 type="submit"
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                // onClick={(e) => e.preventDefault()}
+                onClick={(e: any) => {
+                  onSubmit();
+                  e.preventDefault();
+                }}
               >
                 Submit
               </Button>

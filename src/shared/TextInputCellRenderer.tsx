@@ -29,6 +29,7 @@ import { useParams } from "react-router-dom";
 import moment from "moment";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
+import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 
 const type = [
   {
@@ -71,7 +72,7 @@ const gstType = [
   },
   {
     value: "L",
-    label: "INTRA STATE",
+    label: "LOCAL",
   },
 ];
 const frameworks = [
@@ -147,7 +148,7 @@ const TextInputCellRenderer = (props: any) => {
   const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
-  //   console.log("componentDetails", componentDetails);
+  const { hsnlist } = useSelector((state: RootState) => state.client);
 
   const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
 
@@ -156,25 +157,26 @@ const TextInputCellRenderer = (props: any) => {
     setShowConfirmDialog(true);
   };
 
-  const handleConfirmDelete = () => {
-    // if (selectedRowIndex !== null) {
-    //   setRowData((prevData: any) =>
-    //     prevData.filter((_: any, index: any) => index !== selectedRowIndex)
-    //   );
-    //   api.applyTransaction({
-    //     remove: [api.getDisplayedRowAtIndex(selectedRowIndex).data],
-    //   });
-    //   // Example payload for deleteProduct
-    //   const payload: DeletePayload = {
-    //     item: data?.material?.id,
-    //     so_id: (params?.id as string)?.replace(/_/g, "/"),
-    //     updaterow: data?.updateid,
-    //   };
-    //   if (window.location.pathname.includes("update")) {
-    //     dispatch(deleteProduct(payload));
-    //   }
-    // }
-    // setShowConfirmDialog(false);
+  const handleConfirmDelete = (e) => {
+    e.preventDefault();
+    if (selectedRowIndex !== null) {
+      setRowData((prevData: any) =>
+        prevData.filter((_: any, index: any) => index !== selectedRowIndex)
+      );
+      api.applyTransaction({
+        remove: [api.getDisplayedRowAtIndex(selectedRowIndex).data],
+      });
+      // Example payload for deleteProduct
+      const payload: DeletePayload = {
+        item: data?.material?.id,
+        so_id: (params?.id as string)?.replace(/_/g, "/"),
+        updaterow: data?.updateid,
+      };
+      if (window.location.pathname.includes("update")) {
+        dispatch(deleteProduct(payload));
+      }
+    }
+    setShowConfirmDialog(false);
   };
   const updateData = (newData: any) => {
     api.applyTransaction({ update: [newData] });
@@ -321,13 +323,13 @@ const TextInputCellRenderer = (props: any) => {
             >
               <FaTrash />
             </button>
-            {/* <CommonModal
+            <CommonModal
               isDialogVisible={showConfirmDialog}
-              handleOk={handleConfirmDelete}
+              handleOk={(e: any) => handleConfirmDelete(e)}
               handleCancel={() => setShowConfirmDialog(false)}
               title="Reset Details"
               description={"Are you sure you want to remove this entry?"}
-            /> */}
+            />
           </div>
         );
       case "materialbymer":
@@ -365,7 +367,8 @@ const TextInputCellRenderer = (props: any) => {
       case "material":
         return (
           <Select
-            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px] overflow-y-auto"
+            onPopupScroll={(e) => e.preventDefault()}
+            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
             className="w-full"
             labelInValue
             filterOption={false}
@@ -683,6 +686,29 @@ const TextInputCellRenderer = (props: any) => {
               </Command>
             </PopoverContent>
           </Popover>
+        );
+
+      case "hsnSearch":
+        return (
+          <Select
+            onPopupScroll={(e) => e.preventDefault()}
+            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
+            className="w-full"
+            labelInValue
+            filterOption={false}
+            showSearch
+            placeholder="Select Material"
+            onSearch={(e) => {
+              props.setSearch(e);
+              if (data.type) {
+                props.onSearch(e, data.type);
+              }
+            }}
+            options={transformOptionData(hsnlist || [])}
+            onChange={(e) => handleChange(e.value)}
+            value={typeof value === "string" ? { value } : value?.text}
+            style={{ pointerEvents: "auto" }} // Ensure pointer events are enabled
+          />
         );
 
       default:

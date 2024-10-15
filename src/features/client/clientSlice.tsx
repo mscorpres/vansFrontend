@@ -22,6 +22,10 @@ interface ClientUpdatePayload {
   tds?: string[];
   tcs?: string[];
 }
+interface hsnPayload {
+  id: string;
+  value: string;
+}
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -33,7 +37,11 @@ export const fetchClient = createAsyncThunk<
   ApiResponse<any>,
   { code?: string; name?: string }
 >("/client/getClient", async ({ code, name }) => {
-  const endpoint = code ? `/client/getClient?code=${code}` : name ? `/client/getClient?name=${name}` : `/client/getClient`;
+  const endpoint = code
+    ? `/client/getClient?code=${code}`
+    : name
+    ? `/client/getClient?name=${name}`
+    : `/client/getClient`;
   const response = await spigenAxios.get(endpoint);
   return response.data;
 });
@@ -53,6 +61,24 @@ export const updateClient = createAsyncThunk<
   const response = await spigenAxios.put(endpoint, payload);
   return response.data;
 });
+export const searchingHsn = createAsyncThunk<hsnPayload>(
+  "backend/searchHsn",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post<hsnPayload>(
+        "backend/searchHsn",
+        payload
+      );
+
+      return response.data.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
 
 interface ClientState {
   data: any[];
@@ -64,6 +90,7 @@ const initialState: ClientState = {
   data: [],
   loading: false,
   error: null,
+  hsnlist: null,
 };
 
 const clientSlice = createSlice({
@@ -101,14 +128,28 @@ const clientSlice = createSlice({
         state.error = null;
       })
       .addCase(updateClient.fulfilled, (state, action) => {
-        state.data = state.data.map(client =>
-          client.code === action.payload.data.code ? action.payload.data : client
+        state.data = state.data.map((client) =>
+          client.code === action.payload.data.code
+            ? action.payload.data
+            : client
         );
         state.loading = false;
       })
       .addCase(updateClient.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to update client";
+      }) ///search hsn
+      .addCase(searchingHsn.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchingHsn.fulfilled, (state, action) => {
+        state.loading = false;
+        state.hsnlist = action.payload;
+      })
+      .addCase(searchingHsn.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch HSN";
       });
   },
 });

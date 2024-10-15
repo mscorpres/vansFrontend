@@ -105,7 +105,7 @@ const MasterShippingAddressPage: React.FC = () => {
         })
       ).unwrap();
 
-      if (resultAction.success) {
+      if (resultAction.status == "success") {
         toast({
           title: "Shipping Address created successfully",
           className: "bg-green-600 text-white items-center",
@@ -177,7 +177,7 @@ const MasterShippingAddressPage: React.FC = () => {
                               <FormControl>
                                 <Input
                                   className={InputStyle}
-                                  placeholder="Enter Address Lable"
+                                  placeholder="Enter Address label"
                                   {...field}
                                 />
                               </FormControl>

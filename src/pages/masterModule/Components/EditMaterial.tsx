@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -27,9 +27,24 @@ import { Input } from "@/components/ui/input";
 import { InputStyle } from "@/constants/themeContants";
 import { Button } from "@/components/ui/button";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { gstRateList, taxType } from "@/components/shared/Options";
+import { Label } from "@/components/ui/label";
 const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const { execFun, loading: loading1 } = useApi();
   const [editForm] = Form.useForm();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [preview, setPreview] = useState("");
+
+  const isEnabledOptions = [
+    {
+      label: "Yes",
+      value: "yes",
+    },
+    {
+      label: "No",
+      value: "no",
+    },
+  ];
   const getDetails = async (sheetOpenEdit) => {
     let payload = { componentKey: sheetOpenEdit.component_key };
     const response = await execFun(
@@ -52,7 +67,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         componentMake: arr.c_make,
         mrp: arr.mrp,
         jobWork: arr.jobwork_rate,
-        qcStatus: arr.qc_status,
+        qcStatus: arr.qc_status == "E" ? "Yes" : "No",
         description: arr.description,
         group: { label: arr.groupname, value: arr.groupid },
         brand: arr.brand,
@@ -80,21 +95,23 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     console.log("values", values);
 
     let payload = {
-      componentKey: values.compCode,
+      componentKey: sheetOpenEdit?.component_key,
       componentname: values.componentName,
       uom: values.uom.value,
-      //   soq: values.soq.value,
-      soqqty: values.componentName,
+      soq: values.soq.value,
+      soqqty: values.soqQty,
       moqqty: values.moqQty,
+      hsn: values.hsn,
       //   category: values.moqQty,
       mrn: values.mrp,
       group: values.group.value,
-      enable_status: "N",
+      enable_status: values.enabled.value,
       jobwork_rate: values.jobWork,
-      qc_status: values.qcStatus,
+      qc_status: values.qcStatus ? "E" : "D",
       description: values.description,
       comp_make: values.componentMake,
-      taxtype: values.taxType,
+      taxtype: values.taxTypes.value,
+      taxrate: values.gstTaxRate.value,
       //   taxrate: values.componentMake,
       brand: values.brand,
       ean: values.ean,
@@ -109,28 +126,58 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       //   alert: values.taxType,
       pocost: values.purchaseCost,
       othercost: values.OtherCost,
+      //doubtfull param
+      //   alert: values.taxType,category: values.moqQty,
     };
+    console.log("payload", payload);
+
     return;
     const response = await execFun(updateComponentofMaterial(values), "fetch");
+  };
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreview(URL.createObjectURL(file)); // Create a URL for preview
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await fetch("/upload-endpoint", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      console.log("Upload success:", data);
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
   };
   useEffect(() => {
     if (sheetOpenEdit) {
       getDetails(sheetOpenEdit);
     }
   }, [sheetOpenEdit]);
+
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
       {loading1("fetch") && <FullPageLoading />}
       <Sheet open={sheetOpenEdit} onOpenChange={() => setSheetOpenEdit(null)}>
         <SheetTrigger></SheetTrigger>
         <SheetContent
-          className="min-w-[100%] p-0"
+          className="min-w-[80%] p-0"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}
         >
           <SheetHeader className={modelFixHeaderStyle}>
-            <SheetTitle className="text-slate-600">Update Component</SheetTitle>
+            <SheetTitle className="text-slate-600">{`Update Component:${sheetOpenEdit?.c_name}`}</SheetTitle>
           </SheetHeader>
           <div>
             <Form form={editForm} layout="vertical">
@@ -266,7 +313,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isDisabled={false}
                             isClearable={true}
                             isSearchable={true}
-                            //   options={asyncOptions}
+                            options={isEnabledOptions}
                             //   onChange={(e) => console.log(e)}
                             //   value={
                             //     data.clientDetails
@@ -294,6 +341,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isDisabled={false}
                             isClearable={true}
                             isSearchable={true}
+                            options={isEnabledOptions}
                             //   options={asyncOptions}
                             //   onChange={(e) => console.log(e)}
                             //   value={
@@ -312,6 +360,30 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
+                        <Form.Item name="" label="Available Qty">
+                          <Input
+                            // placeholder="Enter Component Code"
+                            className={InputStyle}
+                          />
+                        </Form.Item>{" "}
+                        <Form.Item name="" label="Customer">
+                          <Input
+                            // placeholder="Enter Component Code"
+                            className={InputStyle}
+                          />
+                        </Form.Item>{" "}
+                        <Form.Item name="" label="CUST. PART">
+                          <Input
+                            // placeholder="Enter Component Code"
+                            className={InputStyle}
+                          />
+                        </Form.Item>{" "}
+                        <Form.Item name="" label="Customer. Desc.">
+                          <Input
+                            // placeholder="Enter Component Code"
+                            className={InputStyle}
+                          />
+                        </Form.Item>{" "}
                       </div>
                     </CardContent>
                   </Card>
@@ -325,8 +397,8 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                       </p>
                     </CardHeader>
                     <CardContent className="mt-[30px]">
-                      <div className="grid grid-cols-1 gap-[20px]">
-                        <Form.Item name="taxType" label="Tax Type">
+                      <div className="grid grid-cols-2 gap-[20px]">
+                        <Form.Item name="taxTypes" label="Tax Type">
                           <Select
                             styles={customStyles}
                             components={{ DropdownIndicator }}
@@ -336,7 +408,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isDisabled={false}
                             isClearable={true}
                             isSearchable={true}
-                            //   options={asyncOptions}
+                            options={taxType}
                             //   onChange={(e) => console.log(e)}
                             //   value={
                             //     data.clientDetails
@@ -358,7 +430,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isDisabled={false}
                             isClearable={true}
                             isSearchable={true}
-                            //   options={asyncOptions}
+                            options={gstRateList}
                             //   onChange={(e) => console.log(e)}
                             //   value={
                             //     data.clientDetails
@@ -424,6 +496,32 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
+                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                          <Label htmlFor="picture">Picture</Label>
+                          <Input
+                            id="picture"
+                            type="file"
+                            accept="image/*" // Only allow image files
+                            onChange={handleFileChange}
+                          />
+                          {/* {preview && (
+                            <img
+                              src={preview}
+                              alt="Preview"
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                marginTop: "10px",
+                              }}
+                            />
+                          )} */}
+                          <Button
+                            onClick={handleUpload}
+                            disabled={!selectedFile}
+                          >
+                            Attach Image
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

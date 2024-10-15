@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   Sheet,
@@ -18,7 +18,11 @@ import Select from "react-select";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Button } from "@/components/ui/button";
-import { getComponentDetailsForServices } from "@/components/shared/Api/masterApi";
+import {
+  getComponentDetailsForServices,
+  listOfUom,
+  saveEditedService,
+} from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
@@ -26,6 +30,49 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
+  const [asyncOptions, setAsyncOptions] = useState([]);
+  const gstType = [
+    {
+      value: "I",
+      label: "INTER STATE",
+    },
+    {
+      value: "L",
+      label: "INTRA STATE",
+    },
+  ];
+  const gstRateList = [
+    {
+      value: "0",
+      label: "0 %",
+    },
+    {
+      value: "5",
+      label: "5 %",
+    },
+    {
+      value: "12",
+      label: "12 %",
+    },
+    {
+      value: "18",
+      label: "18 %",
+    },
+    {
+      value: "28",
+      label: "28 %",
+    },
+  ];
+  const isEnabledOptions = [
+    {
+      label: "Yes",
+      value: "yes",
+    },
+    {
+      label: "No",
+      value: "no",
+    },
+  ];
   const fetchComponentDetails = async (sheetOpenEdit) => {
     const response = await execFun(
       () => getComponentDetailsForServices(sheetOpenEdit),
@@ -40,6 +87,18 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         serviceName: arr.name,
         serviceCategory: arr.name,
         description: arr.description,
+        gstTaxRate: arr.gst_rate,
+        taxType:
+          arr.tax_type == "I"
+            ? {
+                value: "I",
+                label: "INTER STATE",
+              }
+            : {
+                value: "L",
+                label: "INTRA STATE",
+              },
+        enabled: arr.enable_status,
         sacCode: arr.sac,
         uom: { label: arr.uomname, value: arr.uomid },
       };
@@ -53,18 +112,54 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       });
     }
   };
-  console.log("sheeet", sheetOpenEdit);
+  const listUom = async () => {
+    const response = await execFun(() => listOfUom(), "fetch");
+    const { data } = response;
+
+    if (response.status == 200) {
+      let arr = data.data.map((r, index) => {
+        return {
+          label: r.units_name,
+          value: r.units_id,
+        };
+      });
+      setAsyncOptions(arr);
+    }
+  };
   const saveEdit = async () => {
     const values = await form.validateFields();
     console.log("values", values);
-    return;
-    const response = await execFun(() => servicesaddition(values), "update");
-    if (response.status == 200) {
+    let payload = {
+      componentKey: sheetOpenEdit,
+      uom: values.uom.value,
+      category: values.serviceCategory,
+      enable_status: values.enabled.value,
+      description: values.description,
+      taxtype: values.taxType.value,
+      gstrate: values.gstTaxRate.value,
+      sac: values.sacCode,
+    };
+    // return;/
+    const response = await execFun(() => saveEditedService(payload), "fetch");
+
+    let { data } = response;
+
+    if (response.data.code == 200) {
+      toast({
+        title: data.message,
+        className: "bg-green-600 text-white items-center",
+      });
       setSheetOpenEdit(false);
+    } else {
+      toast({
+        title: data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   useEffect(() => {
     if (sheetOpenEdit) {
+      listUom();
       fetchComponentDetails(sheetOpenEdit);
     }
   }, [sheetOpenEdit]);
@@ -80,7 +175,9 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
           }}
         >
           <SheetHeader className={modelFixHeaderStyle}>
-            <SheetTitle className="text-slate-600">Update Services</SheetTitle>
+            <SheetTitle className="text-slate-600">{`Update Services: ${form.getFieldValue(
+              "serviceName"
+            )}`}</SheetTitle>
           </SheetHeader>
           <div>
             <Form form={form} layout="vertical">
@@ -124,10 +221,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              // options={type}
-                              onChange={(e: any) =>
-                                form.setValue("wise", e.value)
-                              }
+                              options={asyncOptions}
                             />
                           </Form.Item>
                           <Form.Item
@@ -153,10 +247,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              // options={type}
-                              onChange={(e: any) =>
-                                form.setValue("wise", e.value)
-                              }
+                              options={isEnabledOptions}
                             />
                           </Form.Item>
                           <Form.Item name="description" label="Description">
@@ -190,10 +281,8 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              // options={type}
-                              onChange={(e: any) =>
-                                form.setValue("wise", e.value)
-                              }
+                              options={gstType}
+                              // labelInvalue={true}
                             />
                           </Form.Item>
 
@@ -207,10 +296,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              // options={type}
-                              onChange={(e: any) =>
-                                form.setValue("wise", e.value)
-                              }
+                              options={gstRateList}
                             />
                           </Form.Item>
 
@@ -241,6 +327,10 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                   <Button
                     type="submit"
                     className="bg-cyan-700 hover:bg-cyan-600"
+                    onClick={(e: any) => {
+                      saveEdit();
+                      e.preventDefault();
+                    }}
                   >
                     Update
                   </Button>

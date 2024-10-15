@@ -51,17 +51,26 @@ const ComponentMap = () => {
     };
     // return;
     const response = await execFun(() => saveComponentMap(payload), "fetch");
-    if (response.status == "success") {
+
+    let { data } = response;
+    if (response.data.code == 200) {
+
       toast({
-        title: response.message,
+        title: data.message,
         className: "bg-green-600 text-white items-center",
       });
       fetchComponentMap();
+      form.reset({
+        partName: "",
+        vendorName: "",
+        vendorPartName: "",
+      });
+    } else {
+      toast({
+        title: data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
     }
-    toast({
-      title: response.message.msg || "Failed to Create Product",
-      className: "bg-red-600 text-white items-center",
-    });
   };
   useEffect(() => {
     fetchComponentMap();

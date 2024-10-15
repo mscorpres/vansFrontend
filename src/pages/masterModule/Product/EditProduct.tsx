@@ -126,7 +126,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         vweight: arr.vweight,
         height: arr.height,
         width: arr.width,
-        brand: arr.brand,
+        // brand: arr.brand,
         minStock: arr.minrmstock,
         batch: arr.batchstock,
         stockLoc: arr.minstock,
@@ -134,7 +134,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         jwCost: arr.jobworkcost,
         packingCost: arr.packingcost,
         otherCost: arr.othercost,
-        sku: arr.sku,
+        // sku: arr.sku,
         // uom: { label: arr.uomname, value: arr.uomid },
       };
       form.setFieldsValue(obj);
@@ -231,7 +231,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       <Sheet open={sheetOpenEdit} onOpenChange={setSheetOpenEdit}>
         <SheetTrigger></SheetTrigger>
         <SheetContent
-          className="min-w-[100%] p-0"
+          className="min-w-[75%] p-0"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}

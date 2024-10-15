@@ -107,7 +107,7 @@ const MasterBillingAddressPage: React.FC = () => {
         })
       ).unwrap();
 
-      if (resultAction.success) {
+      if (resultAction.status == "success") {
         toast({
           title: "Billing Address created successfully",
           className: "bg-green-600 text-white items-center",
