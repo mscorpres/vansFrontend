@@ -27,7 +27,10 @@ import { transformOptionData } from "@/helper/transform";
 import { useParams } from "react-router-dom";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import moment from "moment";
-import { fetchProductData } from "@/features/salesmodule/createSalesOrderSlice";
+import {
+  fetchComponentDetailByCode,
+  fetchProductData,
+} from "@/features/salesmodule/createSalesOrderSlice";
 const frameworks = [
   {
     value: "/",
@@ -147,21 +150,31 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "material") {
-      dispatch(fetchProductData({ comp_key: value})).then(
-        (response: any) => {
-          console.log(response)
-          if (response.meta.requestStatus === "fulfilled") {
-            const materialData = response.payload;
-            data["hsnCode"] = materialData?.hsn_code;
-            data["gstRate"] = materialData?.tax_percent;
-            updateData(data);
-          }
+      dispatch(fetchProductData({ comp_key: value })).then((response: any) => {
+        console.log(response);
+        if (response.meta.requestStatus === "fulfilled") {
+          const materialData = response.payload;
+          data["hsnCode"] = materialData?.hsn_code;
+          data["gstRate"] = materialData?.tax_percent;
+          updateData(data);
         }
-      );
+      });
+      dispatch(
+        fetchComponentDetailByCode({ component_code: value, vencode: "CUS001" })
+      ).then((response: any) => {
+        if (response.meta.requestStatus === "fulfilled") {
+          const componentData = response.payload;
+          data["orderQty"] = componentData?.closingQty;
+          data["hsnCode"] = componentData?.hsn;
+          data["gstRate"] = componentData?.tax_percent;
+          data["rate"] = componentData?.rate;
+          updateData(data);
+        }
+      });
     }
     const discount = parseFloat(data.discount) || 0; // Ensure discount is a number
     const localValue = parseFloat(data.localValue) || 0; // Ensure localValue is a number
-    data["assAmount"] = localValue - (localValue * (discount / 100));
+    data["assAmount"] = localValue - localValue * (discount / 100);
     let cgst = 0;
     let sgst = 0;
     let igst = 0;
@@ -194,7 +207,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
   const handleInputChange = (e: any) => {
     const newValue = e.target.value;
     data[colDef.field] = newValue; // Update the data object
-  
+
     // Update localValue if the rate or orderQty is changed
     if (colDef.field === "rate") {
       data["localValue"] = newValue * parseFloat(data.orderQty);
@@ -205,8 +218,8 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     // Calculate assAmount based on localValue and discount
     const discount = parseFloat(data.discount) || 0; // Ensure discount is a number
     const localValue = parseFloat(data.localValue) || 0; // Ensure localValue is a number
-    data["assAmount"] = localValue - (localValue * (discount / 100));
-  
+    data["assAmount"] = localValue - localValue * (discount / 100);
+
     // Calculate GST based on the updated values
     const gstRate = parseFloat(data.gstRate) || 0;
     let cgst = 0;
@@ -221,7 +234,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       colDef.field === "discount"
     ) {
       const calculation = (data.assAmount * gstRate) / 100;
-  
+
       if (data.gstType === "L") {
         // Intra-State
         cgst = calculation / 2;
@@ -233,19 +246,19 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
         cgst = 0;
         sgst = 0;
       }
-  
+
       // Update the GST fields
       data["cgst"] = cgst.toFixed(2);
       data["sgst"] = sgst.toFixed(2);
       data["igst"] = igst.toFixed(2);
     }
-  
+
     // Update the cell data and re-render
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     api.applyTransaction({ update: [data] });
     updateData(data);
   };
-  
+
   const submitCurrencyRate = (field: string, value: any) => {
     data[field] = value?.rate;
   };
@@ -253,13 +266,12 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-  
+
   const handleDateChange = (date: moment.Moment | null) => {
     data.dueDate = date ? date.format("DD-MM-YYYY") : ""; // Format the date for storage
     updateData(data); // Update the data
   };
-  
-  
+
   const renderContent = () => {
     switch (colDef.field) {
       case "delete":
@@ -297,7 +309,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
             onSearch={(e) => {
               props.setSearch(e);
               if (data.type) {
-                props.onSearch(e);
+                props.onSearch(e, data.type);
               }
             }}
             options={transformOptionData(componentDetails || [])}
@@ -381,7 +393,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
             </PopoverContent>
           </Popover>
         );
-        case "gstRate":
+      case "gstRate":
         return (
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -433,7 +445,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
               filterOption={false}
               placeholder="Currency"
               defaultValue={{ value: "364907247", label: "₹" }}
-            //   options={transformCurrencyData(currency || [])}
+              //   options={transformCurrencyData(currency || [])}
               onChange={(e) => handleCurrencyChange(e.value)}
               // value={value}
             />
@@ -457,7 +469,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
                 aria-expanded={open}
                 className="w-[100%] justify-between  text-slate-600 items-center  border-slate-400 shadow-none"
               >
-                   {value ? capitalizeFirstLetter(value) : colDef.headerName} 
+                {value ? capitalizeFirstLetter(value) : colDef.headerName}
                 <FaSortDown className="w-5 h-5 ml-2 mb-[5px] opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>
@@ -485,11 +497,11 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       case "dueDate":
         return (
           <DatePicker
-          format="DD-MM-YYYY" // Set the format to dd-mm-yyyy
-          onChange={handleDateChange}
-          value={value ? moment(value, "DD-MM-YYYY") : null}  // Convert string to moment object
-          className="w-[100%] border-slate-400 shadow-none mt-[2px]"
-        />
+            format="DD-MM-YYYY" // Set the format to dd-mm-yyyy
+            onChange={handleDateChange}
+            value={value ? moment(value, "DD-MM-YYYY") : null} // Convert string to moment object
+            className="w-[100%] border-slate-400 shadow-none mt-[2px]"
+          />
         );
       case "hsnCode":
       case "remark":

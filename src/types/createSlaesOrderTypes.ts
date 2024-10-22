@@ -132,6 +132,7 @@ export interface ComponentDetailResponse {
   success: boolean;
   message: string | null;
   data: ComponentDetail[];
+  status?: string;
 }
 export interface ClientState {
   clientDetails: Client | null;

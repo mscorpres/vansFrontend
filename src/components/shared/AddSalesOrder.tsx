@@ -34,6 +34,7 @@ const AddSalesOrder = ({
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
   const [resetModel, setResetModel] = useState<boolean>(false);
+  const [search] = useState("");
   const dispatch = useDispatch<AppDispatch>();
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
@@ -102,8 +103,8 @@ const AddSalesOrder = ({
         <SalesOrderTextInputCellRenderer
           {...props}
           componentDetails={[]}
-          setSearch={() => {}}
-          search={"search"}
+          setSearch={handleSearch}
+          search={search}
           onSearch={handleSearch}
           currency={"currency"}
           setRowData={setRowData}
