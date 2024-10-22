@@ -14,35 +14,22 @@ export interface RowData {
   igst?: number;
   dueDate?: string;
   hsnCode?: string;
+  itemDescription?: string;
+  fcValue?: number;
+  lcValue?: number;
   isNew?: boolean;
 }
 
 export const columnDefs = [
   { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
+ 
   {
-    headerName: "Type",
-    field: "type",
-    cellEditor: "selectEditor",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
-  {
-    headerName: "Material",
+    headerName: "Component / Part",
     field: "material",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
-  {
-    headerName: "ASIN Number",
-    field: "asinNumber",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
+    minWidth: 500,
   },
   {
     headerName: "Order Qty",
@@ -67,6 +54,30 @@ export const columnDefs = [
     flex: 1,
     cellRenderer: "textInputCellRenderer",
     minWidth: 250,
+  },
+  {
+    headerName: "LC Value",
+    field: "lcValue",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "FC Value",
+    field: "fcValue",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "Due Date",
+    field: "dueDate",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
   },
   {
     headerName: "GST Rate",
@@ -124,14 +135,7 @@ export const columnDefs = [
     cellRenderer: "textInputCellRenderer",
     minWidth: 200,
   },
-  {
-    headerName: "Due Date",
-    field: "dueDate",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
+ 
   {
     headerName: "HSN Code",
     field: "hsnCode",
@@ -141,8 +145,8 @@ export const columnDefs = [
     minWidth: 200,
   },
   {
-    headerName: "HSN Code",
-    field: "hsnCodeselect",
+    headerName: "Item Desc",
+    field: "itemDescription",
     editable: false,
     flex: 1,
     cellRenderer: "selectEditor",

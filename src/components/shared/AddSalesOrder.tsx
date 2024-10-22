@@ -4,24 +4,32 @@ import { FaFileExcel } from "react-icons/fa";
 import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import TextInputCellRenderer from "@/config/agGrid/TextInputCellRenderer";
 import DatePickerCellRenderer from "@/config/agGrid/DatePickerCellRenderer";
 import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import styled from "styled-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddPoUIStateType } from "@/types/AddPOTypes";
-import columnDefs, { RowData } from "@/config/agGrid/SalseOrderCreateTableColumns";
+import columnDefs, {
+  RowData,
+} from "@/config/agGrid/SalseOrderCreateTableColumns";
 import AddPOPopovers from "@/components/shared/AddPOPopovers";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
-
 // import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { createSellRequest } from "@/features/salesmodule/SalesSlice";
+import SalesOrderTextInputCellRenderer from "@/config/agGrid/SalesOrderTextInputCellRenderer";
+import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
 // }
-const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.SetStateAction<string>>; payloadData: any }) => {
+const AddSalesOrder = ({
+  setTab,
+  payloadData,
+}: {
+  setTab: React.Dispatch<React.SetStateAction<string>>;
+  payloadData: any;
+}) => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
@@ -39,25 +47,25 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
     setResetModel,
   };
 
-
-
   const addNewRow = () => {
     const newRow: RowData = {
-      type: "products",
-      material: "Steel",
-      asinNumber: "B01N1SE4EP",
-      orderQty: 100,
-      rate: 50,
-      currency: "USD",
-      gstRate: 18,
+      material: "",
+      asinNumber: "",
+      orderQty: 1,
+      // rate: 50,
+      currency: "364907247",
+      // gstRate: 18,
       gstType: "local",
-      localValue: 5000,
-      foreignValue: 5000,
-      cgst: 9,
-      sgst: 9,
+      localValue: 0,
+      foreignValue: 0,
+      cgst: 0,
+      sgst: 0,
       igst: 0,
-      dueDate: "2024-07-25",
-      hsnCode: "123456",
+      dueDate: "",
+      hsnCode: "",
+      itemDescription: "",
+      fcValue: 0,
+      lcValue: 0,
       isNew: true,
     };
     setRowData((prevData) => [...prevData, newRow]);
@@ -81,10 +89,27 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
       ],
     };
   }, []);
+  const handleSearch = (searchKey: string) => {
+    if (searchKey) {
+      // Ensure there's a search key before dispatching
+      dispatch(fetchComponentDetail({ search: searchKey }));
+    }
+  };
 
   const components = useMemo(
     () => ({
-      textInputCellRenderer: TextInputCellRenderer,
+      textInputCellRenderer: (props: any) => (
+        <SalesOrderTextInputCellRenderer
+          {...props}
+          componentDetails={[]}
+          setSearch={() => {}}
+          search={"search"}
+          onSearch={handleSearch}
+          currency={"currency"}
+          setRowData={setRowData}
+          channel={"channel"}
+        />
+      ),
       datePickerCellRenderer: DatePickerCellRenderer,
       statusCellRenderer: StatusCellRenderer,
     }),
@@ -102,25 +127,23 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
   //   // dispatch(fetchComponentDetail({ search: "" }));
   // }, []);
 
-
   const handleSubmit = () => {
-    console.log('Payload Data:', payloadData); // Debugging log
+    console.log("Payload Data:", payloadData); // Debugging log
     if (!payloadData || Object.keys(payloadData).length === 0) {
-      console.error('Payload data is missing or undefined.');
+      console.error("Payload data is missing or undefined.");
       // Handle error, e.g., show a message to the user
       return;
     }
-  
+
     try {
       dispatch(createSellRequest(payloadData));
-      setTab('create');
+      setTab("create");
     } catch (error) {
-      console.error('Error submitting data:', error);
+      console.error("Error submitting data:", error);
       // Handle error, e.g., show a message to the user
     }
   };
-  
-  
+
   return (
     <Wrapper>
       <AddPOPopovers uiState={uiState} />
@@ -128,7 +151,9 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
           <Card className="rounded-sm shadow-sm shadow-slate-500">
             <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
-              <CardTitle className="font-[550] text-slate-600">Client Detail</CardTitle>
+              <CardTitle className="font-[550] text-slate-600">
+                Client Detail
+              </CardTitle>
             </CardHeader>
             <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
               <h3 className="font-[500]">Name</h3>
@@ -141,14 +166,18 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
           </Card>
           <Card className="rounded-sm shadow-sm shadow-slate-500">
             <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
-              <CardTitle className="font-[550] text-slate-600">Tax Detail</CardTitle>
+              <CardTitle className="font-[550] text-slate-600">
+                Tax Detail
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-slate-600">
                 <ul>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
                     <div>
-                      <h3 className="font-[500]">Sub-Total value before Taxes :</h3>
+                      <h3 className="font-[500]">
+                        Sub-Total value before Taxes :
+                      </h3>
                     </div>
                     <div>
                       <p className="text-[14px]">0.00</p>
@@ -180,7 +209,9 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
                   </li>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
                     <div>
-                      <h3 className="font-[600] text-cyan-600">Sub-Total values after Taxes :</h3>
+                      <h3 className="font-[600] text-cyan-600">
+                        Sub-Total values after Taxes :
+                      </h3>
                     </div>
                     <div>
                       <p className="text-[14px]">(+)0.00</p>
@@ -193,15 +224,26 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
         </div>
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto bg-white">
           <div className="flex items-center w-full gap-[20px] h-[60px] px-[10px] justify-between">
-            <Button onClick={addNewRow} className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max">
+            <Button
+              onClick={addNewRow}
+              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+            >
               <Plus className="font-[600]" /> Add Item
             </Button>
             <div className="flex items-center gap-[20px]">
-              <Button onClick={onBtExport} className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md">
-                <FaFileExcel className="text-white w-[20px] h-[20px]" /> Export to Excel
+              <Button
+                onClick={onBtExport}
+                className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
+              >
+                <FaFileExcel className="text-white w-[20px] h-[20px]" /> Export
+                to Excel
               </Button>
-              <Button onClick={() => setExcelModel(true)} className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md">
-                <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel Here
+              <Button
+                onClick={() => setExcelModel(true)}
+                className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
+              >
+                <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel
+                Here
               </Button>
             </div>
           </div>
@@ -224,9 +266,21 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
         </div>
       </div>
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-        <Button className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]">Reset</Button>
-        <Button className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]" onClick={()=>setTab("create")}>Back</Button>
-        <Button className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]" onClick={handleSubmit}>Submit</Button>
+        <Button className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]">
+          Reset
+        </Button>
+        <Button
+          className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+          onClick={() => setTab("create")}
+        >
+          Back
+        </Button>
+        <Button
+          className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+          onClick={handleSubmit}
+        >
+          Submit
+        </Button>
       </div>
     </Wrapper>
   );

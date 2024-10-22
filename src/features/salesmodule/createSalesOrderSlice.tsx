@@ -15,6 +15,7 @@ import {
   ComponentDetailResponse,
   Country2,
   CountryResponse,
+  CustomerListDetail,
   ProjectDescription,
   ProjectDescriptionResponse,
   State2,
@@ -173,19 +174,40 @@ export const fetchClientAddressDetail = createAsyncThunk<
 });
 // Define the async thunk for fetching component details
 export const fetchComponentDetail = createAsyncThunk<
-  ComponentDetail[],
+CustomerListDetail[], 
   { search: string }
->("client/fetchComponentDetail", async ({ search }) => {
-  const response = await spigenAxios.post<ComponentDetailResponse>(
-    `/backend/getComponentByNameAndNo`,
-    {
-      search: search,
-    }
-  );
-  console.log("response", response);
+>(
+  "client/fetchComponentDetail",
+  async ({ search }) => {
+    const response = await spigenAxios.post<[]>(
+      `/backend/getComponentByNameAndNo`,
+      {
+        search: search,
+      }
+    );
 
-  if (response.status == 200) {
-    return response.data;
+    if (response.status === 200) {
+      // Assuming response.data has a property that is an array of ComponentDetail
+      return response.data; // Adjust this based on your actual response structure
+    } else {
+      throw new Error(
+         "Failed to fetch component details"
+      );
+    }
+  }
+);
+
+export const fetchProductData = createAsyncThunk<
+  ComponentDetail[],
+  { comp_key: string}
+>("client/fetchProductData", async ({ comp_key }) => {
+  const response = await spigenAxios.post<ComponentDetailResponse>(
+    `/backend/fetchHsnDb`,
+    { comp_key:comp_key }
+  );
+
+  if (response.data.status==="success") {
+    return response.data.data;
   } else {
     // Redux Toolkit will automatically handle the error
     throw new Error(
@@ -193,6 +215,7 @@ export const fetchComponentDetail = createAsyncThunk<
     );
   }
 });
+
 
 export const fetchCustomerDetail = createAsyncThunk<
   ComponentDetail[], // Expected return type

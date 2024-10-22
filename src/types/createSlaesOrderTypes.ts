@@ -139,7 +139,7 @@ export interface ClientState {
   projectDescription: ProjectDescription | null;
   billingAddressList: BillingAddressListItem[] | null;
   clientAddressDetail: ClientAddressDetail | null;
-  componentDetails: ComponentDetail[] | null;
+  componentDetails: any[] | null;
   customerList: CustomerListDetail[] | null;
   loading: boolean;
   error: string | null;
