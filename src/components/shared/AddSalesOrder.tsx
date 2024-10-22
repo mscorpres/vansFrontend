@@ -16,7 +16,7 @@ import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 
-import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
+// import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { createSellRequest } from "@/features/salesmodule/SalesSlice";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
@@ -98,9 +98,9 @@ const AddSalesOrder = ({ setTab, payloadData }: { setTab: React.Dispatch<React.S
   useEffect(() => {
     addNewRow();
   }, []);
-  useEffect(() => {
-    dispatch(fetchComponentDetail({ search: "" }));
-  }, []);
+  // useEffect(() => {
+  //   // dispatch(fetchComponentDetail({ search: "" }));
+  // }, []);
 
 
   const handleSubmit = () => {
