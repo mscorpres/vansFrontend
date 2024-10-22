@@ -122,6 +122,12 @@ export interface ComponentDetail {
   piaStatus: string;
 }
 
+export interface CustomerListDetail {
+  id: string;
+  text: string;
+}
+
+
 export interface ComponentDetailResponse {
   success: boolean;
   message: string | null;
@@ -134,6 +140,7 @@ export interface ClientState {
   billingAddressList: BillingAddressListItem[] | null;
   clientAddressDetail: ClientAddressDetail | null;
   componentDetails: ComponentDetail[] | null;
+  customerList: CustomerListDetail[] | null;
   loading: boolean;
   error: string | null;
   countries: Country2[] | null;

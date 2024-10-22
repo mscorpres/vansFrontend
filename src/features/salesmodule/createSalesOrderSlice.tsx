@@ -31,6 +31,7 @@ const initialState: ClientState = {
   billingAddressList: null,
   clientAddressDetail: null,
   componentDetails: null,
+  customerList: null,
   loading: false,
   error: null,
 };
@@ -192,6 +193,30 @@ export const fetchComponentDetail = createAsyncThunk<
     );
   }
 });
+
+export const fetchCustomerDetail = createAsyncThunk<
+  ComponentDetail[], // Expected return type
+  { search: string } // Argument type
+>("client/fetchCustomerDetail", async ({ search }, { rejectWithValue }) => {
+  try {
+    const response = await spigenAxios.post<ComponentDetailResponse>(
+      `/others/customerList`,
+      { search }
+    );
+
+    // Ensure this line accesses the correct data structure
+    if (response.status === 200) {
+      return response.data.data; // This should return the array of customers
+    } else {
+      return rejectWithValue(
+        response.data.message || "Failed to fetch component details"
+      );
+    }
+  } catch (error: any) {
+    return rejectWithValue(error.message || "An unknown error occurred");
+  }
+});
+
 // Create the slice
 const clientSlice = createSlice({
   name: "client",
@@ -302,6 +327,19 @@ const clientSlice = createSlice({
         state.componentDetails = action.payload;
       })
       .addCase(fetchComponentDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch component details";
+      })
+      .addCase(fetchCustomerDetail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCustomerDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customerList = action.payload;
+      })
+      .addCase(fetchCustomerDetail.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch component details";
