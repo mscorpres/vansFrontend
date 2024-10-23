@@ -1,6 +1,5 @@
 import { FaArrowRightLong } from "react-icons/fa6";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import Select from "react-select";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,32 +9,156 @@ import { Badge } from "@/components/ui/badge";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
-import { Button } from "antd";
+import Select from "react-select";
+import { transformOptionData } from "@/helper/transform";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
+import { Button, Form } from "antd";
 import {
   InputStyle,
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
+import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchBillingList,
+  fetchBillingListDetails,
+  fetchShippingAddressDetails,
+  fetchShippingAddressForPO,
+  fetchVendorAddressDetails,
+  listOfCostCenter,
+  listOfVendorBranchList,
+} from "@/features/client/clientSlice";
+import { useEffect, useState } from "react";
 interface Props {
   setTab: string;
   setPayloadData: string;
+  form: any;
+  setFormVal: [];
+  formVal: [];
 }
-const CreatePoPage: React.FC<Props> = ({ setTab, setPayloadData }) => {
-  const form = useForm<z.infer<typeof createSalesFormSchema>>({
-    resolver: zodResolver(createSalesFormSchema),
-    mode: "onBlur",
-  });
+const CreatePoPage: React.FC<Props> = ({
+  setTab,
+  setPayloadData,
+  form,
+  selectedVendor,
+  setFormVal,
+  formVal,
+}) => {
+  const [searchData, setSearchData] = useState("");
+  const dispatch = useDispatch();
+  const {
+    vendorBranchlist,
+    costCenterList,
+    shippingPOList,
+    shippingPODetails,
+    vendorPODetails,
+    vendorBillingList,
+    vendorBillingDetails,
+  } = useSelector((state: RootState) => state.client);
+  // const selectedVendor = Form.useWatch("vendorName", form);
+  const selBranch = Form.useWatch("branch", form);
+  const selCostCenter = Form.useWatch("costCenter", form);
+  const selShipping = Form.useWatch("shipId", form);
+  const selBilling = Form.useWatch("billingId", form);
+
+  const poTypeOptions = [
+    {
+      label: "New",
+      value: "New",
+    },
+    {
+      label: "Supplementary",
+      value: "supplementary",
+    },
+  ];
+  const poVendorOptions = [
+    {
+      label: "Vendor",
+      value: "vendor",
+    },
+  ];
+
+  const getValues = async () => {
+    let valuesOfFrom = await form.validateFields();
+    setTab("add");
+    setFormVal(valuesOfFrom);
+    // return valuesOfFrom;
+  };
+  useEffect(() => {
+    dispatch(fetchShippingAddressForPO());
+    if (selectedVendor) {
+      dispatch(listOfVendorBranchList({ vendorcode: selectedVendor?.value }));
+    }
+  }, [selectedVendor]);
+
+  useEffect(() => {
+
+    if (selectedVendor && selBranch) {
+      dispatch(
+        fetchVendorAddressDetails({
+          vendorcode: selectedVendor?.value,
+          branchcode: selBranch?.value,
+        })
+      );
+    }
+  }, [selectedVendor, selBranch]);
+  useEffect(() => {
+    if (searchData) {
+
+      dispatch(listOfCostCenter({ search: searchData }));
+    }
+  }, [searchData]);
+  useEffect(() => {
+    if (selCostCenter) {
+      dispatch(fetchBillingList({ cost_center: selCostCenter?.value }));
+    }
+  }, [selCostCenter]);
+  useEffect(() => {
+    if (selShipping) {
+      dispatch(
+        fetchShippingAddressDetails({ shipping_code: selShipping?.value })
+      );
+    }
+  }, [selShipping]);
+  ///setting details from the shipping details
+  useEffect(() => {
+    if (shippingPODetails) {
+      let arr = shippingPODetails;
+
+      form.setFieldValue("shipgst", arr?.gstin);
+      form.setFieldValue("shippan", arr?.pan);
+      form.setFieldValue("shipAddress", arr?.address);
+    }
+  }, [shippingPODetails]);
+  useEffect(() => {
+    if (vendorPODetails) {
+      let arr = vendorPODetails;
+
+      form.setFieldValue("vendorGst", arr?.gstid);
+      form.setFieldValue("address", arr?.address);
+    }
+  }, [vendorPODetails]);
+  useEffect(() => {
+    if (selBilling) {
+      dispatch(fetchBillingListDetails({ billing_code: selBilling?.value }));
+      // let arr = vendorPODetails;
+
+      // form.setFieldValue("vendorGst", arr?.gstid);
+      // form.setFieldValue("address", arr?.address);
+    }
+  }, [selBilling]);;
+
+  useEffect(() => {
+    if (vendorBillingDetails) {
+      let arr = vendorBillingDetails;
+
+      form.setFieldValue("pan", arr?.pan);
+      form.setFieldValue("billgst", arr?.gstin);
+      form.setFieldValue("billAddress", arr?.address);
+    }
+  }, [vendorBillingDetails]);
 
   return (
     <div className="h-[calc(100vh-150px)]">
@@ -43,284 +166,345 @@ const CreatePoPage: React.FC<Props> = ({ setTab, setPayloadData }) => {
         // data.loading  &&
         // <FullPageLoading />
       }
-      <Form {...form}>
-        {" "}
-        <form
-        //  onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
-            <div className="grid grid-cols-2 gap-[30px]">
-              <Card className="rounded shadow bg-[#fff]">
-                <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    Vendor Details
-                  </h3>
-                  <p className="text-slate-600 text-[13px]">
-                    {/* Type Name or Code of the vendor */}
-                  </p>
-                </CardHeader>
-                <CardContent className="mt-[10px]">
-                  <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
-                    <div>
-                      <Select
-                        styles={customStyles}
-                        placeholder="PO type"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        components={{ DropdownIndicator }}
-                        isDisabled={false}
-                        isLoading={true}
-                        isClearable={true}
-                        isSearchable={true}
-                        name="color"
-                        options={colourOptions}
-                      />
-                      {/* <p>error message</p> */}
-                    </div>
-                    <div>
-                      <Select
-                        styles={customStyles}
-                        placeholder="Vendor type"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        components={{ DropdownIndicator }}
-                        isDisabled={false}
-                        isLoading={true}
-                        isClearable={true}
-                        isSearchable={true}
-                        name="color"
-                        options={colourOptions}
-                      />
-                      {/* <p>error message</p> */}
-                    </div>
-                    <div>
-                      <Select
-                        styles={customStyles}
-                        placeholder="Vendor Name"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        components={{ DropdownIndicator }}
-                        isDisabled={false}
-                        isLoading={true}
-                        isClearable={true}
-                        isSearchable={true}
-                        name="color"
-                        options={colourOptions}
-                      />
-                      {/* <p>error message</p> */}
-                    </div>
-                    <div>
-                      <Select
-                        styles={customStyles}
-                        placeholder="Branch"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        components={{ DropdownIndicator }}
-                        isDisabled={false}
-                        isLoading={true}
-                        isClearable={true}
-                        isSearchable={true}
-                        name="color"
-                        options={colourOptions}
-                      />
-                      {/* <p>error message</p> */}
-                    </div>
-
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                        placeholder="GSTIN / UIN"
-                      />
-                    </div>
-
-                    {/* <p>error message</p> */}
-                  </div>{" "}
-                  <div className="">
-                    <Textarea
-                      className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Address"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded shadow bg-[#fff]">
-                <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    PO Terms & Other
-                  </h3>
-                  <p className="text-slate-600 text-[13px]">
-                    {/* Provide the bill and ship information */}
-                  </p>
-                  {/* <Switch className="flex items-center gap-[10px]">
-                <label className="switch">
-                  <input type="checkbox" />
-                  <span className="slider"></span>
-                </label>
+      <Form form={form} layout="vertical">
+        <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
+          <div className="grid grid-cols-2 gap-[30px]">
+            <Card className="rounded shadow bg-[#fff]">
+              <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                <h3 className="text-[17px] font-[600] text-slate-600">
+                  Vendor Details
+                </h3>
                 <p className="text-slate-600 text-[13px]">
-                  Same as Billing Address
+                  {/* Type Name or Code of the vendor */}
                 </p>
-              </Switch> */}
-                </CardHeader>
-
-                <CardContent className="mt-[10px]">
-                  <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                        placeholder="Terms & Condition"
-                      />
-                    </div>
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                        placeholder="Quotation"
-                      />
-                    </div>
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                        placeholder="Payment Terms"
-                      />
-                    </div>
-
-                    <div>
-                      <Select
-                        styles={customStyles}
-                        placeholder="Cost Center"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        components={{ DropdownIndicator }}
-                        isDisabled={false}
-                        isLoading={true}
-                        isClearable={true}
-                        isSearchable={true}
-                        name="color"
-                        options={colourOptions}
-                      />
-                      {/* <p>error message</p> */}
-                    </div>
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                        placeholder="Project"
-                      />
-                    </div>
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                        placeholder="Comment (If any)"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>{" "}
-              <Card className="rounded shadow bg-[#fff]">
-                <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    Invoicing Details
-                  </h3>
-                  {/* <p className="text-slate-600 text-[13px]">Bill To -</p> */}
-                </CardHeader>
-                <CardContent className="mt-[30px]">
-                  <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                    <div>
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Billing ID"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isLoading={true}
-                        isClearable={true}
-                        isSearchable={true}
-                        name="color"
-                        options={colourOptions}
-                      />
-                    </div>
-
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                        placeholder="PAN"
-                      />
-                    </div>
-
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                        placeholder="GSTIN"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-[40px]">
-                    <Textarea
-                      className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Address"
+              </CardHeader>
+              <CardContent className="mt-[10px]">
+                <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
+                  <Form.Item name="poType" label="PO Type" rules={rules.poType}>
+                    <Select
+                      styles={customStyles}
+                      placeholder="PO type"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      components={{ DropdownIndicator }}
+                      isDisabled={false}
+                      //isLoading={true}
+                      isClearable={true}
+                      isSearchable={true}
+                      name="color"
+                      options={poTypeOptions}
                     />
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded shadow bg-[#fff]">
-                <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    Invoicing Details
-                  </h3>
-                  {/* <p className="text-slate-600 text-[13px]">Ship To -</p> */}
-                </CardHeader>
-                <CardContent className="mt-[30px]">
-                  <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                    <div>
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Ship ID"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isLoading={true}
-                        isClearable={true}
-                        isSearchable={true}
-                        name="color"
-                        options={colourOptions}
-                      />
-                    </div>
-
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                        placeholder="PAN"
-                      />
-                    </div>
-
-                    <div className="">
-                      <Input
-                        className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                        placeholder="GSTIN"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-[40px]">
-                    <Textarea
-                      className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Address"
+                    {/* <p>error message</p> */}
+                  </Form.Item>
+                  <Form.Item
+                    name="vendorType"
+                    label="Vendor Type"
+                    rules={rules.vendorType}
+                  >
+                    <Select
+                      styles={customStyles}
+                      placeholder="Vendor type"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      components={{ DropdownIndicator }}
+                      isDisabled={false}
+                      //isLoading={true}
+                      isClearable={true}
+                      isSearchable={true}
+                      name="color"
+                      options={poVendorOptions}
                     />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                    {/* <p>error message</p> */}
+                  </Form.Item>
+                  {/* <div> */}
+
+                  {/* <p>error message</p> */}
+                </div>
+                <Form.Item
+                  name="vendorName"
+                  label="Vendor Name"
+                  rules={rules.vendorName}
+                >
+                  <ReusableAsyncSelect
+                    placeholder="Vendor Name"
+                    endpoint="/backend/vendorList"
+                    transform={transformOptionData}
+                    onChange={(e) => form.setFieldValue("vendorName", e)}
+                    // value={selectedCustomer}
+                    fetchOptionWith="payload"
+                  />
+                </Form.Item>
+                <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
+                  <Form.Item name="branch" label="Branch" rules={rules.branch}>
+                    <Select
+                      styles={customStyles}
+                      placeholder="Branch"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      components={{ DropdownIndicator }}
+                      isDisabled={false}
+                      //isLoading={true}
+                      isClearable={true}
+                      isSearchable={true}
+                      name="color"
+                      // transform={transformOptionData}
+                      options={transformOptionData(vendorBranchlist)}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="vendorGst"
+                    label="GSTIN"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      placeholder="GSTIN / UIN"
+                    />
+                  </Form.Item>
+                </div>{" "}
+                <Form.Item
+                  name="address"
+                  label="Address"
+                  className=""
+                  rules={rules.address}
+                >
+                  <Textarea
+                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
+                    placeholder="Address"
+                  />
+                </Form.Item>
+              </CardContent>
+            </Card>
+            <Card className="rounded shadow bg-[#fff]">
+              <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                <h3 className="text-[17px] font-[600] text-slate-600">
+                  PO Terms & Other
+                </h3>
+                <p className="text-slate-600 text-[13px]"></p>
+              </CardHeader>
+
+              <CardContent className="mt-[10px]">
+                <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
+                  <Form.Item
+                    name="terms"
+                    label="Terms & Condition"
+                    className=""
+                    rules={rules.terms}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
+                      placeholder="Terms & Condition"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="quotation"
+                    label="Quotation"
+                    className=""
+                    rules={rules.quotation}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      placeholder="Quotation"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="paymentTerms"
+                    label="Payment Terms"
+                    className=""
+                    rules={rules.paymentTerms}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      placeholder="Payment Terms"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="costCenter"
+                    label="Cost Center"
+                    rules={rules.costCenter}
+                  >
+                    <ReusableAsyncSelect
+                      placeholder="Cost Center"
+                      endpoint="/backend/costCenter"
+                      transform={transformOptionData}
+                      fetchOptionWith="payload"
+                    />
+                    {/* <p>error message</p> */}
+                  </Form.Item>
+                  <Form.Item
+                    name="project"
+                    label="Project"
+                    className=""
+                    rules={rules.project}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      placeholder="Project"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="comment"
+                    label="Comment"
+                    className=""
+                    rules={rules.comment}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      placeholder="Comment (If any)"
+                    />
+                  </Form.Item>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="rounded shadow bg-[#fff]">
+              <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                <h3 className="text-[17px] font-[600] text-slate-600">
+                  Invoicing Details
+                </h3>
+                {/* <p className="text-slate-600 text-[13px]">Bill To -</p> */}
+              </CardHeader>
+              <CardContent className="mt-[30px]">
+                <Form.Item
+                  name="billingId"
+                  label="Billing ID"
+                  rules={rules.billingId}
+                >
+                  <Select
+                    styles={customStyles}
+                    components={{ DropdownIndicator }}
+                    // placeholder="Ship "
+                    className="border-0 basic-single"
+                    classNamePrefix="select border-0"
+                    isDisabled={false}
+                    //isLoading={true}
+                    isClearable={true}
+                    isSearchable={true}
+                    name="color"
+                    options={transformOptionData(vendorBillingList)}
+                    onChange={(e) => form.setFieldValue("billingId", e)}
+                  />{" "}
+                  {/* <ReusableAsyncSelect
+                    // placeholder="Cost Center"
+                    endpoint="/backend/vendorAddress"
+                    transform={transformOptionData}
+                    fetchOptionWith="payload"
+                  /> */}
+                </Form.Item>
+                <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+                  <Form.Item
+                    name="pan"
+                    label="PAN"
+                    className=""
+                    rules={rules.pan}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
+                      placeholder="Billing PAN"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="billgst"
+                    label="GSTIN"
+                    className=""
+                    rules={rules.billgst}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
+                      placeholder="Billing GSTIN"
+                    />
+                  </Form.Item>
+                </div>
+                <Form.Item
+                  name="billAddress"
+                  label="Address"
+                  className="mt-[40px]"
+                  rules={rules.billAddress}
+                >
+                  <Textarea
+                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
+                    placeholder="Billing Address"
+                  />
+                </Form.Item>
+              </CardContent>
+            </Card>
+            <Card className="rounded shadow bg-[#fff]">
+              <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                <h3 className="text-[17px] font-[600] text-slate-600">
+                  Shipping Details
+                </h3>
+                {/* <p className="text-slate-600 text-[13px]">Ship To -</p> */}
+              </CardHeader>
+              <CardContent className="mt-[30px]">
+                {" "}
+                <Form.Item name="shipId" label="Ship ID" rules={rules.shipId}>
+                  <Select
+                    styles={customStyles}
+                    components={{ DropdownIndicator }}
+                    // placeholder="Ship "
+                    className="border-0 basic-single"
+                    classNamePrefix="select border-0"
+                    isDisabled={false}
+                    //isLoading={true}
+                    isClearable={true}
+                    isSearchable={true}
+                    name="color"
+                    options={transformOptionData(shippingPOList)}
+                    onChange={(e) => form.setFieldValue("shipId", e)}
+                  />
+                </Form.Item>
+                <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+                  <Form.Item
+                    name="shippan"
+                    label="PAN"
+                    className=""
+                    rules={rules.shippan}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
+                      placeholder="Shipping PAN"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="shipgst"
+                    label="GSTIN"
+                    className=""
+                    rules={rules.shipgst}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
+                      placeholder=" Shipping GSTIN"
+                    />
+                  </Form.Item>
+                </div>
+                <Form.Item
+                  rules={rules.shipAddress}
+                  name="shipAddress"
+                  label="Address"
+                  className="mt-[40px]"
+                >
+                  <Textarea
+                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
+                    placeholder="Shipping Address"
+                  />
+                </Form.Item>
+              </CardContent>
+            </Card>
           </div>
-          <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300">
-            <Button
-              onClick={() => setTab("add")}
-              className={`${primartButtonStyle} flex gap-[10px]`}
-              type="submit"
-            >
-              Next
-              <FaArrowRightLong className="" />
-            </Button>
-          </div>
-        </form>
+        </div>
+        <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300 text-white">
+          <Button
+            onClick={getValues}
+            className={`${primartButtonStyle} flex gap-[10px]`}
+            type="submit"
+          >
+            Next
+            <FaArrowRightLong className="" />
+          </Button>
+        </div>
       </Form>
     </div>
   );
@@ -379,3 +563,131 @@ const Switch = styled.div`
   }
 `;
 export default CreatePoPage;
+const rules = {
+  poType: [
+    {
+      required: true,
+      message: "Please select a Type",
+    },
+  ],
+  vendorType: [
+    {
+      required: true,
+      message: "Please select a  Vendor Type",
+    },
+  ],
+  vendorName: [
+    {
+      required: true,
+      message: "Please select a  Vendor Name",
+    },
+  ],
+  branch: [
+    {
+      required: true,
+      message: "Please select a  Vendor branch",
+    },
+  ],
+  vendorGst: [
+    {
+      required: true,
+      message: "Please select a  Vendor GST",
+    },
+  ],
+  address: [
+    {
+      required: true,
+      message: "Please select a  Vendor address",
+    },
+  ],
+  terms: [
+    {
+      required: true,
+      message: "Please select a  Vendor terms",
+    },
+  ],
+  quotation: [
+    {
+      required: true,
+      message: "Please select a  Vendor quotation",
+    },
+  ],
+  paymentTerms: [
+    {
+      required: true,
+      message: "Please select a payment Terms",
+    },
+  ],
+  costCenter: [
+    {
+      required: true,
+      message: "Please select a cost Center",
+    },
+  ],
+  project: [
+    {
+      required: true,
+      message: "Please select a project",
+    },
+  ],
+  comment: [
+    {
+      required: true,
+      message: "Please select a project",
+    },
+  ],
+  billingId: [
+    {
+      required: true,
+      message: "Please select a  billing Id",
+    },
+  ],
+  pan: [
+    {
+      required: true,
+      message: "Please select a billing pan",
+    },
+  ],
+  billgst: [
+    {
+      required: true,
+      message: "Please select a bill gst",
+    },
+  ],
+  billAddress: [
+    {
+      required: true,
+      message: "Please select a bill Address",
+    },
+  ],
+  shipId: [
+    {
+      required: true,
+      message: "Please select a ship Id",
+    },
+  ],
+  shippan: [
+    {
+      required: true,
+      message: "Please select a ship pan",
+    },
+  ],
+  shipgst: [
+    {
+      required: true,
+      message: "Please select a ship gst",
+    },
+  ],
+  shipAddress: [
+    {
+      required: true,
+      message: "Please select a ship address",
+    },
+  ],
+  date: [
+    {
+      required: true,
+      message: "Please select a time period",
+    },
+  ],
+};

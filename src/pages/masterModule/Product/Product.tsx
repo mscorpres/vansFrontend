@@ -15,17 +15,10 @@ import {
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Space } from "antd";
+import { DatePicker, Form, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import {
   SelectContent,
@@ -46,6 +39,7 @@ import {
   componentMapList,
   getComponentsByNameAndNo,
   getProductList,
+  insertProduct,
   listOfUom,
   serviceList,
   servicesaddition,
@@ -53,6 +47,7 @@ import {
 import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import EditProduct from "./EditProduct";
+import { listOfUoms } from "@/features/client/clientSlice";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -68,9 +63,15 @@ const Product = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
+  const { toast } = useToast();
+  const dispatch = useDispatch<AppDispatch>();
+  const { uomlist } = useSelector((state: RootState) => state.client);
+  // const form = useForm<z.infer<typeof FormSchema>>({
+  //   resolver: zodResolver(FormSchema),
+  // });
+  console.log("uomlist", uomlist);
+
+  const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => getProductList(), "fetch");
@@ -95,9 +96,63 @@ const Product = () => {
       //   });
     }
   };
+  const listUom = async () => {
+    const response = await execFun(() => listOfUom(), "fetch");
+    const { data } = response;
+
+    if (response.status == 200) {
+      let arr = data.data.map((r, index) => {
+        return {
+          label: r.units_name,
+          value: r.units_id,
+        };
+      });
+      setAsyncOptions(arr);
+    }
+  };
+  const onsubmit = async () => {
+    const value = await form.validateFields();
+    console.log("value", value);
+    let payload = {
+      p_sku: value.sku,
+      p_name: value.product,
+      units_id: value.uom.value,
+      customer: value.customerName.value,
+    };
+    // return;
+    const response = await execFun(() => insertProduct(payload), "fetch");
+    console.log("response", response);
+
+    const { data } = response;
+    console.log("data", response);
+    if (response.data.code == 200) {
+      toast({
+        title: data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      form.resetFields();
+    } else {
+      toast({
+        title: data.message.msg || "Failed to Product",
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+
+    // if (response.status == 200) {
+    //   let arr = data.data.map((r, index) => {
+    //     return {
+    //       label: r.units_name,
+    //       value: r.units_id,
+    //     };
+    //   });
+    //   setAsyncOptions(arr);
+    // }
+  };
 
   useEffect(() => {
     fetchProductList();
+    listUom();
+    dispatch(listOfUoms());
   }, []);
 
   const columnDefs: ColDef<rowData>[] = [
@@ -158,112 +213,70 @@ const Product = () => {
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
-        <Form {...form}>
+        <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6 overflow-hidden p-[10px] h-[1000px]"
           >
             <div className="grid grid-cols-2 gap-[40px] ">
-              <div className="">
-                <FormField
-                  control={form.control}
-                  name="sku"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={LableStyle}>SKU</FormLabel>
-                      <FormControl>
-                        <Input
-                          className={InputStyle}
-                          placeholder="Enter SKU"
-                          // {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+              <Form.Item name="sku" label="SKU">
+                <Input
+                  className={InputStyle}
+                  placeholder="Enter SKU"
+                  // {...field}
                 />
-              </div>
-              <div className="">
-                <FormField
-                  control={form.control}
-                  name="uom"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel className={LableStyle}>UOM</FormLabel>
-                      <FormControl>
-                        <Select
-                          styles={customStyles}
-                          components={{ DropdownIndicator }}
-                          placeholder=" Enter UOM"
-                          className="border-0 basic-single"
-                          classNamePrefix="select border-0"
-                          isDisabled={false}
-                          isClearable={true}
-                          isSearchable={true}
-                          options={asyncOptions}
-                          //   onChange={(e) => console.log(e)}
-                          //   value={
-                          //     data.clientDetails
-                          //       ? {
-                          //           label: data.clientDetails.city.name,
-                          //           value: data.clientDetails.city.name,
-                          //         }
-                          //       : null
-                          //   }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+              </Form.Item>
+
+              <Form.Item name="uom" label="UOM">
+                <Select
+                  styles={customStyles}
+                  components={{ DropdownIndicator }}
+                  placeholder=" Enter UOM"
+                  className="border-0 basic-single"
+                  classNamePrefix="select border-0"
+                  isDisabled={false}
+                  isClearable={true}
+                  isSearchable={true}
+                  options={asyncOptions}
+                  //   onChange={(e) => console.log(e)}
+                  //   value={
+                  //     data.clientDetails
+                  //       ? {
+                  //           label: data.clientDetails.city.name,
+                  //           value: data.clientDetails.city.name,
+                  //         }
+                  //       : null
+                  //   }
                 />
-              </div>
+              </Form.Item>
             </div>
-            <div className="">
-              <FormField
-                control={form.control}
-                name="product"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LableStyle}>Product</FormLabel>
-                    <FormControl>
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Product"
-                        // {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            <Form.Item name="product" label="Product">
+              <Input
+                className={InputStyle}
+                placeholder="Enter Product"
+                // {...field}
               />
-            </div>{" "}
+            </Form.Item>
+
             <div className="">
-              <FormField
-                control={form.control}
-                name="customerName"
-                render={() => (
-                  <FormItem>
-                    <FormLabel className={LableStyle}>
-                      Customer Name/Code
-                    </FormLabel>
-                    <FormControl>
-                      <ReusableAsyncSelect
-                        placeholder="Customer Name"
-                        endpoint="/others/customerList"
-                        transform={transformOptionData}
-                        onChange={(e) => form.setValue("customerName", e)}
-                        // value={selectedCustomer}
-                        fetchOptionWith="payload"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Form.Item name="customerName" label="  Customer Name/Code">
+                <ReusableAsyncSelect
+                  placeholder="Customer Name"
+                  endpoint="/others/customerList"
+                  transform={transformOptionData}
+                  onChange={(e) => form.setValue("customerName", e)}
+                  // value={selectedCustomer}
+                  fetchOptionWith="payload"
+                />
+              </Form.Item>
             </div>
             <Button
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={(e: any) => {
+                e.preventDefault();
+                onsubmit();
+              }}
             >
               Submit
             </Button>

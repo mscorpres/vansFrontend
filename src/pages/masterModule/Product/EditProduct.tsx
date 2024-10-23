@@ -41,10 +41,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useDispatch, useSelector } from "react-redux";
+import { listOfUoms } from "@/features/client/clientSlice";
 const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
+  const [asyncOptions, setAsyncOptions] = useState([]);
   const { execFun, loading: loading1 } = useApi();
+  const dispatch = useDispatch<AppDispatch>();
+  const { uomlist } = useSelector((state: RootState) => state.client);
   const typeOption = [
     {
       label: "FG",
@@ -206,6 +211,64 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       fetchComponentDetails(sheetOpenEdit);
     }
   }, [sheetOpenEdit]);
+  const callUom = async () => {
+    let a;
+    if (asyncOptions.length == 0) {
+      a = await dispatch(listOfUoms());
+    }
+
+    let arr = a.payload.map((r, index) => {
+      return {
+        label: r.units_name,
+        value: r.units_id,
+      };
+    });
+    setAsyncOptions(arr);
+  };
+  const submitTheForm = async () => {
+    const values = form.getFieldsValue();
+    console.log("values", values);
+
+    
+    let hehe = {
+      p_name: values.productName,
+      category: "--",
+      mrp: values.mrp,
+      producttype: values.type.value,
+      isenabled: values.enabled.value,
+      gsttype: values.tax.value,
+      gstrate: values.gst.value,
+      uom: values.uom.value,
+      location: "--",
+      hsn: values.hsn,
+      brand: values.brand,
+      ean: values.ean,
+      weight: values.weight,
+      vweight: values.vweight,
+      height: values.height,
+      width: values.width,
+      minstock: values.stockLoc,
+      minstockrm: values.minStock,
+      batchstock: values.batch,
+      labourcost: values.labourCost,
+      packingcost: values.packingCost,
+      othercost: values.otherCost,
+      jobworkcost: values.jwCost,
+      description: values.description,
+      //doubtfull
+      // producttKey: "2023811171652470",
+    };
+    // console.log("payload", payload);
+    console.log("hehe", hehe);
+
+    return;
+    const response = await execFun(updateComponentofMaterial(values), "fetch");
+  };
+  useEffect(() => {
+    if (uomlist) {
+      callUom();
+    }
+  }, [uomlist]);
   return (
     <div className="h-[calc(100vh-100px)] ">
       {loading1("fetch") && <FullPageLoading />}
@@ -281,7 +344,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="UOM"
+                              placeholder="Product Type"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -311,10 +374,25 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           {/* </div>
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px] "> */}
                           <Form.Item name="uom" label="UOM">
-                            <Input
-                              className={InputStyle}
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
                               placeholder="Enter UOM"
-                              // {...field}
+                              className="border-0 basic-single"
+                              classNamePrefix="select border-0"
+                              isDisabled={false}
+                              isClearable={true}
+                              isSearchable={true}
+                              options={asyncOptions}
+                              //   onChange={(e) => console.log(e)}
+                              //   value={
+                              //     data.clientDetails
+                              //       ? {
+                              //           label: data.clientDetails.city.name,
+                              //           value: data.clientDetails.city.name,
+                              //         }
+                              //       : null
+                              //   }
                             />
                           </Form.Item>
                           {/* </div>
@@ -332,7 +410,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Enter enabled"
+                              placeholder="Enter Enabled"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -431,21 +509,18 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Brand"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="ean" label="EAN">
                             <Input
                               className={InputStyle}
                               placeholder="Enter EAN"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="weight" label="Weight (gms)">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Weight (gms)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item
@@ -455,21 +530,18 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Volumetric Weight (gms)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="height" label="Height (mm)">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Height (mm)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="width" label="Width (mm)">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Width (mm)"
-                              // {...field}
                             />
                           </Form.Item>
                         </div>
@@ -480,9 +552,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         <h3 className="text-[17px] font-[600] text-slate-600">
                           Production Plan and Costing :
                         </h3>
-                        <p className="text-slate-600 text-[13px]">
-                          {/* Type Name or Code of the Client */}
-                        </p>
+                        <p className="text-slate-600 text-[13px]"></p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
@@ -490,21 +560,18 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Min Stock (FG)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="minStock" label="Min Stock (RM)">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Min Stock (RM)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="batch" label="Mfg Batch Size">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Mfg Batch Size"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item
@@ -514,14 +581,12 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Default Stock Location"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="labourCost" label="Labour Cost">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Labour Cost"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item
@@ -531,14 +596,12 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Sec Packing Cost"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="jwCost" label="JW Cost">
                             <Input
                               className={InputStyle}
                               placeholder="Enter JW Cost"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item
@@ -548,7 +611,6 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Other Cost"
-                              // {...field}
                             />
                           </Form.Item>
                         </div>
@@ -556,108 +618,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                     </Card>
                   </div>
                 </div>
-                {/* <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
-                  <div className="grid grid-cols-4 gap-[20px]">
-                    <Form.Item name="serviceCode" label="Service Code">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Service Code"
-                      />
-                    </Form.Item>
-                    <Form.Item name="serviceName" label="Service Name">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Service Name"
-                      />
-                    </Form.Item>
 
-                    <Form.Item name="uom" label="UOM">
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select UOM"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item name="serviceCategory" label="Service Category">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Service Category"
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      className="w-full"
-                      name="enabled"
-                      label="Enabled"
-                    >
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select Enabled"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item name="description" label="Description">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Component Description"
-                      />
-                    </Form.Item>
-                  </div>{" "}
-                  <div className="grid grid-cols-1 gap-[20px]">
-                    <Typography.Title level={3}>Tax Details :</Typography.Title>
-                  </div>
-                  <div className="grid grid-cols-4 gap-[20px]">
-                    <Form.Item label="Tax Type" name="taxType">
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select Tax Type"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="GST Tax Rate" name="gstTaxRate">
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select GST Tax Rate"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="SAC Code" name="sacCode">
-                      <Input className={InputStyle} placeholder="Enter SAC" />
-                    </Form.Item>
-                  </div>
-                </div> */}
                 <div className={modelFixFooterStyle}>
                   <Button
                     variant={"outline"}
@@ -673,7 +634,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                     // type="submit"
                     className="bg-cyan-700 hover:bg-cyan-600"
                     onClick={(e: any) => {
-                      setOpen(true);
+                      submitTheForm();
                       e.preventDefault();
                     }}
                   >

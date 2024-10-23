@@ -41,3 +41,20 @@ export const gstRateList = [
     label: "28 %",
   },
 ];
+export const exportDateRange = (dateRange) => {
+  console.log("dateRange", dateRange);
+
+  const startDate = dateRange[0]
+    .toLocaleDateString("en-GB")
+    .split("/")
+    .reverse()
+    .join("-");
+  const endDate = dateRange[1]
+    .toLocaleDateString("en-GB")
+    .split("/")
+    .reverse()
+    .join("-");
+  let dataString = `${startDate}-${endDate}`;
+  console.log("dateString", dataString);
+  return dataString;
+};

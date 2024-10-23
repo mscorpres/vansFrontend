@@ -14,10 +14,11 @@ import {
 import { fetchProductData } from "@/features/salesmodule/SalesSlice";
 import { AppDispatch, RootState } from "@/store";
 import { CommandList } from "cmdk";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSortDown, FaTrash } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { DatePicker, Select } from "antd";
+import "ag-grid-enterprise";
 // import { transformCurrencyData, transformOptionData } from "@/helper/transform";
 // import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
 // import {
@@ -30,6 +31,8 @@ import moment from "moment";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
+import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
+import { fetchComponentDetails } from "@/features/client/clientSlice";
 
 const type = [
   {
@@ -148,7 +151,10 @@ const TextInputCellRenderer = (props: any) => {
   const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
-  const { hsnlist } = useSelector((state: RootState) => state.client);
+
+  const { hsnlist, getComponentData } = useSelector(
+    (state: RootState) => state.client
+  );
 
   const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
 
@@ -181,6 +187,7 @@ const TextInputCellRenderer = (props: any) => {
   const updateData = (newData: any) => {
     api.applyTransaction({ update: [newData] });
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
+    // setRowData((prevData: any) => [...prevData, newData]);
   };
   //   console.log("data inn texty", data);
 
@@ -194,8 +201,34 @@ const TextInputCellRenderer = (props: any) => {
 
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
-    if (colDef.field === "material") {
-      data["material"] = data.material;
+    if (colDef.field === "procurementMaterial") {
+      console.log("data", data);
+      console.log("props?.vendorCode?.value", props);
+
+      data["procurementMaterial"] = data.procurementMaterial;
+      dispatch(
+        fetchComponentDetails({
+          component_code: data["procurementMaterial"],
+          vencode: props?.vendorCode?.value,
+        })
+      );
+      console.log("componentFetchDetails", getComponentData);
+      data["vendorName"] =
+        getComponentData?.ven_com?.comp_name +
+        "/ Maker:" +
+        getComponentData.make;
+      // data[
+      //   "vendorName"
+      // ] = `${getComponentData?.ven_com?.comp_name}/ Maker:${getComponentData.make}`;
+      data["orderQty"] = getComponentData.closingQty;
+      data["rate"] = getComponentData.gstrate;
+      data["hsnCode"] = getComponentData.closingQty;
+      // data["orderQty"] = getComponentData.hsn;
+      api.refreshCells({ rowNodes: [props.node], columns: [column] });
+      api.applyTransaction({ update: [data] });
+      updateData(data);
+
+      // dispatch(fetchComponentDetails({}));
       //   dispatch(fetchProductData({ product_key: value })).then(
       //     (response: any) => {
       //       if (response.meta.requestStatus === "fulfilled") {
@@ -367,9 +400,7 @@ const TextInputCellRenderer = (props: any) => {
       case "material":
         return (
           <Select
-            onPopupScroll={(e) => e.preventDefault()}
-            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
-            className="w-full"
+            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] w-full overflow-y-auto"
             labelInValue
             filterOption={false}
             showSearch
@@ -383,7 +414,27 @@ const TextInputCellRenderer = (props: any) => {
             options={transformOptionData(componentDetails || [])}
             onChange={(e) => handleChange(e.value)}
             value={typeof value === "string" ? { value } : value?.text}
-            style={{ pointerEvents: "auto" }} // Ensure pointer events are enabled
+            style={{ pointerEvents: "auto" }}
+          />
+        );
+      case "procurementMaterial":
+        return (
+          <Select
+            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] w-full overflow-y-auto"
+            labelInValue
+            filterOption={false}
+            showSearch
+            placeholder="Select Material"
+            onSearch={(e) => {
+              props.setSearch(e);
+              if (data.type) {
+                props.onSearch(e, data.type);
+              }
+            }}
+            options={transformOptionData(componentDetails || [])}
+            onChange={(e) => handleChange(e.value)}
+            value={typeof value === "string" ? { value } : value?.text}
+            style={{ pointerEvents: "auto" }}
           />
         );
       case "asinNumber":
@@ -586,14 +637,32 @@ const TextInputCellRenderer = (props: any) => {
       case "materialDescription":
         return (
           <Input
-            readOnly
             value={value}
-            type="text"
+            // type="text"
             placeholder={colDef.headerName}
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );
       case "localValue":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "value":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
       case "foreignValue":
       case "cgst":
       case "sgst":
@@ -708,6 +777,26 @@ const TextInputCellRenderer = (props: any) => {
             onChange={(e) => handleChange(e.value)}
             value={typeof value === "string" ? { value } : value?.text}
             style={{ pointerEvents: "auto" }} // Ensure pointer events are enabled
+          />
+        );
+      case "vendorName":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "component_fullname":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );
 

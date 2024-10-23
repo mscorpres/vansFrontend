@@ -158,27 +158,7 @@ const Hsn = () => {
       getTheListHSN(isValue?.value);
     }
   }, [isValue]);
-  const removeRows = () => {
-    console.log("removing rows", rowData);
-  };
 
-  const fetchComponentList = async (search) => {
-    const response = await execFun(
-      () => getComponentsByNameAndNo(search),
-      "fetch"
-    );
-    console.log("response---", response);
-    if (response.status === "sucess") {
-      let arr = response.data.map((r) => {
-        return {
-          label: r.id,
-          value: r.text,
-        };
-      });
-      setAsyncOptions(arr);
-      console.log("arr", arr);
-    }
-  };
   const handleSubmit = async () => {
     const value = form.getFieldsValue();
 

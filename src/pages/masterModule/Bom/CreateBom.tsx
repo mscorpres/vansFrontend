@@ -32,6 +32,7 @@ import { fetchBomTypeWise } from "@/components/shared/Api/masterApi";
 import EditBom from "./EditBom";
 import ViewBom from "./ViewBom";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { useNavigate } from "react-router-dom";
 const FormSchema = z.object({
   wise: z.string().optional(),
 });
@@ -45,6 +46,8 @@ const CreateBom = () => {
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
+
+  const navigate = useNavigate();
   const fetchBOMList = async (formData: z.infer<typeof FormSchema>) => {
     const { wise } = formData;
     console.log("fetchBOMList", formData);
@@ -125,6 +128,12 @@ const CreateBom = () => {
       </>
     );
   };
+  console.log("rowData, data,, subject id", sheetOpenEdit);
+  useEffect(() => {
+    if (sheetOpenEdit.length) {
+      window.open(`/master/bom/edit/${sheetOpenEdit}`, "_blank");
+    }
+  }, [sheetOpenEdit]);
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -333,12 +342,12 @@ const CreateBom = () => {
           paginationAutoPageSize={true}
         />
       </div>
-      {sheetOpenEdit && (
+      {/* {sheetOpenEdit && (
         <EditBom
           sheetOpenEdit={sheetOpenEdit}
           setSheetOpenEdit={setSheetOpenEdit}
         />
-      )}
+      )} */}
       {openView && (
         <ViewBom openView={openView} setSheetOpenView={setSheetOpenView} />
       )}

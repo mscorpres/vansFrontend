@@ -11,7 +11,7 @@ export const transformCustomerData = (data: any[]) => {
 
 export const transformOptionData = (data: any[]) => {
   // console.log("data", data);
-  if (data.length) {
+  if (data?.length) {
     return data?.map((item) => ({
       label: item.text,
       value: item.id,

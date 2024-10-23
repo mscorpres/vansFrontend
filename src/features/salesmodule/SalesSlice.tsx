@@ -49,7 +49,7 @@ export const createSellRequest = createAsyncThunk<
   ApiResponse<any>,
   SellRequestPayload
 >("/sellRequest/createSellRequest", async (payload) => {
-  const response = await spigenAxios.post("/sellRequest/createSellRequest", payload);
+  const response = await spigenAxios.post("/purchaseOrder/createPO", payload);
   return response.data;
 });
 
