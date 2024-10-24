@@ -452,6 +452,29 @@ export const fetchneededApprovalPO = createAsyncThunk<
     throw new Error("An unknown error occurred");
   }
 });
+//rejectpo
+export const rejectPo = createAsyncThunk<uomPayload, { poid: string; remark: string }>(
+  "/purchaseOrder/rejectPo",
+  async ({ poid, remark }) => {
+    try {
+      const response = await spigenAxios.post<uomPayload>(
+        "/purchaseOrder/rejectPo",
+        {
+          poid: poid,
+          remark: remark,
+        }
+      );
+      console.log("response", response.data);
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
 
 interface ClientState {
   data: any[];
