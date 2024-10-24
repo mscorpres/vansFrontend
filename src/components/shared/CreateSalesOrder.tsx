@@ -187,6 +187,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                     value: "c01",
                                   },
                                 ]}
+                                defaultValue={"c01"}
                               />
                             </FormControl>
                             <FormMessage />

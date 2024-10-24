@@ -2,25 +2,83 @@ import AddSalesOrder from "@/components/shared/AddSalesOrder";
 import CreateSalesOrder from "@/components/shared/CreateSalesOrder";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { AppDispatch, RootState } from "@/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
-import { fetchBillAddress, fetchBillAddressList, fetchBillingAddress, fetchBranchDetail, fetchCustomerBranches } from "@/features/salesmodule/createSalesOrderSlice";
+import { fetchBillAddress, fetchBillAddressList, fetchBillingAddress, fetchBranchDetail, fetchCustomerBranches, fetchDataForUpdate } from "@/features/salesmodule/createSalesOrderSlice";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { useParams } from "react-router-dom";
+import { RowData } from "@/data";
 
 const CreateSalesOrderPage = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const params = useParams();
+  const pathname = window.location.pathname;
   const [tabvalue, setTabvalue] = useState<string>("create");
   const [branches, setBranches] = useState([]);
   const [payloadData, setPayloadData] = useState<any>(null);
-  const { loading } = useSelector((state: RootState) => state.client);
+  const [rowData , setRowData] = useState();
+  const [derivedType,setDerivedType] = useState<any>(null);
+  const { updateData,loading } = useSelector((state: RootState) => state.client);
   const form = useForm<z.infer<typeof createSalesFormSchema>>({
     resolver: zodResolver(createSalesFormSchema),
     mode: "onBlur",
   });
+
+  
+  useEffect(() => {
+    if (pathname?.includes("update") && params?.id) {
+      const soId = (params.id as string).replace(/_/g, "/");
+      dispatch(fetchDataForUpdate({ so_id: soId }));
+    }
+  }, [pathname, params]);
+
+  useEffect(() => {
+    if (updateData) {
+      const header: any = updateData.header;
+      
+
+    
+        // if (ship?.state?.value == "09") {
+        //   setDerivedType("L");
+        // } else {
+        //   setDerivedType("I");
+        // }
+      
+
+      const updatedData: RowData[] = updateData?.items?.map((material: any) => ({
+        type: material.so_type?.value || "product",
+        items: material.item_code || "",
+        material: material.selectedItem[0] || "",
+        materialDescription: material.item_details || "",
+        rate: parseFloat(material.rate) || 0,
+        orderQty: material.orderqty || 1,
+        assAmount:
+          (
+            material.rate * material.orderqty -
+            material.rate * material.orderqty * (material.discount / 100)
+          ).toString() || "0",
+        discount: parseFloat(material.discount) || 0,
+        currency: material.currency || "364907247",
+        gstType: material.gsttype?.[0]?.id || "I",
+        localValue: material.exchangetaxablevalue,
+        foreignValue: parseFloat(material.exchangerate) || 0,
+        cgst: parseFloat(material.cgst) || 0,
+        sgst: parseFloat(material.sgst) || 0,
+        igst: parseFloat(material.igst) || 0,
+        dueDate: material.due_date || "",
+        hsnCode: material.hsncode || "",
+        remark: material.remark || "",
+        gstRate: material?.gst_rate || 0,
+        updateid: material?.updateid || 0,
+        isNew: true,
+      }));
+      setRowData(updatedData);
+    }
+  }, [updateData, form]);
 
 const handleCustomerSelection = (e: any) => {
   console.log("handleCustomerSelection", e);

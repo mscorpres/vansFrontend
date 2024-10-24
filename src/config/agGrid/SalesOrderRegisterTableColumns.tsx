@@ -11,6 +11,8 @@ import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/Confir
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { toast } from "@/components/ui/use-toast";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { approveSo } from "@/features/salesmodule/SalesSlice";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -19,13 +21,14 @@ interface ActionMenuProps {
 const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isInvoiceModalVisible, setIsInvoiceModalVisible] = useState(false);
   const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
     useState(false);
   const [date, setDate] = useState("");
   const [form] = Form.useForm();
   const [invoiceForm] = Form.useForm(); // Form instance for the invoice modal
-  const { sellRequestDetails,loading } = useSelector(
+  const { sellRequestDetails, loading } = useSelector(
     (state: RootState) => state.sellRequest
   );
   const dateRange = useSelector(
@@ -33,7 +36,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   );
 
   const handleUpdate = (row: any) => {
-    const soId = row?.req_id; // Replace with actual key for employee ID
+    const soId = row?.so_id; // Replace with actual key for employee ID
     window.open(`/sales/order/update/${soId.replaceAll("/", "_")}`, "_blank");
     // dispatch(fetchDataForUpdate({ clientCode: soId }));
   };
@@ -52,6 +55,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const handleshowMaterialList = (row: RowData) => {
     // dispatch(fetchSellRequestDetails({ req_id: row?.req_id }));
     setIsMaterialListModalVisible(true);
+  };
+
+  const confirmApprove = () => {
+    dispatch(approveSo({ so_id: row?.so_id }));
+    setShowConfirmationModal(false);
   };
 
   const handleOk = () => {
@@ -136,18 +144,25 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     // });
   };
 
-  const isDisabled = row?.hasInvoice === true || row?.status === "Cancelled";
+  const isDisabled = row?.approveStatus === "Approved";
 
   const menu = (
     <Menu>
       <Menu.Item
         key="update"
-        onClick={() => handleUpdate(row)}
+        onClick={() => {
+          console.log(row);
+          handleUpdate(row);
+        }}
         disabled={isDisabled}
       >
         Update
       </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal} disabled={isDisabled}>
+      <Menu.Item
+        key="approve"
+        onClick={() => setShowConfirmationModal(true)}
+        disabled={isDisabled}
+      >
         Approve
       </Menu.Item>
       <Menu.Item key="cancel" onClick={showCancelModal} disabled={isDisabled}>
@@ -198,6 +213,13 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         row={{ req_id: row?.req_id }}
         loading={loading}
       /> */}
+      <ConfirmationModal
+        open={showConfirmationModal}
+        onOkay={confirmApprove}
+        onClose={() => setShowConfirmationModal(false)}
+        title="Confirm Approve!"
+        description={`Are you sure you want to approve this sales order ${row?.so_id}?`}
+      />
     </>
   );
 };
@@ -210,7 +232,12 @@ export const columnDefs: ColDef<any>[] = [
     maxWidth: 100,
     cellRenderer: (params: any) => <ActionMenu row={params.data} />,
   },
-  { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50,filter: false},
+  {
+    headerName: "#",
+    valueGetter: "node.rowIndex + 1",
+    maxWidth: 50,
+    filter: false,
+  },
 
   {
     headerName: "SO ID",
@@ -219,8 +246,16 @@ export const columnDefs: ColDef<any>[] = [
     cellRenderer: CopyCellRenderer,
   },
   { headerName: "Status", field: "soStatus", filter: "agTextColumnFilter" },
-  { headerName: "SO Invoice Status", field: "soInvoiceStatus", filter: "agTextColumnFilter" },
-  { headerName: "Approve Status", field: "approveStatus", filter: "agTextColumnFilter" },
+  {
+    headerName: "SO Invoice Status",
+    field: "soInvoiceStatus",
+    filter: "agTextColumnFilter",
+  },
+  {
+    headerName: "Approve Status",
+    field: "approveStatus",
+    filter: "agTextColumnFilter",
+  },
   {
     headerName: "Customer Name",
     field: "clintname",
