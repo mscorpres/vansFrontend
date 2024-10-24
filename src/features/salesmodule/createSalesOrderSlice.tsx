@@ -82,12 +82,12 @@ export const fetchProjectDescription = createAsyncThunk<
 
 export const fetchBillingAddress = createAsyncThunk<
   BillingAddress,
-  { billing_code: string }
->("client/fetchBillingAddress", async ({ billing_code }) => {
+  { cost_center: string }
+>("client/fetchBillingAddress", async (cost_center) => {
   try {
     const response = await spigenAxios.post<BillingAddressResponse>(
       "/backend/billingAddress",
-      { billing_code }
+      {cost_center: cost_center}
     );
     if (response.data.code !== 200) {
       throw new Error("Failed to fetch billing address");
@@ -100,6 +100,35 @@ export const fetchBillingAddress = createAsyncThunk<
     throw new Error("An unknown error occurred");
   }
 });
+
+export const fetchBillAddressList = createAsyncThunk<
+  any, // Define the type of the data you expect to return
+  { id: string } // Define the type of the argument you expect
+>("/client/uploadBillAddressExcel", async (id: any) => {
+  const formData = new FormData();
+  formData.append("cost_center", id);
+  const response = await spigenAxios.post(
+    `backend/billingAddressList`,
+    formData
+  );
+
+  return response.data;
+});
+
+export const fetchBillAddress = createAsyncThunk<
+  any, // Define the type of the data you expect to return
+  { id: string } // Define the type of the argument you expect
+>("/client/fetchBillAddress", async (id: any) => {
+  const formData = new FormData();
+  formData.append("billing_code", id);
+  const response = await spigenAxios.post(
+    `backend/billingAddress`,
+    formData
+  );
+
+  return response.data;
+});
+
 // Define the async thunk for fetching countries
 export const fetchCountries = createAsyncThunk<Country2[], void>(
   "client/fetchCountries",
@@ -253,6 +282,50 @@ export const fetchCustomerDetail = createAsyncThunk<
   }
 });
 
+export const fetchCustomerBranches = createAsyncThunk<
+  ComponentDetail[], // Expected return type
+  { client: string } // Argument type
+>("client/fetchCustomerBranches", async ({ client }, { rejectWithValue }) => {
+  try {
+    const response = await spigenAxios.get<ComponentDetailResponse>(
+      `/client/getBranchList?client=${client}`
+    );
+
+    // Ensure this line accesses the correct data structure
+    if (response.status === 200) {
+      return response.data.data; // This should return the array of customers
+    } else {
+      return rejectWithValue(
+        response.data.message || "Failed to fetch component details"
+      );
+    }
+  } catch (error: any) {
+    return rejectWithValue(error.message || "An unknown error occurred");
+  }
+});
+
+export const fetchBranchDetail = createAsyncThunk<
+  ComponentDetail[], // Expected return type
+  { client: string } // Argument type
+>("client/fetchBranchDetail", async ({ client }, { rejectWithValue }) => {
+  try {
+    const response = await spigenAxios.get<ComponentDetailResponse>(
+      `/client/branchDetails?addressID=${client}`
+    );
+
+    // Ensure this line accesses the correct data structure
+    if (response.status === 200) {
+      return response.data.data; // This should return the array of customers
+    } else {
+      return rejectWithValue(
+        response.data.message || "Failed to fetch component details"
+      );
+    }
+  } catch (error: any) {
+    return rejectWithValue(error.message || "An unknown error occurred");
+  }
+});
+
 // Create the slice
 const clientSlice = createSlice({
   name: "client",
@@ -376,6 +449,18 @@ const clientSlice = createSlice({
         state.customerList = action.payload;
       })
       .addCase(fetchCustomerDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch component details";
+      })
+      .addCase(fetchBranchDetail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchBranchDetail.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(fetchBranchDetail.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch component details";

@@ -18,7 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { DatePicker, Space } from "antd";
 import { gridOptions } from "@/config/agGrid/ModuleRegistry";
 const { RangePicker } = DatePicker;
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 const languages = [
   { label: "English", value: "en" },
   { label: "French", value: "fr" },
