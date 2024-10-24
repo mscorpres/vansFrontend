@@ -29,6 +29,7 @@ import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer
 import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
 import { rangePresets } from "@/General";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 
 const { RangePicker } = DatePicker;
 const dateFormat = "DD/MM/YYYY";
@@ -52,7 +53,7 @@ const RegisterSalesOrderPage: React.FC = () => {
   const { toast } = useToast();
   const [type, setType] = useState<string>("date_wise");
   const dispatch = useDispatch();
-  const { data: rowData } = useSelector(
+  const { data: rowData,loading } = useSelector(
     (state: RootState) => state.sellRequest
   );
 
@@ -100,30 +101,18 @@ const RegisterSalesOrderPage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (type === "date_wise") {
-      console.log("Dispatching fetchSellRequestList");
-      dispatch(fetchSellRequestList({ type, data: "" }) as any);
-    }
-  }, [type, dispatch]);
-
   const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
-
-  useEffect(() => {
-    if (type === "date_wise") {
-      dispatch(fetchSellRequestList({ type, data: "" }) as any);
-    }
-  }, [type, dispatch]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+      {loading && <FullPageLoading />}
       <div className="bg-[#fff]">
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
         <div className="p-[10px]">
-          <Select onValueChange={(value) => setType(value)} defaultValue={type}>
+          <Select onValueChange={(value:string) => setType(value)} defaultValue={type}>
             <SelectTrigger>
               <SelectValue placeholder="Select a filter type" />
             </SelectTrigger>
@@ -194,7 +183,7 @@ const RegisterSalesOrderPage: React.FC = () => {
         <AgGridReact
           loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
-          columnDefs={columnDefs}
+          columnDefs={columnDefs as any}
           defaultColDef={{ filter: true, sortable: true }}
           pagination={true}
           paginationPageSize={10}

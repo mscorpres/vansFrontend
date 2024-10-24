@@ -57,7 +57,7 @@ export function ConfirmCancellationDialog({
     <Dialog open={isDialogVisible} onOpenChange={handleCancel}>
       <DialogContent
         className="min-w-[800px]"
-        onInteractOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e:any) => e.preventDefault()}
       >
         {loading ? (
           <div className="flex items-center justify-center h-full">
