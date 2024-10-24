@@ -66,6 +66,7 @@ import R3 from "./pages/ReportsModule/R3";
 import R6 from "./pages/ReportsModule/R6";
 import ClientLayout from "./layouts/Master/ClientLayout";
 import Hsn from "./pages/masterModule/HSN/Hsn";
+import EditBom from "./pages/masterModule/Bom/EditBom";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -198,6 +199,18 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           {/* <ComponentsLayout> */}
+          <EditBom />
+          {/* </ComponentsLayout> */}
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/bom/edit/:id",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          {/* <ComponentsLayout> */}
           <VendorList />
           {/* </ComponentsLayout> */}
         </MainLayout>
@@ -219,6 +232,30 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/create-po",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <POLayout>
+            <PoCreateTemplate />
+          </POLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/create-po/edit/:id",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <POLayout>
+            <PoCreateTemplate />
+          </POLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/create-po/approve/:id",
   },
 
   {

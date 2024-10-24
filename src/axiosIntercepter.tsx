@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { toast } from "react-toastify";
-
+import { toast as toasts } from "@/components/ui/use-toast";
 const socketLink: string = import.meta.env.VITE_REACT_APP_SOCKET_BASE_URL;
 const imsLink: string = import.meta.env.VITE_REACT_APP_API_BASE_URL;
 
@@ -54,8 +54,12 @@ spigenAxios.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      if (errorData.success !== undefined) {
-        toast.error(errorData.message || "Error occurred.");
+      if (errorData.success === false) {
+        toasts({
+          title: errorData?.message,
+          className: "bg-red-600 text-white items-center",
+        });
+        toast.error(errorData?.message || "Error occurred.");
         return Promise.reject(errorData);
       }
 

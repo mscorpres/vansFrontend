@@ -45,8 +45,90 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
   );
   const [columnDefs] = useState<ColDef[]>([
     {
+      field: "#",
+      headerName: "id",
+      flex: 1,
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter PO ID...",
+        },
+      },
+    },
+    {
       field: "componentPartID",
-      headerName: "PO ID",
+      headerName: "Po Id",
+      flex: 1,
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter PO ID...",
+        },
+      },
+    },
+    {
+      field: "po_components",
+      headerName: "Component Name",
+      flex: 1,
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter Cost Center...",
+        },
+      },
+    },
+    {
+      field: "vendor_part_code",
+      headerName: "	Vendor Component Name / Part No.",
+      flex: 2,
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter Vendor & Narration...",
+        },
+      },
+    },
+    {
+      field: "c_brand",
+      headerName: "Make (Brand)",
+      flex: 1,
+      filter: "agDateColumnFilter",
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter PO Reg. Date...",
+        },
+      },
+    },
+    {
+      field: "ordered_qty",
+      headerName: "Ordered Qty",
+      flex: 1,
+      filter: "agDateColumnFilter",
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter PO Reg. Date...",
+        },
+      },
+    },
+    {
+      field: "pending_qty",
+      headerName: "Pending Qty",
+      flex: 1,
+      filter: "agDateColumnFilter",
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter PO Reg. Date...",
+        },
+      },
+    },
+  ]);
+  const [columnDefsCompleted] = useState<ColDef[]>([
+    {
+      field: "componentPartID",
+      headerName: "Po Id",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -120,37 +202,49 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     //   setRowData(managePoViewComponentList);
     // }
     let response = await execFun(
-      () => fetchViewComponentsOfManage(view.po_transaction),
+      () =>
+        fetchViewComponentsOfManage(
+          view.po_transaction ? view?.po_transaction : view?.po_transaction_code
+        ),
       "fetch"
     );
     console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data?.data.data.map((r, id) => {
-        return { id: id + 1, ...r };
+        return {
+          id: id + 1,
+          vendor_part_code: r.vendor_part_code + "-" + r.vendor_part_desc,
+          ...r,
+        };
       });
+      console.log("arr", arr);
+
       setRowData(arr);
     }
   };
   useEffect(() => {
-    if (view?.po_transaction) {
+    if (view?.po_transaction || view?.po_transaction_code) {
       calltheApi();
     }
   }, [view]);
- 
+
   return (
-    <Sheet open={view.po_transaction} onOpenChange={setView}>
+    <Sheet
+      open={view.po_transaction || view.po_transaction_code}
+      onOpenChange={setView}
+    >
       <SheetContent className="min-w-[100%] p-0">
         <SheetHeader className={modelFixHeaderStyle}>
           <SheetTitle className="text-slate-600">
-            View Components {view.po_transaction}
+            View Components {view.po_transaction || view.po_transaction_code}
           </SheetTitle>
         </SheetHeader>{" "}
-        <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        <div className="ag-theme-quartz h-[calc(100vh-100px)] px-[10px]">
           <AgGridReact
             //   loadingCellRenderer={loadingCellRenderer}
             rowData={rowData}
-            columnDefs={columnDefs}
+            columnDefs={view.po_transaction ? columnDefs : columnDefsCompleted}
             defaultColDef={{ filter: true, sortable: true }}
             pagination={true}
             paginationPageSize={10}

@@ -14,7 +14,11 @@ import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
 import useApi from "@/hooks/useApi";
 import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
-import { fetchManagePOList } from "@/features/client/clientSlice";
+import {
+  cancelPO,
+  fetchManagePOList,
+  printPO,
+} from "@/features/client/clientSlice";
 import { exportDateRange } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
 import ViewCompoents from "./ViewCompoents";
@@ -22,11 +26,13 @@ import POCancel from "./POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./MINPO";
 import { useNavigate } from "react-router-dom";
+import { downloadFunction } from "@/lib/PrintFunctions";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
   setView,
   row,
+  cancelTheSelectedPo,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -48,7 +54,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       </Menu.Item>
       <Menu.Item
         key=" Edit"
-        onClick={() => navigate("/create-po")} // disabled={isDisabled}
+        onClick={() =>
+          navigate(
+            `/create-po/edit/${row?.po_transaction?.replaceAll("/", "_")}`
+          )
+        } // disabled={isDisabled}
       >
         Edit
       </Menu.Item>
@@ -60,7 +70,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       </Menu.Item>
       <Menu.Item
         key=" Print"
-        // onClick={() => setViewBranch(row)} // disabled={isDisabled}
+        onClick={() => cancelTheSelectedPo(row)} // disabled={isDisabled}
       >
         Print
       </Menu.Item>
@@ -126,6 +136,7 @@ const ManagePoPage: React.FC = () => {
           setView={setView}
           setCancel={setCancel}
           row={params.data}
+          cancelTheSelectedPo={cancelTheSelectedPo}
         />
       ),
     },
@@ -194,6 +205,22 @@ const ManagePoPage: React.FC = () => {
       value: "vendorwise",
     },
   ];
+  const cancelTheSelectedPo = async (row: any) => {
+    console.log("row", row);
+    let payload = {
+      poId: row?.po_transaction,
+    };
+    console.log("payload", payload);
+
+    dispatch(printPO({ poid: row?.po_transaction })).then((res: any) => {
+      console.log("res", res);
+      if (res.payload.code == 200) {
+        let { data } = res.payload;
+        downloadFunction(data.buffer, data.filename);
+      }
+    });
+    // setLoading(false);
+  };
   const dispatch = useDispatch<AppDispatch>();
   const getVendorList = async () => {
     // return;
@@ -227,7 +254,6 @@ const ManagePoPage: React.FC = () => {
       floatingFilter: true,
     };
   }, []);
-
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">

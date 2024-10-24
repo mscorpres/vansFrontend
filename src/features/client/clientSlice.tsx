@@ -369,6 +369,89 @@ export const fetchDataPOforMIN = createAsyncThunk<uomPayload, { poid: string }>(
     }
   }
 );
+export const fetchDataPOEdit = createAsyncThunk<uomPayload, { pono: string }>(
+  "/purchaseOrder/fetchData4Update",
+  async ({ pono }) => {
+    try {
+      const response = await spigenAxios.post<uomPayload>(
+        "/purchaseOrder/fetchData4Update",
+        { pono: pono }
+      );
+      console.log("response", response.data);
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const printPO = createAsyncThunk<uomPayload, { poid: string }>(
+  "/poPrint",
+  async ({ poid }) => {
+    try {
+      const response = await spigenAxios.post<uomPayload>("/poPrint", {
+        poid: poid,
+      });
+      console.log("response", response.data);
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+//fetch completed Po
+export const fetchCompletedPo = createAsyncThunk<
+  uomPayload,
+  { data: string; wise: string }
+>("/purchaseOrder/fetchCompletePO", async ({ data, wise }) => {
+  try {
+    const response = await spigenAxios.post<uomPayload>(
+      "/purchaseOrder/fetchCompletePO",
+      {
+        data: data,
+        wise: wise,
+      }
+    );
+    console.log("response", response.data);
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unknown error occurred");
+  }
+});
+//fetch approval Po
+export const fetchneededApprovalPO = createAsyncThunk<
+  uomPayload,
+  { data: string; wise: string }
+>("purchaseOrder/fetchneededApprovalPO", async ({ data, wise }) => {
+  try {
+    const response = await spigenAxios.post<uomPayload>(
+      "purchaseOrder/fetchneededApprovalPO",
+      {
+        data: data,
+        wise: wise,
+      }
+    );
+    console.log("response", response.data);
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unknown error occurred");
+  }
+});
 
 interface ClientState {
   data: any[];
@@ -394,6 +477,7 @@ const initialState: ClientState = {
   managePoViewComponentList: null,
   cancelPO: null,
   poMinList: null,
+  editPoDetails: null,
 };
 
 const clientSlice = createSlice({
@@ -626,6 +710,32 @@ const clientSlice = createSlice({
         state.error =
           action.error.message.msg ||
           "Failed to fetch sales order shipment list";
+      })
+      .addCase(fetchDataPOEdit.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchDataPOEdit.fulfilled, (state, action) => {
+        state.loading = false;
+        state.editPoDetails = action.payload;
+      })
+      .addCase(fetchDataPOEdit.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(printPO.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(printPO.fulfilled, (state, action) => {
+        state.loading = false;
+        state.editPoDetails = action.payload;
+      })
+      .addCase(printPO.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
       });
     //// manage po lsit view
     // .addCase(fetchManagePOVeiwComponentList.pending, (state) => {
