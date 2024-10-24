@@ -2,6 +2,7 @@ import { RowData } from "@/types/SalesInvoiceTypes";
 import { ColDef } from "ag-grid-community";
 
 export const columnDefs: ColDef<RowData>[] = [
+  { headerName: "", valueGetter: "node.rowIndex + 1",maxWidth: 100 },
     { headerName: 'ID', field: 'id', filter: 'agNumberColumnFilter' },
     { headerName: 'Date', field: 'delivery_challan_dt', filter: 'agDateColumnFilter' },
     { headerName: 'Invoice Number', field: 'invoiceNumber', filter: 'agTextColumnFilter' },

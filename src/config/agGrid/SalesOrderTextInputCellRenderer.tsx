@@ -166,7 +166,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
           const componentData = response.payload;
           data["orderQty"] = componentData?.closingQty;
           data["hsnCode"] = componentData?.hsn;
-          data["gstRate"] = componentData?.tax_percent;
+          data["gstRate"] = componentData?.gstrate;
           data["rate"] = componentData?.rate;
           updateData(data);
         }

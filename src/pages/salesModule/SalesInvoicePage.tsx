@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 
 const { RangePicker } = DatePicker;
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 const wises = [
   { label: "Date Wise", value: "datewise" },
   { label: "client", value: "clientwise" },

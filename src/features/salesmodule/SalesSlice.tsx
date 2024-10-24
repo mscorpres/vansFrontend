@@ -85,7 +85,7 @@ const initialState: SellRequestState = {
   error: null,
 };
 interface FetchSellRequestPayload {
-  wise: any;
+  type: any;
   data: string;
 }
 
@@ -93,8 +93,8 @@ interface FetchSellRequestPayload {
 export const fetchSellRequestList = createAsyncThunk<
   ApiResponse<SellRequest[]>,
   FetchSellRequestPayload
->("sellRequest/fetchSellRequestList", async (payload) => {
-  const response = await spigenAxios.post("sellRequest/fetchSellRequestList", payload);
+>("salesOrder/getSaleOrderList", async (payload) => {
+  const response = await spigenAxios.post("salesOrder/getSaleOrderList", payload);
   return response.data;
 });
 

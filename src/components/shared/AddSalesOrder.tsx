@@ -55,7 +55,7 @@ const AddSalesOrder = ({
       orderQty: 1,
       // rate: 50,
       currency: "364907247",
-      // gstRate: 18,
+      gstRate: 0,
       gstType: "local",
       localValue: 0,
       foreignValue: 0,

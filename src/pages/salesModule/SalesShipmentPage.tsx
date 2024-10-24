@@ -23,7 +23,7 @@ import { fetchSalesOrderShipmentList } from "@/features/salesmodule/SalesSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const { RangePicker } = DatePicker;
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 const wises = [
   { label: "Date Wise", value: "datewise" },
   { label: "client", value: "clientwise" },

@@ -28,11 +28,12 @@ import { RootState } from "@/store";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
+import { rangePresets } from "@/General";
 
 const { RangePicker } = DatePicker;
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 const wises = [
-  { label: "Date Wise", value: "DATE" },
+  { label: "Date Wise", value: "date_wise" },
   { label: "SO(s)Wise", value: "SONO" },
 ] as const;
 
@@ -49,7 +50,7 @@ const FormSchema = z.object({
 
 const RegisterSalesOrderPage: React.FC = () => {
   const { toast } = useToast();
-  const [wise, setWise] = useState<string>("DATE");
+  const [type, setType] = useState<string>("date_wise");
   const dispatch = useDispatch();
   const { data: rowData } = useSelector(
     (state: RootState) => state.sellRequest
@@ -63,7 +64,7 @@ const RegisterSalesOrderPage: React.FC = () => {
     const { dateRange, soWise } = formData;
 
     let dataString = "";
-    if (wise === "DATE" && dateRange) {
+    if (type === "date_wise" && dateRange) {
       const startDate = dateRange[0]
         .toLocaleDateString("en-GB")
         .split("/")
@@ -75,53 +76,44 @@ const RegisterSalesOrderPage: React.FC = () => {
         .reverse()
         .join("-");
       dataString = `${startDate}-${endDate}`;
-    } else if (wise === "SONO" && soWise) {
+    } else if (type === "SONO" && soWise) {
       dataString = soWise;
     }
 
     try {
       console.log("Dispatching fetchSellRequestList with:", {
-        wise,
+        type,
         data: dataString,
       });
       const resultAction = await dispatch(
-        fetchSellRequestList({ wise, data: dataString }) as any
+        fetchSellRequestList({ type, data: dataString }) as any
       ).unwrap();
       console.log("Result Action:", resultAction);
-      if (resultAction.success) {
+      if (resultAction.code === 200) {
         toast({
           title: "Register fetched successfully",
           className: "bg-green-600 text-white items-center",
         });
-      } else {
-        toast({
-          title: resultAction.message || "Failed to Create Product",
-          className: "bg-red-600 text-white items-center",
-        });
       }
     } catch (error: any) {
       console.error("Failed to fetch sell requests:", error);
-      toast({
-        title: error.message || "Failed to fetch Product",
-        className: "bg-red-600 text-white items-center",
-      });
     }
   };
 
   useEffect(() => {
-    if (wise === "DATE") {
+    if (type === "date_wise") {
       console.log("Dispatching fetchSellRequestList");
-      dispatch(fetchSellRequestList({ wise, data: "" }) as any);
+      dispatch(fetchSellRequestList({ type, data: "" }) as any);
     }
-  }, [wise, dispatch]);
+  }, [type, dispatch]);
 
   const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
 
   useEffect(() => {
-    if (wise === "DATE") {
-      dispatch(fetchSellRequestList({ wise, data: "" }) as any);
+    if (type === "date_wise") {
+      dispatch(fetchSellRequestList({ type, data: "" }) as any);
     }
-  }, [wise, dispatch]);
+  }, [type, dispatch]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -131,7 +123,7 @@ const RegisterSalesOrderPage: React.FC = () => {
           Filter
         </div>
         <div className="p-[10px]">
-          <Select onValueChange={(value) => setWise(value)} defaultValue={wise}>
+          <Select onValueChange={(value) => setType(value)} defaultValue={type}>
             <SelectTrigger>
               <SelectValue placeholder="Select a filter type" />
             </SelectTrigger>
@@ -151,7 +143,7 @@ const RegisterSalesOrderPage: React.FC = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6 overflow-hidden p-[10px]"
           >
-            {wise === "DATE" ? (
+            {type === "date_wise" ? (
               <FormField
                 control={form.control}
                 name="dateRange"
@@ -167,6 +159,7 @@ const RegisterSalesOrderPage: React.FC = () => {
                             )
                           }
                           format={dateFormat}
+                          presets={rangePresets}
                         />
                       </Space>
                     </FormControl>
@@ -205,6 +198,7 @@ const RegisterSalesOrderPage: React.FC = () => {
           defaultColDef={{ filter: true, sortable: true }}
           pagination={true}
           paginationPageSize={10}
+          suppressCellFocus={true}
           paginationAutoPageSize={true}
         />
       </div>
