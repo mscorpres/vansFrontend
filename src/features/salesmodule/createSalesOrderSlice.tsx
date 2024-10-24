@@ -26,6 +26,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 const initialState: ClientState = {
   clientDetails: null,
   billingAddress: null,
+  updateData: null,
   projectDescription: null,
   countries: null,
   states: null,
@@ -304,6 +305,30 @@ export const fetchCustomerBranches = createAsyncThunk<
   }
 });
 
+export const fetchDataForUpdate = createAsyncThunk(
+  "client/fetchData",
+  async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
+    try {
+      const response = await spigenAxios.post<any>(
+        "/salesOrder/fetchData4Update",
+        { so_id: so_id }
+      );
+
+      if (!response.data) {
+        throw new Error("No data received");
+      }
+      // Return the entire response as expected by the fulfilled case
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle error using rejectWithValue
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 export const fetchBranchDetail = createAsyncThunk<
   ComponentDetail[], // Expected return type
   { client: string } // Argument type
@@ -342,6 +367,18 @@ const clientSlice = createSlice({
         state.clientDetails = action.payload;
       })
       .addCase(fetchClientDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch client details";
+      })
+      .addCase(fetchDataForUpdate.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchDataForUpdate.fulfilled, (state, action) => {
+        state.loading = false;
+        state.clientDetails = action.payload;
+      })
+      .addCase(fetchDataForUpdate.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch client details";
       })

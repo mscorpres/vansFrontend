@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 interface ConfirmationModalProps {
   open: boolean;
   onClose: (confirmed: boolean) => void;
+  onOkay: () => void;
   title: string;
   description: string;
   submitText?: string;

@@ -137,6 +137,7 @@ export interface ComponentDetailResponse {
 export interface ClientState {
   clientDetails: Client | null;
   billingAddress: BillingAddress | null;
+  updateData: any;
   projectDescription: ProjectDescription | null;
   billingAddressList: BillingAddressListItem[] | null;
   clientAddressDetail: ClientAddressDetail | null;
