@@ -20,10 +20,12 @@ import { AppDispatch } from "@/store";
 
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { createSellRequest } from "@/features/salesmodule/SalesSlice";
-import { Checkbox, Form } from "antd";
+import { App, Checkbox, Form } from "antd";
 import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import RejectModal from "@/components/shared/RejectModal";
+import { rejectPo } from "@/features/client/clientSlice";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
 // }
@@ -34,6 +36,11 @@ interface Props {
   selectedVendor: string;
   setFormVal: [];
   formVal: [];
+  rowData: [];
+  setRowData: [];
+  isApprove: [];
+  setIsApprove: [];
+  params: string;
 }
 // const AddPO = ({
 //   setTab,
@@ -53,12 +60,19 @@ const AddPO: React.FC<Props> = ({
   selectedVendor,
   setFormVal,
   formVal,
+  rowData,
+  setRowData,
+  isApprove,
+  setIsApprove,
+  params,
 }) => {
-  const [rowData, setRowData] = useState<RowData[]>([]);
+  // const [rowData, setRowData] = useState<RowData[]>([]);
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
+  const [rejectText, setRejectText] = useState("");
   const [resetModel, setResetModel] = useState<boolean>(false);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+  const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
   const [taxDetails, setTaxDetails] = useState([]);
   const [removingList, setRemovingList] = useState([]);
   const [search, setSearch] = useState("");
@@ -83,7 +97,7 @@ const AddPO: React.FC<Props> = ({
   let clientAdd = form.getFieldValue("address");
   let clientGst = form.getFieldValue("vendorGst");
   let vendorNameis = form.getFieldValue("vendorName");
-  console.log("address", clientAdd);
+  console.log("address", clientAdd, clientGst, vendorNameis);
 
   const addNewRow = () => {
     const newRow = {
@@ -168,7 +182,6 @@ const AddPO: React.FC<Props> = ({
   }, []);
 
   const handleSubmit = async () => {
-
     let arr = rowData;
     let payload = {
       vendorname: formVal.vendorName.value,
@@ -363,98 +376,93 @@ const AddPO: React.FC<Props> = ({
     },
   ];
   console.log("rowData", rowData);
+  const handleReject = () => {
+    console.log("rejected", params, rejectText);
+    dispatch(
+      rejectPo({ poid: params?.id?.replaceAll("_", "/"), remark: rejectText })
+    ).then((response: any) => {
+      console.log("resp", response);
+      if (response.payload.success == "200") {
+        setShowRejectConfirm(true);
+      }
+    });
+  };
   useEffect(() => {
-    let singleArr = rowData;
-    const values = singleArr?.reduce(
-      (partialSum, a) => partialSum + +Number(a?.localValue).toFixed(2),
-      0
-    );
-    const value = +Number(values).toFixed(2);
-    // const freights = mainArrs?.reduce(
-    //   (partialSum, a) => partialSum + +Number(a?.freightAmount),
-    //   0
-    // );
-    // const freight = +Number(freights).toFixed(2);
-    const cgsts = singleArr?.reduce(
-      (partialSum, a) => partialSum + +Number(a?.cgst).toFixed(2),
-      0
-    );
-    const cgst = +Number(cgsts).toFixed(2);
-    const sgsts = singleArr?.reduce(
-      (partialSum, a) => partialSum + +Number(a?.sgst).toFixed(2),
-      0
-    );
-    const sgst = +Number(sgsts).toFixed(2);
-    // console.log("sgst", sgst);
-    const igsts = singleArr?.reduce(
-      (partialSum, a) => partialSum + +Number(a?.igst).toFixed(2),
-      0
-    );
+    const calculateTaxDetails = () => {
+      let singleArr = rowData;
+      const values = singleArr?.reduce(
+        (partialSum, a) => partialSum + +Number(a?.localValue).toFixed(2),
+        0
+      );
+      const value = +Number(values).toFixed(2);
+      // const freights = mainArrs?.reduce(
+      //   (partialSum, a) => partialSum + +Number(a?.freightAmount),
+      //   0
+      // );
+      // const freight = +Number(freights).toFixed(2);
+      const cgsts = singleArr?.reduce(
+        (partialSum, a) => partialSum + +Number(a?.cgst).toFixed(2),
+        0
+      );
+      const cgst = +Number(cgsts).toFixed(2);
+      const sgsts = singleArr?.reduce(
+        (partialSum, a) => partialSum + +Number(a?.sgst).toFixed(2),
+        0
+      );
+      const sgst = +Number(sgsts).toFixed(2);
+      // console.log("sgst", sgst);
+      const igsts = singleArr?.reduce(
+        (partialSum, a) => partialSum + +Number(a?.igst).toFixed(2),
+        0
+      );
 
-    const igst = +Number(igsts).toFixed(2);
-    // console.log("mainArrVenAm", mainArrVenAm);
-    // setmainArrs(mainArrs);
-    // console.log("mainArrs", mainArrs);
-    // let vendorAmounts;
-    // vendorAmounts = mainArrs?.reduce(
-    //   (partialSum, a) => partialSum + (a?.venAmmount || 0),
-    //   0
-    // );
-    // // console.log("vendorAmount", vendorAmounts);
-    // var vendorAmount = vendorAmounts;
-    // setMAVenAmValue(vendorAmount);
+      const igst = +Number(igsts).toFixed(2);
 
-    // const tds = singleArr?.reduce(
-    //   (a, b) => a + +Number(b?.tdsAmount ?? 0).toFixed(2),
-    //   0
-    // );
+      const arr = [
+        {
+          title: "Value",
+          description: value,
+        },
+        // {
+        //   title: "Freight",
+        //   description: freight,
+        // },
+        {
+          title: "CGST",
+          description: cgst,
+        },
+        {
+          title: "SGST",
+          description: sgst,
+        },
+        {
+          title: "IGST",
+          description: igst,
+        },
+        // { title: "TDS", description: tds },
+        // {
+        //   title: "Round Off",
+        //   description:
+        //     roundOffSign.toString() + [Number(roundOffValue).toFixed(2)],
+        // },
+        // {
+        //   title: "Vendor Amount",
+        //   description: vendorAmount,
+        // },
+      ];
+      setTaxDetails(arr);
+      console.log("arr", arr);
+      console.log("Tax Details:", arr);
+    };
 
-    // if (roundOffSign === "+") {
-    //   vendorAmounts = vendorAmount + +Number(roundOffValue).toFixed(2);
-    //   vendorAmount = +Number(vendorAmounts).toFixed(2);
-    // }
-    // if (roundOffSign === "-") {
-    //   vendorAmounts -= +Number(roundOffValue).toFixed(2);
-    //   vendorAmount = +Number(vendorAmounts).toFixed(2);
-    // }
+    // Initial calculation
+    calculateTaxDetails();
 
-    // console.log("my single arr", singleArr);
-    // setmainArrs(singleArr);
+    // Set interval to recalculate every 5 seconds (5000 ms)
+    const intervalId = setInterval(calculateTaxDetails, 5000);
 
-    const arr = [
-      {
-        title: "Value",
-        description: value,
-      },
-      // {
-      //   title: "Freight",
-      //   description: freight,
-      // },
-      {
-        title: "CGST",
-        description: cgst,
-      },
-      {
-        title: "SGST",
-        description: sgst,
-      },
-      {
-        title: "IGST",
-        description: igst,
-      },
-      // { title: "TDS", description: tds },
-      // {
-      //   title: "Round Off",
-      //   description:
-      //     roundOffSign.toString() + [Number(roundOffValue).toFixed(2)],
-      // },
-      // {
-      //   title: "Vendor Amount",
-      //   description: vendorAmount,
-      // },
-    ];
-    setTaxDetails(arr);
-    console.log("arr", arr);
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId);
   }, [rowData]);
   return (
     <Wrapper>
@@ -470,11 +478,11 @@ const AddPO: React.FC<Props> = ({
             <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
               {/* //detais of client */}
               <h3 className="font-[500]">Name</h3>
-              {/* <p className="text-[14px]">{vendorNameis}</p> */}
+              <p className="text-[14px]">{vendorNameis?.label}</p>
               <h3 className="font-[500]">Address</h3>
-              {/* <p className="text-[14px]">{vendorNameis}</p> */}
+              <p className="text-[14px]">{clientAdd}</p>
               <h3 className="font-[500]">GSTIN</h3>
-              {/* <p className="text-[14px]">{clientGst}</p> */}
+              <p className="text-[14px]">{clientGst}</p>
             </CardContent>
           </Card>
           <Card className="rounded-sm shadow-sm shadow-slate-500">
@@ -564,7 +572,7 @@ const AddPO: React.FC<Props> = ({
             >
               <Trash2 />
             </Button> */}
-            <div className="flex items-center gap-[20px]">
+            {/* <div className="flex items-center gap-[20px]">
               <Button
                 onClick={onBtExport}
                 className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
@@ -579,7 +587,7 @@ const AddPO: React.FC<Props> = ({
                 <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel
                 Here
               </Button>
-            </div>
+            </div> */}
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
             <AgGridReact
@@ -599,28 +607,61 @@ const AddPO: React.FC<Props> = ({
           </div>
         </div>
       </div>
+      {/* <ConfirmationModal
+        open={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onOkay={handleSubmit}
+        okayText={isApprove ? "Approve" : "Submit"}
+        title="Confirm Submit!"
+        description={`Are you sure to ${
+          isApprove ? "Approve" : "Submit"
+        } details of all components of this Purchase Order?`}
+        // description="Are you sure to submit details of all components of this Purchase Order?"
+      /> */}
       <ConfirmationModal
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}
         onOkay={handleSubmit}
+        submitText={isApprove ? "Approve" : "Submit"}
         title="Confirm Submit!"
-        description="Are you sure to submit details of all components of this Purchase Order?"
+        description={`Are you sure to ${
+          isApprove ? "approve" : "submit"
+        } details of all components of this Purchase Order?`}
+      />
+      <RejectModal
+        open={showRejectConfirm}
+        onClose={() => setShowRejectConfirm(false)}
+        onOkay={handleReject}
+        setRejectText={setRejectText}
+        // submitText={isApprove ? "Reject" : "Submit"}
+        title="Confirm Submit!"
+        description={`Are you sure to ${
+          isApprove ? "reject" : "submit"
+        } details of all components of this Purchase Order?`}
+        // description={`Are you sure to ${
+        //   isApprove ? "reject" : "submit"
+        // } details of all components of this Purchase Order?`}
       />
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-        <Button className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]">
-          Reset
-        </Button>
         <Button
           className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setTab("create")}
         >
           Back
+        </Button>{" "}
+        <Button
+          className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+          onClick={() =>
+            isApprove ? setShowRejectConfirm(true) : setRowData([])
+          }
+        >
+          {isApprove ? "Reject" : "Reset"}
         </Button>
         <Button
           className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setShowConfirmation(true)}
         >
-          Submit
+          {isApprove ? "Approve" : "Submit"}
         </Button>
       </div>
     </Wrapper>

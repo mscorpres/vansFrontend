@@ -12,7 +12,12 @@ import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 
-const RejectModal: React.FC<Props> = ({ open, onClose, onOkay }) => {
+const RejectModal: React.FC<Props> = ({
+  open,
+  onClose,
+  onOkay,
+  setRejectText,
+}) => {
   // const { cancelShipment, setCancelShipment } = uiState;
   console.log("V", open);
 
@@ -34,7 +39,10 @@ const RejectModal: React.FC<Props> = ({ open, onClose, onOkay }) => {
           </div>
           <div>
             <Label className={LableStyle}>Remark</Label>
-            <Textarea className={InputStyle} />
+            <Textarea
+              onChange={(e) => setRejectText(e.target.value)}
+              className={InputStyle}
+            />
           </div>
         </div>
         <div className="flex items-center gap-[10px] justify-end mt-[10px]">
