@@ -26,7 +26,7 @@ import POCancel from "./POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./MINPO";
 import { useNavigate } from "react-router-dom";
-import { downloadFunction } from "@/lib/PrintFunctions";
+import { downloadFunction } from "@/components/shared/PrintFunctions";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,

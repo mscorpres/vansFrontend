@@ -29,7 +29,7 @@ import POCancel from "./ProcurementModule/ManagePO/POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { useNavigate } from "react-router-dom";
-import { downloadFunction } from "@/lib/PrintFunctions";
+import { downloadFunction } from "@/components/shared/PrintFunctions";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
