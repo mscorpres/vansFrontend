@@ -7,7 +7,7 @@ import { colourOptions } from "@/data";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Badge } from "@/components/ui/badge";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import Select from "react-select";
 import { transformOptionData } from "@/helper/transform";
@@ -57,12 +57,6 @@ const CreatePoPage: React.FC<Props> = ({
     vendorBillingList,
     vendorBillingDetails,
   } = useSelector((state: RootState) => state.client);
-  // const selectedVendor = Form.useWatch("vendorName", form);
-  const selBranch = Form.useWatch("branch", form);
-  const selCostCenter = Form.useWatch("costCenter", form);
-  const selShipping = Form.useWatch("shipId", form);
-  const selBilling = Form.useWatch("billingId", form);
-
   const poTypeOptions = [
     {
       label: "New",
@@ -80,6 +74,17 @@ const CreatePoPage: React.FC<Props> = ({
     },
   ];
 
+  // const selectedVendor = Form.useWatch("vendorName", form);
+  //find in form
+  const selBranch = Form.useWatch("branch", form);
+  const selCostCenter = Form.useWatch("costCenter", form);
+  const selShipping = Form.useWatch("shipId", form);
+  const selBilling = Form.useWatch("billingId", form);
+
+  const params = useParams();
+  console.log("params", params);
+
+  //
   const getValues = async () => {
     let valuesOfFrom = await form.validateFields();
     setTab("add");
@@ -94,7 +99,6 @@ const CreatePoPage: React.FC<Props> = ({
   }, [selectedVendor]);
 
   useEffect(() => {
-
     if (selectedVendor && selBranch) {
       dispatch(
         fetchVendorAddressDetails({
@@ -106,7 +110,6 @@ const CreatePoPage: React.FC<Props> = ({
   }, [selectedVendor, selBranch]);
   useEffect(() => {
     if (searchData) {
-
       dispatch(listOfCostCenter({ search: searchData }));
     }
   }, [searchData]);
@@ -122,6 +125,10 @@ const CreatePoPage: React.FC<Props> = ({
       );
     }
   }, [selShipping]);
+  useEffect(() => {
+    if (params) {
+    }
+  }, [params]);
   ///setting details from the shipping details
   useEffect(() => {
     if (shippingPODetails) {
@@ -148,7 +155,7 @@ const CreatePoPage: React.FC<Props> = ({
       // form.setFieldValue("vendorGst", arr?.gstid);
       // form.setFieldValue("address", arr?.address);
     }
-  }, [selBilling]);;
+  }, [selBilling]);
 
   useEffect(() => {
     if (vendorBillingDetails) {
@@ -193,6 +200,7 @@ const CreatePoPage: React.FC<Props> = ({
                       isSearchable={true}
                       name="color"
                       options={poTypeOptions}
+                      value={poTypeOptions[0]}
                     />
                     {/* <p>error message</p> */}
                   </Form.Item>
@@ -381,6 +389,7 @@ const CreatePoPage: React.FC<Props> = ({
                     //isLoading={true}
                     isClearable={true}
                     isSearchable={true}
+                    // labe
                     name="color"
                     options={transformOptionData(vendorBillingList)}
                     onChange={(e) => form.setFieldValue("billingId", e)}
@@ -498,7 +507,7 @@ const CreatePoPage: React.FC<Props> = ({
         <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300 text-white">
           <Button
             onClick={getValues}
-            className={`${primartButtonStyle} flex gap-[10px]`}
+            className={`${primartButtonStyle} flex gap-[10px] text-white`}
             type="submit"
           >
             Next
