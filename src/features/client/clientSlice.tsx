@@ -109,7 +109,7 @@ export const listOfBillToList = createAsyncThunk<
         cost_center: cost_center,
       }
     );
-    console.log("response", response.data);
+    // console.log("response", response.data);
 
     return response.data;
   } catch (error) {
@@ -302,7 +302,6 @@ export const fetchManagePOList = createAsyncThunk<
       "/purchaseOrder/fetchPendingData4PO",
       { data: data, wise: wise }
     );
-    console.log("response", response.data);
 
     return response.data.response.data;
   } catch (error) {
@@ -321,7 +320,6 @@ export const fetchManagePOVeiwComponentList = createAsyncThunk<
       "/purchaseOrder/fetchComponentList4PO",
       { poid: poid }
     );
-    console.log("response", response.data);
 
     return response.data.response.data;
   } catch (error) {
@@ -340,7 +338,6 @@ export const cancelFetchedPO = createAsyncThunk<
       "/purchaseOrder/CancelPO",
       { purchase_order: poid, remark: remark }
     );
-    console.log("response", response.data);
 
     return response.data.response.data;
   } catch (error) {
@@ -358,7 +355,6 @@ export const fetchDataPOforMIN = createAsyncThunk<uomPayload, { poid: string }>(
         "/purchaseOrder/fetchData4MIN",
         { pono: poid }
       );
-      console.log("response", response.data);
 
       return response.data;
     } catch (error) {
@@ -377,7 +373,6 @@ export const fetchDataPOEdit = createAsyncThunk<uomPayload, { pono: string }>(
         "/purchaseOrder/fetchData4Update",
         { pono: pono }
       );
-      console.log("response", response.data);
 
       return response.data;
     } catch (error) {
@@ -395,9 +390,26 @@ export const printPO = createAsyncThunk<uomPayload, { poid: string }>(
       const response = await spigenAxios.post<uomPayload>("/poPrint", {
         poid: poid,
       });
-      console.log("response", response.data);
 
       return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const fetchCurrency = createAsyncThunk<uomPayload>(
+  "/backend/fetchAllCurrecy",
+  async () => {
+    try {
+      const response = await spigenAxios.get<uomPayload>(
+        "/backend/fetchAllCurrecy"
+      );
+      // console.log("response-->", response?.data?.data);
+
+      return response.data.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -419,7 +431,7 @@ export const fetchCompletedPo = createAsyncThunk<
         wise: wise,
       }
     );
-    console.log("response", response.data);
+    console.log("response.data.data", response.data);
 
     return response.data;
   } catch (error) {
@@ -442,7 +454,7 @@ export const fetchneededApprovalPO = createAsyncThunk<
         wise: wise,
       }
     );
-    console.log("response", response.data);
+    // console.log("response", response.data);
 
     return response.data;
   } catch (error) {
@@ -453,18 +465,38 @@ export const fetchneededApprovalPO = createAsyncThunk<
   }
 });
 //rejectpo
-export const rejectPo = createAsyncThunk<uomPayload, { poid: string; remark: string }>(
-  "/purchaseOrder/rejectPo",
-  async ({ poid, remark }) => {
+export const rejectPo = createAsyncThunk<
+  uomPayload,
+  { poid: string; remark: string }
+>("/purchaseOrder/rejectPo", async ({ poid, remark }) => {
+  try {
+    const response = await spigenAxios.post<uomPayload>(
+      "/purchaseOrder/rejectPo",
+      {
+        poid: poid,
+        remark: remark,
+      }
+    );
+    // console.log("response", response.data);
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unknown error occurred");
+  }
+});
+//update Po
+export const updatePo = createAsyncThunk<uomPayload, payload>(
+  "/purchaseOrder/updateData4Update",
+  async (payload) => {
     try {
       const response = await spigenAxios.post<uomPayload>(
-        "/purchaseOrder/rejectPo",
-        {
-          poid: poid,
-          remark: remark,
-        }
+        "/purchaseOrder/updateData4Update",
+        payload
       );
-      console.log("response", response.data);
+      // console.log("response", response.data);
 
       return response.data;
     } catch (error) {
@@ -501,6 +533,7 @@ const initialState: ClientState = {
   cancelPO: null,
   poMinList: null,
   editPoDetails: null,
+  currencyList: null,
 };
 
 const clientSlice = createSlice({
@@ -743,6 +776,19 @@ const clientSlice = createSlice({
         state.editPoDetails = action.payload;
       })
       .addCase(fetchDataPOEdit.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(fetchCurrency.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCurrency.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currencyList = action.payload;
+      })
+      .addCase(fetchCurrency.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch Cost Center List";

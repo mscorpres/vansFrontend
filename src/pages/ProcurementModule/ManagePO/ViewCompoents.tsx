@@ -29,7 +29,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchManagePOVeiwComponentList } from "@/features/client/clientSlice";
 import { fetchViewComponentsOfManage } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
-const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
+import FullPageLoading from "@/components/shared/FullPageLoading";
+const ViewCompoents: React.FC<Props> = ({ view, setView, loading }) => {
   console.log("view", view);
   const [rowData, setRowData] = useState([]);
   const dispatch = useDispatch<AppDispatch>();
@@ -234,6 +235,8 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       open={view.po_transaction || view.po_transaction_code}
       onOpenChange={setView}
     >
+      {" "}
+      {loading == true && <FullPageLoading />}
       <SheetContent className="min-w-[100%] p-0">
         <SheetHeader className={modelFixHeaderStyle}>
           <SheetTitle className="text-slate-600">

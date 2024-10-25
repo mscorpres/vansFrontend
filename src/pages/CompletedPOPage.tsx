@@ -31,6 +31,9 @@ import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { useNavigate } from "react-router-dom";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import { transformOptionData } from "@/helper/transform";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -122,6 +125,7 @@ const CompletedPOPage: React.FC = () => {
       field: "po_transaction_code",
       headerName: "PO ID",
       flex: 1,
+      cellRenderer: CopyCellRenderer,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -133,6 +137,7 @@ const CompletedPOPage: React.FC = () => {
       field: "cost_center",
       headerName: "Cost Center",
       flex: 1,
+      cellRenderer: CopyCellRenderer,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -224,10 +229,17 @@ const CompletedPOPage: React.FC = () => {
   };
   const fetchManageList = async () => {
     const values = await form.validateFields();
-    let date = exportDateRangespace(values.data);
     console.log("date", date);
+    let datas;
+    if (values.wise.value === "datewise") {
+      datas = exportDateRangespace(values.data);
+    } else if (values.wise.value === "vendorwise") {
+      datas = values.data.value;
+    } else {
+      datas = values.data;
+    }
 
-    let payload = { data: date, wise: values.wise.value };
+    let payload = { data: datas, wise: values.wise.value };
     console.log("payload", payload);
     setLoading(true);
     dispatch(fetchCompletedPo(payload)).then((res: any) => {
@@ -305,20 +317,29 @@ const CompletedPOPage: React.FC = () => {
             </Form.Item>
           ) : selectedwise?.value === "vendorwise" ? (
             <Form.Item className="w-full" name="data">
-              <Input placeholder="vendor number" />
+              <ReusableAsyncSelect
+                placeholder="Vendor Name"
+                endpoint="/backend/vendorList"
+                transform={transformOptionData}
+                // onChange={(e) => form.setFieldValue("vendorName", e)}
+                // value={selectedCustomer}
+                fetchOptionWith="payload"
+              />
             </Form.Item>
           ) : (
             <Form.Item className="w-full" name="data">
               <Input placeholder="PO number" />
             </Form.Item>
-          )}
-          <Button
-            type="submit"
-            className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            onClick={fetchManageList}
-          >
-            Search
-          </Button>{" "}
+          )}{" "}
+          <div className="w-full flex justify-end">
+            <Button
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={fetchManageList}
+            >
+              Search
+            </Button>{" "}
+          </div>
           {/* <CustomTooltip
               message="Add Address"
               side="top"

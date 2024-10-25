@@ -25,7 +25,11 @@ import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import RejectModal from "@/components/shared/RejectModal";
-import { rejectPo } from "@/features/client/clientSlice";
+import {
+  fetchCurrency,
+  rejectPo,
+  updatePo,
+} from "@/features/client/clientSlice";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
 // }
@@ -80,6 +84,7 @@ const AddPO: React.FC<Props> = ({
   const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
+  const { currencyList } = useSelector((state: RootState) => state.client);
 
   const { execFun, loading: loading1 } = useApi();
   const gridRef = useRef<AgGridReact<RowData>>(null);
@@ -120,7 +125,11 @@ const AddPO: React.FC<Props> = ({
       hsnCode: "",
       isNew: true,
     };
-    setRowData((prevData) => [...prevData, newRow]);
+    // setRowData((prevData) => [...prevData, newRow]);
+    setRowData((prevData) => [
+      ...(Array.isArray(prevData) ? prevData : []),
+      newRow,
+    ]);
   };
   const removeRows = () => {
     console.log("removing rows", rowData);
@@ -161,6 +170,7 @@ const AddPO: React.FC<Props> = ({
           search={search}
           onSearch={handleSearch}
           vendorCode={selectedVendor}
+          currencyList={currencyList}
           // componentDetails={hsnlist}
         />
       ),
@@ -173,16 +183,22 @@ const AddPO: React.FC<Props> = ({
   const onBtExport = useCallback(() => {
     gridRef.current!.api.exportDataAsExcel();
   }, []);
+  // console.log("currencyList", currencyList);
 
   // useEffect(() => {
   //   addNewRow();
   // }, []);
   useEffect(() => {
     dispatch(fetchComponentDetail({ search: "" }));
+    dispatch(fetchCurrency());
   }, []);
 
   const handleSubmit = async () => {
+    // console.log("isapprove", isApprove);
+    // return;
     let arr = rowData;
+    // console.log("arr", arr);
+
     let payload = {
       vendorname: formVal.vendorName.value,
       vendortype: "v01",
@@ -204,10 +220,10 @@ const AddPO: React.FC<Props> = ({
       original_po: null,
       currency: ["364907247"],
       exchange: ["1"],
-      component: arr.map((r) => r.procurementMaterial),
+      component: arr.map((r) => r?.procurementMaterial),
       qty: arr.map((r) => r.orderQty),
       rate: arr.map((r) => r.rate),
-      duedate: arr.map((r) => r.dueDate),
+      duedate: arr.map((r) => formattedDate(r.dueDate)),
       hsncode: arr.map((r) => r.hsnCode),
       gsttype: arr.map((r) => r.gstType),
       gstrate: arr.map((r) => r.gstRate),
@@ -220,7 +236,14 @@ const AddPO: React.FC<Props> = ({
 
     // return;
     try {
-      dispatch(createSellRequest(payload));
+      console.log("isApprove", isApprove);
+
+      if (isApprove == "edit") {
+        dispatch(updatePo(payload));
+      } else if (isApprove == "approve") {
+      } else {
+        dispatch(createSellRequest(payload));
+      }
       // setTab("create");
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -232,7 +255,7 @@ const AddPO: React.FC<Props> = ({
       () => getComponentsByNameAndNo(search),
       "fetch"
     );
-    console.log("response---", response);
+    // console.log("response---", response);
     if (response.status === "sucess") {
       let arr = response.data.map((r) => {
         return {
@@ -241,7 +264,7 @@ const AddPO: React.FC<Props> = ({
         };
       });
       setAsyncOptions(arr);
-      console.log("arr", arr);
+      // console.log("arr", arr);
     }
   };
   const columnDefs = [
@@ -387,6 +410,12 @@ const AddPO: React.FC<Props> = ({
       }
     });
   };
+  // const formattedDate = dueDate.map((date) => {});
+  const formattedDate = (date) => {
+    const [year, month, day] = date.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
   useEffect(() => {
     const calculateTaxDetails = () => {
       let singleArr = rowData;
