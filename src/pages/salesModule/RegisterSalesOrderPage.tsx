@@ -30,6 +30,7 @@ import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
 import { rangePresets } from "@/General";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import moment from "moment";
 
 const { RangePicker } = DatePicker;
 const dateFormat = "DD/MM/YYYY";
@@ -53,7 +54,7 @@ const RegisterSalesOrderPage: React.FC = () => {
   const { toast } = useToast();
   const [type, setType] = useState<string>("date_wise");
   const dispatch = useDispatch();
-  const { data: rowData,loading } = useSelector(
+  const { data: rowData, loading } = useSelector(
     (state: RootState) => state.sellRequest
   );
 
@@ -66,26 +67,14 @@ const RegisterSalesOrderPage: React.FC = () => {
 
     let dataString = "";
     if (type === "date_wise" && dateRange) {
-      const startDate = dateRange[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = dateRange[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
+      const startDate = moment(dateRange[0]).format("DD-MM-YYYY");
+      const endDate = moment(dateRange[1]).format("DD-MM-YYYY");
       dataString = `${startDate}-${endDate}`;
     } else if (type === "SONO" && soWise) {
       dataString = soWise;
     }
 
     try {
-      console.log("Dispatching fetchSellRequestList with:", {
-        type,
-        data: dataString,
-      });
       const resultAction = await dispatch(
         fetchSellRequestList({ type, data: dataString }) as any
       ).unwrap();
@@ -112,7 +101,10 @@ const RegisterSalesOrderPage: React.FC = () => {
           Filter
         </div>
         <div className="p-[10px]">
-          <Select onValueChange={(value:string) => setType(value)} defaultValue={type}>
+          <Select
+            onValueChange={(value: string) => setType(value)}
+            defaultValue={type}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select a filter type" />
             </SelectTrigger>

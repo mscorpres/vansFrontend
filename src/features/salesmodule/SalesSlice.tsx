@@ -385,5 +385,6 @@ const sellRequestSlice = createSlice({
   },
 });
 
-
+export const { setDateRange, } =
+  sellRequestSlice.actions;
 export default sellRequestSlice.reducer;

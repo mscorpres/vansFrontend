@@ -67,6 +67,7 @@ import R6 from "./pages/ReportsModule/R6";
 import ClientLayout from "./layouts/Master/ClientLayout";
 import Hsn from "./pages/masterModule/HSN/Hsn";
 import EditBom from "./pages/masterModule/Bom/EditBom";
+import CreateEwayBill from "@/config/agGrid/invoiceModule/CreateEwayBill";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -565,6 +566,22 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/sales/order/invoice",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <CreateEwayBill />
+      </Protected>
+    ),
+    path: "/salesOrder/e-way/:id",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <CreateEwayBill />
+      </Protected>
+    ),
+    path: "/salesOrder/e-inv/:id",
   },
   {
     element: (
