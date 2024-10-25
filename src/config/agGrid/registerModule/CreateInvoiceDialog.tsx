@@ -35,7 +35,7 @@ export function CreateInvoiceDialog({
     <Dialog open={isDialogVisible} onOpenChange={handleCancel}>
       <DialogContent
         className="min-w-[600px]"
-        onInteractOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e:any) => e.preventDefault()}
       >
         {loading ? (
           <div className="flex items-center justify-center h-full">
@@ -50,51 +50,7 @@ export function CreateInvoiceDialog({
               <p className="pb-5 text-[18px]">
                 Are you sure you want to create an invoice for SO {row.req_id}?
               </p>
-              <Form.Item
-                name="nos_of_boxes"
-                label="Number of Boxes"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter the number of boxes!",
-                  },
-                ]}
-              >
-                <Input className={InputStyle} />
-              </Form.Item>
-              <Form.Item
-                name="invoice_no"
-                label="Invoice Number"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter the invoice number!",
-                  },
-                ]}
-              >
-                <Input className={InputStyle} />
-              </Form.Item>
-              <Form.Item
-                name="invoice_date"
-                label="Date"
-                rules={[
-                  { required: true, message: "Please enter the invoice date!" },
-                ]}
-              >
-                <DatePicker
-                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 py-[13px] w-[100%] hover:border-neutral-700"
-                  // className="py-[13px] w-[550px]"
-                  format="DD-MM-YYYY"
-                  onChange={(date) => {
-                    if (date) {
-                      const dateFormat = moment(date as any).format(
-                        "DD-MM-YYYY"
-                      );
-                      setDate(dateFormat);
-                    }
-                  }}
-                />
-              </Form.Item>
+
               <Form.Item name="remark" label="Remark">
                 <Input.TextArea
                   rows={4}

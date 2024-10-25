@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { spigenAxios } from "@/axiosIntercepter";
+import { toast } from "@/components/ui/use-toast";
 
 
 interface SellRequestPayload {
@@ -44,6 +45,30 @@ export interface ApiResponse<T> {
   message?: string | null;
 }
 
+interface materialListPayload {
+  code: number;
+  status: string;
+  data: materialListItemData[];
+}
+
+interface materialListItemData {
+  so_id: string;
+  item: string;
+  itemName: string;
+  itemPartNo: string;
+  itemSpecification: string;
+  qty: string;
+  rate: string;
+  uom: string;
+  gstRate: string;
+  cgstRate: string;
+  sgstRate: string;
+  igstRate: string;
+  dueDate: string; // Consider using Date type if you will parse it
+  hsnCode: string;
+  itemRemark: string;
+}
+
 
 export const createSellRequest = createAsyncThunk<
   ApiResponse<any>,
@@ -75,12 +100,16 @@ interface SellRequest {
 
 interface SellRequestState {
   data: SellRequest[];
+  dateRange: string;
+  sellRequestList: SellRequest[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: SellRequestState = {
   data: [],
+  dateRange: "",
+  sellRequestList: [],
   loading: false,
   error: null,
 };
@@ -89,6 +118,10 @@ interface FetchSellRequestPayload {
   data: string;
 }
 
+interface CancelPayload {
+  cancelReason: string;
+  so_id: string;
+}
 
 export const fetchSellRequestList = createAsyncThunk<
   ApiResponse<SellRequest[]>,
@@ -130,14 +163,118 @@ export const approveSo = createAsyncThunk(
   }
 );
 
+export const cancelSalesOrder = createAsyncThunk(
+  "client/cancelSalesOrder",
+  async (payload: CancelPayload, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/cancelSO",
+        payload
+      )) as any;
 
+      if (response?.data?.code==200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
 
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
 
+export const fetchMaterialList = createAsyncThunk(
+  "client/soMaterialList",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/soMaterialList",
+        payload
+      )) as any;
+
+      if (response?.data?.code==200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+export const createInvoice = createAsyncThunk(
+  "client/createInvoice",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/createInvoice",
+        payload
+      )) as any;
+
+      if (response?.data?.code==200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+export const printSellOrder = createAsyncThunk(
+  "client/printSellOrder",
+  async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
+    try {
+      const response = await spigenAxios.post<any>(
+        "/salesOrder/printSalesOrder",
+        { so_id: so_id }
+      );
+
+      if (!response.data) {
+        throw new Error("No data received");
+      }
+      // Return the entire response as expected by the fulfilled case
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle error using rejectWithValue
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
 
 const sellRequestSlice = createSlice({
   name: "sellRequest",
   initialState,
-  reducers: {},
+  reducers: {
+    setDateRange(state, action: any) {
+      state.dateRange = action.payload;
+    },
+    // setWise(state, action: any) {
+    //   state.wise = action.payload;
+    // },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createSellRequest.pending, (state) => {
@@ -162,7 +299,52 @@ const sellRequestSlice = createSlice({
       .addCase(approveSo.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to create sell request";
-      })      
+      })  
+      .addCase(cancelSalesOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cancelSalesOrder.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(cancelSalesOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to cancel sell request";
+      })    
+      .addCase(fetchMaterialList.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMaterialList.fulfilled, (state, action) => {
+        state.sellRequestList = action.payload.data;
+        state.loading = false;
+      })
+      .addCase(fetchMaterialList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to cancel sell request";
+      })  
+      .addCase(createInvoice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createInvoice.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(createInvoice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to create invoice";
+      })
+      
+      .addCase(printSellOrder.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(printSellOrder.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(printSellOrder.rejected, (state, action) => {
+        state.error = action.error?.message || null;
+        state.loading = false;
+      })
 
       .addCase(fetchSellRequestList.pending, (state) => {
         state.loading = true;
