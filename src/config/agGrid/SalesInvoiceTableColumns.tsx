@@ -3,12 +3,13 @@ import { ColDef } from "ag-grid-community";
 import { Button, Dropdown, Form } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchInvoiceDetail, fetchSalesOrderInvoiceList, printSellInvoice } from "@/features/salesmodule/salesInvoiceSlice";
+import { cancelInvoice, fetchInvoiceDetail, fetchSalesOrderInvoiceList, printSellInvoice } from "@/features/salesmodule/salesInvoiceSlice";
 import { AppDispatch, RootState } from "@/store";
 import { useState } from "react";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import ViewInvoiceModal from "@/config/agGrid/salesmodule/ViewInvoiceModal";
+import { printFunction } from "@/components/shared/PrintFunctions";
 
 const ActionMenu: React.FC<any> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -30,7 +31,11 @@ const ActionMenu: React.FC<any> = ({ row }) => {
 const handlePrintInvoice = async (orderId: string) => {
     dispatch(
       printSellInvoice({ invoiceNo: orderId, })
-    );
+    ).then((response: any) => {
+      if (response?.payload?.success) {
+        printFunction(response?.payload?.data.buffer.data);
+      }
+    })
   };
 
   const handleOk = () => {
@@ -38,15 +43,15 @@ const handlePrintInvoice = async (orderId: string) => {
       .validateFields()
       .then((values) => {
         const payload = {
-          remark: values.remark,
-          invoice_no: row.so_ship_invoice_id,
+          cancelReason: values.remark,
+          invoice_no: row.invoiceNo,
         };
         dispatch(cancelInvoice(payload)).then((response: any) => {
           if (response?.payload?.success) {
             form.resetFields();
             dispatch(
               fetchSalesOrderInvoiceList({
-                type: "datewise",
+                type: "date_wise",
                 data: dateRange,
               }) as any
             );

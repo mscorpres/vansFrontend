@@ -60,9 +60,9 @@ interface ViewInvoiceModalProps {
       rate?: string;
       uom?: string;
       gstRate?: string;
-      cgstRate?: string;
-      sgstRate?: string;
-      igstRate?: string;
+      cgstRate?: any;
+      sgstRate?: any;
+      igstRate?: any;
       dueDate?: string;
       hsnCode?: string;
       itemRemark?: string;
@@ -134,7 +134,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
   }
 
   const handleEwayClick = (module: string) => {
-    const shipmentId = sellRequestDetails?.materialData[0]?.soId || "";
+    const shipmentId = sellRequestDetails?.headerData?.invoiceNo || "";
     const sanitizedShipmentId = shipmentId.replace(/\//g, "_");
     if (module === "Invoice") {
       // window.open(`/salesOrder/e-inv/${sanitizedShipmentId}`, "_blank");
