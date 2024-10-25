@@ -29,7 +29,11 @@ const PoCreateTemplate = () => {
     let urlParts = currentUrl.split("/");
     const secondLastItem = [urlParts.length - 2];
     if (urlParts[secondLastItem] == "approve") {
-      setIsApprove(true);
+      setIsApprove("approve");
+    } else if (urlParts[secondLastItem] == "edit") {
+      setIsApprove("edit");
+    } else {
+      setIsApprove(false);
     }
     if (params) {
       setParamVal(params.id?.replaceAll("_", "/"));

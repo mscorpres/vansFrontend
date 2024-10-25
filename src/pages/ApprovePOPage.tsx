@@ -31,6 +31,8 @@ import POCancel from "./ProcurementModule/ManagePO/POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { useNavigate } from "react-router-dom";
+import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import { transformOptionData } from "@/helper/transform";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -177,6 +179,10 @@ const ApprovePOPage: React.FC = () => {
       label: "Vendor Wise",
       value: "vendorwise",
     },
+    {
+      label: "Project Wise",
+      value: "projectwise",
+    },
   ];
   const cancelTheSelectedPo = async (row: any) => {
     console.log("row", row);
@@ -206,10 +212,17 @@ const ApprovePOPage: React.FC = () => {
   };
   const fetchManageList = async () => {
     const values = await form.validateFields();
-    let date = exportDateRangespace(values.data);
-    console.log("date", date);
+    console.log("values", values);
+    let data;
+    if (values.wise.value === "datewise") {
+      data = exportDateRangespace(values.data);
+    } else if (values.wise.value === "vendorwise") {
+      data = values.data.value;
+    } else {
+      data = values.data;
+    }
 
-    let payload = { data: date, wise: values.wise.value };
+    let payload = { data: data, wise: values.wise.value };
     console.log("payload", payload);
 
     dispatch(fetchneededApprovalPO(payload)).then((res: any) => {
@@ -284,20 +297,29 @@ const ApprovePOPage: React.FC = () => {
             </Form.Item>
           ) : selectedwise?.value === "vendorwise" ? (
             <Form.Item className="w-full" name="data">
-              <Input placeholder="vendor number" />
+              <ReusableAsyncSelect
+                placeholder="Vendor Name"
+                endpoint="/backend/vendorList"
+                transform={transformOptionData}
+                // onChange={(e) => form.setFieldValue("vendorName", e)}
+                // value={selectedCustomer}
+                fetchOptionWith="payload"
+              />
             </Form.Item>
           ) : (
             <Form.Item className="w-full" name="data">
               <Input placeholder="PO number" />
             </Form.Item>
           )}
-          <Button
-            type="submit"
-            className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            onClick={fetchManageList}
-          >
-            Search
-          </Button>{" "}
+          <div className="w-full flex justify-end">
+            <Button
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={fetchManageList}
+            >
+              Search
+            </Button>{" "}
+          </div>
           {/* <CustomTooltip
               message="Add Address"
               side="top"

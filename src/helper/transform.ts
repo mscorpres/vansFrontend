@@ -18,6 +18,15 @@ export const transformOptionData = (data: any[]) => {
     }));
   }
 };
+export const transformCurrencyData = (data: any[]) => {
+  // console.log("data", data);
+  if (data?.length) {
+    return data?.map((item) => ({
+      label: item.currency_symbol,
+      value: item.currency_id,
+    }));
+  }
+};
 export const transformPlaceData = (data: any[]) => {
   console.log("data", data);
   return data?.map((item) => ({
@@ -34,7 +43,9 @@ export const transformClientTds = (data: any[]) => {
   }));
 };
 
-export const transformOptions = (data: any[]): { label: string; value: string; }[] => {
+export const transformOptions = (
+  data: any[]
+): { label: string; value: string }[] => {
   // Ensure the function always returns an array
   if (data?.length) {
     return data.map((item) => ({
@@ -42,8 +53,7 @@ export const transformOptions = (data: any[]): { label: string; value: string; }
       value: item.id,
     }));
   }
-  
+
   // Return an empty array if data is empty or undefined
   return [];
 };
-

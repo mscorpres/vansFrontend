@@ -29,10 +29,13 @@ import { useParams } from "react-router-dom";
 // import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import moment from "moment";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformOptionData } from "@/helper/transform";
+import { transformCurrencyData, transformOptionData } from "@/helper/transform";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
-import { fetchComponentDetails } from "@/features/client/clientSlice";
+import {
+  fetchComponentDetails,
+  fetchCurrency,
+} from "@/features/client/clientSlice";
 
 const type = [
   {
@@ -179,7 +182,7 @@ const TextInputCellRenderer = (props: any) => {
         updaterow: data?.updateid,
       };
       if (window.location.pathname.includes("update")) {
-        dispatch(deleteProduct(payload));
+        // dispatch(deleteProduct(payload));
       }
     }
     setShowConfirmDialog(false);
@@ -192,6 +195,7 @@ const TextInputCellRenderer = (props: any) => {
   //   console.log("data inn texty", data);
 
   const handleCurrencyChange = (value: any) => {
+    dispatch(fetchCurrency());
     data["currency"] = value;
     setOpenCurrencyDialog(true);
   };
@@ -337,7 +341,7 @@ const TextInputCellRenderer = (props: any) => {
     data.dueDate = date ? date.format("DD-MM-YYYY") : ""; // Format the date for storage
     updateData(data); // Update the data
   };
-  //   console.log("props", props);
+  // console.log("props--->", props?.currencyList);
 
   const renderContent = () => {
     switch (colDef.field) {
@@ -565,7 +569,7 @@ const TextInputCellRenderer = (props: any) => {
               filterOption={false}
               placeholder="Currency"
               defaultValue={{ value: "364907247", label: "₹" }}
-              //   options={transformCurrencyData(currency || [])}
+              options={transformCurrencyData(props?.currencyList || [])}
               onChange={(e) => handleCurrencyChange(e.value)}
               // value={value}
             />

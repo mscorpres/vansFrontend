@@ -27,6 +27,8 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./MINPO";
 import { useNavigate } from "react-router-dom";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -119,10 +121,11 @@ const ManagePoPage: React.FC = () => {
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
   const [remarkDescription, setRemarkDescription] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [cancel, setCancel] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
-  const dateFormat = "YYYY/MM/DD";
+  const dateFormat = "DD/MM/YYYY";
 
   const [columnDefs] = useState<ColDef[]>([
     {
@@ -142,8 +145,9 @@ const ManagePoPage: React.FC = () => {
     },
     {
       field: "po_transaction",
-      headerName: "PO ID",
+      headerName: "Po Id ",
       flex: 1,
+      cellRenderer: CopyCellRenderer,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -153,7 +157,7 @@ const ManagePoPage: React.FC = () => {
     },
     {
       field: "cost_center",
-      headerName: "COST CENTER",
+      headerName: "Cost Center",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -163,8 +167,9 @@ const ManagePoPage: React.FC = () => {
       },
     },
     {
-      field: "po_comment",
-      headerName: "VENDER & NARRATION",
+      field: "vendor_name",
+      headerName: "Vendor & Narration",
+      cellRenderer: CopyCellRenderer,
       flex: 2,
       filterParams: {
         floatingFilterComponentParams: {
@@ -175,7 +180,7 @@ const ManagePoPage: React.FC = () => {
     },
     {
       field: "po_reg_date",
-      headerName: "PO REG. DATE",
+      headerName: "PO Reg. Date",
       flex: 1,
       filter: "agDateColumnFilter",
       filterParams: {
@@ -187,7 +192,7 @@ const ManagePoPage: React.FC = () => {
     },
     {
       field: "po_approval_status",
-      headerName: "APPROVED STATUS",
+      headerName: "Approval Status",
       flex: 1,
     },
   ]);
@@ -239,14 +244,19 @@ const ManagePoPage: React.FC = () => {
     }
   };
   const fetchManageList = async () => {
+    setLoading(true);
     const values = await form.validateFields();
     let date = exportDateRange(values.data);
     let payload = { data: date, wise: values.wise.value };
-    let arr = dispatch(fetchManagePOList(payload));
+    dispatch(fetchManagePOList(payload)).then((res: any) => {
+      // console.log("res", res);
+    });
 
     if (managePoList) {
       setRowData(managePoList);
+      setLoading(false);
     }
+    setLoading(false);
   };
   const defaultColDef = useMemo(() => {
     return {
@@ -254,9 +264,12 @@ const ManagePoPage: React.FC = () => {
       floatingFilter: true,
     };
   }, []);
+  // console.log("loading", loading);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+      {" "}
+      {loading && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
@@ -266,7 +279,7 @@ const ManagePoPage: React.FC = () => {
         <div className="p-[10px]"></div>
         <Form
           form={form}
-          className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+          className="space-y-6 overflow-hidden p-[10px] h-[370px]  "
         >
           {/* <form
             onSubmit={form.handleSubmit(fetchManageList)}
@@ -310,13 +323,15 @@ const ManagePoPage: React.FC = () => {
               <Input placeholder="PO number" />
             </Form.Item>
           )}
-          <Button
-            type="submit"
-            className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            onClick={fetchManageList}
-          >
-            Search
-          </Button>{" "}
+          <div className="w-full flex justify-end">
+            <Button
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
+              onClick={fetchManageList}
+            >
+              Search
+            </Button>{" "}
+          </div>{" "}
           {/* <CustomTooltip
               message="Add Address"
               side="top"
@@ -352,6 +367,7 @@ const ManagePoPage: React.FC = () => {
         setView={setView}
         setShowConfirmation={setShowConfirmation}
         showConfirmation={showConfirmation}
+        loading={loading}
       />
       <POCancel
         cancel={cancel}

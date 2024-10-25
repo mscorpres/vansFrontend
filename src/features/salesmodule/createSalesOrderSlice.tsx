@@ -88,7 +88,7 @@ export const fetchBillingAddress = createAsyncThunk<
   try {
     const response = await spigenAxios.post<BillingAddressResponse>(
       "/backend/billingAddress",
-      {cost_center: cost_center}
+      { cost_center: cost_center }
     );
     if (response.data.code !== 200) {
       throw new Error("Failed to fetch billing address");
@@ -122,10 +122,7 @@ export const fetchBillAddress = createAsyncThunk<
 >("/client/fetchBillAddress", async (id: any) => {
   const formData = new FormData();
   formData.append("billing_code", id);
-  const response = await spigenAxios.post(
-    `backend/billingAddress`,
-    formData
-  );
+  const response = await spigenAxios.post(`backend/billingAddress`, formData);
 
   return response.data;
 });

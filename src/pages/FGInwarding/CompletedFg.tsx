@@ -39,6 +39,7 @@ import useApi from "@/hooks/useApi";
 import { fetchListOfCompletedFg } from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import { exportDateRangespace } from "@/components/shared/Options";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -70,17 +71,18 @@ const CompeletedFg = () => {
 
     let dataString = "";
     if (wise === "datewise" && dateRange) {
-      const startDate = dateRange[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = dateRange[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      dataString = `${startDate}-${endDate}`;
+      dataString = exportDateRangespace(dateRange);
+      // const startDate = dateRange[0]
+      //   .toLocaleDateString("en-GB")
+      //   .split("/")
+      //   .reverse()
+      //   .join("-");
+      // const endDate = dateRange[1]
+      //   .toLocaleDateString("en-GB")
+      //   .split("/")
+      //   .reverse()
+      //   .join("-");
+      // dataString = `${startDate}-${endDate}`;
       console.log("dateString", dataString);
     } else if (wise === "skuwise" && datainp) {
       dataString = datainp;
