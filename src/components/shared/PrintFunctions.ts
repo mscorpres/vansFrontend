@@ -42,3 +42,7 @@ export const downloadFunction = (buffer: any, filename: string) => {
   console.log(filename);
   fileDownload(file, `${filename}.pdf`);
 };
+const downloadExcel = (buffer, filename, type) => {
+  const file = new Blob([new Uint8Array(buffer)]);
+  fileDownload(file, filename + ".xlsx");
+};

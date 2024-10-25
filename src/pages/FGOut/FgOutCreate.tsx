@@ -1,10 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
@@ -14,17 +13,18 @@ import {
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Edit2, Filter } from "lucide-react";
+// import {
+//   Form,
+//   FormControl,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from "@/components/ui/form";
+import { Edit2, Filter, Plus } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
+import { DatePicker, Divider, Form, Space } from "antd";
+import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
 import { Input } from "@/components/ui/input";
 import {
   SelectContent,
@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/select";
 import Select from "react-select";
 import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
+import { AppDispatch, RootState } from "@/store";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
@@ -52,8 +52,15 @@ import {
   serviceList,
   servicesaddition,
 } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
 
+import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
+import { spigenAxios } from "@/axiosIntercepter";
+import { AgGridReact } from "@ag-grid-community/react";
+import { createFgOut, fetchFGProduct } from "@/features/client/storeSlice";
+import TextInputCellRenderer from "./TextInputCellRenderer";
+import DatePickerCellRenderer from "@/config/agGrid/DatePickerCellRenderer";
+import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 const dateFormat = "YYYY/MM/DD";
 const FormSchema = z.object({
   wise: z.string().optional(),
@@ -68,11 +75,49 @@ const FormSchema = z.object({
 const FgOutCreate = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [wise, setWise] = useState();
+  const [search, setSearch] = useState("");
   const [asyncOptions, setAsyncOptions] = useState([]);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+  // const form = useForm<z.infer<typeof FormSchema>>({
+  //   resolver: zodResolver(FormSchema),
+  // });
+  const [form] = Form.useForm();
+
+  const dispatch = useDispatch<AppDispatch>();
+  // const { product } = useAppSelector((state) => state.store);
+  const gridRef = useRef<AgGridReact<RowData>>(null);
   const { execFun, loading: loading1 } = useApi();
+
+  const addNewRow = () => {
+    const newRow = {
+      checked: false,
+      // type: "products",
+      product: "",
+      materialDescription: "",
+      // asinNumber: "B01N1SE4EP",
+      qty: 0,
+      orderQty: 0,
+      // rate: 50,
+      // currency: "USD",
+      // gstRate: 18,
+      // gstType: "local",
+      // localValue: 0,
+      // foreignValue: 0,
+      // cgst: 9,
+      // sgst: 9,
+      // igst: 0,
+      // dueDate: "2024-07-25",
+      // hsnCode: "",
+      isNew: true,
+    };
+    // setRowData((prevData) => [...prevData, newRow]);
+    setRowData((prevData) => [
+      ...(Array.isArray(prevData) ? prevData : []),
+      newRow,
+    ]);
+  };
+  console.log("rowData", rowData);
+
   const fetchFgOutList = async (formData: z.infer<typeof FormSchema>) => {
     const { date } = formData;
     console.log("fetchBOMList", formData);
@@ -120,47 +165,114 @@ const FgOutCreate = () => {
 
   const type = [
     {
-      label: "Out",
-      value: "0",
+      label: "Sale",
+      value: "sale",
     },
   ];
-  useEffect(() => {
-    fetchFgOutList();
+  // useEffect(() => {
+  //   fetchFgOutList();
+  // }, []);
+  const handleSubmit = async () => {
+    const values = await form.validateFields();
+    console.log("values", values);
+    console.log("rowData", rowData);
+    let payload = {
+      fg_out_type: "SL001",
+      product: rowData.map((r) => r.product),
+      qty: rowData.map((r) => r.qty),
+      remark: rowData.map((r) => r.materialDescription),
+      comment: values.remark,
+    };
+    dispatch(createFgOut(payload));
+  };
+  const columnDefs = [
+    {
+      headerName: "",
+      valueGetter: "node.rowIndex + 1",
+      cellRenderer: "textInputCellRenderer",
+      maxWidth: 100,
+      field: "delete",
+    },
+    { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
+
+    {
+      headerName: "Product/ SKU",
+      field: "product",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+
+    {
+      headerName: "Issue Qty/ UOM",
+      field: "orderQty",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      headerName: "Stock In Hand",
+      field: "qty",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+
+    {
+      headerName: "Remark",
+      field: "materialDescription",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+  ];
+  const defaultColDef = useMemo<ColDef>(() => {
+    return {
+      floatingFilter: false,
+      editable: false,
+    };
   }, []);
-
-  const columnDefs: ColDef<rowData>[] = [
-    {
-      headerName: "ID",
-      field: "id",
-      filter: "agNumberColumnFilter",
-      width: 90,
-    },
-    {
-      headerName: "BOM Name & SKU",
-      field: "bom_product_sku",
-      filter: "agTextColumnFilter",
-      width: 220,
-    },
-    {
-      headerName: "Customer",
-      field: "client_name",
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
-    {
-      headerName: "Customer Code",
-      field: "client_code",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-
-    {
-      headerName: "Actions",
-      cellRendererFramework: "ActionCellRenderer",
-      width: 150,
-      suppressMenu: true, // Optionally, hide the menu icon in this column
-    },
-  ];
+  const components = useMemo(
+    () => ({
+      textInputCellRenderer: (props: any) => (
+        <TextInputCellRenderer
+          {...props}
+          setRowData={setRowData}
+          rowData={rowData}
+          setSearch={handleSearch}
+          search={search}
+          onSearch={handleSearch}
+          // vendorCode={selectedVendor}
+          // currencyList={currencyList}
+          // componentDetails={hsnlist}
+        />
+      ),
+      datePickerCellRenderer: DatePickerCellRenderer,
+      statusCellRenderer: StatusCellRenderer,
+    }),
+    []
+  );
+  const statusBar = useMemo<{
+    statusPanels: StatusPanelDef[];
+  }>(() => {
+    return {
+      statusPanels: [
+        { statusPanel: "agFilteredRowCountComponent", align: "right" },
+        { statusPanel: "agSelectedRowCountComponent", align: "right" },
+        { statusPanel: "agAggregationComponent", align: "right" },
+      ],
+    };
+  }, []);
+  const handleSearch = (searchKey: string, type: any) => {
+    if (searchKey) {
+      let p = { search: searchKey };
+      dispatch(fetchFGProduct(p));
+    }
+  };
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -168,83 +280,103 @@ const FgOutCreate = () => {
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
-          Filter
+          Add
         </div>
         <div className="p-[10px]"></div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(fetchFgOutList)}
-            className="space-y-6 overflow-hidden p-[10px] h-[170px]"
-          >
-            <FormField
-              control={form.control}
-              name="wise"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Select
-                      styles={customStyles}
-                      components={{ DropdownIndicator }}
-                      placeholder="Select Type"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
-                      options={type}
-                      onChange={(e: any) => setWise(e.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />{" "}
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Space direction="vertical" size={12} className="w-full">
-                      <DatePicker
-                        className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                        // onChange={(value) => console.log("value", value)}
-                        onChange={(value) =>
-                          field.onChange(
-                            value ? value?.map((date) => date!.toDate()) : ""
-                          )
-                        }
-                        format={dateFormat}
-                      />
-                    </Space>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <Form form={form} className="px-[10px]">
+          <Form.Item className="w-full" name="wise">
+            {/* <FormControl> */}
+            <Select
+              styles={customStyles}
+              components={{ DropdownIndicator }}
+              placeholder="Select Type"
+              className="border-0 basic-single"
+              classNamePrefix="select border-0"
+              isDisabled={false}
+              isClearable={true}
+              isSearchable={true}
+              options={type}
+              onChange={(e: any) => setWise(e.value)}
             />
-            {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
-          </form>
+          </Form.Item>
+          <Form.Item className="w-full" name="remark">
+            <Input
+              // value={value}
+              // type="text"
+              // placeholder={colDef.headerName}
+              className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+            />
+          </Form.Item>
+
+          <Button
+            type="submit"
+            className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+            //   onClick={() => {
+            //     fetchBOMList();
+            //   }}
+          >
+            Search
+          </Button>
+          {/* </form> */}
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        <AgGridReact
-          //   loadingCellRenderer={loadingCellRenderer}
-          rowData={rowData}
-          columnDefs={columnDefs}
-          defaultColDef={{ filter: true, sortable: true }}
-          pagination={true}
-          paginationPageSize={10}
-          paginationAutoPageSize={true}
+      <div className="max-h-[calc(100vh-100px)] overflow-y-auto bg-white">
+        <div className="flex items-center w-full gap-[20px] h-[60px] px-[10px] justify-between">
+          <Button
+            onClick={() => {
+              addNewRow();
+            }}
+            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+          >
+            <Plus className="font-[600]" /> Add Item
+          </Button>{" "}
+        </div>
+        <div className="ag-theme-quartz h-[calc(100vh-220px)] w-full">
+          <AgGridReact
+            ref={gridRef}
+            rowData={rowData}
+            columnDefs={columnDefs}
+            defaultColDef={defaultColDef}
+            statusBar={statusBar}
+            components={components}
+            pagination={true}
+            paginationPageSize={10}
+            animateRows={true}
+            gridOptions={commonAgGridConfig}
+            suppressCellFocus={false}
+            suppressRowClickSelection={false}
+          />
+        </div>{" "}
+        <ConfirmationModal
+          open={showConfirmation}
+          onClose={() => setShowConfirmation(false)}
+          onOkay={handleSubmit}
+          submitText="Submit"
+          title="Confirm Submit!"
+          description={`Are you sure to submit details of this entry?`}
         />
+        <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+          <Button
+            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+            // onClick={() => setTab("create")}
+          >
+            Back
+          </Button>{" "}
+          <Button
+            className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+            // onClick={() =>
+            // isApprove ? setShowRejectConfirm(true) : setRowData([])
+            // }
+          >
+            Reset
+          </Button>
+          <Button
+            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+            onClick={() => setShowConfirmation(true)}
+          >
+            Submit
+          </Button>
+        </div>
       </div>
     </Wrapper>
   );

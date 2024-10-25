@@ -46,17 +46,7 @@ interface Props {
   setIsApprove: [];
   params: string;
 }
-// const AddPO = ({
-//   setTab,
-//   payloadData,
-//   form,
-//   selectedVendor,
-//   getValues,
-// }: {
-//   setTab: React.Dispatch<React.SetStateAction<string>>;
-//   payloadData: any;
-//   form: any;
-// }) => {
+
 const AddPO: React.FC<Props> = ({
   setTab,
   payloadData,

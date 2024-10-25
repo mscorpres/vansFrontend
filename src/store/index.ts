@@ -12,6 +12,7 @@ import SalesSlice from "@/features/salesmodule/SalesSlice";
 import salesTransactionSlice from "@/features/salesmodule/salesTransactionSlice";
 import salesShipmentSlice from "@/features/salesmodule/salesShipmentSlice";
 import salesInvoiceSlice from "@/features/salesmodule/salesInvoiceSlice";
+import storeSlice from "@/features/client/storeSlice";
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
     billing: billingAdressSlice,
     shipping: shippingAdressSlice,
     client: clientSlice,
+    store: storeSlice,
     branch: branchSlice,
     sellRequest: SalesSlice,
     sellShipment: salesShipmentSlice,

@@ -323,9 +323,9 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <FgOutCreate>
-            <PendingFg />
-          </FgOutCreate>
+          <FgLayoutOut>
+            <FgOutCreate />
+          </FgLayoutOut>
         </MainLayout>
       </Protected>
     ),

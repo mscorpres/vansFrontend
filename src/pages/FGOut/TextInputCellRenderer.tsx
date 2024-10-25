@@ -36,6 +36,7 @@ import {
   fetchComponentDetails,
   fetchCurrency,
 } from "@/features/client/clientSlice";
+import { fetchFGProductData } from "@/features/client/storeSlice";
 
 const type = [
   {
@@ -154,12 +155,14 @@ const TextInputCellRenderer = (props: any) => {
   const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
-
+  const { product, productData } = useSelector(
+    (state: RootState) => state.store
+  );
   const { hsnlist, getComponentData } = useSelector(
     (state: RootState) => state.client
   );
+  console.log("here is fg data");
 
-  const { product } = useSelector((state: RootState) => state.store);
   const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
 
   const handleDeleteRow = (rowIndex: number) => {
@@ -206,29 +209,20 @@ const TextInputCellRenderer = (props: any) => {
 
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
-    if (colDef.field === "procurementMaterial") {
+    if (colDef.field === "product") {
       console.log("data", data);
       console.log("props?.vendorCode?.value", props);
 
-      data["procurementMaterial"] = data.procurementMaterial;
+      data["product"] = data.product;
+
       dispatch(
-        fetchComponentDetails({
-          component_code: data["procurementMaterial"],
-          vencode: props?.vendorCode?.value,
+        fetchFGProductData({
+          search: data["product"],
         })
       );
-      console.log("componentFetchDetails", getComponentData);
-      data["vendorName"] =
-        getComponentData?.ven_com?.comp_name +
-        "/ Maker:" +
-        getComponentData.make;
-      // data[
-      //   "vendorName"
-      // ] = `${getComponentData?.ven_com?.comp_name}/ Maker:${getComponentData.make}`;
-      data["orderQty"] = getComponentData.closingQty;
-      data["rate"] = getComponentData.gstrate;
-      data["hsnCode"] = getComponentData.closingQty;
-      // data["orderQty"] = getComponentData.hsn;
+      console.log("productData", productData);
+      data["orderQty"] = productData?.total;
+
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
       updateData(data);
@@ -422,26 +416,6 @@ const TextInputCellRenderer = (props: any) => {
             style={{ pointerEvents: "auto" }}
           />
         );
-      case "procurementMaterial":
-        return (
-          <Select
-            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] w-full overflow-y-auto"
-            labelInValue
-            filterOption={false}
-            showSearch
-            placeholder="Select Material"
-            onSearch={(e) => {
-              props.setSearch(e);
-              if (data.type) {
-                props.onSearch(e, data.type);
-              }
-            }}
-            options={transformOptionData(componentDetails || [])}
-            onChange={(e) => handleChange(e.value)}
-            value={typeof value === "string" ? { value } : value?.text}
-            style={{ pointerEvents: "auto" }}
-          />
-        );
       case "product":
         return (
           <Select
@@ -457,6 +431,26 @@ const TextInputCellRenderer = (props: any) => {
               }
             }}
             options={transformOptionData(product || [])}
+            onChange={(e) => handleChange(e.value)}
+            value={typeof value === "string" ? { value } : value?.text}
+            style={{ pointerEvents: "auto" }}
+          />
+        );
+      case "procurementMaterial":
+        return (
+          <Select
+            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] w-full overflow-y-auto"
+            labelInValue
+            filterOption={false}
+            showSearch
+            placeholder="Select Material"
+            onSearch={(e) => {
+              props.setSearch(e);
+              if (data.type) {
+                props.onSearch(e, data.type);
+              }
+            }}
+            options={transformOptionData(componentDetails || [])}
             onChange={(e) => handleChange(e.value)}
             value={typeof value === "string" ? { value } : value?.text}
             style={{ pointerEvents: "auto" }}

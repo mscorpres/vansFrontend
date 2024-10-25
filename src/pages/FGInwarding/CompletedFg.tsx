@@ -40,6 +40,8 @@ import { fetchListOfCompletedFg } from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { exportDateRangespace } from "@/components/shared/Options";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { IoMdDownload } from "react-icons/io";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -189,7 +191,9 @@ const CompeletedFg = () => {
       },
     },
   ];
-
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "Store Completed");
+  };
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
@@ -269,14 +273,28 @@ const CompeletedFg = () => {
                   </FormItem>
                 )}
               />
-            )}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={fetchFGList}
-            >
-              Search
-            </Button>
+            )}{" "}
+            <div className="flex gap-[10px] justify-end">
+              {" "}
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                // onClick={() => {}}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={fetchFGList}
+              >
+                Search
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
