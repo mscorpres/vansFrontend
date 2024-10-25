@@ -169,9 +169,7 @@ const FgOutCreate = () => {
       value: "sale",
     },
   ];
-  // useEffect(() => {
-  //   fetchFgOutList();
-  // }, []);
+
   const handleSubmit = async () => {
     const values = await form.validateFields();
     console.log("values", values);
