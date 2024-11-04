@@ -26,6 +26,17 @@ interface hsnPayload {
   id: string;
   value: string;
 }
+interface settleTransferPayload {
+  component: [];
+  cost_center: [];
+  frombox: [];
+  qty: [];
+  remark: [];
+  tobox: [];
+}
+interface searchPayload {
+  search: string;
+}
 interface uomPayload {
   id: string;
   value: string;
@@ -50,6 +61,7 @@ interface StoreState {
   data: any[];
   loading: boolean;
   error: string | null;
+  transferBoxList: any[];
 }
 
 const initialState: StoreState = {
@@ -58,6 +70,10 @@ const initialState: StoreState = {
   error: null,
   product: null,
   productData: null,
+  transactionApproval: null,
+  transactionFromBoxList: null,
+  transferBoxList: null,
+  availableStockBoxes: null,
 };
 export const saveFGs = createAsyncThunk<uomPayload, payload>(
   "/fgIN/saveFGs",
@@ -67,7 +83,6 @@ export const saveFGs = createAsyncThunk<uomPayload, payload>(
         "/fgIN/saveFGs",
         payload
       );
-      console.log("response", response.data);
 
       return response.data;
     } catch (error) {
@@ -78,7 +93,7 @@ export const saveFGs = createAsyncThunk<uomPayload, payload>(
     }
   }
 );
-export const fetchFGProduct = createAsyncThunk<uomPayload, { search }>(
+export const fetchFGProduct = createAsyncThunk<uomPayload, { search: string }>(
   "/fgOUT/fetchProduct",
   async ({ search }) => {
     try {
@@ -86,7 +101,7 @@ export const fetchFGProduct = createAsyncThunk<uomPayload, { search }>(
         "/fgOUT/fetchProduct",
         { searchTerm: search }
       );
-      console.log("response", response.data);
+    
 
       return response.data;
     } catch (error) {
@@ -97,15 +112,34 @@ export const fetchFGProduct = createAsyncThunk<uomPayload, { search }>(
     }
   }
 );
-export const fetchFGProductData = createAsyncThunk<uomPayload, { search }>(
-  "/fgOUT/fetchProductData",
-  async ({ search }) => {
+export const fetchFGProductData = createAsyncThunk<
+  uomPayload,
+  { search: string }
+>("/fgOUT/fetchProductData", async ({ search }) => {
+  try {
+    const response = await spigenAxios.post<uomPayload>(
+      "/fgOUT/fetchProductData",
+      { search: search }
+    );
+  
+
+    return response.data.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unknown error occurred");
+  }
+});
+export const createFgOut = createAsyncThunk<uomPayload, payload>(
+  "/fgout/createFgOut",
+  async (payload) => {
     try {
       const response = await spigenAxios.post<uomPayload>(
-        "/fgOUT/fetchProductData",
-        { search: search }
+        "/fgout/createFgOut",
+        payload
       );
-      console.log("response", response.data);
+     
 
       return response.data.data;
     } catch (error) {
@@ -116,16 +150,101 @@ export const fetchFGProductData = createAsyncThunk<uomPayload, { search }>(
     }
   }
 );
-export const createFgOut = createAsyncThunk<uomPayload, payload>(
-  "/fgout/createFgOut",
+export const fetchTransactionForApproval = createAsyncThunk<
+  uomPayload,
+  payload
+>("/storeApproval/fetchTransactionForApproval", async (payload) => {
+  try {
+    const response = await spigenAxios.post<uomPayload>(
+      "/storeApproval/fetchTransactionForApproval",
+      payload
+    );
+   
+    return response.data.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unknown error occurred");
+  }
+});
+export const fetchComponentBoxes = createAsyncThunk<searchPayload>(
+  "/minSettle/fetchComponentBoxes",
   async (payload) => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
-        "/fgout/createFgOut",
+      const response = await spigenAxios.post(
+        "/minSettle/fetchComponentBoxes",
         payload
       );
-      console.log("response", response.data);
-
+    
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const fetchTransferLoc = createAsyncThunk<searchPayload>(
+  "/backend/fetchTransferLoc",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post(
+        "/backend/fetchTransferLoc",
+        payload
+      );
+     
+      return response.data.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const settleTransfer = createAsyncThunk<settleTransferPayload>(
+  "/minSettle/settleTransfer",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post(
+        "/minSettle/settleTransfer",
+        payload
+      );
+      
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
+  "/backend/fetchAvailableStockBoxes",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post(
+        "/backend/fetchAvailableStockBoxes",
+        payload
+      );
+      return response.data.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const stockOut = createAsyncThunk<settleTransferPayload>(
+  "/backend/stockOut",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post("/backend/stockOut", payload);
+     
       return response.data.data;
     } catch (error) {
       if (error instanceof Error) {
@@ -174,6 +293,66 @@ const storeSlice = createSlice({
         state.productData = action.payload;
       })
       .addCase(fetchFGProductData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(fetchTransactionForApproval.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTransactionForApproval.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactionApproval = action.payload;
+      })
+      .addCase(fetchTransactionForApproval.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(fetchComponentBoxes.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchComponentBoxes.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactionFromBoxList = action.payload.boxes;
+      })
+      .addCase(fetchComponentBoxes.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(fetchTransferLoc.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTransferLoc.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transferBoxList = action.payload;
+      })
+      .addCase(fetchTransferLoc.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(settleTransfer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(settleTransfer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(settleTransfer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(fetchAvailableStockBoxes.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAvailableStockBoxes.fulfilled, (state, action) => {
+        state.loading = false;
+        state.availableStockBoxes = action.payload;
+      })
+      .addCase(fetchAvailableStockBoxes.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       });

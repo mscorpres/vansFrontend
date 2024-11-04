@@ -184,10 +184,10 @@ export const materialmenu = [
   {
     name: "Warehouse",
     subMenu: [
-      { name: "MR Approval", path: "/not-permission" },
-      { name: "Inward", path: "/not-permission" },
-      { name: "Transfer", path: "/not-permission" },
-      { name: "Pic Slip", path: "/not-permission" },
+      { name: "MR Approval", path: "/warehouse/mrApproval" },
+      { name: "Inward", path: "/warehouse/inward" },
+      { name: "Transfer", path: "/warehouse/transfer" },
+      { name: "Pick Slip", path: "/warehouse/pickSlip" },
       { name: "Batch Allocation", path: "/not-permission" },
     ],
   },
@@ -205,33 +205,33 @@ export const materialmenu = [
       { name: "View FG(s) OUT", path: "/fgOut/view" },
     ],
   },
-  {
-    name: "Production",
-    subMenu: [
-      {
-        name: "PPR",
-        subMenu: [
-          { name: "Material", path: "/master/material" },
-          { name: "Service", path: "/master/service" },
-        ],
-      },
-      {
-        name: "Material Requisition",
-        subMenu: [
-          { name: "Material", path: "/master/material" },
-          { name: "Service", path: "/master/service" },
-        ],
-      },
-      {
-        name: "Production & Plan",
-        subMenu: [
-          { name: "Create PPR", path: "/production/ppr/create" },
-          { name: "Pending PPR", path: "/production/ppr/pending" },
-          { name: "Completed PPR", path: "/production/ppr/completed" },
-        ],
-      },
-    ],
-  },
+  // {
+  //   name: "Production",
+  //   subMenu: [
+  //     {
+  //       name: "PPR",
+  //       subMenu: [
+  //         { name: "Material", path: "/master/material" },
+  //         { name: "Service", path: "/master/service" },
+  //       ],
+  //     },
+  //     {
+  //       name: "Material Requisition",
+  //       subMenu: [
+  //         { name: "Material", path: "/master/material" },
+  //         { name: "Service", path: "/master/service" },
+  //       ],
+  //     },
+  //     {
+  //       name: "Production & Plan",
+  //       subMenu: [
+  //         { name: "Create PPR", path: "/production/ppr/create" },
+  //         { name: "Pending PPR", path: "/production/ppr/pending" },
+  //         { name: "Completed PPR", path: "/production/ppr/completed" },
+  //       ],
+  //     },
+  //   ],
+  // },
   {
     name: "Report (s)",
     subMenu: [

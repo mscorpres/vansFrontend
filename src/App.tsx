@@ -68,6 +68,17 @@ import ClientLayout from "./layouts/Master/ClientLayout";
 import Hsn from "./pages/masterModule/HSN/Hsn";
 import EditBom from "./pages/masterModule/Bom/EditBom";
 import CreateEwayBill from "@/config/agGrid/invoiceModule/CreateEwayBill";
+import MrApproval from "./layouts/MrApProval";
+import PendingMr from "./pages/WarehouseModule/PendingMr/PendingMr";
+import TransferBox from "./pages/WarehouseModule/PendingMr/TransferBox";
+import PickSlipLayout from "./layouts/PickSlipLayout";
+import PickSlip from "./pages/WarehouseModule/PickSlip/PickSlip";
+import InwardLayout from "./layouts/InwardLayout";
+import Inwards from "./pages/WarehouseModule/Inwards";
+import ItemQr from "./pages/WarehouseModule/ItemQr";
+import PrintMinLabel from "./pages/WarehouseModule/PrintMinLabel";
+import BoxMarkup from "./pages/WarehouseModule/BoxMarkup";
+import BatchAlloaction from "./pages/WarehouseModule/BatchAlloaction";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -633,6 +644,181 @@ const router = createBrowserRouter([
   //   ),
   //   path: "/master/product/sfg",
   // },
+  //wareHouse
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <MrApproval>
+            <PendingMr />
+            {/* <SalesETransactionRegisterPage /> */}
+          </MrApproval>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/mrApproval",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <MrApproval>
+            <PendingMr />
+            {/* <SalesETransactionRegisterPage /> */}
+          </MrApproval>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/status",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <TransferBox />
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/transfer",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <PickSlipLayout>
+            <PickSlip />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </PickSlipLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/pickSlip",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <Inwards />
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/inward",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <BoxMarkup />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/boxMarkup",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <ItemQr />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/childMarkup",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <BatchAlloaction />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/batchAllocation",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <ItemQr />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/PickSlip",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <PrintMinLabel />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/PickSlip/print",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <PrintMinLabel />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/min/print",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <ItemQr />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/itemQr",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <PrintMinLabel />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/inward",
+  },
   {
     element: (
       <Protected authentication>

@@ -205,13 +205,10 @@ const TextInputCellRenderer = (props: any) => {
   };
   //   console.log("materialList", materialList);
   const handleChange = (value: string) => {
-    // console.log("value", value);
-
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "product") {
-      console.log("data", data);
-      console.log("props?.vendorCode?.value", props);
+   
 
       data["product"] = data.product;
 
@@ -220,26 +217,13 @@ const TextInputCellRenderer = (props: any) => {
           search: data["product"],
         })
       );
-      console.log("productData", productData);
+      
       data["orderQty"] = productData?.total;
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
       updateData(data);
 
-      // dispatch(fetchComponentDetails({}));
-      //   dispatch(fetchProductData({ product_key: value })).then(
-      //     (response: any) => {
-      //       if (response.meta.requestStatus === "fulfilled") {
-      //         const materialData = response.payload;
-      //         data[
-      //           "materialDescription"
-      //         ] = ` ASIN - ${materialData?.asin}\n FNSKU -  ${materialData?.fnsku} \nFSNID - ${materialData?.fsnid} \nItem Code - ${materialData?.item_code} \nCroma Code - ${materialData?.croma_code}`;
-      //         data["hsnCode"] = materialData?.hsn;
-      //         updateData(data);
-      //       }
-      //     }
-      //   );
     }
     let cgst = 0;
     let sgst = 0;
@@ -397,6 +381,26 @@ const TextInputCellRenderer = (props: any) => {
           //   />
         );
       case "material":
+        return (
+          <Select
+            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] w-full overflow-y-auto"
+            labelInValue
+            filterOption={false}
+            showSearch
+            placeholder="Select Material"
+            onSearch={(e) => {
+              props.setSearch(e);
+              if (data.type) {
+                props.onSearch(e, data.type);
+              }
+            }}
+            options={transformOptionData(componentDetails || [])}
+            onChange={(e) => handleChange(e.value)}
+            value={typeof value === "string" ? { value } : value?.text}
+            style={{ pointerEvents: "auto" }}
+          />
+        );
+      case "transfermaterial":
         return (
           <Select
             className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] w-full overflow-y-auto"

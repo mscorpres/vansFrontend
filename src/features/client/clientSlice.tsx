@@ -38,6 +38,7 @@ interface shippingAddressPayload {
   gstin: string;
   pan: string;
   pincode: string;
+  data: string;
 }
 
 export interface ApiResponse<T> {
@@ -87,9 +88,8 @@ export const listOfCostCenter = createAsyncThunk<
     const response = await spigenAxios.post<uomPayload>("/backend/costCenter", {
       search: search,
     });
-    console.log("response", response.data);
 
-    return response.data.data;
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
