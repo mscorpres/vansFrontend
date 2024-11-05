@@ -47,7 +47,7 @@ const InwardLayout = (props: { children: React.ReactNode }) => {
               Batch Allocation
             </NavLink>
           </li>
-          <li className="h-[50px]">
+          {/* <li className="h-[50px]">
             <NavLink
               to={"/warehouse/PickSlip"}
               className={({ isActive }) =>
@@ -56,7 +56,7 @@ const InwardLayout = (props: { children: React.ReactNode }) => {
             >
               Pick Slip
             </NavLink>
-          </li>
+          </li> */}
           <li className="h-[50px]">
             <NavLink
               to={"/warehouse/PickSlip/print"}

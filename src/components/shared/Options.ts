@@ -41,6 +41,21 @@ export const gstRateList = [
     label: "28 %",
   },
 ];
+
+export const vendorTypeOptions = [
+  {
+    value: "Vendor",
+    label: "Vendor",
+  },
+  {
+    value: "JWI",
+    label: "j01",
+  },
+  {
+    value: "Customer Return",
+    label: "Customer Return",
+  },
+];
 export const exportDateRange = (dateRange) => {
   console.log("dateRange", dateRange);
 

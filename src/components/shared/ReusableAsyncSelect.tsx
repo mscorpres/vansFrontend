@@ -34,18 +34,35 @@ const ReusableAsyncSelect = <T,>({ endpoint, transform, onChange, value, fetchOp
         }
       });
     } else if (fetchOptionWith === "payload") {
-      dispatch(fetchData({ endpoint, payload: { search: inputValue } })).then((action) => {
-        if (fetchData.fulfilled.match(action)) {
-          const response = action.payload as ApiResponse<T[]>;
-          if (Array.isArray(response)) {
-            callback(transform(response));
+      dispatch(fetchData({ endpoint, payload: { search: inputValue } })).then(
+        (action) => {
+          if (fetchData.fulfilled.match(action)) {
+            const response = action.payload as ApiResponse<T[]>;
+            if (Array.isArray(response)) {
+              callback(transform(response));
+            } else {
+              callback(transform(response.data));
+            }
           } else {
-            callback(transform(response.data));
+            callback([]);
           }
-        } else {
-          callback([]);
         }
-      });
+      );
+    } else if (fetchOptionWith === "payloadSearchTerm") {
+      dispatch(fetchData({ endpoint, payload: { searchTerm: inputValue } })).then(
+        (action) => {
+          if (fetchData.fulfilled.match(action)) {
+            const response = action.payload as ApiResponse<T[]>;
+            if (Array.isArray(response)) {
+              callback(transform(response));
+            } else {
+              callback(transform(response.data));
+            }
+          } else {
+            callback([]);
+          }
+        }
+      );
     }
   };
 

@@ -79,6 +79,9 @@ import ItemQr from "./pages/WarehouseModule/ItemQr";
 import PrintMinLabel from "./pages/WarehouseModule/PrintMinLabel";
 import BoxMarkup from "./pages/WarehouseModule/BoxMarkup";
 import BatchAlloaction from "./pages/WarehouseModule/BatchAlloaction";
+import InwardTemplate from "./pages/WarehouseModule/Inward/InwardTemplate";
+import ChildMarkup from "./pages/WarehouseModule/ChildMarkup";
+import PrintPickSlip from "./pages/WarehouseModule/PrintPickSlip";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -700,7 +703,7 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <InwardLayout>
-            <Inwards />
+            <InwardTemplate />
           </InwardLayout>
         </MainLayout>
       </Protected>
@@ -726,7 +729,8 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <InwardLayout>
-            <ItemQr />
+            <NotPermissionPage />
+            {/* <ChildMarkup /> */}
             {/* <PendingMr /> */}
             {/* <SalesETransactionRegisterPage /> */}
           </InwardLayout>
@@ -740,9 +744,7 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <InwardLayout>
-            <BatchAlloaction />
-            {/* <PendingMr /> */}
-            {/* <SalesETransactionRegisterPage /> */}
+            <NotPermissionPage />
           </InwardLayout>
         </MainLayout>
       </Protected>
@@ -768,7 +770,7 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <InwardLayout>
-            <PrintMinLabel />
+            <PrintPickSlip />
             {/* <PendingMr /> */}
             {/* <SalesETransactionRegisterPage /> */}
           </InwardLayout>
@@ -796,7 +798,8 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <InwardLayout>
-            <ItemQr />
+            <NotPermissionPage />
+            {/* <ItemQr /> */}
             {/* <PendingMr /> */}
             {/* <SalesETransactionRegisterPage /> */}
           </InwardLayout>
@@ -804,6 +807,21 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/warehouse/itemQr",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <NotPermissionPage />
+            {/* <ItemQr /> */}
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/pickSlip/qr",
   },
   {
     element: (
