@@ -74,7 +74,6 @@ export const exportDateRange = (dateRange) => {
   return dataString;
 };
 export const exportDateRangespace = (dateRange) => {
-  console.log("dateRange", dateRange);
 
   const formatDate = (date) => {
     // Format the date to dd mm yyyy
@@ -88,6 +87,16 @@ export const exportDateRangespace = (dateRange) => {
   const startDate = formatDate(dateRange[0]);
   const endDate = formatDate(dateRange[1]);
   let dataString = `${startDate} - ${endDate}`;
-  console.log("dateString", dataString);
   return dataString;
+};
+export const exportDatepace = (dateRange) => {// Log the dateRange value
+
+  // Function to format the date into dd-mm-yyyy
+
+  // Format the date to dd-mm-yyyy
+  const day = String(dateRange.getDate()).padStart(2, "0"); // Get day and pad with zero if needed
+  const month = String(dateRange.getMonth() + 1).padStart(2, "0"); // Month is zero-based, so add 1
+  const year = dateRange.getFullYear(); // Get full year
+
+  return `${day}-${month}-${year}`; // Return formatted date
 };

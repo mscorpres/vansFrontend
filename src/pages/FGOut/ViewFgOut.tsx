@@ -1,0 +1,226 @@
+import React, { useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { AgGridReact } from "ag-grid-react";
+import { Button } from "@/components/ui/button";
+import { customStyles } from "@/config/reactSelect/SelectColorConfig";
+import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
+
+import { Edit2, Filter } from "lucide-react";
+import styled from "styled-components";
+import { Checkbox, DatePicker, Divider, Form, Space } from "antd";
+import { Input } from "@/components/ui/input";
+import {
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Select from "react-select";
+import {
+  transformCustomerData,
+  transformOptionData,
+  transformPlaceData,
+} from "@/helper/transform";
+// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
+import { toast, useToast } from "@/components/ui/use-toast";
+import useApi from "@/hooks/useApi";
+import {
+  fetchListOfCompletedFg,
+  fetchListOfCompletedFgOut,
+} from "@/components/shared/Api/masterApi";
+import { spigenAxios } from "@/axiosIntercepter";
+import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import {
+  exportDatepace,
+  exportDateRangespace,
+} from "@/components/shared/Options";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { IoMdDownload } from "react-icons/io";
+const FormSchema = z.object({
+  searchValue: z.string().optional(),
+  datainp: z.string().optional(),
+  dateRange: z
+    .array(z.date())
+    .length(2)
+    .optional()
+    .refine((data) => data === undefined || data.length === 2, {
+      message: "Please select a valid date range.",
+    }),
+});
+
+const ViewFgOut = () => {
+  const [rowData, setRowData] = useState<RowData[]>([]);
+  const [asyncOptions, setAsyncOptions] = useState([]);
+  const [wise, setWise] = useState();
+  const [form] = Form.useForm();
+  const { execFun, loading: loading1 } = useApi();
+  const { RangePicker } = DatePicker;
+
+  const dateFormat = "YYYY/MM/DD";
+  const fetchFGList = async () => {
+    const values = await form.validateFields();
+    let dataString = exportDatepace(values.dateRange);
+
+    // return;
+    let payload = { date: dataString, method: "O" };
+
+    const response = await execFun(
+      () => fetchListOfCompletedFgOut(payload),
+      "fetch"
+    );
+    // return;
+    let { data } = response;
+    if (data.code === 200) {
+      let arr = data.data.map((r, index) => {
+        return {
+          id: index + 1,
+          ...r,
+        };
+      });
+      setRowData(arr);
+      //   addToast(response.message, {
+      //     appearance: "success",
+      //     autoDismiss: true,
+      //   });
+    } else {
+      toast({
+        title: response.data.message,
+        className: "bg-red-700 text-center text-white",
+      });
+      //   addToast(response.message, {
+      //     appearance: "error",
+      //     autoDismiss: true,
+      //   });
+    }
+  };
+
+  const type = [
+    {
+      label: "Date Wise",
+      value: "datewise",
+    },
+    {
+      label: "SKU Wise",
+      value: "skuwise",
+    },
+    ,
+  ];
+  useEffect(() => {
+    fetchFGList();
+  }, []);
+
+  const columnDefs: ColDef<rowData>[] = [
+    {
+      headerName: "ID",
+      field: "id",
+      filter: "agNumberColumnFilter",
+      flex: 1,
+    },
+    {
+      headerName: "SKU",
+      field: "sku",
+      filter: "agTextColumnFilter",
+      flex: 1,
+    },
+    {
+      headerName: "Product",
+      field: "name",
+      filter: "agTextColumnFilter",
+      flex: 1,
+    },
+    {
+      headerName: "Out Qty",
+      field: "approveqty",
+      filter: "agTextColumnFilter",
+      flex: 1,
+    },
+    {
+      headerName: "Out By",
+      field: "approveby",
+      filter: "agTextColumnFilter",
+      flex: 1,
+    },
+  ];
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "FG Out");
+  };
+  const handleDateChange = (date: moment.Moment | null) => {
+    data = date ? date.format("DD-MM-YYYY") : ""; // Format the date for storage
+  };
+  return (
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+      <div className="bg-[#fff]">
+        {" "}
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <Filter className="h-[20px] w-[20px]" />
+          Filter
+        </div>
+        <div className="p-[10px]"></div>
+        <Form form={form}>
+          {/* <form
+            onSubmit={form.handleSubmit(fetchFGList)}
+            className="space-y-6 overflow-hidden p-[10px] h-[470px]"
+          > */}
+          <Form.Item className="w-full px-[5px]" name="dateRange">
+            <Space direction="vertical" size={12} className="w-full">
+              <DatePicker
+                format="DD-MM-YYYY" // Set the format to dd-mm-yyyy
+                onChange={(date, dateString) => {
+                  // Use `date` to get the Date object, or `dateString` for formatted value
+                  form.setFieldValue("dateRange", date ? date.toDate() : null);
+                }}
+                className="w-[100%] border-slate-400 shadow-none mt-[2px]"
+              />
+            </Space>
+          </Form.Item>
+
+          <div className="flex gap-[10px] justify-end  px-[5px]">
+            {" "}
+            <Button
+              // type="submit"
+              className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+              // onClick={() => {}}
+              onClick={(e: any) => {
+                e.preventDefault();
+                handleDownloadExcel();
+              }}
+            >
+              <IoMdDownload size={20} />
+            </Button>
+            <Button
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={fetchFGList}
+            >
+              Search
+            </Button>
+          </div>
+          {/* </form> */}
+        </Form>
+      </div>
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        <AgGridReact
+          //   loadingCellRenderer={loadingCellRenderer}
+          rowData={rowData}
+          columnDefs={columnDefs}
+          defaultColDef={{ filter: true, sortable: true }}
+          pagination={true}
+          paginationPageSize={10}
+          paginationAutoPageSize={true}
+        />
+      </div>
+    </Wrapper>
+  );
+};
+
+export default ViewFgOut;
+const Wrapper = styled.div`
+  .ag-theme-quartz .ag-root-wrapper {
+    border-top: 0;
+    border-bottom: 0;
+  }
+`;

@@ -38,6 +38,7 @@ interface ResponseData {
   // Define the structure of the expected response data
   status: string;
   message: string;
+  data: [];
   // Other response fields
 }
 
@@ -68,22 +69,30 @@ interface StoreState {
   data: any[];
   loading: boolean;
   error: string | null;
-  transferBoxList: any[];
+  product: any[];
+  productData: any[];
   minComponents: [];
+  transactionApproval: null;
+  transactionFromBoxList: null;
+  transferBoxList: [];
+  availableStockBoxes: null;
+  minTransactiondata: null;
+  markupNum: null;
+  settleSave: null;
 }
 
 const initialState: StoreState = {
   data: [],
   loading: false,
   error: null,
-  product: null,
-  productData: null,
+  product: [],
+  productData: [],
   transactionApproval: null,
   transactionFromBoxList: null,
-  transferBoxList: null,
+  transferBoxList: [],
   availableStockBoxes: null,
   minTransactiondata: null,
-  minComponents: null,
+  minComponents: [],
   markupNum: null,
   settleSave: null,
 };
@@ -150,7 +159,7 @@ export const createFgOut = createAsyncThunk<uomPayload, payload>(
         payload
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -159,6 +168,7 @@ export const createFgOut = createAsyncThunk<uomPayload, payload>(
     }
   }
 );
+
 export const fetchTransactionForApproval = createAsyncThunk<
   uomPayload,
   payload
@@ -290,7 +300,6 @@ export const getComponentsFromTransaction =
           "/minSettle/getComponents",
           payload
         );
-        console.log("response", response.data);
 
         return response.data;
       } catch (error) {
@@ -306,7 +315,6 @@ export const getMarkupID = createAsyncThunk<settleTransferPayload>(
   async (payload) => {
     try {
       const response = await spigenAxios.post("/minSettle/getMarkupID");
-      console.log("response", response.data);
 
       return response.data;
     } catch (error) {
@@ -322,7 +330,6 @@ export const saveSettle = createAsyncThunk<settleTransferPayload>(
   async (payload) => {
     try {
       const response = await spigenAxios.post("/minSettle/saveSattle", payload);
-      console.log("response", response.data);
 
       return response.data;
     } catch (error) {
@@ -344,7 +351,6 @@ export const getminBox = createAsyncThunk<ResponseData, FormData>(
         },
       });
 
-      console.log("Response data:", response.data);
       return response.data; // Return the response data to Redux
     } catch (error) {
       if (error instanceof Error) {
@@ -361,7 +367,6 @@ export const qrPrint = createAsyncThunk<ResponseData, FormData>(
       // Make sure your axios instance is correctly set up
       const response = await spigenAxios.post("/qrPrint", payload);
 
-      console.log("Response data:", response.data);
       return response.data; // Return the response data to Redux
     } catch (error) {
       if (error instanceof Error) {
@@ -381,7 +386,6 @@ export const fetchPrintPickSetelement = createAsyncThunk<ResponseData>(
         payload
       );
 
-      console.log("Response data:", response.data);
       return response.data; // Return the response data to Redux
     } catch (error) {
       if (error instanceof Error) {
@@ -401,7 +405,60 @@ export const printPickSetelement = createAsyncThunk<ResponseData>(
         payload
       );
 
-      console.log("Response data:", response.data);
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const getMinTransactionByDate = createAsyncThunk<ResponseData>(
+  "/transaction/getMinTransactionByDate", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/transaction/getMinTransactionByDate",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const printSingleMin = createAsyncThunk<ResponseData>(
+  "/minPrint/printSingleMin", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/minPrint/printSingleMin",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const cutomerLable = createAsyncThunk<ResponseData>(
+  "/cutomerLable", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post("/cutomerLable", payload);
+
       return response.data; // Return the response data to Redux
     } catch (error) {
       if (error instanceof Error) {
@@ -594,6 +651,18 @@ const storeSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(printPickSetelement.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(getMinTransactionByDate.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getMinTransactionByDate.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(getMinTransactionByDate.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       });

@@ -18,7 +18,28 @@ const InwardTemplate = () => {
   const [isApprove, setIsApprove] = useState(false);
   const [form] = Form.useForm();
   const [paramVal, setParamVal] = useState("");
-  const [rowData, setRowData] = useState<RowData[]>([]);
+  const [rowData, setRowData] = useState<RowData[]>([
+    {
+      checked: false,
+      type: "products",
+      procurementMaterial: "",
+      materialDescription: "",
+      asinNumber: "B01N1SE4EP",
+      orderQty: 100,
+      rate: 50,
+      currency: "USD",
+      gstRate: 18,
+      gstType: "local",
+      localValue: 0,
+      foreignValue: 0,
+      cgst: 9,
+      sgst: 9,
+      igst: 0,
+      dueDate: "2024-07-25",
+      hsnCode: "",
+      isNew: true,
+    },
+  ]);
   const selectedVendor = Form.useWatch("vendorName", form);
   const dispatch = useDispatch<AppDispatch>();
   console.log("tabvalue", tabvalue);

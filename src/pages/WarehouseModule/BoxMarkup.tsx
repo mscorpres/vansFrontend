@@ -104,18 +104,13 @@ const BoxMarkup = () => {
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
   // });
-  console.log("uomlist", uomlist);
-
   const [form] = Form.useForm();
   const selMin = Form.useWatch("minTxn", form);
-  console.log("selMin", selMin);
-  console.log("minNum", minNum);
 
   const { execFun, loading: loading1 } = useApi();
 
   const onsubmit = async () => {
     const value = await form.validateFields();
-    console.log("value", value);
     let payload = {
       p_sku: value.sku,
       p_name: value.product,
@@ -124,11 +119,9 @@ const BoxMarkup = () => {
     };
     // return;
     const response = await execFun(() => insertProduct(payload), "fetch");
-    console.log("response", response);
-
+   
     const { data } = response;
-    console.log("data", response);
-    if (response.data.code == 200) {
+   if (response.data.code == 200) {
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -199,7 +192,6 @@ const BoxMarkup = () => {
       dispatch(
         getComponentsFromTransaction({ transaction: selMin?.value })
       ).then((res) => {
-        console.log("res", res);
         if (res.payload.code == 200) {
           let arr = res.payload.data.map((r, index) => {
             return {
@@ -301,12 +293,10 @@ const BoxMarkup = () => {
       width: 200,
     },
   ];
-  console.log("sheetOpen", sheetOpen);
   useEffect(() => {
     if (sheetOpen) {
       let markup;
       dispatch(getMarkupID()).then((res) => {
-        console.log("res", res);
         if (res.payload.code == 200) {
           setMarkupID(res.payload.data.markupCode);
         }
@@ -340,23 +330,20 @@ const BoxMarkup = () => {
       });
 
       // Show the boxes and their product count
-      console.log(boxes);
-      console.log("markup,", markupID);
       let arr = boxes.map((r, index) => {
         return {
           id: index + 1,
           box: "BOX" + r.box,
           items: r.items,
-          markup: "BOX" + markupID + index + 1,
+          markup: "BOX" + Number(markupID + index + 1),
           isNew: true,
         };
       });
-      console.log("arr", arr);
+      // return;
       setRowDataBoxes(arr);
     }
   }, [sheetOpen]);
   const submitMarkedBoxes = async () => {
-    console.log("rowDataBoxes", rowDataBoxes);
 
     let payload = {
       min_no: sheetOpen?.data?.min_no,
@@ -366,7 +353,6 @@ const BoxMarkup = () => {
       item_qty: rowDataBoxes.map((rowData) => rowData.items),
     };
     dispatch(saveSettle(payload)).then((res) => {
-      console.log("res", res);
       if (res.payload.code == 200) {
         toast({
           title: res.payload.message,

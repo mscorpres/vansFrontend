@@ -78,6 +78,7 @@ const PickSlip = () => {
   const [formValues, setFormValues] = useState({ compCode: "" });
   const [totalQty, setTotalQty] = useState(0);
   const [finalrows, setFinalRows] = useState([]);
+  const [boxName, setBoxName] = useState([]);
 
   const [selectedRows, setSelectedRows] = useState([]);
   const dispatch = useDispatch<AppDispatch>();
@@ -96,7 +97,7 @@ const PickSlip = () => {
 
       gstRate: 18,
       pickmaterial: "",
-      transferFromBox: "",
+      outQty: "",
       selectOutBoxes: "",
       remark: "",
 
@@ -168,7 +169,9 @@ const PickSlip = () => {
           form={form}
           setSheetOpen={setSheetOpen}
           selectedRows={selectedRows}
-          finalrows={finalrows}
+          finalrows={finalrows.length}
+          boxName={boxName}
+          totalQty={selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
         />
       ),
     }),
@@ -217,20 +220,38 @@ const PickSlip = () => {
   const handleSubmit = async () => {
     const value = form.getFieldsValue();
     const values = await form.validateFields();
-
     let payload = {
-      customer: values.customerName,
+      customer: values.customerName?.value,
       component: rowData.map((r) => r.pickmaterial),
-      qty: rowData.map((r) => r.transferFromBox),
-      box: rowData.map((r) => r.selectOutBoxes),
+      qty: rowData.map((r) => r.outQty),
+      box: finalrows.map((r) => r.box_name),
       remark: rowData.map((r) => r.remark),
-      costcenter: values.costCenter,
-      boxqty: ["5000"],
+      costcenter: values.costCenter.value,
+      boxqty: finalrows.map((r) => r.qty),
     };
     dispatch(stockOut(payload)).then((res: any) => {
+      if (res.payload.code == 200) {
+        toast({
+          title: res.payload.message,
+          className: "bg-green-600 text-white items-center",
+        });
+        form.resetFields();
+        setShowConfirmation(false);
+      } else {
+        toast({
+          title: res.payload.message,
+          className: "bg-red-600 text-white items-center",
+        });
+      }
+      setShowConfirmation(false);
     });
-    
   };
+  useEffect(() => {
+    const boxNames = finalrows.map((item) => item?.box_name);
+
+    setBoxName(boxNames);
+  }, [finalrows]);
+
   const columnDefs: ColDef<rowData>[] = [
     // {
     // {
@@ -257,7 +278,7 @@ const PickSlip = () => {
 
     {
       headerName: "Out Qty",
-      field: "transferFromBox",
+      field: "outQty",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -281,8 +302,6 @@ const PickSlip = () => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-
-   
   ];
   const handleCheckboxChange = (e) => {
     setRowDataBoxes((prevState) => ({
@@ -291,7 +310,6 @@ const PickSlip = () => {
     }));
   };
   const columnBoxesDefs: ColDef<rowData>[] = [
-   
     {
       headerCheckboxSelection: true, // To show a header checkbox
       checkboxSelection: true, // Enable checkbox in the cell
@@ -333,9 +351,12 @@ const PickSlip = () => {
   };
   useEffect(() => {
     let sum = selectedRows.reduce((a, b) => a + Number(b?.qty), 0);
-    setTotalQty;
-    sum;
+    setTotalQty(sum);
   }, [selectedRows]);
+  const closeDrawer = () => {
+    setSheetOpen(false);
+    setFinalRows(selectedRows);
+  };
 
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] overflow-hidden">
@@ -496,9 +517,9 @@ const PickSlip = () => {
             </Typography.Text>
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={() => setFinalRows(selectedRows)}
+              onClick={closeDrawer}
             >
-              Okay and Close
+              Confirm
             </Button>
           </div>
           <div></div>

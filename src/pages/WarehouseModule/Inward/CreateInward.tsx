@@ -68,6 +68,7 @@ const CreateInward: React.FC<Props> = ({
     (state: RootState) => state.client
   );
   const [forms] = Form.useForm();
+  const selBranch = Form.useWatch("branch", form);
   const params = useParams();
   console.log("params", params);
   const { execFun, loading: loading1 } = useApi();
@@ -180,16 +181,16 @@ const CreateInward: React.FC<Props> = ({
     }
   }, [selectedVendor]);
 
-  // useEffect(() => {
-  //   if (selectedVendor && selBranch) {
-  //     dispatch(
-  //       fetchVendorAddressDetails({
-  //         vendorcode: selectedVendor?.value,
-  //         branchcode: selBranch?.value,
-  //       })
-  //     );
-  //   }
-  // }, [selectedVendor, selBranch]);
+  useEffect(() => {
+    if (selectedVendor && selBranch) {
+      dispatch(
+        fetchVendorAddressDetails({
+          vendorcode: selectedVendor?.value,
+          branchcode: selBranch?.value,
+        })
+      );
+    }
+  }, [selectedVendor, selBranch]);
   useEffect(() => {
     if (searchData) {
       dispatch(listOfCostCenter({ search: searchData }));

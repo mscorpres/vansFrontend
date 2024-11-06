@@ -161,7 +161,6 @@ const TextInputCellRenderer = (props: any) => {
   const { hsnlist, getComponentData } = useSelector(
     (state: RootState) => state.client
   );
-  console.log("here is fg data");
 
   const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
 
@@ -196,34 +195,32 @@ const TextInputCellRenderer = (props: any) => {
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     // setRowData((prevData: any) => [...prevData, newData]);
   };
-  //   console.log("data inn texty", data);
 
   const handleCurrencyChange = (value: any) => {
     dispatch(fetchCurrency());
     data["currency"] = value;
     setOpenCurrencyDialog(true);
   };
-  //   console.log("materialList", materialList);
   const handleChange = (value: string) => {
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "product") {
-   
-
       data["product"] = data.product;
 
       dispatch(
         fetchFGProductData({
           search: data["product"],
         })
-      );
-      
-      data["orderQty"] = productData?.total;
+      ).then((res) => {
+        if (res.payload) {
+          let date2 = res.payload;
+          data["qty"] = date2?.total;
+        }
+      });
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
       updateData(data);
-
     }
     let cgst = 0;
     let sgst = 0;
@@ -320,7 +317,6 @@ const TextInputCellRenderer = (props: any) => {
     data.dueDate = date ? date.format("DD-MM-YYYY") : ""; // Format the date for storage
     updateData(data); // Update the data
   };
-  // console.log("props--->", props?.currencyList);
 
   const renderContent = () => {
     switch (colDef.field) {
@@ -813,6 +809,16 @@ const TextInputCellRenderer = (props: any) => {
           />
         );
       case "component_fullname":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "orderQty":
         return (
           <Input
             onChange={handleInputChange}

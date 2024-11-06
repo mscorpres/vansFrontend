@@ -188,7 +188,7 @@ export const materialmenu = [
       { name: "Inward", path: "/warehouse/inward" },
       { name: "Transfer", path: "/warehouse/transfer" },
       { name: "Pick Slip", path: "/warehouse/pickSlip" },
-      { name: "Batch Allocation", path: "/not-permission" },
+      { name: "Batch Allocation", path: "/warehouse/batchAllocation" },
     ],
   },
   {
@@ -256,5 +256,53 @@ export const materialmenu = [
       { name: "Create Physical Stock", path: "/not-permission" },
       { name: "View Physical Stock", path: "/not-permission" },
     ],
+  },
+];
+export const printMenu = [
+  // {
+  //   name: "Master",
+  //   subMenu: [
+  //     {
+  //       name: "Components",
+  //       subMenu: [
+  //         { name: "Material", path: "/master/material" },
+  //         { name: "Service", path: "/master/service" },
+  //       ],
+  //     },
+  //     { name: "Component Map", path: "/master/componentMap/map" },
+  //     { name: "Products", path: "/master/product" },
+  //     { name: "HSN map", path: "/master/hsn" },
+  //     { name: "Groups", path: "/master/groups" },
+  //     { name: "Locations", path: "/master/location" },
+  //     { name: "Billing address", path: "/master/billing-address" },
+  //     { name: "Shipping address", path: "/master/shipping-address" },
+  //     {
+  //       name: "Bill Of Material",
+  //       subMenu: [
+  //         { name: "Bom", path: "/master/bom" },
+  //         // { name: "Manage Bom", path: "/not-permission" },
+  //       ],
+  //     },
+  //     {
+  //       name: "Vender / Suppliar",
+  //       subMenu: [{ name: "Add / Rectify", path: "/master/vendor" }],
+  //     },
+  //     {
+  //       name: "Customer / Client",
+  //       subMenu: [
+  //         { name: "Add", path: "/master/client/add" },
+  //         { name: "View", path: "/master/client/view" },
+  //       ],
+  //     },
+  //     // {
+  //     //   name: "Customer / Client",
+  //     //   path: "/master/customer",
+  //     // },
+  //   ],
+  // },
+
+  {
+    name: "Warehouse",
+    path: "/warehouse/PickSlip/print",
   },
 ];

@@ -10,6 +10,10 @@ import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import styled from "styled-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddPoUIStateType } from "@/types/AddPOTypes";
+import {
+  modelFixFooterStyle,
+  modelFixHeaderStyle,
+} from "@/constants/themeContants";
 // import columnDefs, {
 //   RowData,
 // } from "@/config/agGrid/SalseOrderCreateTableColumns";
@@ -26,11 +30,27 @@ import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import RejectModal from "@/components/shared/RejectModal";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
   fetchCurrency,
   rejectPo,
   updatePo,
 } from "@/features/client/clientSlice";
 import { minTransaction } from "@/features/client/storeSlice";
+import {
+  FileInput,
+  FileUploader,
+  FileUploaderContent,
+  FileUploaderItem,
+} from "@/components/shared/FileUpload";
+import { IoCloudUpload } from "react-icons/io5";
+import { useToast } from "@/components/ui/use-toast";
+import { spigenAxios } from "@/axiosIntercepter";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
 // }
@@ -70,15 +90,26 @@ const AddPO: React.FC<Props> = ({
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
   const [taxDetails, setTaxDetails] = useState([]);
   const [removingList, setRemovingList] = useState([]);
+  const [attachmentFile, setAttachmentFile] = useState([]);
   const [search, setSearch] = useState("");
+  const [sheetOpen, setSheetOpen] = useState([]);
+  const [files, setFiles] = useState<File[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const dispatch = useDispatch<AppDispatch>();
   const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
-  const { currencyList } = useSelector((state: RootState) => state.client);
+  const { minTransactiondata } = useSelector((state: RootState) => state.store);
+  const isLoading = useSelector(
+    (state) => storeSlice.minTransactiondata.loading
+  );
 
+  const { currencyList } = useSelector((state: RootState) => state.client);
+  const { toast } = useToast();
   const { execFun, loading: loading1 } = useApi();
   const gridRef = useRef<AgGridReact<RowData>>(null);
+
   const selVendor = Form.useWatch("vendorName", form);
   // const clientAdd = Form.useWatch("address", form);
   const uiState: AddPoUIStateType = {
@@ -90,10 +121,13 @@ const AddPO: React.FC<Props> = ({
     resetModel,
     setResetModel,
   };
+
+  const handleFileChange = (newFiles: File[] | null) => {
+    setFiles(newFiles);
+  };
   let clientAdd = form.getFieldValue("address");
   let clientGst = form.getFieldValue("vendorGst");
   let vendorNameis = form.getFieldValue("vendorName");
-  console.log("address", clientAdd, clientGst, vendorNameis);
 
   const addNewRow = () => {
     const newRow = {
@@ -123,7 +157,6 @@ const AddPO: React.FC<Props> = ({
     ]);
   };
   const removeRows = () => {
-    console.log("removing rows", rowData);
   };
   const defaultColDef = useMemo<ColDef>(() => {
     return {
@@ -174,7 +207,6 @@ const AddPO: React.FC<Props> = ({
   const onBtExport = useCallback(() => {
     gridRef.current!.api.exportDataAsExcel();
   }, []);
-  // console.log("currencyList", currencyList);
 
   // useEffect(() => {
   //   addNewRow();
@@ -185,10 +217,8 @@ const AddPO: React.FC<Props> = ({
   }, []);
 
   const handleSubmit = async () => {
-    // console.log("isapprove", isApprove);
     // return;
     let arr = rowData;
-    // console.log("arr", arr);
 
     let payload = {
       vendor: formVal.vendorName.value,
@@ -207,10 +237,9 @@ const AddPO: React.FC<Props> = ({
       cgst: arr.map((r) => r.cgst),
       sgst: arr.map((r) => r.sgst),
       igst: arr.map((r) => r.igst),
+      attachment: attachmentFile,
     };
-    console.log("payload", payload);
     dispatch(minTransaction(payload)).then((res) => {
-      console.log("res", res);
     });
   };
   const fetchComponentList = async (search) => {
@@ -218,7 +247,6 @@ const AddPO: React.FC<Props> = ({
       () => getComponentsByNameAndNo(search),
       "fetch"
     );
-    // console.log("response---", response);
     if (response.status === "sucess") {
       let arr = response.data.map((r) => {
         return {
@@ -227,7 +255,6 @@ const AddPO: React.FC<Props> = ({
         };
       });
       setAsyncOptions(arr);
-      // console.log("arr", arr);
     }
   };
   const columnDefs = [
@@ -354,13 +381,10 @@ const AddPO: React.FC<Props> = ({
       minWidth: 200,
     },
   ];
-  console.log("rowData", rowData);
   const handleReject = () => {
-    console.log("rejected", params, rejectText);
     dispatch(
       rejectPo({ poid: params?.id?.replaceAll("_", "/"), remark: rejectText })
     ).then((response: any) => {
-      console.log("resp", response);
       if (response.payload.success == "200") {
         setShowRejectConfirm(true);
       }
@@ -370,6 +394,29 @@ const AddPO: React.FC<Props> = ({
   const formattedDate = (date) => {
     const [year, month, day] = date.split("-");
     return `${day}-${month}-${year}`;
+  };
+  const uploadDocs = async () => {
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("action", "uploadTempFile");
+    files.map((comp) => {
+      formData.append("files", comp);
+    });
+    const response = await spigenAxios.post(
+      "/transaction/upload-invoice",
+      formData
+    );
+    if (response.data.code == 200) {
+      // toast
+      toast({
+        title: "Doc Uploaded successfully",
+        className: "bg-green-600 text-white items-center",
+      });
+      setLoading(false);
+      setSheetOpen(false);
+      setAttachmentFile(response.data.data);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -395,7 +442,6 @@ const AddPO: React.FC<Props> = ({
         0
       );
       const sgst = +Number(sgsts).toFixed(2);
-      // console.log("sgst", sgst);
       const igsts = singleArr?.reduce(
         (partialSum, a) => partialSum + +Number(a?.igst).toFixed(2),
         0
@@ -436,8 +482,6 @@ const AddPO: React.FC<Props> = ({
         // },
       ];
       setTaxDetails(arr);
-      console.log("arr", arr);
-      console.log("Tax Details:", arr);
     };
 
     // Initial calculation
@@ -477,7 +521,7 @@ const AddPO: React.FC<Props> = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-slate-600">
+              <div className="text-slate-600 flex">
                 <ul>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
                     <div>
@@ -548,19 +592,18 @@ const AddPO: React.FC<Props> = ({
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
             >
               <Plus className="font-[600]" /> Add Item
-            </Button>{" "}
+            </Button>
             <div>
               <Button
-                onClick={() => setExcelModel(true)}
+                onClick={() => setSheetOpen(true)}
                 className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
               >
-                <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel
-                Here
+                <Upload className="text-white w-[20px] h-[20px]" /> Upload Docs
               </Button>
             </div>{" "}
-            *
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
+            {minTransactiondata.laoding && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
@@ -636,7 +679,81 @@ const AddPO: React.FC<Props> = ({
           {/* {isApprove ? "Approve" : "Submit"} */}
           Save MIN
         </Button>
-      </div>
+      </div>{" "}
+      <Sheet open={sheetOpen == true} onOpenChange={setSheetOpen}>
+        <SheetContent
+          className="min-w-[35%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          {/* {loading == true && <FullPageLoading />} */}
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
+          </SheetHeader>{" "}
+          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+            {" "}
+            <FileUploader
+              value={files}
+              onValueChange={handleFileChange}
+              dropzoneOptions={{
+                accept: {
+                  "image/*": [".jpg", ".jpeg", ".png", ".gif", ".pdf"],
+                },
+                maxFiles: 5,
+                maxSize: 4 * 1024 * 1024, // 4 MB
+                multiple: true,
+              }}
+            >
+              <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
+                <h2 className="text-xl font-semibold text-center mb-4">
+                  <div className=" text-center w-full justify-center flex">
+                    {" "}
+                    <div>Upload Your Files</div>
+                    <div>
+                      {" "}
+                      <IoCloudUpload
+                        className="text-cyan-700 ml-5 h-[20]"
+                        size={"1.5rem"}
+                      />
+                    </div>
+                  </div>
+                </h2>
+                <FileInput>
+                  <span className="text-slate-500 text-sm text-center w-full justify-center flex">
+                    Drag and drop files here, or click to select files
+                  </span>
+                </FileInput>{" "}
+              </div>{" "}
+              <div className=" m-[20px]">
+                <FileUploaderContent>
+                  {files?.map((file, index) => (
+                    <FileUploaderItem key={index} index={index}>
+                      <span>{file.name}</span>
+                    </FileUploaderItem>
+                  ))}
+                </FileUploaderContent>
+              </div>
+            </FileUploader>{" "}
+          </div>{" "}
+          <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+            <Button
+              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+              // onClick={() => setTab("create")}
+            >
+              Back
+            </Button>{" "}
+            <Button
+              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              onClick={uploadDocs}
+              // loading={laoding}
+            >
+              {/* {isApprove ? "Approve" : "Submit"} */}
+              Upload
+            </Button>
+          </div>{" "}
+        </SheetContent>
+      </Sheet>
     </Wrapper>
   );
 };

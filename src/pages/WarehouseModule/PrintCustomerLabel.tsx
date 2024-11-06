@@ -14,10 +14,10 @@ import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
 import { AgGridReact } from "ag-grid-react";
 import { useDispatch, useSelector } from "react-redux";
-import { getminBox, qrPrint } from "@/features/client/storeSlice";
+import { cutomerLable, getminBox, qrPrint } from "@/features/client/storeSlice";
 import { spigenAxios } from "@/axiosIntercepter";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
-import { images } from "@/assets/images.jpeg";
+import { print } from "./../../assets/print.jpeg";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 function PrintMinLabel() {
   const [form] = Form.useForm();
@@ -61,12 +61,13 @@ function PrintMinLabel() {
     );
   };
   const onsubmit = async () => {
+    let values = await form.validateFields();
+
     setLoading(true);
     let payload = {
-      type: "MIN",
-      min_no: selMin.value,
+      pickSlip_no: values.min.value,
     };
-    dispatch(qrPrint(payload)).then((res) => {
+    dispatch(cutomerLable(payload)).then((res) => {
       if (res.payload.code == 200) {
         downloadFunction(
           res.payload.data.buffer.data,
@@ -82,7 +83,7 @@ function PrintMinLabel() {
       const formData = new FormData();
       formData.append("type", "MIN");
       formData.append("min_no", selMin.value);
-      if (selType.value == "Transfer" || selType == "Transfer") {
+      if (selType?.value == "Transfer" || selType == "Transfer") {
         getDataBox(formData);
       } else {
         getData(formData);
@@ -103,42 +104,17 @@ function PrintMinLabel() {
             className="space-y-6 overflow-hidden p-[10px] h-[1000px]"
           >
             <div className="grid grid-cols-1 gap-[40px]">
-              <Form.Item name="printType" label="Print Type">
-                <Select
-                  styles={customStyles}
-                  components={{ DropdownIndicator }}
-                  // placeholder=" Enter UOM"
-                  className="border-0 basic-single"
-                  classNamePrefix="select border-0"
-                  isDisabled={false}
-                  isClearable={true}
-                  isSearchable={true}
-                  options={types}
+              <Form.Item name="min" label="Slip Transaction Id">
+                <ReusableAsyncSelect
+                  // placeholder="Customer Name"
+                  endpoint="/backend/getOutTransaction"
+                  transform={transformOptionData}
+                  // onChange={(e) => form.setValue("customerName", e)}
+                  // value={selectedCustomer}
+                  fetchOptionWith="payloadSearchTerm"
                 />
               </Form.Item>
-              {selType == "Transfer" || selType?.value == "Transfer" ? (
-                <Form.Item name="min" label="  MIN">
-                  <ReusableAsyncSelect
-                    // placeholder="Customer Name"
-                    endpoint="/backend/getTrfMinsTransaction4Label"
-                    transform={transformOptionData}
-                    // onChange={(e) => form.setValue("customerName", e)}
-                    // value={selectedCustomer}
-                    fetchOptionWith="payloadSearchTerm"
-                  />
-                </Form.Item>
-              ) : (
-                <Form.Item name="min" label="  MIN">
-                  <ReusableAsyncSelect
-                    // placeholder="Customer Name"
-                    endpoint="/backend/getMinsTransaction4Label"
-                    transform={transformOptionData}
-                    // onChange={(e) => form.setValue("customerName", e)}
-                    // value={selectedCustomer}
-                    fetchOptionWith="payloadSearchTerm"
-                  />
-                </Form.Item>
-              )}
+              {/* // )} */}
             </div>
 
             <Button
@@ -157,7 +133,11 @@ function PrintMinLabel() {
       <div className="ag-theme-quartz h-[calc(100vh-50px)]">
         {" "}
         <div className="h-[calc(100vh-50px)] flex flex-col gap-[20px] justify-center items-center">
-          <img src="/p2.png" className="w-[300px] opacity-50" alt="" />
+          {/* <img
+            src="./../../assets/print.jpeg"
+            // alt="project under developent"
+            className="w-[400px] opacity-30"
+          /> */}
         </div>
       </div>
     </Wrapper>

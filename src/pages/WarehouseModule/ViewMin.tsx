@@ -1,7 +1,7 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { Badge, Edit2, EyeIcon, Filter, Trash } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
@@ -19,26 +19,27 @@ import {
   fetchManagePOList,
   printPO,
 } from "@/features/client/clientSlice";
-import {
-  exportDateRange,
-  exportDateRangespace,
-} from "@/components/shared/Options";
+import { exportDateRange } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
-import ViewCompoents from "./ViewCompoents";
-import POCancel from "./POCancel";
+// import ViewCompoents from "./ViewCompoents";
+// import POCancel from "./POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-import MINPO from "./MINPO";
+// import MINPO from "./MINPO";
 import { useNavigate } from "react-router-dom";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import {
-  fetchPrintPickSetelement,
-  printPickSetelement,
+  getMinTransactionByDate,
+  printSingleMin,
 } from "@/features/client/storeSlice";
-import { transformOptions } from "@/helper/transform";
-import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-const ActionMenu: React.FC<ActionMenuProps> = ({ row, printTheSelectedPo }) => {
+const ActionMenu: React.FC<ActionMenuProps> = ({
+  setViewMinPo,
+  setCancel,
+  setView,
+  row,
+  cancelTheSelectedPo,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -46,7 +47,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row, printTheSelectedPo }) => {
     <Menu>
       <Menu.Item
         key=" Print"
-        onClick={() => printTheSelectedPo(row)} // disabled={isDisabled}
+        onClick={() => cancelTheSelectedPo(row)} // disabled={isDisabled}
       >
         Print
       </Menu.Item>
@@ -74,7 +75,7 @@ const FormSchema = z.object({
 });
 const { RangePicker } = DatePicker;
 const dateFormat = "YYYY/MM/DD";
-const PrintPickSlip: React.FC = () => {
+const ViewMin: React.FC = () => {
   const { managePoList } = useSelector((state: RootState) => state.client);
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
@@ -107,13 +108,13 @@ const PrintPickSlip: React.FC = () => {
           setView={setView}
           setCancel={setCancel}
           row={params.data}
-          printTheSelectedPo={printTheSelectedPo}
+          cancelTheSelectedPo={cancelTheSelectedPo}
         />
       ),
     },
     {
-      field: "part",
-      headerName: "Part ",
+      field: "datetime",
+      headerName: "Min Date Time ",
       flex: 1,
       cellRenderer: CopyCellRenderer,
       filterParams: {
@@ -124,8 +125,8 @@ const PrintPickSlip: React.FC = () => {
       },
     },
     {
-      field: "component",
-      headerName: "Component",
+      field: "transaction",
+      headerName: "Min Id",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -135,10 +136,10 @@ const PrintPickSlip: React.FC = () => {
       },
     },
     {
-      field: "desc",
-      headerName: "Desc & Narration",
+      field: "invoice",
+      headerName: "Invoice Id",
       cellRenderer: CopyCellRenderer,
-      flex: 2,
+      flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -147,9 +148,9 @@ const PrintPickSlip: React.FC = () => {
       },
     },
     {
-      field: "transaction",
-      headerName: "Transaction",
-      flex: 1,
+      field: "vendorname",
+      headerName: "Vendor Name",
+      flex: 2,
       filter: "agDateColumnFilter",
       filterParams: {
         floatingFilterComponentParams: {
@@ -159,8 +160,8 @@ const PrintPickSlip: React.FC = () => {
       },
     },
     {
-      field: "remark",
-      headerName: "Remark",
+      field: "partcode",
+      headerName: "Part Code",
       flex: 1,
     },
   ]);
@@ -170,20 +171,20 @@ const PrintPickSlip: React.FC = () => {
       value: "datewise",
     },
     {
-      label: "Txn Wise",
-      value: "transaction_wise",
+      label: "Min Wise",
+      value: "minwise",
     },
   ];
-  const printTheSelectedPo = async (row: any) => {
+  const cancelTheSelectedPo = async (row: any) => {
     let payload = {
-      pickSlip_no: row?.transaction,
+      transaction: row?.transaction,
     };
-    // return;
-    dispatch(printPickSetelement({ pickSlip_no: row?.transaction })).then(
+
+    dispatch(printSingleMin({ transaction: row?.transaction })).then(
       (res: any) => {
         if (res.payload.code == 200) {
           let { data } = res.payload;
-          downloadFunction(data.buffer, data.filename);
+          downloadFunction(data.buffer.data, data.filename);
         }
       }
     );
@@ -209,27 +210,30 @@ const PrintPickSlip: React.FC = () => {
   const fetchManageList = async () => {
     setLoading(true);
     const values = await form.validateFields();
-
     let date;
-    if (values.wise.value === "datewise") {
-      date = exportDateRangespace(values.data);
+    if (values.wise.value == "datewise") {
+      date = exportDateRange(values.data);
     } else {
-      date = values.data.value;
+      date = values.data;
     }
     let payload = { data: date, wise: values.wise.value };
-    dispatch(fetchPrintPickSetelement(payload)).then((res: any) => {
+    dispatch(getMinTransactionByDate(payload)).then((res: any) => {
       if (res.payload.code == 200) {
-        let a = res.payload.response.data;
-        let arr = a.map((r) => {
-          return {
-            ...r,
-          };
+        let arr = res.payload.data;
+        let newRow = arr.data.map((r) => {
+          return { ...r };
         });
 
-        setRowData(arr);
+        setRowData(newRow);
+      } else {
+        setLoading(false);
       }
     });
 
+    if (managePoList) {
+      setRowData(managePoList);
+      setLoading(false);
+    }
     setLoading(false);
   };
   const defaultColDef = useMemo(() => {
@@ -238,11 +242,14 @@ const PrintPickSlip: React.FC = () => {
       floatingFilter: true,
     };
   }, []);
+  useEffect(() => {
+    form.setFieldValue("data", "");
+  }, [selectedwise]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       {" "}
-      {loading == true && <FullPageLoading />}
+      {loading && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
@@ -287,16 +294,13 @@ const PrintPickSlip: React.FC = () => {
                 />
               </Space>
             </Form.Item>
+          ) : selectedwise?.value === "vendorwise" ? (
+            <Form.Item className="w-full" name="data">
+              <Input placeholder="vendor number" />
+            </Form.Item>
           ) : (
             <Form.Item className="w-full" name="data">
-              <ReusableAsyncSelect
-                // placeholder="Cost Center"
-                endpoint="/backend/getOutTransaction"
-                transform={transformOptions}
-                fetchOptionWith="payloadSearchTerm"
-                // onChange={handleCostCenterChange}
-                // value={selectedCostCenter}
-              />
+              <Input placeholder="Min number" />
             </Form.Item>
           )}
           <div className="w-full flex justify-end">
@@ -327,8 +331,6 @@ const PrintPickSlip: React.FC = () => {
         <Divider />
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-120px)]">
-        {" "}
-        {loading == true && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
@@ -340,6 +342,21 @@ const PrintPickSlip: React.FC = () => {
           paginationPageSizeSelector={[10, 25, 50]}
         />
       </div>{" "}
+      {/* <ViewCompoents
+        view={view}
+        setView={setView}
+        setShowConfirmation={setShowConfirmation}
+        showConfirmation={showConfirmation}
+        loading={loading}
+      />
+      <POCancel
+        cancel={cancel}
+        setCancel={setCancel}
+        // handleCancelPO={handleCancelPO}
+        remarkDescription={remarkDescription}
+        setRemarkDescription={setRemarkDescription}
+      />{" "}
+      <MINPO viewMinPo={viewMinPo} setViewMinPo={setViewMinPo} /> */}
       <ConfirmationModal
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}
@@ -357,4 +374,4 @@ const Wrapper = styled.div`
   }
 `;
 
-export default PrintPickSlip;
+export default ViewMin;

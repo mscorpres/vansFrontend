@@ -39,7 +39,10 @@ import useApi from "@/hooks/useApi";
 import { fetchListOfCompletedFg } from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { exportDateRangespace } from "@/components/shared/Options";
+import {
+  exportDatepace,
+  exportDateRangespace,
+} from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 const FormSchema = z.object({
@@ -67,13 +70,10 @@ const CompeletedFg = () => {
   const dateFormat = "YYYY/MM/DD";
   const fetchFGList = async (formData: z.infer<typeof FormSchema>) => {
     let { dateRange, datainp } = formData;
-    console.log("dateRange, input", dateRange, datainp);
-    console.log("Wise", wise);
-    console.log("formData", formData);
 
     let dataString = "";
     if (wise === "datewise" && dateRange) {
-      dataString = exportDateRangespace(dateRange);
+      dataString = exportDatepace(dateRange);
       // const startDate = dateRange[0]
       //   .toLocaleDateString("en-GB")
       //   .split("/")
@@ -85,7 +85,6 @@ const CompeletedFg = () => {
       //   .reverse()
       //   .join("-");
       // dataString = `${startDate}-${endDate}`;
-      console.log("dateString", dataString);
     } else if (wise === "skuwise" && datainp) {
       dataString = datainp;
     }
@@ -95,7 +94,6 @@ const CompeletedFg = () => {
       () => fetchListOfCompletedFg(wise, dataString),
       "fetch"
     );
-    console.log("response", response);
     // return;
     let { data } = response;
     if (data.code === 200) {

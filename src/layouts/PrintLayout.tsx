@@ -2,29 +2,40 @@ import { navlinkActiveStyle, navLinkStyle } from "@/constants/themeContants";
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-const FgLayoutOut = (props: { children: React.ReactNode }) => {
+const PrintLayout = (props: { children: React.ReactNode }) => {
   return (
     <div className="">
       <div className="w-full bg-white tab h-[50px] shadow z-10 border-b border-slate-300">
         <ul className="group flex items-center  h-[50px] ">
           <li className="h-[50px]">
             <NavLink
-              to={"/fgOut/create"}
+              to={"/warehouse/min/print"}
               className={({ isActive }) =>
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }
             >
-              Create FG Out
+              MIN Label
             </NavLink>
           </li>
           <li className="h-[50px]">
             <NavLink
-              to={"/fgOut/view"}
+              to={"/warehouse/PickSlip/print"}
               className={({ isActive }) =>
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }
             >
-              View FG Out
+              Pick Slip
+            </NavLink>
+          </li>
+         
+          <li className="h-[50px]">
+            <NavLink
+              to={"/warehouse/printCustomerLabel"}
+              className={({ isActive }) =>
+                `${navLinkStyle} ${isActive && navlinkActiveStyle}`
+              }
+            >
+              Customer Label
             </NavLink>
           </li>
         </ul>
@@ -36,4 +47,4 @@ const FgLayoutOut = (props: { children: React.ReactNode }) => {
   );
 };
 
-export default FgLayoutOut;
+export default PrintLayout;

@@ -82,6 +82,10 @@ import BatchAlloaction from "./pages/WarehouseModule/BatchAlloaction";
 import InwardTemplate from "./pages/WarehouseModule/Inward/InwardTemplate";
 import ChildMarkup from "./pages/WarehouseModule/ChildMarkup";
 import PrintPickSlip from "./pages/WarehouseModule/PrintPickSlip";
+import ViewMin from "./pages/WarehouseModule/ViewMin";
+import PrintCustomerLabel from "./pages/WarehouseModule/PrintCustomerLabel";
+import PrintLayout from "./layouts/PrintLayout";
+import ViewFgOut from "./pages/FGOut/ViewFgOut";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -351,7 +355,7 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <FgLayoutOut>
-            <CompeletedFg />
+            <ViewFgOut />
           </FgLayoutOut>
         </MainLayout>
       </Protected>
@@ -769,11 +773,11 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <InwardLayout>
+          <PrintLayout>
             <PrintPickSlip />
             {/* <PendingMr /> */}
             {/* <SalesETransactionRegisterPage /> */}
-          </InwardLayout>
+          </PrintLayout>
         </MainLayout>
       </Protected>
     ),
@@ -783,11 +787,11 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <InwardLayout>
+          <PrintLayout>
             <PrintMinLabel />
             {/* <PendingMr /> */}
             {/* <SalesETransactionRegisterPage /> */}
-          </InwardLayout>
+          </PrintLayout>
         </MainLayout>
       </Protected>
     ),
@@ -807,6 +811,36 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/warehouse/itemQr",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <PrintLayout>
+            <PrintCustomerLabel />
+            {/* <ItemQr /> */}
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </PrintLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/printCustomerLabel",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <ViewMin />
+            {/* <ItemQr /> */}
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/viewMin",
   },
   {
     element: (
