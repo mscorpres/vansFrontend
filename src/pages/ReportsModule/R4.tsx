@@ -1,60 +1,16 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+import { DatePicker } from "antd";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
-import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import {
-  fetchListOfMINRegister,
-  fetchListOfMINRegisterOut,
-  fetchListOfQ1,
-  fetchR4,
-  getComponentsByNameAndNo,
-} from "@/components/shared/Api/masterApi";
+import { fetchR4 } from "@/components/shared/Api/masterApi";
+import { IoMdDownload } from "react-icons/io";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -79,26 +35,7 @@ const R4 = () => {
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     console.log("formData", formData);
-    // let { date } = formData;
-    // let dataString = "";
-    // if (date) {
-    //   const startDate = date[0]
-    //     .toLocaleDateString("en-GB")
-    //     .split("/")
-    //     .reverse()
-    //     .join("-");
-    //   const endDate = date[1]
-    //     .toLocaleDateString("en-GB")
-    //     .split("/")
-    //     .reverse()
-    //     .join("-");
-    //   dataString = `${startDate}-${endDate}`;
-    //   console.log("dateString", dataString);
-    // }
-    // let payload = {
-    //   min_types: formData.types,
-    //   data: dataString,
-    // };
+
     const response = await execFun(() => fetchR4(), "fetch");
     console.log("response", response);
     let { data } = response;
@@ -113,15 +50,8 @@ const R4 = () => {
 
       setRowData(arr);
     } else {
-      //   addToast(data.message.msg, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
     }
   };
-  useEffect(() => {
-    // fetchComponentList();
-  }, []);
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -195,13 +125,33 @@ const R4 = () => {
       value: "PROJECT",
     },
   ];
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "R4 All Item Closing Stock");
+  };
+
   useEffect(() => {
     fetchQueryResults();
   }, []);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-1">
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="flex gap-[10px] justify-end  px-[5px] bg-white h-[50px]">
+        <Button
+          // type="submit"
+          className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey mt-[8px]"
+          // onClick={() => {}}
+          disabled={rowData.length === 0}
+          onClick={(e: any) => {
+            e.preventDefault();
+            handleDownloadExcel();
+          }}
+        >
+          <IoMdDownload size={20} />
+        </Button>
+      </div>
+      <div className="ag-theme-quartz h-[calc(100vh-150px)]">
+        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

@@ -262,6 +262,17 @@ export const fetchListOfQ2 = async (payload: any) => {
   );
   return response;
 };
+export const itemQueryL = async (payload: any) => {
+  const response = await spigenAxios.post("/itemQueryL", payload);
+  return response;
+};
+export const fetchCustomerComponentsByPart = async (payload: any) => {
+  const response = await spigenAxios.post(
+    "/component/fetchCustomerComponentsByPart",
+    payload
+  );
+  return response;
+};
 export const fetchListOfQ3 = async (payload: any) => {
   const response = await spigenAxios.post("/skuQueryA/fetchSKU_logs", payload);
   return response;
@@ -297,7 +308,7 @@ export const fetchR4 = async (payload: any) => {
   return response;
 };
 export const fetchR6 = async (payload: any) => {
-  const response = await spigenAxios.get("/rate/componentRate", payload);
+  const response = await spigenAxios.post("/rate/componentRate", payload);
   return response;
 };
 export const getComponentDetailsForServices = async (payload: any) => {
@@ -443,6 +454,13 @@ export const fetchViewComponentsOfManage = async (payload: any) => {
       poid: payload,
     }
   );
+  return response;
+};
+// /purchaseOrder/fetchComponentList4PO
+export const fetchBomForProduct = async (payload: any) => {
+  const response = await spigenAxios.post("/backend/fetchBomForProduct", {
+    search: payload,
+  });
   return response;
 };
 // /purchaseOrder/fetchComponentList4PO

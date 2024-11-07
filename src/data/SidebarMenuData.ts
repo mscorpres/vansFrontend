@@ -243,7 +243,7 @@ export const materialmenu = [
           { name: "Reports R1-R5", path: "/inventory/report/r1" },
         ],
       },
-      { name: "Printing", path: "/not-permission" },
+      { name: "Printing", path: "/warehouse/min/print" },
     ],
   },
   {
@@ -259,50 +259,7 @@ export const materialmenu = [
   },
 ];
 export const printMenu = [
-  // {
-  //   name: "Master",
-  //   subMenu: [
-  //     {
-  //       name: "Components",
-  //       subMenu: [
-  //         { name: "Material", path: "/master/material" },
-  //         { name: "Service", path: "/master/service" },
-  //       ],
-  //     },
-  //     { name: "Component Map", path: "/master/componentMap/map" },
-  //     { name: "Products", path: "/master/product" },
-  //     { name: "HSN map", path: "/master/hsn" },
-  //     { name: "Groups", path: "/master/groups" },
-  //     { name: "Locations", path: "/master/location" },
-  //     { name: "Billing address", path: "/master/billing-address" },
-  //     { name: "Shipping address", path: "/master/shipping-address" },
-  //     {
-  //       name: "Bill Of Material",
-  //       subMenu: [
-  //         { name: "Bom", path: "/master/bom" },
-  //         // { name: "Manage Bom", path: "/not-permission" },
-  //       ],
-  //     },
-  //     {
-  //       name: "Vender / Suppliar",
-  //       subMenu: [{ name: "Add / Rectify", path: "/master/vendor" }],
-  //     },
-  //     {
-  //       name: "Customer / Client",
-  //       subMenu: [
-  //         { name: "Add", path: "/master/client/add" },
-  //         { name: "View", path: "/master/client/view" },
-  //       ],
-  //     },
-  //     // {
-  //     //   name: "Customer / Client",
-  //     //   path: "/master/customer",
-  //     // },
-  //   ],
-  // },
-
-  {
-    name: "Warehouse",
-    path: "/warehouse/PickSlip/print",
-  },
+  { name: " MIN Label", path: "/warehouse/min/print" },
+  { name: "Pick Slip", path: "/warehouse/PickSlip/print" },
+  { name: " Customer Label", path: "/warehouse/printCustomerLabel" },
 ];

@@ -23,38 +23,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Edit2, Filter } from "lucide-react";
+import { , Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { DatePicker, Space } from "antd";
+;
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
-import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+
 import {
-  fetchListOfMINRegister,
-  fetchListOfMINRegisterOut,
-  fetchListOfQ1,
   fetchR2,
-  getComponentsByNameAndNo,
 } from "@/components/shared/Api/masterApi";
+import { exportDateRangespace } from "@/components/shared/Options";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { IoMdDownload } from "react-icons/io";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -82,18 +65,7 @@ const R2 = () => {
     let { date } = formData;
     let dataString = "";
     if (date) {
-      const startDate = date[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = date[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      dataString = `${startDate}-${endDate}`;
-      console.log("dateString", dataString);
+      dataString = exportDateRangespace(date);
     }
     let payload = {
       wise: formData.types,
@@ -115,11 +87,11 @@ const R2 = () => {
 
       setRowData(arr);
     } else {
-      //   addToast(data.message.msg, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
+ 
     }
+  };
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "R2 Po Report");
   };
   useEffect(() => {
     // fetchComponentList();
@@ -312,7 +284,7 @@ const R2 = () => {
                             value ? value.map((date) => date!.toDate()) : []
                           )
                         }
-                        format={dateFormat}
+                        format={"DD/MM/YYYY"}
                       />
                     </Space>
                   </FormControl>
@@ -320,20 +292,35 @@ const R2 = () => {
                 </FormItem>
               )}
             />
-            {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            <div className="flex gap-[10px] justify-end  px-[5px]">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>{" "}
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                // onClick={() => {}}
+                disabled={rowData.length === 0}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

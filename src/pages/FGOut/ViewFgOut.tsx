@@ -1,42 +1,18 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import {  useEffect, useState } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 
-import { Edit2, Filter } from "lucide-react";
+import {  Filter } from "lucide-react";
 import styled from "styled-components";
-import { Checkbox, DatePicker, Divider, Form, Space } from "antd";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Select from "react-select";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { toast, useToast } from "@/components/ui/use-toast";
+import { DatePicker, Form, Space } from "antd";
+import { toast, } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import {
-  fetchListOfCompletedFg,
   fetchListOfCompletedFgOut,
 } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
-import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   exportDatepace,
-  exportDateRangespace,
 } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
@@ -161,10 +137,7 @@ const ViewFgOut = () => {
         </div>
         <div className="p-[10px]"></div>
         <Form form={form}>
-          {/* <form
-            onSubmit={form.handleSubmit(fetchFGList)}
-            className="space-y-6 overflow-hidden p-[10px] h-[470px]"
-          > */}
+        
           <Form.Item className="w-full px-[5px]" name="dateRange">
             <Space direction="vertical" size={12} className="w-full">
               <DatePicker
@@ -184,6 +157,7 @@ const ViewFgOut = () => {
               // type="submit"
               className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
               // onClick={() => {}}
+              disabled={rowData.length === 0}
               onClick={(e: any) => {
                 e.preventDefault();
                 handleDownloadExcel();
@@ -199,7 +173,6 @@ const ViewFgOut = () => {
               Search
             </Button>
           </div>
-          {/* </form> */}
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">

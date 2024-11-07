@@ -1,20 +1,11 @@
 import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import socket from "@/components/shared/socket";
+
 import {
   Form,
   FormControl,
@@ -26,42 +17,27 @@ import {
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+
+import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
-import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import {
-  fetchListOfMINRegister,
-  fetchListOfMINRegisterOut,
-  fetchListOfQ1,
-  getComponentsByNameAndNo,
-} from "@/components/shared/Api/masterApi";
+
+import { exportDatepace } from "@/components/shared/Options";
 const FormSchema = z.object({
   date: z
-    .array(z.date())
-    .length(2)
+    .union([z.date(), z.array(z.date()).length(2)]) // Either a single date or an array with exactly 2 dates
     .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
+    .refine(
+      (data) => {
+        // Additional refinement to ensure that if it's an array, it has exactly 2 dates
+        if (Array.isArray(data)) {
+          return data.length === 2;
+        }
+        return true; // If it's a single date, it's valid
+      },
+      {
+        message: "Please select a valid date range.",
+      }
+    ),
   types: z.string().optional(),
 });
 
@@ -72,54 +48,25 @@ const R1 = () => {
   });
   const { execFun, loading: loading1 } = useApi();
   //   const { addToast } = useToastContainer()
-  const { RangePicker } = DatePicker;
-
-  const dateFormat = "YYYY/MM/DD";
+  
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     console.log("formData", formData);
     let { date } = formData;
-    let dataString = "";
-    if (date) {
-      const startDate = date[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = date[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      dataString = `${startDate}-${endDate}`;
-      console.log("dateString", dataString);
-    }
-    let payload = {
-      min_types: formData.types,
-      data: dataString,
-    };
-    const response = await execFun(
-      () => fetchListOfMINRegisterOut(payload),
-      "fetch"
-    );
-    console.log("response", response);
-    let { data } = response;
-    if (data.code == 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          id: index + 1,
-          ...r,
-        };
-      });
-      console.log("arr", arr);
+    // if (date) {
 
-      setRowData(arr);
-    } else {
-      //   addToast(data.message.msg, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
-    }
+    let dataString = exportDatepace(formData?.date);
+    console.log("dataString", dataString);
+
+    socket.emit("stockPartBoxWise", {
+      reqFor: "downloade_trans_out",
+      date: dataString,
+    });
+
+    toast({
+      title: "Report will be sent to your email",
+      className: "bg-cyan-700 text-white",
+    });
   };
   useEffect(() => {
     // fetchComponentList();
@@ -234,42 +181,18 @@ const R1 = () => {
           >
             <FormField
               control={form.control}
-              name="types"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Select
-                      styles={customStyles}
-                      components={{ DropdownIndicator }}
-                      placeholder=" Enter Type"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
-                      options={type}
-                      onChange={(e: any) => form.setValue("types", e.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />{" "}
-            <FormField
-              control={form.control}
               name="date"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormControl>
                     <Space direction="vertical" size={12} className="w-full">
-                      <RangePicker
-                        className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                        onChange={(value) =>
-                          field.onChange(
-                            value ? value.map((date) => date!.toDate()) : []
-                          )
-                        }
-                        format={dateFormat}
+                      <DatePicker
+                        format="DD-MM-YYYY" // Set the format to dd-mm-yyyy
+                        onChange={(date, dateString) => {
+                          // Use `date` to get the Date object, or `dateString` for formatted value
+                          form.setValue("date", date ? date.toDate() : null);
+                        }}
+                        className="w-[100%] border-slate-400 shadow-none mt-[2px]"
                       />
                     </Space>
                   </FormControl>
@@ -290,7 +213,7 @@ const R1 = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      {/* <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
@@ -300,7 +223,7 @@ const R1 = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
         />
-      </div>
+      </div> */}
     </Wrapper>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,12 +7,9 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
+
 import {
-  InputStyle,
   LableStyle,
-  primartButtonStyle,
 } from "@/constants/themeContants";
 import {
   Form,
@@ -27,34 +23,17 @@ import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
 import {
-  transformCustomerData,
   transformOptionData,
-  transformPlaceData,
 } from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
-  fetchListOfMINRegister,
-  fetchListOfMINRegisterOut,
-  fetchListOfQ1,
-  fetchR2,
-  getComponentsByNameAndNo,
+  
+  fetchR6,
 } from "@/components/shared/Api/masterApi";
+import { exportDateRangespace } from "@/components/shared/Options";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -80,25 +59,13 @@ const R6 = () => {
   const { RangePicker } = DatePicker;
   const theWise = form.watch("types");
   const dateFormat = "YYYY/MM/DD";
-  console.log("theWise", theWise);
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     console.log("formData", formData);
     let { date } = formData;
     let dataString = "";
     if (date) {
-      const startDate = date[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = date[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      dataString = `${startDate}-${endDate}`;
-      console.log("dateString", dataString);
+      dataString = exportDateRangespace(date);
     }
     let payload = {
       searchValues: theWise,
@@ -106,11 +73,11 @@ const R6 = () => {
     };
     console.log("payload", payload);
 
-    const response = await execFun(() => fetchR2(payload), "fetch");
+    const response = await execFun(() => fetchR6(payload), "fetch");
     console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
-      let arr = data.response.data.map((r, index) => {
+      let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
           ...r,
@@ -120,10 +87,7 @@ const R6 = () => {
 
       setRowData(arr);
     } else {
-      //   addToast(data.message.msg, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
+      
     }
   };
   const handleCompChange = (e: any) => {
@@ -142,117 +106,68 @@ const R6 = () => {
       width: 90,
     },
     {
-      headerName: "Po Date",
-      field: "reg_date",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-    {
-      headerName: "Created By",
-      field: "reg_by",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-    {
-      headerName: "PO Order Id",
-      field: "po_order_id",
-      filter: "agTextColumnFilter",
-      width: 220,
-    },
-
-    {
       headerName: "Part",
-      field: "part_no",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-
-    {
-      headerName: "Compenent",
-      field: "component_name",
+      field: "PART",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Vendor Compenent Code/Description",
-      field: "vendor_name",
+      headerName: "Description",
+      field: "DESC",
       filter: "agTextColumnFilter",
       width: 190,
     },
-
     {
-      headerName: "UoM",
-      field: "unit_name",
+      headerName: "Box Name",
+      field: "BOX_NAME",
       filter: "agTextColumnFilter",
       width: 220,
     },
 
     {
       headerName: "Qty",
-      field: "ordered_qty",
-      filter: "agTextColumnFilter",
-      width: 220,
-    },
-    {
-      headerName: " Pending Qty",
-      field: "ordered_pending",
-      filter: "agTextColumnFilter",
-      width: 220,
-    },
-    {
-      headerName: "Rate",
-      field: "po_rate",
-      filter: "agTextColumnFilter",
-      width: 220,
-    },
-    {
-      headerName: "Currency",
-      field: "currency_lable",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-    {
-      headerName: "Currency Sym",
-      field: "currency_symbol",
+      field: "QTY",
       filter: "agTextColumnFilter",
       width: 190,
     },
 
     {
-      headerName: "Vendor Code",
-      field: "vendor_code",
+      headerName: "Rate",
+      field: "RATE",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Vendor Name",
-      field: "vendor_name",
+      headerName: "Amount LC",
+      field: "AMOUNT_LC",
       filter: "agTextColumnFilter",
       width: 190,
     },
+
     {
-      headerName: "Due Date",
-      field: "due_date",
+      headerName: "Amount FC",
+      field: "AMOUNT_FC",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 220,
     },
+
     {
       headerName: "Cost Center",
-      field: "po_cost_center",
+      field: "cost_center",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 220,
     },
     {
-      headerName: "Project Name",
-      field: "po_project",
+      headerName: " Insert Date",
+      field: "insert_date",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 220,
     },
     {
-      headerName: "Branch In",
-      field: "branch",
+      headerName: "Remark",
+      field: "remark",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 220,
     },
   ];
   const type = [
@@ -318,7 +233,7 @@ const R6 = () => {
                               value ? value.map((date) => date!.toDate()) : []
                             )
                           }
-                          format={dateFormat}
+                          format={"DD/MM/YYYY"}
                         />
                       </Space>
                     </FormControl>
@@ -362,6 +277,8 @@ const R6 = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

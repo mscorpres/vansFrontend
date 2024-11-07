@@ -1,6 +1,4 @@
-import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,13 +6,6 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
 import {
   Form,
   FormControl,
@@ -23,37 +14,27 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  LableStyle,
+} from "@/constants/themeContants";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
+
+import {
+  fetchBomForProduct,
+  fetchR3,
+} from "@/components/shared/Api/masterApi";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
-  fetchListOfMINRegister,
-  fetchListOfMINRegisterOut,
-  fetchListOfQ1,
-  getComponentsByNameAndNo,
-} from "@/components/shared/Api/masterApi";
+  transformOptionBomData,
+  transformOptionData,
+} from "@/helper/transform";
+import { exportDateRangespace } from "@/components/shared/Options";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -63,10 +44,13 @@ const FormSchema = z.object({
       message: "Please select a valid date range.",
     }),
   types: z.string().optional(),
+  bom: z.string().optional(),
+  part: z.string().optional(),
 });
 
 const R3 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const [asyncOptions, setAsyncOptions] = useState([]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -76,32 +60,19 @@ const R3 = () => {
 
   const dateFormat = "YYYY/MM/DD";
 
+  const thebranch = form.watch("part");
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     console.log("formData", formData);
     let { date } = formData;
-    let dataString = "";
-    if (date) {
-      const startDate = date[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = date[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      dataString = `${startDate}-${endDate}`;
-      console.log("dateString", dataString);
-    }
+    let dataString = exportDateRangespace(date);
+
     let payload = {
-      min_types: formData.types,
-      data: dataString,
+      product: formData.part,
+      subject: formData.bom,
+      date: dataString,
     };
-    const response = await execFun(
-      () => fetchListOfMINRegisterOut(payload),
-      "fetch"
-    );
+    // return;
+    const response = await execFun(() => fetchR3(payload), "fetch");
     console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
@@ -121,9 +92,25 @@ const R3 = () => {
       //   });
     }
   };
+  const fetchBom = async (payload) => {
+    const response = await execFun(() => fetchBomForProduct(payload), "fetch");
+    console.log("re", response);
+    if (response.data.code == 200) {
+      let { data } = response;
+      let arr = data.data.map((r) => {
+        return {
+          ...r,
+        };
+      });
+      console.log("arr", arr);
+      setAsyncOptions(transformOptionBomData(arr));
+    }
+  };
   useEffect(() => {
-    // fetchComponentList();
-  }, []);
+    if (thebranch) {
+      fetchBom(thebranch);
+    }
+  }, [thebranch]);
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -133,72 +120,90 @@ const R3 = () => {
       width: 90,
     },
     {
-      headerName: "Pick Slip No.",
-      field: "PICKSLIPNNO",
+      headerName: "SKU",
+      field: "sku",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Cost Center",
-      field: "COSTCENTER",
+      headerName: "Part Code",
+      field: "part_code",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Date & Time",
-      field: "DATE",
+      headerName: "Part Name",
+      field: "part_name",
       filter: "agTextColumnFilter",
       width: 220,
     },
 
     {
-      headerName: "TYPE",
-      field: "TYPE",
+      headerName: "Category",
+      field: "category",
       filter: "agTextColumnFilter",
       width: 190,
     },
 
     {
-      headerName: "Part No",
-      field: "PART",
+      headerName: "Status",
+      field: "status",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Component",
-      field: "COMPONENT",
+      headerName: "Alternate of",
+      field: "alternat_of",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Box No",
-      field: "FROMLOCATION",
+      headerName: "BOM Qty",
+      field: "bom_qty",
       filter: "agTextColumnFilter",
       width: 220,
     },
     {
-      headerName: "Qty",
-      field: "OUTQTY",
-      filter: "agTextColumnFilter",
-      width: 220,
-    },
-
-    {
-      headerName: "UoM",
-      field: "UNIT",
+      headerName: "UOM",
+      field: "uom",
       filter: "agTextColumnFilter",
       width: 220,
     },
 
     {
-      headerName: "Vendor Name",
-      field: "CUSTOMER",
+      headerName: "Opening",
+      field: "opening",
+      filter: "agTextColumnFilter",
+      width: 220,
+    },
+
+    {
+      headerName: "Inward",
+      field: "inward",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Approved By",
-      field: "ISSUEBY",
+      headerName: "Outward",
+      field: "outward",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Closing",
+      field: "closing",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Order In Transit",
+      field: "ord_in_transit",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Last Purchase Price",
+      field: "last_purch_price",
       filter: "agTextColumnFilter",
       width: 190,
     },
@@ -234,27 +239,56 @@ const R3 = () => {
           >
             <FormField
               control={form.control}
-              name="types"
+              name="part"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormControl>
-                    <Select
-                      styles={customStyles}
-                      components={{ DropdownIndicator }}
-                      placeholder=" Enter Type"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
-                      options={type}
-                      onChange={(e: any) => form.setValue("types", e.value)}
+                    <ReusableAsyncSelect
+                      placeholder="Part Name"
+                      endpoint="/backend/fetchProduct"
+                      transform={transformOptionData}
+                      onChange={(e) => form.setValue("part", e?.value)}
+                      // value={selectedCustomer}
+                      fetchOptionWith="payload"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />{" "}
+            <FormField
+              control={form.control}
+              name="bom"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={LableStyle}>State</FormLabel>
+                  <FormControl>
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="Branch"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false}
+                      isClearable={true}
+                      isSearchable={true}
+                      options={asyncOptions}
+                      onChange={(e) => form.setValue("bom", e?.value)}
+                      // onChange={(e) => console.log(e)}
+                      // value={
+                      //   data.clientDetails
+                      //     ? {
+                      //         label: data.clientDetails.city.name,
+                      //         value: data.clientDetails.city.name,
+                      //       }
+                      //     : null
+                      // }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="date"
@@ -291,6 +325,8 @@ const R3 = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

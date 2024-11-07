@@ -1,6 +1,4 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,34 +12,23 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { Checkbox, DatePicker, Divider, Space } from "antd";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Checkbox, DatePicker, Space } from "antd";
+
 import Select from "react-select";
 import {
-  transformCustomerData,
   transformOptionData,
-  transformPlaceData,
 } from "@/helper/transform";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import { fetchListOfCompletedFg } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   exportDatepace,
-  exportDateRangespace,
 } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
@@ -74,17 +61,6 @@ const CompeletedFg = () => {
     let dataString = "";
     if (wise === "datewise" && dateRange) {
       dataString = exportDatepace(dateRange);
-      // const startDate = dateRange[0]
-      //   .toLocaleDateString("en-GB")
-      //   .split("/")
-      //   .reverse()
-      //   .join("-");
-      // const endDate = dateRange[1]
-      //   .toLocaleDateString("en-GB")
-      //   .split("/")
-      //   .reverse()
-      //   .join("-");
-      // dataString = `${startDate}-${endDate}`;
     } else if (wise === "skuwise" && datainp) {
       dataString = datainp;
     }
@@ -104,15 +80,12 @@ const CompeletedFg = () => {
         };
       });
       setRowData(arr);
-      //   addToast(response.message, {
-      //     appearance: "success",
-      //     autoDismiss: true,
-      //   });
+  
     } else {
-      //   addToast(response.message, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-700 text-center text-white",
+      });
     }
   };
 
