@@ -23,17 +23,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { , Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Space } from "antd";
-;
 import Select from "react-select";
 
 import useApi from "@/hooks/useApi";
 
-import {
-  fetchR2,
-} from "@/components/shared/Api/masterApi";
+import { fetchR2 } from "@/components/shared/Api/masterApi";
 import { exportDateRangespace } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
@@ -87,7 +84,6 @@ const R2 = () => {
 
       setRowData(arr);
     } else {
- 
     }
   };
   const handleDownloadExcel = () => {
