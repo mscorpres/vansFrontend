@@ -166,12 +166,12 @@ export const fetchStates = createAsyncThunk<State2[], void>(
 // Define the async thunk for fetching billing address list
 export const fetchBillingAddressList = createAsyncThunk<
   BillingAddressListItem[],
-  { search: string }
->("client/fetchBillingAddressList", async ({ search }) => {
+  { cost_center: string }
+>("client/fetchBillingAddressList", async ({ cost_center }) => {
   try {
     const response = await spigenAxios.post<BillingAddressListResponse>(
       "/backend/billingAddressList",
-      { search }
+      { cost_center: cost_center }
     );
     return response.data;
   } catch (error) {

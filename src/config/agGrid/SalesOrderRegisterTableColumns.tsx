@@ -32,7 +32,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const [isInvoiceModalVisible, setIsInvoiceModalVisible] = useState(false);
   const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
     useState(false);
-  const [date, setDate] = useState("");
   const [form] = Form.useForm();
   const [invoiceForm] = Form.useForm(); // Form instance for the invoice modal
   const { sellRequestList, loading } = useSelector(
@@ -41,7 +40,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dateRange = useSelector(
     (state: RootState) => state.sellRequest.dateRange
   );
-
+ 
   const handleUpdate = (row: any) => {
     const soId = row?.so_id; // Replace with actual key for employee ID
     window.open(`/sales/order/update/${soId.replaceAll("/", "_")}`, "_blank");
@@ -193,7 +192,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         handleCancel={handleInvoiceModalCancel}
         row={{ req_id: row?.so_id }}
         form={invoiceForm}
-        setDate={setDate}
         loading={loading}
       />
       <MaterialListModal

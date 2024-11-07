@@ -110,9 +110,10 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
   );
 
   const totalValue = sellRequestDetails?.materialData?.reduce(
-    (acc, item) => acc + (item.item_value || 0),
+    (acc, item) => acc + (item.rate ?? 0) * (item.qty ?? 0),
     0
-  );
+  ) ?? 0;
+  
   const totalCGST = itemCGSTs?.reduce((acc, value) => acc + value, 0);
   const totalSGST = itemSGSTs?.reduce((acc, value) => acc + value, 0);
   const totalIGST = itemIGSTs?.reduce((acc, value) => acc + value, 0);

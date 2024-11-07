@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
+import { fetchSellRequestList, setDateRange } from "@/features/salesmodule/SalesSlice";
 import { RootState } from "@/store";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
@@ -70,8 +70,10 @@ const RegisterSalesOrderPage: React.FC = () => {
       const startDate = moment(dateRange[0]).format("DD-MM-YYYY");
       const endDate = moment(dateRange[1]).format("DD-MM-YYYY");
       dataString = `${startDate}-${endDate}`;
+      dispatch(setDateRange(dataString as any));
     } else if (type === "SONO" && soWise) {
       dataString = soWise;
+      dispatch(setDateRange(dataString as any));
     }
 
     try {

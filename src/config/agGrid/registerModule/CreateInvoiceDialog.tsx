@@ -1,4 +1,4 @@
-import { Button, DatePicker, Form, Input } from "antd";
+import { Button,Form, Input } from "antd";
 import { FormInstance } from "antd/lib/form";
 import {
   Dialog,
@@ -7,7 +7,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"; // Ensure this path is correct
-import moment from "moment";
 import { InputStyle } from "@/constants/themeContants";
 
 interface CreateInvoiceDialogProps {
@@ -18,7 +17,6 @@ interface CreateInvoiceDialogProps {
     req_id: string;
   };
   form: FormInstance;
-  setDate: any;
   loading?: boolean;
 }
 
@@ -28,7 +26,6 @@ export function CreateInvoiceDialog({
   handleCancel,
   row,
   form,
-  setDate,
   loading,
 }: CreateInvoiceDialogProps) {
   return (

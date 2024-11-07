@@ -64,7 +64,7 @@ export const printSellInvoice = createAsyncThunk(
   "client/printSellInvoice",
   async ({ invoiceNo }: { invoiceNo: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>("/invoice/printInvoice", {
+      const response = await spigenAxios.post<any>("/salesInvoice/printEInvoice", {
         invoiceNo: invoiceNo,
       });
 
@@ -87,7 +87,7 @@ export const fetchDataForEwayBill = createAsyncThunk(
   async ({ shipment_id }: { shipment_id: string }, { rejectWithValue }) => {
     try {
       const response = await spigenAxios.post<any>(
-        "/invoice/fetchDataForEwayBill",
+        "invoice/fetchEWB",
         { so_inv_id: shipment_id }
       );
 
@@ -290,7 +290,7 @@ const sellInvoiceSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchDataForEwayBill.fulfilled, (state, action) => {
-        state.ewayBillData = action.payload.data;
+        state.ewayBillData = action.payload.items;
         state.loading = false;
       })
       .addCase(fetchDataForEwayBill.rejected, (state, action) => {
@@ -301,7 +301,7 @@ const sellInvoiceSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchDataForInvoice.fulfilled, (state, action) => {
-        state.ewayBillData = action.payload.data;
+        state.ewayBillData = action.payload.items;
         state.loading = false;
       })
       .addCase(fetchDataForInvoice.rejected, (state, action) => {

@@ -48,16 +48,16 @@ interface FetchTransactionPayload {
 export const fetchInvoiceList = createAsyncThunk<
 ApiResponse<eInvoice[]>,
 FetchTransactionPayload
->("so_challan_shipment/getEinvoiceList", async (payload) => {
-  const response = await spigenAxios.post("so_challan_shipment/getEinvoiceList", payload);
+>("salesInvoice/getEinvoiceList", async (payload) => {
+  const response = await spigenAxios.post("salesInvoice/fetchEnvoiceDetail", payload);
   return response.data;
 });
 
 export const fetchEwayList = createAsyncThunk<
   ApiResponse<any>,
   FetchTransactionPayload
->("so_challan_shipment/getEwayBillList", async (payload) => {
-  const response = await spigenAxios.post("so_challan_shipment/getEwayBillList", payload);
+>("salesInvoice/getEwayBillList", async (payload) => {
+  const response = await spigenAxios.post("salesInvoice/fetchEwayBillDetail", payload);
   return response.data;
 });
 

@@ -3,18 +3,18 @@ import { z } from "zod";
 
 
 const columnDefs: ColDef[] = [
-    { headerName: "Item Name", field: "item_name", width: 500,cellRenderer: "truncateCellRenderer", },
-    { headerName: "Part No", field: "item_part_no" },
-    { headerName: "HSN", field: "item_hsncode" },
-    { headerName: "Qty", field: "item_qty" },
-    { headerName: "Rate", field: "item_rate" },
-    { headerName: "Discount (%)", field: "item_discount" },
-    { headerName: "GST Rate", field: "item_gst_rate" },
-    { headerName: "GST Type", field: "item_gst_type" },
-    { headerName: "CGST", field: "item_cgst" },
-    { headerName: "SGST", field: "item_sgst" },
-    { headerName: "IGST", field: "item_igst" },
-    { headerName: "Taxable Amount", field: "item_value" },
+    { headerName: "Item Name", field: "c_name", width: 500,cellRenderer: "truncateCellRenderer", },
+    { headerName: "Part No", field: "c_part_no" },
+    { headerName: "HSN", field: "hsn_code" },
+    { headerName: "Qty", field: "qty" },
+    { headerName: "Rate", field: "rate" },
+    { headerName: "Taxable Value", field: "taxable_value" },
+    { headerName: "GST Rate", field: "gst_rate" },
+    { headerName: "GST Type", field: "gst_type" },
+    { headerName: "CGST", field: "cgst_rate" },
+    { headerName: "SGST", field: "sgst_rate" },
+    { headerName: "IGST", field: "igst_rate" },
+    { headerName: "Amount", field: "final_amount" },
   ];
 
 const supplyTypeOptions = [
@@ -145,16 +145,14 @@ const headerEInv= z.object({
 const billFrom = z.object({
   gstin: z.string({ required_error: "GSTIN is required" }),
   legalName: z.string({ required_error: "Legal Name is required" }),
-  tradeName: z.string().optional(),
   addressLine1: z.string({ required_error: "Address Line 1 is required" }),
   addressLine2: z.string().optional(),
   location: z.string({ required_error: "Location is required" }),
-  state: stateSchema.refine((val) => val.code && val.name, {
-    message: "State is required",
-  }),
+  // state: stateSchema.refine((val) => val.code && val.name, {
+  //   message: "State is required",
+  // }),
   pincode: z.string({ required_error: "Pincode is required" }),
-  email: z.string().email().optional(),
-  phone: z.string().optional(),
+  pan: z.string().optional(),
 });
 
 const billTo = z.object({
@@ -163,36 +161,31 @@ const billTo = z.object({
   addressLine1: z.string({ required_error: "Address Line 1 is required" }),
   addressLine2: z.string().optional(),
   location: z.string({ required_error: "Location is required" }),
-  state: stateSchema.refine((val) => val.code && val.name, {
-    message: "State is required",
-  }),
+  // state: stateSchema.refine((val) => val.code && val.name, {
+  //   message: "State is required",
+  // }),
   pincode: z.string({ required_error: "Pincode is required" }),
-  // email: z.string({ required_error: "Email is required" }),
+  pan: z.string({ required_error: "Pan No. is required" }),
   // email: z.string().optional(),
-  phone: z.union([z.string().optional(), z.null()]),
+  // phone: z.union([z.string().optional(), z.null()]),
 });
 
 const dispatchFrom = z.object({
   legalName: z.string({ required_error: "Legal Name is required" }),
   addressLine1: z.string({ required_error: "Address Line 1 is required" }),
   addressLine2: z.string().optional(),
-  location: z.string({ required_error: "Location is required" }),
-  state: stateSchema.refine((val) => val.code && val.name, {
-    message: "State is required",
-  }),
-  pincode: z.string({ required_error: "Pincode is required" }),
+  // state: stateSchema.refine((val) => val.code && val.name, {
+  //   message: "State is required",
+  // }),ui
+  pan: z.string({ required_error: "Pincode is reqred" }),
 });
 
 const shipTo = z.object({
   gstin: z.string({ required_error: "GSTIN is required" }),
   legalName: z.string({ required_error: "Legal Name is required" }),
-  tradeName: z.string().optional(),
   addressLine1: z.string({ required_error: "Address Line 1 is required" }),
   addressLine2: z.string().optional(),
-  location: z.string({ required_error: "Location is required" }),
-  state: stateSchema.refine((val) => val.code && val.name, {
-    message: "State is required",
-  }),
+  // location: z.string({ required_error: "Location is required" }),
   pincode: z.string({ required_error: "Pincode is required" }),
 });
 
