@@ -37,6 +37,16 @@ const spigenAxios = axios.create({
   },
 });
 
+spigenAxios.interceptors.request.use(async (config) => {
+  const loggedInUser: LoggedInUser | null = JSON.parse(
+    localStorage.getItem("loggedInUser") as string
+  );
+  if (loggedInUser) {
+    config.headers["x-csrf-token"] = loggedInUser.token;
+  }
+  return config;
+});
+
 spigenAxios.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.data?.success !== undefined) {

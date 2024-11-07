@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
-import { fetchBillAddress, fetchBillAddressList, fetchBillingAddress, fetchBranchDetail, fetchCustomerBranches, fetchDataForUpdate } from "@/features/salesmodule/createSalesOrderSlice";
+import { fetchBillAddress, fetchBillAddressList, fetchBillingAddress, fetchBillingAddressList, fetchBranchDetail, fetchCustomerBranches, fetchDataForUpdate } from "@/features/salesmodule/createSalesOrderSlice";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { useParams } from "react-router-dom";
 import { RowData } from "@/data";

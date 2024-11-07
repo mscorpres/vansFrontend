@@ -79,6 +79,8 @@ import ItemQr from "./pages/WarehouseModule/ItemQr";
 import PrintMinLabel from "./pages/WarehouseModule/PrintMinLabel";
 import BoxMarkup from "./pages/WarehouseModule/BoxMarkup";
 import BatchAlloaction from "./pages/WarehouseModule/BatchAlloaction";
+import InternetStatusBar from "@/InternetStatusBar";
+import { useEffect, useState } from "react";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -909,10 +911,42 @@ const router = createBrowserRouter([
 // Define the unauthenticated routes
 
 function App() {
+  const [isOffline, setIsOffline] = useState<boolean>(false);
+  useEffect(() => {
+    const handleOffline = () => {
+      setIsOffline(true); // User is offline, apply blur effect
+    };
+
+    const handleOnline = () => {
+      setIsOffline(false); // User is online, remove blur effect
+    };
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    // Check initial connection status
+    if (!navigator.onLine) {
+      setIsOffline(true); // If the user is offline when the app loads
+    }
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
   return (
     <>
+      <InternetStatusBar />
       <Toaster />
-      <RouterProvider router={router} />
+      <div
+        className={` ${
+          isOffline ? "filter blur-sm grayscale pointer-events-none" : ""
+        }`}
+      >
+        {/* Router for different pages */}
+        <RouterProvider router={router} />
+      </div>
     </>
   );
 }
