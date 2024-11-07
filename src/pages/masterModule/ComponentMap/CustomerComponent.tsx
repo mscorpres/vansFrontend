@@ -105,7 +105,7 @@ const CustomerComponent = () => {
 
             <Form.Item name="vendorName" label="Customer Name">
               <ReusableAsyncSelect
-                placeholder="Vendor Name"
+                placeholder="Customer Name"
                 endpoint="/others/customerList"
                 transform={transformOptionData}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
@@ -118,7 +118,7 @@ const CustomerComponent = () => {
             <Form.Item name="vendorPartCode" label="Customer Part Code">
               <Input
                 className={InputStyle}
-                placeholder="Enter Vendor Part Name"
+                placeholder="Enter Customer Part Name"
                 // {...field}
               />
             </Form.Item>
@@ -127,14 +127,14 @@ const CustomerComponent = () => {
             <Form.Item name="vendorPartName" label="Customer Part Name">
               <Input
                 className={InputStyle}
-                placeholder="Enter Vendor Part Name"
+                placeholder="Enter Customer Part Name"
                 // {...field}
               />
             </Form.Item>
             <Form.Item name="desc" label="Description">
               <Input
                 className={InputStyle}
-                placeholder="Enter Vendor Part Name"
+                placeholder="Enter Customer Part Name"
                 // {...field}
               />
             </Form.Item>
