@@ -47,7 +47,7 @@ const InwardLayout = (props: { children: React.ReactNode }) => {
               Batch Allocation
             </NavLink>
           </li>
-          <li className="h-[50px]">
+          {/* <li className="h-[50px]">
             <NavLink
               to={"/warehouse/PickSlip"}
               className={({ isActive }) =>
@@ -56,8 +56,8 @@ const InwardLayout = (props: { children: React.ReactNode }) => {
             >
               Pick Slip
             </NavLink>
-          </li>
-          <li className="h-[50px]">
+          </li> */}
+          {/* <li className="h-[50px]">
             <NavLink
               to={"/warehouse/PickSlip/print"}
               className={({ isActive }) =>
@@ -66,8 +66,8 @@ const InwardLayout = (props: { children: React.ReactNode }) => {
             >
               Print Pick Slip
             </NavLink>
-          </li>
-          <li className="h-[50px]">
+          </li> */}
+          {/* <li className="h-[50px]">
             <NavLink
               to={"/warehouse/min/print"}
               className={({ isActive }) =>
@@ -76,7 +76,7 @@ const InwardLayout = (props: { children: React.ReactNode }) => {
             >
               Print MIN Label
             </NavLink>
-          </li>
+          </li> */}
           <li className="h-[50px]">
             <NavLink
               to={"/warehouse/itemQr"}
@@ -87,6 +87,17 @@ const InwardLayout = (props: { children: React.ReactNode }) => {
               Item QR
             </NavLink>
           </li>
+          <li className="h-[50px]">
+            <NavLink
+              to={"/warehouse/viewMin"}
+              className={({ isActive }) =>
+                `${navLinkStyle} ${isActive && navlinkActiveStyle}`
+              }
+            >
+              View Min
+            </NavLink>
+          </li>
+         
         </ul>
       </div>
       <div className="h-[calc(100vh-100px)] bg-transparent overflow-y-auto ">

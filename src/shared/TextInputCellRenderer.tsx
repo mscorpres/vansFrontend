@@ -41,6 +41,7 @@ import {
   fetchAvailableStockBoxes,
   fetchComponentBoxes,
 } from "@/features/client/storeSlice";
+import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
 
 const type = [
   {
@@ -160,6 +161,7 @@ const TextInputCellRenderer = (props: any) => {
     (state: RootState) => state.createSalesOrder
   );
   // const { costCenterList } = useSelector((state: RootState) => state.client);
+  // console.log("prop->>>>>s", props);
 
   const { hsnlist, getComponentData, costCenterList } = useSelector(
     (state: RootState) => state.client
@@ -167,6 +169,7 @@ const TextInputCellRenderer = (props: any) => {
   const { transactionFromBoxList, transferBoxList } = useSelector(
     (state: RootState) => state.store
   );
+  const { currencyList } = useSelector((state: RootState) => state.client);
   const { product } = useSelector((state: RootState) => state.store);
   const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
   const [asyncOptions, setAsyncOptions] = useState([]);
@@ -203,8 +206,9 @@ const TextInputCellRenderer = (props: any) => {
   };
 
   const handleCurrencyChange = (value: any) => {
-    dispatch(fetchCurrency());
     data["currency"] = value;
+    console.log("handleCurrencyChange");
+
     setOpenCurrencyDialog(true);
   };
   //   console.log("materialList", materialList);
@@ -220,33 +224,37 @@ const TextInputCellRenderer = (props: any) => {
           component_code: data["procurementMaterial"],
           vencode: props?.vendorCode?.value,
         })
-      );
-     data["vendorName"] =
-        getComponentData?.ven_com?.comp_name +
-        "/ Maker:" +
-        getComponentData.make;
-      // data[
-      //   "vendorName"
-      // ] = `${getComponentData?.ven_com?.comp_name}/ Maker:${getComponentData.make}`;
-      data["orderQty"] = getComponentData.closingQty;
-      data["rate"] = getComponentData.gstrate;
-      data["hsnCode"] = getComponentData.closingQty;
+      ).then((res) => {
+        if (res.payload) {
+          let data2 = res.payload;
+          data["vendorName"] =
+            data2?.ven_com?.comp_name + "/ Maker:" + data2.make;
+          // data[
+          //   "vendorName"
+          // ] = `${getComponentData?.ven_com?.comp_name}/ Maker:${getComponentData.make}`;
+          data["orderQty"] = data2.closingQty;
+          data["rate"] = data2.gstrate;
+          data["hsnCode"] = data2.hsn;
+          if (colDef.field === "exchange_rate") {
+            data["foreignValue"] = data["exchange_rate"];
+          }
+        }
+      });
+      dispatch(fetchCurrency());
+
       // data["orderQty"] = getComponentData.hsn;
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
       updateData(data);
     }
     if (colDef.field === "transferMaterial") {
-     
-      dispatch(
-        fetchComponentBoxes({
-          search: data["transferMaterial"],
-        })
-      ).then((response: any) => {
-        if (response.payload.status == "success") {
-        data["transferFromBox"] = response.payload.boxes;
+      dispatch(fetchComponentBoxes({ search: data["transferMaterial"] })).then(
+        (response: any) => {
+          if (response.payload.status == "success") {
+            data["transferFromBox"] = response.payload.boxes;
+          }
         }
-      });
+      );
       dispatch(listOfCostCenter({ search: "000" }));
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
@@ -254,20 +262,18 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "pickmaterial") {
-     
       let payload = {
         c_center: props.form.getFieldValue("costCenter").value,
         component: data["pickmaterial"],
       };
-     
+
       dispatch(fetchAvailableStockBoxes(payload));
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
       updateData(data);
-      }
+    }
     if (colDef.field === "costCenter") {
-    
     }
     let cgst = 0;
     let sgst = 0;
@@ -309,6 +315,9 @@ const TextInputCellRenderer = (props: any) => {
     if (colDef.field === "orderQty") {
       data["localValue"] = newValue * parseFloat(data.rate);
     }
+    if (data["exchange_rate"]) {
+      data["foreignValue"] = data["exchange_rate"] * data["localValue"];
+    }
     // Calculate GST based on the updated values
     const gstRate = parseFloat(data.gstRate) || 0;
     let cgst = 0;
@@ -328,6 +337,7 @@ const TextInputCellRenderer = (props: any) => {
         cgst = calculation / 2;
         sgst = calculation / 2; // Same as CGST
         igst = 0;
+
         data.cgst = cgst.toFixed(2);
         data.sgst = sgst.toFixed(2);
         data.igst = igst.toFixed(2);
@@ -345,6 +355,9 @@ const TextInputCellRenderer = (props: any) => {
       data["cgst"] = cgst.toFixed(2);
       data["sgst"] = sgst.toFixed(2);
       data["igst"] = igst.toFixed(2);
+      if (data["exchange_rate"]) {
+        data["foreignValue"] = data["exchange_rate"] * data["localValue"];
+      }
     }
 
     // Update the cell data and re-render
@@ -641,7 +654,7 @@ const TextInputCellRenderer = (props: any) => {
           <Select
             onPopupScroll={(e) => e.preventDefault()}
             className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
-            className="w-full"
+            // className="w-full"
             labelInValue
             filterOption={false}
             showSearch
@@ -652,12 +665,24 @@ const TextInputCellRenderer = (props: any) => {
             style={{ pointerEvents: "auto" }} // Ensure pointer events are enabled
           />
         );
+      case "outQty":
+        return (
+          <Input
+            onChange={handleInputChange}
+            // readOnly
+            // value={value}
+            // type="number"
+            // onClick={() => props.setSheetOpen(true)}
+            placeholder={colDef.headerName}
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
       case "transferToBox":
         return (
           <Select
             onPopupScroll={(e) => e.preventDefault()}
             className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
-            className="w-full"
+            // className="w-full"
             labelInValue
             filterOption={false}
             showSearch
@@ -679,7 +704,7 @@ const TextInputCellRenderer = (props: any) => {
           <Select
             onPopupScroll={(e) => e.preventDefault()}
             className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
-            className="w-full"
+            // className="w-full"
             labelInValue
             filterOption={false}
             showSearch
@@ -706,18 +731,18 @@ const TextInputCellRenderer = (props: any) => {
               filterOption={false}
               placeholder="Currency"
               defaultValue={{ value: "364907247", label: "₹" }}
-              options={transformCurrencyData(props?.currencyList || [])}
+              options={transformCurrencyData(currencyList || [])}
               onChange={(e) => handleCurrencyChange(e.value)}
               // value={value}
             />
-            {/* <CurrencyRateDialog
+            <CurrencyRateDialog
               open={openCurrencyDialog}
               onClose={() => setOpenCurrencyDialog(false)}
               currency={data.currency || ""}
               price={parseFloat(data.rate) || 0}
               inputHandler={submitCurrencyRate}
               rowId={data.rowId}
-            /> */}
+            />
           </>
         );
       case "type":
@@ -805,6 +830,15 @@ const TextInputCellRenderer = (props: any) => {
           />
         );
       case "foreignValue":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
       case "cgst":
       case "sgst":
       case "igst":
@@ -914,7 +948,7 @@ const TextInputCellRenderer = (props: any) => {
           <Select
             onPopupScroll={(e) => e.preventDefault()}
             className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
-            className="w-full"
+            // className="w-full"
             labelInValue
             filterOption={false}
             showSearch
@@ -962,6 +996,16 @@ const TextInputCellRenderer = (props: any) => {
           />
         );
       case "box_name":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "invoice":
         return (
           <Input
             onChange={handleInputChange}

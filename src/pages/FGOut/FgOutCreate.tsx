@@ -37,7 +37,7 @@ import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
 import { AppDispatch, RootState } from "@/store";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ActionCellRenderer from "./ActionCellRenderer";
 import {
@@ -93,7 +93,7 @@ const FgOutCreate = () => {
       checked: false,
       // type: "products",
       product: "",
-      materialDescription: "",
+      remark: "",
       // asinNumber: "B01N1SE4EP",
       qty: 0,
       orderQty: 0,
@@ -116,12 +116,9 @@ const FgOutCreate = () => {
       newRow,
     ]);
   };
-  console.log("rowData", rowData);
 
   const fetchFgOutList = async (formData: z.infer<typeof FormSchema>) => {
     const { date } = formData;
-    console.log("fetchBOMList", formData);
-    console.log("wise", wise);
     let dataString = "";
     const startDate = dateRange[0]
       .toLocaleDateString("en-GB")
@@ -134,15 +131,11 @@ const FgOutCreate = () => {
       .reverse()
       .join("-");
     dataString = `${startDate}-${endDate}`;
-    console.log("dateString", dataString);
-    // return;
-    const response = await execFun(
+   const response = await execFun(
       () => fetchListOfCompletedFgOut(dataString),
       "fetch"
     );
-    console.log("response", response);
-    // return;
-    let { data } = response;
+     let { data } = response;
     if (response.status === 200) {
       let arr = data.response.data.map((r, index) => {
         return {
@@ -172,16 +165,28 @@ const FgOutCreate = () => {
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
-    console.log("values", values);
-    console.log("rowData", rowData);
     let payload = {
       fg_out_type: "SL001",
       product: rowData.map((r) => r.product),
       qty: rowData.map((r) => r.qty),
-      remark: rowData.map((r) => r.materialDescription),
+      remark: rowData.map((r) => r.remark),
       comment: values.remark,
     };
-    dispatch(createFgOut(payload));
+    dispatch(createFgOut(payload)).then((res) => {
+       if (res.payload.code) {
+        toast({
+          title: "FG OUT Completed",
+          className: "bg-green-600 text-white items-center",
+        });
+        setShowConfirmation(false);
+        form.resetFields();
+      } else {
+        toast({
+          title: "erro",
+          className: "bg-red-600 text-white items-center",
+        });
+      }
+    });
   };
   const columnDefs = [
     {
@@ -221,7 +226,7 @@ const FgOutCreate = () => {
 
     {
       headerName: "Remark",
-      field: "materialDescription",
+      field: "remark",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",

@@ -239,11 +239,8 @@ export const fetchListOfCompletedFg = async (wise: any, dataString: any) => {
   });
   return response;
 };
-export const fetchListOfCompletedFgOut = async (dataString: any) => {
-  const response = await spigenAxios.post("/fgout/fetchFgOutRpt", {
-    date: dataString,
-    method: "O",
-  });
+export const fetchListOfCompletedFgOut = async (payload) => {
+  const response = await spigenAxios.post("/fgout/fetchFgOutRpt", payload);
   return response;
 };
 export const fetchListOfProjectId = async (search: any) => {
