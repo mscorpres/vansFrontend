@@ -128,7 +128,14 @@ export const materialmenu = [
           { name: "Service", path: "/master/service" },
         ],
       },
-      { name: "Component Map", path: "/master/componentMap/map" },
+      {
+        name: "Component Map",
+
+        subMenu: [
+          { name: "Vendor", path: "/master/componentMap/vendor" },
+          { name: "Customer", path: "/master/componentMap/customer" },
+        ],
+      },
       { name: "Products", path: "/master/product" },
       { name: "HSN map", path: "/master/hsn" },
       { name: "Groups", path: "/master/groups" },

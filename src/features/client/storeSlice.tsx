@@ -66,19 +66,19 @@ export interface ApiResponse<T> {
 }
 
 interface StoreState {
-  data: any[];
+  data: any;
   loading: boolean;
   error: string | null;
-  product: any[];
-  productData: any[];
-  minComponents: [];
-  transactionApproval: null;
-  transactionFromBoxList: null;
-  transferBoxList: [];
-  availableStockBoxes: null;
-  minTransactiondata: null;
-  markupNum: null;
-  settleSave: null;
+  product: any;
+  productData: any;
+  minComponents: any;
+  transactionApproval: any;
+  transactionFromBoxList: any;
+  transferBoxList: any;
+  availableStockBoxes: any;
+  minTransactiondata: any;
+  markupNum: any;
+  settleSave: any;
 }
 
 const initialState: StoreState = {
@@ -96,7 +96,7 @@ const initialState: StoreState = {
   markupNum: null,
   settleSave: null,
 };
-export const saveFGs = createAsyncThunk<uomPayload, payload>(
+export const saveFGs = createAsyncThunk<any>(
   "/fgIN/saveFGs",
   async (payload) => {
     try {
@@ -114,7 +114,7 @@ export const saveFGs = createAsyncThunk<uomPayload, payload>(
     }
   }
 );
-export const fetchFGProduct = createAsyncThunk<uomPayload, { search: string }>(
+export const fetchFGProduct = createAsyncThunk<any, { search: string }>(
   "/fgOUT/fetchProduct",
   async ({ search }) => {
     try {
@@ -132,29 +132,28 @@ export const fetchFGProduct = createAsyncThunk<uomPayload, { search: string }>(
     }
   }
 );
-export const fetchFGProductData = createAsyncThunk<
-  uomPayload,
-  { search: string }
->("/fgOUT/fetchProductData", async ({ search }) => {
-  try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/fgOUT/fetchProductData",
-      { search: search }
-    );
+export const fetchFGProductData = createAsyncThunk<any, { search: string }>(
+  "/fgOUT/fetchProductData",
+  async ({ search }) => {
+    try {
+      const response = await spigenAxios.post<any>("/fgOUT/fetchProductData", {
+        search: search,
+      });
 
-    return response.data.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
+      return response.data.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
     }
-    throw new Error("An unknown error occurred");
   }
-});
-export const createFgOut = createAsyncThunk<uomPayload, payload>(
+);
+export const createFgOut = createAsyncThunk<any>(
   "/fgout/createFgOut",
   async (payload) => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
+      const response = await spigenAxios.post<any>(
         "/fgout/createFgOut",
         payload
       );
@@ -169,24 +168,24 @@ export const createFgOut = createAsyncThunk<uomPayload, payload>(
   }
 );
 
-export const fetchTransactionForApproval = createAsyncThunk<
-  uomPayload,
-  payload
->("/storeApproval/fetchTransactionForApproval", async (payload) => {
-  try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/storeApproval/fetchTransactionForApproval",
-      payload
-    );
+export const fetchTransactionForApproval = createAsyncThunk<any>(
+  "/storeApproval/fetchTransactionForApproval",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post<any>(
+        "/storeApproval/fetchTransactionForApproval",
+        payload
+      );
 
-    return response.data.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
+      return response.data.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
     }
-    throw new Error("An unknown error occurred");
   }
-});
+);
 export const fetchComponentBoxes = createAsyncThunk<searchPayload>(
   "/minSettle/fetchComponentBoxes",
   async (payload) => {
@@ -528,7 +527,7 @@ const storeSlice = createSlice({
       })
       .addCase(fetchComponentBoxes.fulfilled, (state, action) => {
         state.loading = false;
-        state.transactionFromBoxList = action.payload.boxes;
+        state.transactionFromBoxList = action.payload?.boxes;
       })
       .addCase(fetchComponentBoxes.rejected, (state, action) => {
         state.loading = false;
