@@ -19,7 +19,7 @@ import {
   fetchManagePOList,
   printPO,
 } from "@/features/client/clientSlice";
-import { exportDateRange } from "@/components/shared/Options";
+import { exportDatepace, exportDateRange } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
 // import ViewCompoents from "./ViewCompoents";
 // import POCancel from "./POCancel";
@@ -33,6 +33,7 @@ import {
   getMinTransactionByDate,
   printSingleMin,
 } from "@/features/client/storeSlice";
+import { toast } from "@/components/ui/use-toast";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -77,6 +78,9 @@ const { RangePicker } = DatePicker;
 const dateFormat = "YYYY/MM/DD";
 const ViewMin: React.FC = () => {
   const { managePoList } = useSelector((state: RootState) => state.client);
+  const { loading } = useSelector((state: RootState) => state.store);
+  // console.log("loading", loading);
+
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
   // });
@@ -90,7 +94,7 @@ const ViewMin: React.FC = () => {
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
   const [remarkDescription, setRemarkDescription] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [cancel, setCancel] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
@@ -208,16 +212,20 @@ const ViewMin: React.FC = () => {
     }
   };
   const fetchManageList = async () => {
-    setLoading(true);
+    // setLoading(true);
     const values = await form.validateFields();
+    console.log("val", values);
+
     let date;
     if (values.wise.value == "datewise") {
-      date = exportDateRange(values.data);
+      date = exportDatepace(values.data);
     } else {
       date = values.data;
     }
     let payload = { data: date, wise: values.wise.value };
     dispatch(getMinTransactionByDate(payload)).then((res: any) => {
+      // console.log("res", res);
+
       if (res.payload.code == 200) {
         let arr = res.payload.data;
         let newRow = arr.data.map((r) => {
@@ -226,15 +234,19 @@ const ViewMin: React.FC = () => {
 
         setRowData(newRow);
       } else {
-        setLoading(false);
+        toast({
+          title: res.payload.message.msg,
+          className: "bg-red-700 text-white text-center",
+        });
+        // setLoading(false);
       }
     });
 
     if (managePoList) {
       setRowData(managePoList);
-      setLoading(false);
+      // setLoading(false);
     }
-    setLoading(false);
+    // setLoading(false);
   };
   const defaultColDef = useMemo(() => {
     return {
@@ -249,7 +261,6 @@ const ViewMin: React.FC = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       {" "}
-      {loading && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
@@ -281,15 +292,13 @@ const ViewMin: React.FC = () => {
           {selectedwise?.value === "datewise" ? (
             <Form.Item className="w-full" name="data">
               <Space direction="vertical" size={12} className="w-full">
-                <RangePicker
+                <DatePicker
                   className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
                   // onChange={(e: any) => form.setFieldValue("data", e?.value)}
-                  onChange={(value) =>
-                    form.setFieldValue(
-                      "data",
-                      value ? value.map((date) => date!.toDate()) : []
-                    )
-                  }
+                  onChange={(date, dateString) => {
+                    // Use `date` to get the Date object, or `dateString` for formatted value
+                    form.setFieldValue("data", date ? date.toDate() : null);
+                  }}
                   format={dateFormat}
                 />
               </Space>
@@ -331,6 +340,7 @@ const ViewMin: React.FC = () => {
         <Divider />
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+        {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}

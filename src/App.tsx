@@ -6,7 +6,6 @@ import AuthLayout from "./layouts/AuthLayout";
 import POLayout from "./layouts/POLayout";
 import SOLayout from "./layouts/SOLayout";
 import HomePage from "./pages/HomePage";
-import CreatePoPage from "./pages/ProcurementModule/CreatePoPage";
 import CompletedPOPage from "./pages/CompletedPOPage";
 import ApprovePOPage from "./pages/ApprovePOPage";
 import ManagePoPage from "./pages/ProcurementModule/ManagePO/ManagePoPage";
@@ -22,9 +21,7 @@ import SalesShipmentPage from "./pages/salesModule/SalesShipmentPage";
 import SalesInvoicePage from "./pages/salesModule/SalesInvoicePage";
 import AllocatedInvoicesPage from "./pages/salesModule/AllocatedInvoicesPage";
 import SalesETransactionRegisterPage from "./pages/salesModule/SalesETransactionRegisterPage";
-import MasterProductLayout from "./layouts/MasterProductLayout";
-import MasterProductFgPage from "./pages/masterModule/MasterProductFgPage";
-import MasterProductSfgPage from "./pages/masterModule/MasterProductSfgPage";
+//
 import MasterAddressLayout from "./layouts/MasterAddressLayout";
 import MasterBillingAddressPage from "./pages/masterModule/MasterBillingAddressPage";
 import MasterShippingAddressPage from "./pages/masterModule/MasterShippingAddressPage";
@@ -74,20 +71,27 @@ import TransferBox from "./pages/WarehouseModule/PendingMr/TransferBox";
 import PickSlipLayout from "./layouts/PickSlipLayout";
 import PickSlip from "./pages/WarehouseModule/PickSlip/PickSlip";
 import InwardLayout from "./layouts/InwardLayout";
-import Inwards from "./pages/WarehouseModule/Inwards";
+// import Inwards from "./pages/WarehouseModule/Inwards";
 import ItemQr from "./pages/WarehouseModule/ItemQr";
 import PrintMinLabel from "./pages/WarehouseModule/PrintMinLabel";
 import BoxMarkup from "./pages/WarehouseModule/BoxMarkup";
-import BatchAlloaction from "./pages/WarehouseModule/BatchAlloaction";
+// import BatchAlloaction from "./pages/WarehouseModule/BatchAlloaction";
 import InternetStatusBar from "@/InternetStatusBar";
 import { useEffect, useState } from "react";
 import InwardTemplate from "./pages/WarehouseModule/Inward/InwardTemplate";
-import ChildMarkup from "./pages/WarehouseModule/ChildMarkup";
+// import ChildMarkup from "./pages/WarehouseModule/ChildMarkup";
 import PrintPickSlip from "./pages/WarehouseModule/PrintPickSlip";
 import ViewMin from "./pages/WarehouseModule/ViewMin";
 import PrintCustomerLabel from "./pages/WarehouseModule/PrintCustomerLabel";
 import PrintLayout from "./layouts/PrintLayout";
 import ViewFgOut from "./pages/FGOut/ViewFgOut";
+import CustomerComponent from "./pages/masterModule/ComponentMap/CustomerComponent";
+import ComponentMapLayout from "./layouts/Master/ComponentMapLayout";
+import CreatePhyStock from "./layouts/CreatePhyStock";
+import CreatePhysicalStock from "./pages/PhysicalStock/CreatePhysicalStock";
+import PendingStock from "./pages/PhysicalStock/PendingStock";
+import RejectedStock from "./pages/PhysicalStock/RejectedStock";
+import ViewPhysicalStock from "./pages/PhysicalStock/ViewPhysicalStock";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -149,13 +153,25 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          {/* <ComponentsLayout> */}
-          <ComponentMap />
-          {/* </ComponentsLayout> */}
+          <ComponentMapLayout>
+            <CustomerComponent />
+          </ComponentMapLayout>
         </MainLayout>
       </Protected>
     ),
-    path: "/master/componentMap/map",
+    path: "/master/componentMap/customer",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <ComponentMapLayout>
+            <ComponentMap />
+          </ComponentMapLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/componentMap/vendor",
   },
   {
     element: (
@@ -912,7 +928,7 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <ClientLayout>
-            <AddClient />{" "}
+            <AddClient />
           </ClientLayout>
         </MainLayout>
       </Protected>
@@ -930,6 +946,55 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/master/client/view",
+  },
+  ////Physical Stock///////////////
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <CreatePhysicalStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/physicalStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <PendingStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/pendingStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <RejectedStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/rejectedStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <ViewPhysicalStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/viewphysicalStock",
   },
   {
     element: (

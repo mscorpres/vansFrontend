@@ -1,6 +1,4 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,61 +6,33 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { DatePicker,  Space } from "antd";
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
-import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
-  fetchListOfMINRegister,
   fetchListOfMINRegisterOut,
-  fetchListOfQ1,
-  getComponentsByNameAndNo,
 } from "@/components/shared/Api/masterApi";
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import { exportDateRangespace } from "@/components/shared/Options";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { IoMdDownload } from "react-icons/io";
 const FormSchema = z.object({
   date: z
     .array(z.date())
     .length(2)
-    .optional()
     .refine((data) => data === undefined || data.length === 2, {
       message: "Please select a valid date range.",
     }),
-  types: z.string().optional(),
+  types: z.string(),
 });
 
 const TransactionOut = () => {
@@ -71,7 +41,6 @@ const TransactionOut = () => {
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
-  //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
 
   const dateFormat = "YYYY/MM/DD";
@@ -81,18 +50,7 @@ const TransactionOut = () => {
     let { date } = formData;
     let dataString = "";
     if (date) {
-      const startDate = date[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = date[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      dataString = `${startDate}-${endDate}`;
-      console.log("dateString", dataString);
+      dataString = exportDateRangespace(date);
     }
     let payload = {
       min_types: formData.types,
@@ -115,10 +73,7 @@ const TransactionOut = () => {
 
       setRowData(arr);
     } else {
-      //   addToast(data.message.msg, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
+
     }
   };
   useEffect(() => {
@@ -213,6 +168,9 @@ const TransactionOut = () => {
       value: "box-wise",
     },
   ];
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "Transaction Out Register");
+  };
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -265,7 +223,7 @@ const TransactionOut = () => {
                             value ? value.map((date) => date!.toDate()) : []
                           )
                         }
-                        format={dateFormat}
+                        format={"DD/MM/YYYY"}
                       />
                     </Space>
                   </FormControl>
@@ -273,20 +231,36 @@ const TransactionOut = () => {
                 </FormItem>
               )}
             />
-            {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            {/* )} */}{" "}
+            <div className="flex gap-[10px] justify-end  px-[5px]">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                // onClick={() => {}}
+                disabled={rowData.length === 0}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

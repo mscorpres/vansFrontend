@@ -19,17 +19,13 @@ import { FaSortDown, FaTrash } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { DatePicker, Select } from "antd";
 import "ag-grid-enterprise";
-// import { transformCurrencyData, transformOptionData } from "@/helper/transform";
-// import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
-// import {
-//   DeletePayload,
-//   deleteProduct,
-// } from "@/features/salesmodule/SalesSlice";
 import { useParams } from "react-router-dom";
-// import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import moment from "moment";
-import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformCurrencyData, transformOptionData } from "@/helper/transform";
+import {
+  transformCurrencyData,
+  transformOptionData,
+  transformOptionDataphy,
+} from "@/helper/transform";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import {
@@ -38,8 +34,10 @@ import {
   listOfCostCenter,
 } from "@/features/client/clientSlice";
 import {
+  closingStock,
   fetchAvailableStockBoxes,
   fetchComponentBoxes,
+  getPhysicalStockfromBox,
 } from "@/features/client/storeSlice";
 import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
 
@@ -160,15 +158,16 @@ const TextInputCellRenderer = (props: any) => {
   const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
-  // const { costCenterList } = useSelector((state: RootState) => state.client);
-  // console.log("prop->>>>>s", props);
 
   const { hsnlist, getComponentData, costCenterList } = useSelector(
     (state: RootState) => state.client
   );
-  const { transactionFromBoxList, transferBoxList } = useSelector(
-    (state: RootState) => state.store
-  );
+  const {
+    transactionFromBoxList,
+    transferBoxList,
+    boxData,
+    phyStockFromBoxData,
+  } = useSelector((state: RootState) => state.store);
   const { currencyList } = useSelector((state: RootState) => state.client);
   const { product } = useSelector((state: RootState) => state.store);
   const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
@@ -272,6 +271,27 @@ const TextInputCellRenderer = (props: any) => {
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
       updateData(data);
+    }
+    if (colDef.field === "boxName") {
+      dispatch(getPhysicalStockfromBox({ boxno: data["boxName"] })).then(
+        (r) => {
+          if (r.payload?.code == 200) {
+            data["boxPartName"] = r?.payload.data;
+          }
+        }
+      );
+      api.refreshCells({ rowNodes: [props.node], columns: [column] });
+      api.applyTransaction({ update: [data] });
+      updateData(data);
+    }
+    if (colDef.field === "boxPartName") {
+      dispatch(
+        closingStock({ boxno: data["boxName"], partNo: data["boxPartName"] })
+      ).then((r) => {
+        if (r.payload?.code == 200) {
+          //  data["boxPartName"] = r?.payload.data;
+        }
+      });
     }
     if (colDef.field === "costCenter") {
     }
@@ -1012,6 +1032,67 @@ const TextInputCellRenderer = (props: any) => {
             value={value}
             placeholder={colDef.headerName}
             type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      /////////////physical stock
+      case "boxName":
+        return (
+          <Select
+            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] w-full overflow-y-auto"
+            labelInValue
+            filterOption={false}
+            showSearch
+            placeholder="Select Material"
+            onSearch={(e) => {
+              props.setSearch(e);
+              if (data.type) {
+                props.onSearch(e, data.type);
+              }
+            }}
+            options={transformOptionData(boxData || [])}
+            onChange={(e) => handleChange(e.value)}
+            value={typeof value === "string" ? { value } : value?.text}
+            style={{ pointerEvents: "auto" }}
+          />
+        );
+      case "boxPartName":
+        return (
+          <Select
+            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] w-full overflow-y-auto"
+            labelInValue
+            filterOption={false}
+            showSearch
+            placeholder="Select Material"
+            onSearch={(e) => {
+              props.setSearch(e);
+              if (data.type) {
+                props.onSearch(e, data.type);
+              }
+            }}
+            options={transformOptionDataphy(phyStockFromBoxData || [])}
+            onChange={(e) => handleChange(e.value)}
+            value={typeof value === "string" ? { value } : value?.text}
+            style={{ pointerEvents: "auto" }}
+          />
+        );
+      case "phyqty":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="number"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "location":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="number"
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );

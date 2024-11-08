@@ -214,7 +214,7 @@ const CreateInward: React.FC<Props> = ({
         // <FullPageLoading />
       }
       <Form form={form} layout="vertical">
-        <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-80px)] overflow-y-auto">
+        <div className="rounded p-[30px] shadow bg-[#fff] h-[calc(100vh-145px)] overflow-y-auto">
           <div className="grid grid-cols-1 gap-[30px]">
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -393,7 +393,7 @@ const CreateInward: React.FC<Props> = ({
               {/* <form onSubmit={forms.handleSubmit(addVendor)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
                 <div className="grid grid-cols-2 gap-[20px]">
-                  <Form.Item name="label" label=" Address label" className="">
+                  <Form.Item name="label" label=" Address label">
                     <Input
                       className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
                       placeholder="GSTIN / UIN"
@@ -407,7 +407,7 @@ const CreateInward: React.FC<Props> = ({
                   >
                     <Input
                       className={InputStyle}
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
                       // placeholder="GSTIN / UIN"
                     />
                   </Form.Item>
@@ -419,7 +419,7 @@ const CreateInward: React.FC<Props> = ({
                   >
                     <Input
                       className={InputStyle}
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
                       // placeholder="GSTIN / UIN"
                     />
                   </Form.Item>

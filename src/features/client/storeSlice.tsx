@@ -66,19 +66,26 @@ export interface ApiResponse<T> {
 }
 
 interface StoreState {
-  data: any[];
+  data: any;
   loading: boolean;
   error: string | null;
-  product: any[];
-  productData: any[];
-  minComponents: [];
-  transactionApproval: null;
-  transactionFromBoxList: null;
-  transferBoxList: [];
-  availableStockBoxes: null;
-  minTransactiondata: null;
-  markupNum: null;
-  settleSave: null;
+  product: any;
+  productData: any;
+  minComponents: any;
+  transactionApproval: any;
+  transactionFromBoxList: any;
+  transferBoxList: any;
+  availableStockBoxes: any;
+  minTransactiondata: any;
+  markupNum: any;
+  settleSave: any;
+  boxData: any;
+  phyStockFromBoxData: any;
+  closingStock: any;
+  insertPhyStock: any;
+  pendingStk: any;
+  rejStk: any;
+  allStock: any;
 }
 
 const initialState: StoreState = {
@@ -95,8 +102,15 @@ const initialState: StoreState = {
   minComponents: [],
   markupNum: null,
   settleSave: null,
+  boxData: null,
+  phyStockFromBoxData: null,
+  closingStock: null,
+  insertPhyStock: null,
+  pendingStk: null,
+  rejStk: null,
+  allStock: null,
 };
-export const saveFGs = createAsyncThunk<uomPayload, payload>(
+export const saveFGs = createAsyncThunk<any>(
   "/fgIN/saveFGs",
   async (payload) => {
     try {
@@ -114,7 +128,7 @@ export const saveFGs = createAsyncThunk<uomPayload, payload>(
     }
   }
 );
-export const fetchFGProduct = createAsyncThunk<uomPayload, { search: string }>(
+export const fetchFGProduct = createAsyncThunk<any, { search: string }>(
   "/fgOUT/fetchProduct",
   async ({ search }) => {
     try {
@@ -132,29 +146,28 @@ export const fetchFGProduct = createAsyncThunk<uomPayload, { search: string }>(
     }
   }
 );
-export const fetchFGProductData = createAsyncThunk<
-  uomPayload,
-  { search: string }
->("/fgOUT/fetchProductData", async ({ search }) => {
-  try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/fgOUT/fetchProductData",
-      { search: search }
-    );
+export const fetchFGProductData = createAsyncThunk<any, { search: string }>(
+  "/fgOUT/fetchProductData",
+  async ({ search }) => {
+    try {
+      const response = await spigenAxios.post<any>("/fgOUT/fetchProductData", {
+        search: search,
+      });
 
-    return response.data.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
+      return response.data.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
     }
-    throw new Error("An unknown error occurred");
   }
-});
-export const createFgOut = createAsyncThunk<uomPayload, payload>(
+);
+export const createFgOut = createAsyncThunk<any>(
   "/fgout/createFgOut",
   async (payload) => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
+      const response = await spigenAxios.post<any>(
         "/fgout/createFgOut",
         payload
       );
@@ -169,24 +182,24 @@ export const createFgOut = createAsyncThunk<uomPayload, payload>(
   }
 );
 
-export const fetchTransactionForApproval = createAsyncThunk<
-  uomPayload,
-  payload
->("/storeApproval/fetchTransactionForApproval", async (payload) => {
-  try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/storeApproval/fetchTransactionForApproval",
-      payload
-    );
+export const fetchTransactionForApproval = createAsyncThunk<any>(
+  "/storeApproval/fetchTransactionForApproval",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post<any>(
+        "/storeApproval/fetchTransactionForApproval",
+        payload
+      );
 
-    return response.data.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
     }
-    throw new Error("An unknown error occurred");
   }
-});
+);
 export const fetchComponentBoxes = createAsyncThunk<searchPayload>(
   "/minSettle/fetchComponentBoxes",
   async (payload) => {
@@ -468,6 +481,158 @@ export const cutomerLable = createAsyncThunk<ResponseData>(
     }
   }
 );
+
+///phyical Stock//////////
+export const getAllBox = createAsyncThunk<ResponseData>(
+  "/physicalStock/getAllBox", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/physicalStock/getAllBox",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const getPhysicalStockfromBox = createAsyncThunk<ResponseData>(
+  "/physicalStock/getPhysical_stock", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/physicalStock/getPhysical_stock",
+        payload
+      );
+
+      return response.data.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const closingStock = createAsyncThunk<ResponseData>(
+  "/physicalStock/closingStock", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/physicalStock/closingStock",
+        payload
+      );
+
+      return response.data.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const insertPhysical = createAsyncThunk<ResponseData>(
+  "physicalStock/insertphysical_data", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "physicalStock/insertphysical_data",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const pendingPhysical = createAsyncThunk<ResponseData>(
+  "/physicalStock/pendingphysical_stock", // Action type
+  async () => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.get(
+        "/physicalStock/pendingphysical_stock"
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const rejectedPhysical = createAsyncThunk<ResponseData>(
+  "/physicalStock/rejectphysical_stockList", // Action type
+  async () => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.get(
+        "/physicalStock/rejectphysical_stockList"
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const updateRejectphysical = createAsyncThunk<ResponseData>(
+  "/physicalStock/updateRejectphysical_stock", // Action type
+  async () => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.get(
+        "/physicalStock/updateRejectphysical_stock"
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const allphysical = createAsyncThunk<ResponseData>(
+  "/physicalStock/allphysical_stock", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/physicalStock/allphysical_stock",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+
 const storeSlice = createSlice({
   name: "client",
   initialState,
@@ -528,7 +693,7 @@ const storeSlice = createSlice({
       })
       .addCase(fetchComponentBoxes.fulfilled, (state, action) => {
         state.loading = false;
-        state.transactionFromBoxList = action.payload.boxes;
+        state.transactionFromBoxList = action.payload?.boxes;
       })
       .addCase(fetchComponentBoxes.rejected, (state, action) => {
         state.loading = false;
@@ -663,6 +828,90 @@ const storeSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(getMinTransactionByDate.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(getAllBox.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllBox.fulfilled, (state, action) => {
+        state.loading = false;
+        state.boxData = action.payload;
+      })
+      .addCase(getAllBox.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(getPhysicalStockfromBox.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPhysicalStockfromBox.fulfilled, (state, action) => {
+        state.loading = false;
+        state.phyStockFromBoxData = action.payload;
+      })
+      .addCase(getPhysicalStockfromBox.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(closingStock.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(closingStock.fulfilled, (state, action) => {
+        state.loading = false;
+        state.closingStock = action.payload;
+      })
+      .addCase(closingStock.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(insertPhysical.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(insertPhysical.fulfilled, (state, action) => {
+        state.loading = false;
+        state.insertPhyStock = action.payload;
+      })
+      .addCase(insertPhysical.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(pendingPhysical.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(pendingPhysical.fulfilled, (state, action) => {
+        state.loading = false;
+        state.pendingStk = action.payload;
+      })
+      .addCase(pendingPhysical.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(rejectedPhysical.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(rejectedPhysical.fulfilled, (state, action) => {
+        state.loading = false;
+        state.rejStk = action.payload;
+      })
+      .addCase(rejectedPhysical.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(allphysical.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(allphysical.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allStock = action.payload;
+      })
+      .addCase(allphysical.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       });

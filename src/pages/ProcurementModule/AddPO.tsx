@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Upload } from "lucide-react";
-import { FaFileExcel } from "react-icons/fa";
-import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
+import { StatusPanelDef, ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
@@ -10,9 +9,6 @@ import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import styled from "styled-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddPoUIStateType } from "@/types/AddPOTypes";
-// import columnDefs, {
-//   RowData,
-// } from "@/config/agGrid/SalseOrderCreateTableColumns";
 import AddPOPopovers from "@/components/shared/AddPOPopovers";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,7 +16,7 @@ import { AppDispatch } from "@/store";
 
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { createSellRequest } from "@/features/salesmodule/SalesSlice";
-import { App, Checkbox, Form } from "antd";
+import { Form } from "antd";
 import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
@@ -30,9 +26,7 @@ import {
   rejectPo,
   updatePo,
 } from "@/features/client/clientSlice";
-// interface Props{
-//   setTab:Dispatch<SetStateAction<string>>;
-// }
+
 interface Props {
   setTab: string;
   payloadData: string;
@@ -60,7 +54,6 @@ const AddPO: React.FC<Props> = ({
   setIsApprove,
   params,
 }) => {
-  // const [rowData, setRowData] = useState<RowData[]>([]);
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
   const [rejectText, setRejectText] = useState("");
@@ -79,7 +72,6 @@ const AddPO: React.FC<Props> = ({
   const { execFun, loading: loading1 } = useApi();
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const selVendor = Form.useWatch("vendorName", form);
-  // const clientAdd = Form.useWatch("address", form);
   const uiState: AddPoUIStateType = {
     excelModel,
     setExcelModel,
@@ -92,14 +84,13 @@ const AddPO: React.FC<Props> = ({
   let clientAdd = form.getFieldValue("address");
   let clientGst = form.getFieldValue("vendorGst");
   let vendorNameis = form.getFieldValue("vendorName");
-  console.log("address", clientAdd, clientGst, vendorNameis);
 
   const addNewRow = () => {
     const newRow = {
       checked: false,
       type: "products",
       procurementMaterial: "",
-      materialDescription: "",
+      remark: "",
       asinNumber: "B01N1SE4EP",
       orderQty: 100,
       rate: 50,
@@ -121,9 +112,7 @@ const AddPO: React.FC<Props> = ({
       newRow,
     ]);
   };
-  const removeRows = () => {
-    console.log("removing rows", rowData);
-  };
+  const removeRows = () => {};
   const defaultColDef = useMemo<ColDef>(() => {
     return {
       floatingFilter: false,
@@ -173,21 +162,15 @@ const AddPO: React.FC<Props> = ({
   const onBtExport = useCallback(() => {
     gridRef.current!.api.exportDataAsExcel();
   }, []);
-  // console.log("currencyList", currencyList);
 
-  // useEffect(() => {
-  //   addNewRow();
-  // }, []);
   useEffect(() => {
     dispatch(fetchComponentDetail({ search: "" }));
     dispatch(fetchCurrency());
   }, []);
 
   const handleSubmit = async () => {
-    // console.log("isapprove", isApprove);
-    // return;
     let arr = rowData;
-    // console.log("arr", arr);
+    console.log("formVal", formVal);
 
     let payload = {
       vendorname: formVal.vendorName.value,
@@ -222,12 +205,9 @@ const AddPO: React.FC<Props> = ({
       igst: arr.map((r) => r.igst),
       // remark: arr.map((r) => r.orderQty),
     };
-    console.log("payload", payload);
 
     // return;
     try {
-      console.log("isApprove", isApprove);
-
       if (isApprove == "edit") {
         dispatch(updatePo(payload));
       } else if (isApprove == "approve") {
@@ -245,7 +225,6 @@ const AddPO: React.FC<Props> = ({
       () => getComponentsByNameAndNo(search),
       "fetch"
     );
-    // console.log("response---", response);
     if (response.status === "sucess") {
       let arr = response.data.map((r) => {
         return {
@@ -254,7 +233,6 @@ const AddPO: React.FC<Props> = ({
         };
       });
       setAsyncOptions(arr);
-      // console.log("arr", arr);
     }
   };
   const columnDefs = [
@@ -381,20 +359,17 @@ const AddPO: React.FC<Props> = ({
     },
     {
       headerName: "ITEM DESCRIPTION",
-      field: "materialDescription",
+      field: "remark",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
   ];
-  console.log("rowData", rowData);
   const handleReject = () => {
-    console.log("rejected", params, rejectText);
     dispatch(
       rejectPo({ poid: params?.id?.replaceAll("_", "/"), remark: rejectText })
     ).then((response: any) => {
-      console.log("resp", response);
       if (response.payload.success == "200") {
         setShowRejectConfirm(true);
       }
@@ -414,11 +389,7 @@ const AddPO: React.FC<Props> = ({
         0
       );
       const value = +Number(values).toFixed(2);
-      // const freights = mainArrs?.reduce(
-      //   (partialSum, a) => partialSum + +Number(a?.freightAmount),
-      //   0
-      // );
-      // const freight = +Number(freights).toFixed(2);
+
       const cgsts = singleArr?.reduce(
         (partialSum, a) => partialSum + +Number(a?.cgst).toFixed(2),
         0
@@ -429,7 +400,6 @@ const AddPO: React.FC<Props> = ({
         0
       );
       const sgst = +Number(sgsts).toFixed(2);
-      // console.log("sgst", sgst);
       const igsts = singleArr?.reduce(
         (partialSum, a) => partialSum + +Number(a?.igst).toFixed(2),
         0
@@ -470,8 +440,6 @@ const AddPO: React.FC<Props> = ({
         // },
       ];
       setTaxDetails(arr);
-      console.log("arr", arr);
-      console.log("Tax Details:", arr);
     };
 
     // Initial calculation

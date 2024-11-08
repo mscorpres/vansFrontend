@@ -11,6 +11,12 @@ import { fetchR4 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "@/store";
+import { pendingPhysical } from "@/features/client/storeSlice";
+import { toast } from "@/components/ui/use-toast";
+import { ImCross } from "react-icons/im";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -22,38 +28,67 @@ const FormSchema = z.object({
   types: z.string().optional(),
 });
 
-const R4 = () => {
+const PendingStock = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
+  const { loading } = useSelector((state: RootState) => state.store);
   //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
-
+  const dispatch = useDispatch<AppDispatch>();
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
+    dispatch(pendingPhysical()).then((r) => {
+      console.log("res", r);
 
-    const response = await execFun(() => fetchR4(), "fetch");
-    console.log("response", response);
-    let { data } = response;
-    if (data.code == 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          id: index + 1,
-          ...r,
-        };
-      });
-      console.log("arr", arr);
-
-      setRowData(arr);
-    } else {
-    }
+      if (r.payload.code == 200) {
+        let arr = r.payload.data.map((r, index) => {
+          return {
+            id: index + 1,
+            ...r,
+          };
+        });
+        toast({
+          title: r.payload?.message,
+          className: "bg-green-700 text-white text-center",
+        });
+        setRowData(arr);
+      } else {
+        toast({
+          title: r.payload?.message,
+          className: "bg-red-700 text-white text-center",
+        });
+      }
+    });
   };
 
   const columnDefs: ColDef<rowData>[] = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 120,
+      cellRenderer: (e) => {
+        return (
+          <div className="flex gap-[5px] items-center justify-center h-full">
+            {/* <Button className=" bg-green-700 hover:bg-green-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+            <FaCheckCircle
+              className="h-[15px] w-[15px] text-green-700"
+              // onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+            />
+            {/* </Button>{" "} */}
+            {/* <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600"> */}
+            <FaTimesCircle
+              className="h-[15px] w-[15px] text-red-700   "
+              // onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+            />
+            {/* </Button>{" "} */}
+          </div>
+        );
+      },
+    },
     {
       headerName: "ID",
       field: "id",
@@ -61,72 +96,70 @@ const R4 = () => {
       width: 90,
     },
     {
-      headerName: "Part Code",
-      field: "part_no",
+      headerName: "Box Number",
+      field: "box_no",
       filter: "agTextColumnFilter",
       width: 140,
     },
     {
-      headerName: "Part Name",
-      field: "name",
+      headerName: "Part Code",
+      field: "part_name",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Desc",
-      field: "c_specification",
+      headerName: "Part Name",
+      field: "c_name",
       filter: "agTextColumnFilter",
       width: 320,
     },
 
     {
-      headerName: "Total Stock",
-      field: "stock",
+      headerName: "IMS Stock",
+      field: "ims_closing_stock",
       filter: "agTextColumnFilter",
       width: 150,
     },
 
     {
-      headerName: "Navs Stock",
-      field: "navStock",
+      headerName: "Physical Stock",
+      field: "physical_stock",
       filter: "agTextColumnFilter",
       width: 150,
     },
     {
-      headerName: "Stock Time",
+      headerName: "ClosingStock",
       field: "closing_stock_time",
       filter: "agTextColumnFilter",
       width: 150,
     },
     {
-      headerName: "Make",
-      field: "make",
+      headerName: "Cost Center",
+      field: "cost_center_name",
       filter: "agTextColumnFilter",
       width: 180,
     },
     {
-      headerName: "Soq",
-      field: "soq",
+      headerName: "Verified By",
+      field: "user_name",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
+      headerName: "Date & Time",
+      field: "insert_date",
+      filter: "agTextColumnFilter",
+      width: 180,
+    },
+    {
+      headerName: "Remark",
+      field: "remark",
       filter: "agTextColumnFilter",
       width: 150,
     },
   ];
-  const type = [
-    {
-      label: "Pending",
-      value: "P",
-    },
-    {
-      label: "All",
-      value: "A",
-    },
-    {
-      label: "Project",
-      value: "PROJECT",
-    },
-  ];
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "R4 All Item Closing Stock");
+    downloadCSV(rowData, columnDefs, "Pending Stock");
   };
 
   useEffect(() => {
@@ -151,7 +184,7 @@ const R4 = () => {
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-150px)]">
         {" "}
-        {loading1("fetch") && <FullPageLoading />}
+        {loading && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
@@ -166,7 +199,7 @@ const R4 = () => {
   );
 };
 
-export default R4;
+export default PendingStock;
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;

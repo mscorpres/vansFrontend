@@ -59,6 +59,7 @@ import {
 } from "@/features/client/storeSlice";
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -100,6 +101,7 @@ const BoxMarkup = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { uomlist } = useSelector((state: RootState) => state.client);
 
+  const { loading } = useSelector((state: RootState) => state.store);
   const gridRef = useRef<AgGridReact<RowData>>(null);
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
@@ -119,9 +121,9 @@ const BoxMarkup = () => {
     };
     // return;
     const response = await execFun(() => insertProduct(payload), "fetch");
-   
+
     const { data } = response;
-   if (response.data.code == 200) {
+    if (response.data.code == 200) {
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -344,7 +346,6 @@ const BoxMarkup = () => {
     }
   }, [sheetOpen]);
   const submitMarkedBoxes = async () => {
-
     let payload = {
       min_no: sheetOpen?.data?.min_no,
       min_qty: sheetOpen?.data?.qty,
@@ -378,6 +379,7 @@ const BoxMarkup = () => {
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
+        {loading && <FullPageLoading />}
         <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
@@ -406,7 +408,7 @@ const BoxMarkup = () => {
               </Form.Item>
             </div>
 
-            <Button
+            {/* <Button
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               onClick={(e: any) => {
@@ -415,7 +417,7 @@ const BoxMarkup = () => {
               }}
             >
               Submit
-            </Button>
+            </Button> */}
           </form>
         </Form>{" "}
         {sheetOpenEdit?.length > 0 && (
@@ -459,6 +461,8 @@ const BoxMarkup = () => {
             </SheetTitle>
           </SheetHeader>{" "}
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+            {" "}
+            {loading && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowDataBoxes}

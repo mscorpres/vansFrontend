@@ -61,6 +61,7 @@ import TextInputCellRenderer from "./TextInputCellRenderer";
 import DatePickerCellRenderer from "@/config/agGrid/DatePickerCellRenderer";
 import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const dateFormat = "YYYY/MM/DD";
 const FormSchema = z.object({
   wise: z.string().optional(),
@@ -76,7 +77,7 @@ const FgOutCreate = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [wise, setWise] = useState();
   const [search, setSearch] = useState("");
-  const [asyncOptions, setAsyncOptions] = useState([]);
+  const { loading } = useSelector((state: RootState) => state.store);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
@@ -91,23 +92,12 @@ const FgOutCreate = () => {
   const addNewRow = () => {
     const newRow = {
       checked: false,
-      // type: "products",
       product: "",
       remark: "",
-      // asinNumber: "B01N1SE4EP",
-      qty: 0,
+      uom: "",
+      stock: 0,
       orderQty: 0,
-      // rate: 50,
-      // currency: "USD",
-      // gstRate: 18,
-      // gstType: "local",
-      // localValue: 0,
-      // foreignValue: 0,
-      // cgst: 9,
-      // sgst: 9,
-      // igst: 0,
-      // dueDate: "2024-07-25",
-      // hsnCode: "",
+
       isNew: true,
     };
     // setRowData((prevData) => [...prevData, newRow]);
@@ -131,11 +121,11 @@ const FgOutCreate = () => {
       .reverse()
       .join("-");
     dataString = `${startDate}-${endDate}`;
-   const response = await execFun(
+    const response = await execFun(
       () => fetchListOfCompletedFgOut(dataString),
       "fetch"
     );
-     let { data } = response;
+    let { data } = response;
     if (response.status === 200) {
       let arr = data.response.data.map((r, index) => {
         return {
@@ -144,15 +134,7 @@ const FgOutCreate = () => {
         };
       });
       setRowData(arr);
-      //   addToast(response.message, {
-      //     appearance: "success",
-      //     autoDismiss: true,
-      //   });
     } else {
-      //   addToast(response.message, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
     }
   };
 
@@ -168,21 +150,22 @@ const FgOutCreate = () => {
     let payload = {
       fg_out_type: "SL001",
       product: rowData.map((r) => r.product),
-      qty: rowData.map((r) => r.qty),
+      qty: rowData.map((r) => r.orderQty),
       remark: rowData.map((r) => r.remark),
       comment: values.remark,
     };
     dispatch(createFgOut(payload)).then((res) => {
-       if (res.payload.code) {
+      if (res.payload.code == 200 || res.payload.success == true) {
         toast({
           title: "FG OUT Completed",
           className: "bg-green-600 text-white items-center",
         });
         setShowConfirmation(false);
         form.resetFields();
+        setRowData([]);
       } else {
         toast({
-          title: "erro",
+          title: res.payload.message.msg,
           className: "bg-red-600 text-white items-center",
         });
       }
@@ -208,7 +191,7 @@ const FgOutCreate = () => {
     },
 
     {
-      headerName: "Issue Qty/ UOM",
+      headerName: "Issue Qty ",
       field: "orderQty",
       editable: false,
       flex: 1,
@@ -216,8 +199,16 @@ const FgOutCreate = () => {
       minWidth: 200,
     },
     {
+      headerName: "UOM",
+      field: "uom",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
       headerName: "Stock In Hand",
-      field: "qty",
+      field: "stock",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -286,7 +277,7 @@ const FgOutCreate = () => {
           Add
         </div>
         <div className="p-[10px]"></div>
-        <Form form={form} className="px-[10px]">
+        <Form form={form} className="px-[10px]" layout="vertical">
           <Form.Item className="w-full" name="wise">
             {/* <FormControl> */}
             <Select
@@ -302,7 +293,7 @@ const FgOutCreate = () => {
               onChange={(e: any) => setWise(e.value)}
             />
           </Form.Item>
-          <Form.Item className="w-full" name="remark">
+          <Form.Item className="w-full" name="remark" label="Description">
             <Input
               // value={value}
               // type="text"
@@ -311,15 +302,6 @@ const FgOutCreate = () => {
             />
           </Form.Item>
 
-          <Button
-            type="submit"
-            className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            //   onClick={() => {
-            //     fetchBOMList();
-            //   }}
-          >
-            Search
-          </Button>
           {/* </form> */}
         </Form>
       </div>
@@ -335,6 +317,7 @@ const FgOutCreate = () => {
           </Button>{" "}
         </div>
         <div className="ag-theme-quartz h-[calc(100vh-220px)] w-full">
+          {loading && <FullPageLoading />}
           <AgGridReact
             ref={gridRef}
             rowData={rowData}
@@ -376,6 +359,7 @@ const FgOutCreate = () => {
           <Button
             className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={() => setShowConfirmation(true)}
+            disabled={rowData.length == 0}
           >
             Submit
           </Button>
