@@ -26,6 +26,7 @@ import { downloadFunction } from "@/components/shared/PrintFunctions";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { fetchTransactionForApproval } from "@/features/client/storeSlice";
+import { toast } from "@/components/ui/use-toast";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -34,6 +35,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   cancelTheSelectedPo,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+
   const navigate = useNavigate();
 
   const menu = (
@@ -105,6 +107,7 @@ const { RangePicker } = DatePicker;
 const dateFormat = "YYYY/MM/DD";
 const PendingMr: React.FC = () => {
   const { managePoList } = useSelector((state: RootState) => state.client);
+  const { loading } = useSelector((state: RootState) => state.store);
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
   // });
@@ -116,7 +119,6 @@ const PendingMr: React.FC = () => {
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
   const [remarkDescription, setRemarkDescription] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [cancel, setCancel] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
@@ -228,18 +230,27 @@ const PendingMr: React.FC = () => {
     }
   };
   const fetchManageList = async () => {
-    setLoading(true);
+    // setLoading(true);
     const values = await form.validateFields();
     // let date = exportDateRange(values.data);
     let payload = { status: values.wise.value };
     dispatch(fetchTransactionForApproval(payload)).then((res: any) => {
+      console.log("res", res);
+      if (res.payload.code == 200) {
+      } else {
+        toast({
+          title: res.payload?.message?.msg,
+          className: "text-white bg-red-700",
+        });
+      }
     });
 
     if (managePoList) {
       setRowData(managePoList);
-      setLoading(false);
+      // setLoading(false);
+    } else {
     }
-    setLoading(false);
+    // setLoading(false);
   };
   const defaultColDef = useMemo(() => {
     return {
@@ -308,6 +319,8 @@ const PendingMr: React.FC = () => {
         <Divider />
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+        {" "}
+        {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}

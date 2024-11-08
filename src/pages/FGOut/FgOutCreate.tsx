@@ -94,9 +94,10 @@ const FgOutCreate = () => {
       checked: false,
       product: "",
       remark: "",
-      qty: 0,
+      uom: "",
+      stock: 0,
       orderQty: 0,
-     
+
       isNew: true,
     };
     // setRowData((prevData) => [...prevData, newRow]);
@@ -133,9 +134,7 @@ const FgOutCreate = () => {
         };
       });
       setRowData(arr);
-   
     } else {
-     
     }
   };
 
@@ -151,21 +150,22 @@ const FgOutCreate = () => {
     let payload = {
       fg_out_type: "SL001",
       product: rowData.map((r) => r.product),
-      qty: rowData.map((r) => r.qty),
+      qty: rowData.map((r) => r.orderQty),
       remark: rowData.map((r) => r.remark),
       comment: values.remark,
     };
     dispatch(createFgOut(payload)).then((res) => {
-      if (res.payload.code) {
+      if (res.payload.code == 200 || res.payload.success == true) {
         toast({
           title: "FG OUT Completed",
           className: "bg-green-600 text-white items-center",
         });
         setShowConfirmation(false);
         form.resetFields();
+        setRowData([]);
       } else {
         toast({
-          title: "erro",
+          title: res.payload.message.msg,
           className: "bg-red-600 text-white items-center",
         });
       }
@@ -191,7 +191,7 @@ const FgOutCreate = () => {
     },
 
     {
-      headerName: "Issue Qty/ UOM",
+      headerName: "Issue Qty ",
       field: "orderQty",
       editable: false,
       flex: 1,
@@ -199,8 +199,16 @@ const FgOutCreate = () => {
       minWidth: 200,
     },
     {
+      headerName: "UOM",
+      field: "uom",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
       headerName: "Stock In Hand",
-      field: "qty",
+      field: "stock",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -351,6 +359,7 @@ const FgOutCreate = () => {
           <Button
             className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={() => setShowConfirmation(true)}
+            disabled={rowData.length == 0}
           >
             Submit
           </Button>

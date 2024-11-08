@@ -254,6 +254,7 @@ const CompeletedFg = () => {
                   e.preventDefault();
                   handleDownloadExcel();
                 }}
+                disabled={rowData.length == 0}
               >
                 <IoMdDownload size={20} />
               </Button>
