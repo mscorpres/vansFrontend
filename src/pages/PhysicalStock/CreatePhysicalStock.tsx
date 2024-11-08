@@ -16,10 +16,7 @@ import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllBox,
-  insertPhysical,
-} from "@/features/client/storeSlice";
+import { getAllBox, insertPhysical } from "@/features/client/storeSlice";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 
 const CreatePhysicalStock = () => {
@@ -149,7 +146,6 @@ const CreatePhysicalStock = () => {
     };
 
     dispatch(insertPhysical(payload)).then((res: any) => {
-
       if (res.payload.code == 200) {
         toast({
           title: res.payload.message,
@@ -259,17 +255,13 @@ const CreatePhysicalStock = () => {
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[0px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
         {loading1("fetch") && <FullPageLoading />}{" "}
-     
         <div className="p-[10px]"></div>
         <Form
           form={form}
           layout="vertical"
           className="space-y-6 overflow-hidden p-[10px] h-[400px]"
-        >
-     
-        </Form>{" "}
+        ></Form>{" "}
       </div>{" "}
-      
       {callreset == true && (
         <CommonModal
           isDialogVisible={callreset}
@@ -324,6 +316,7 @@ const CreatePhysicalStock = () => {
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}
+              disabled={rowData.length == 0}
             >
               Submit
             </Button>

@@ -15,6 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store";
 import { pendingPhysical } from "@/features/client/storeSlice";
 import { toast } from "@/components/ui/use-toast";
+import { ImCross } from "react-icons/im";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -39,18 +41,19 @@ const PendingStock = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-
     dispatch(pendingPhysical()).then((r) => {
+      console.log("res", r);
+
       if (r.payload.code == 200) {
-        toast({
-          title: r.payload?.message,
-          className: "bg-green-700 text-white text-center",
-        });
-        let arr = data.data.map((r, index) => {
+        let arr = r.payload.data.map((r, index) => {
           return {
             id: index + 1,
             ...r,
           };
+        });
+        toast({
+          title: r.payload?.message,
+          className: "bg-green-700 text-white text-center",
         });
         setRowData(arr);
       } else {
@@ -60,10 +63,32 @@ const PendingStock = () => {
         });
       }
     });
-
   };
 
   const columnDefs: ColDef<rowData>[] = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 120,
+      cellRenderer: (e) => {
+        return (
+          <div className="flex gap-[5px] items-center justify-center h-full">
+            {/* <Button className=" bg-green-700 hover:bg-green-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+            <FaCheckCircle
+              className="h-[15px] w-[15px] text-green-700"
+              // onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+            />
+            {/* </Button>{" "} */}
+            {/* <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600"> */}
+            <FaTimesCircle
+              className="h-[15px] w-[15px] text-red-700   "
+              // onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+            />
+            {/* </Button>{" "} */}
+          </div>
+        );
+      },
+    },
     {
       headerName: "ID",
       field: "id",
@@ -71,72 +96,70 @@ const PendingStock = () => {
       width: 90,
     },
     {
-      headerName: "Part Code",
-      field: "part_no",
+      headerName: "Box Number",
+      field: "box_no",
       filter: "agTextColumnFilter",
       width: 140,
     },
     {
-      headerName: "Part Name",
-      field: "name",
+      headerName: "Part Code",
+      field: "part_name",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Desc",
-      field: "c_specification",
+      headerName: "Part Name",
+      field: "c_name",
       filter: "agTextColumnFilter",
       width: 320,
     },
 
     {
-      headerName: "Total Stock",
-      field: "stock",
+      headerName: "IMS Stock",
+      field: "ims_closing_stock",
       filter: "agTextColumnFilter",
       width: 150,
     },
 
     {
-      headerName: "Navs Stock",
-      field: "navStock",
+      headerName: "Physical Stock",
+      field: "physical_stock",
       filter: "agTextColumnFilter",
       width: 150,
     },
     {
-      headerName: "Stock Time",
+      headerName: "ClosingStock",
       field: "closing_stock_time",
       filter: "agTextColumnFilter",
       width: 150,
     },
     {
-      headerName: "Make",
-      field: "make",
+      headerName: "Cost Center",
+      field: "cost_center_name",
       filter: "agTextColumnFilter",
       width: 180,
     },
     {
-      headerName: "Soq",
-      field: "soq",
+      headerName: "Verified By",
+      field: "user_name",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
+      headerName: "Date & Time",
+      field: "insert_date",
+      filter: "agTextColumnFilter",
+      width: 180,
+    },
+    {
+      headerName: "Remark",
+      field: "remark",
       filter: "agTextColumnFilter",
       width: 150,
     },
   ];
-  const type = [
-    {
-      label: "Pending",
-      value: "P",
-    },
-    {
-      label: "All",
-      value: "A",
-    },
-    {
-      label: "Project",
-      value: "PROJECT",
-    },
-  ];
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "PendingStock All Item Closing Stock");
+    downloadCSV(rowData, columnDefs, "Pending Stock");
   };
 
   useEffect(() => {
