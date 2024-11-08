@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Badge } from "@/components/ui/badge";
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store";
-import { fetchBillAddressList, fetchCustomerDetail } from "@/features/salesmodule/createSalesOrderSlice";
+import React from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 import {
+  transformCurrencyData,
   transformOptionData,
   transformOptions,
-  transformPlaceData,
+  transformStateOptions,
 } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -24,7 +24,7 @@ import {
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-
+import { Dayjs } from "dayjs";
 import { z } from "zod";
 import {
   Form,
@@ -35,6 +35,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
+import { stateOptions } from "@/General";
+import { DatePicker, Space } from "antd";
 interface Props {
   setTab: Dispatch<SetStateAction<string>>;
   setPayloadData: Dispatch<SetStateAction<any>>;
@@ -43,6 +45,8 @@ interface Props {
   branches: any[];
   handleBranchSelection: (e: any) => void;
   handleCostCenterChange: (e: any) => void;
+  handleBillIdChange: (e: any) => void;
+  currencyList: any;
 }
 type CreateSalesOrderForm = z.infer<typeof createSalesFormSchema>;
 const CreateSalesOrder: React.FC<Props> = ({
@@ -54,81 +58,10 @@ const CreateSalesOrder: React.FC<Props> = ({
   branches,
   handleBranchSelection,
   handleCostCenterChange,
+  handleBillIdChange,
+  currencyList,
 }: any) => {
-  const [selectedCostCenter, setSelectedCostCenter] = useState<{
-    label: string;
-    value: string;
-  } | null>(null);
-
-  const [options, setOptions] = useState<any[]>([]);
-  const dispatch = useDispatch<AppDispatch>();
   const data = useSelector((state: RootState) => state.createSalesOrder);
-  // useEffect(() => {
-  //   dispatch(fetchBillingAddress({ billing_code: "R26331LI" }));
-  //   dispatch(fetchBillingAddressList({ search: "" }));
-  //   dispatch(fetchCountries());
-  //   dispatch(fetchStates());
-  // }, []);
-  console.log(data?.customerList);
-
-  // const handleBillingAddressChange = (e: any) => {
-  //   const billingCode = e.value;
-  //   form.setValue("bill_from_address", billingCode);
-
-  //   dispatch(fetchBillingAddress({ billing_code: billingCode })).then(
-  //     (response: any) => {
-  //       if (response.meta.requestStatus === "fulfilled") {
-  //         const billingData = response.payload;
-  //         form.setValue("address", billingData.address);
-  //         form.setValue("company", billingData.company);
-  //         form.setValue("gstin", billingData.gstin);
-  //         form.setValue("pan", billingData.pan);
-  //         form.setValue("statecode", billingData.statecode);
-  //       }
-  //     }
-  //   );
-  // };
-
-  // const handleCostCenterChange = (e: any) => {
-  //   setSelectedCostCenter(e);
-  //   form.setValue("cost_center", e.value);
-  // };
-  // const handleProjectIdChange = (e: any) => {
-  //   setSelectedProjectId(e);
-  //   form.setValue("project_id", e.value);
-  //   dispatch(fetchProjectDescription({ project_name: e.value })).then(
-  //     (response: any) => {
-  //       if (response.meta.requestStatus === "fulfilled") {
-  //         form.setValue("project_description", response.payload?.description);
-  //       }
-  //     }
-  //   );
-  // };
-
-  const handleInputChange = async (inputValue: string) => {
-    if (inputValue) {
-      console.log("Searching for:", inputValue);
-      try {
-        dispatch(fetchCustomerDetail({ search: inputValue })).then(
-          (response) => {
-            if (fetchCustomerDetail.fulfilled.match(response)) {
-              // Map the customer data to the required format
-              const options = response.payload.map((customer) => ({
-                value: customer.id,
-                label: customer.text,
-              }));
-              setOptions(options);
-            }
-          }
-        );
-      } catch (error) {
-        console.error("Error fetching customer list:", error);
-        setOptions([]); // Clear options on error
-      }
-    } else {
-      setOptions([]); // Clear options if input is empty
-    }
-  };
 
   const onSubmit = (data: CreateSalesOrderForm) => {
     console.log("Submitted Data from CreateSalesOrder:", data); // Debugging log
@@ -139,7 +72,7 @@ const CreateSalesOrder: React.FC<Props> = ({
       console.error("Data is null or undefined");
     }
   };
-  console.log(form.getValues());
+  console.log(form.getValues(), currencyList);
   return (
     <div className="h-[calc(100vh-150px)]">
       {data.loading && <FullPageLoading />}
@@ -161,11 +94,14 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="customer_type"
+                        name="header.customer_type"
                         render={() => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Customer Type
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -198,11 +134,14 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="customer_code"
+                        name="header.customer_code"
                         render={() => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Customer Name
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <ReusableAsyncSelect
@@ -225,7 +164,12 @@ const CreateSalesOrder: React.FC<Props> = ({
                         name="billTo.branch"
                         render={() => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Branch</FormLabel>
+                            <FormLabel className={LableStyle}>
+                              Branch
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
                             <FormControl>
                               <Select
                                 styles={customStyles}
@@ -265,6 +209,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               PIN Code
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -286,6 +233,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               GST / UIN
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -303,9 +253,14 @@ const CreateSalesOrder: React.FC<Props> = ({
                       <FormField
                         control={form.control}
                         name="billTo.state"
-                        render={() => (
+                        render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
+                            <FormLabel className={LableStyle}>
+                              State
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
                             <FormControl>
                               <Select
                                 styles={customStyles}
@@ -313,12 +268,21 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 placeholder="State"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
-                                isDisabled={false}
-                                isClearable={true}
-                                isSearchable={true}
-                                onInputChange={handleInputChange} // Call API on input change
-                                name="customer" // Ensure correct name for the field
-                                options={options} // Use the fetched options
+                                isDisabled={true} // Disable the select dropdown so it cannot be changed
+                                isClearable={false} // Prevent clearing the value
+                                isSearchable={false} // Disable search if not needed
+                                name="customer" // Ensure this name aligns with the form field
+                                options={
+                                  stateOptions
+                                    ? transformStateOptions(stateOptions)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateOptions)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -334,7 +298,10 @@ const CreateSalesOrder: React.FC<Props> = ({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LableStyle}>
-                            Bill To Address
+                            Bill To Address1
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -357,7 +324,10 @@ const CreateSalesOrder: React.FC<Props> = ({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LableStyle}>
-                            Billing To Address
+                            Bill To Address2
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -393,6 +363,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Company
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -414,6 +387,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Pan No.
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -435,6 +411,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               GSTIN / UIN
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -452,37 +431,42 @@ const CreateSalesOrder: React.FC<Props> = ({
                       <FormField
                         control={form.control}
                         name="shipTo.state"
-                        render={() => (
+                        render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
+                            <FormLabel className={LableStyle}>
+                              State
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
                             <FormControl>
                               <Select
                                 styles={customStyles}
+                                components={{ DropdownIndicator }}
                                 placeholder="State"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
-                                components={{ DropdownIndicator }}
-                                isDisabled={false}
-                                isLoading={true}
-                                isClearable={true}
-                                isSearchable={true}
-                                name="color"
+                                isDisabled={true}
+                                isClearable={false}
+                                isSearchable={false}
+                                name="customer"
                                 options={
-                                  data.states
-                                    ? transformPlaceData(data.states)
+                                  stateOptions
+                                    ? transformStateOptions(stateOptions)
                                     : []
                                 }
-                                // onChange={(e: any) =>
-                                //   form.setValue("shipTo.state", e.value)
-                                // }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateOptions)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
                               />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-
-                      {/* <p>error message</p> */}
                     </div>
                     <div className="">
                       <FormField
@@ -492,6 +476,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Pincode
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -513,7 +500,10 @@ const CreateSalesOrder: React.FC<Props> = ({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LableStyle}>
-                            Ship To Address
+                            Ship To Address1
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -534,7 +524,10 @@ const CreateSalesOrder: React.FC<Props> = ({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LableStyle}>
-                            Ship To Address
+                            Ship To Address2
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -560,38 +553,223 @@ const CreateSalesOrder: React.FC<Props> = ({
                   </p>
                 </CardHeader>
                 <CardContent className="mt-[10px]">
-                <div>
-                      <div className="flex justify-end">
-                        <Badge className="p-0 text-[13px] bg-transparent border-none shadow-none font-[400] max-h-max text-cyan-600 py-[3px] px-[10px] cursor-pointer hover:bg-blue-100 hover:shadow shadow-slate-500 rounded-full">
-                          Add Vendor
-                        </Badge>
-                      </div>
+                  <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+                    <div className="">
                       <FormField
                         control={form.control}
-                        name="costcenter"
-                        render={() => (
+                        name="header.po_number"
+                        render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Cost Center
+                              PO Number
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
-                              <ReusableAsyncSelect
-                                placeholder="Cost Center"
-                                endpoint="backend/costCenter"
-                                transform={transformOptions}
-                                fetchOptionWith="payload"
-                                onChange={handleCostCenterChange}
-                                value={selectedCostCenter}
+                              <Input
+                                className={InputStyle}
+                                placeholder="PO Number"
+                                {...field}
                               />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-
-                      {/* <p>error message</p> */}
                     </div>
-                  <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="header.po_date"
+                        render={() => (
+                          <FormItem className="pl-[10px] w-full flex flex-col">
+                            <FormLabel className={LableStyle}>
+                              PO Date
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Space direction="vertical" size={12}>
+                                <DatePicker
+                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
+                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
+                                  format="DD-MM-YYYY"
+                                  onChange={(value: Dayjs | null) => {
+                                    const formattedDate = value
+                                      ? value.format("DD-MM-YYYY")
+                                      : "";
+                                    form.setValue(
+                                      "header.po_date",
+                                      formattedDate
+                                    );
+                                  }}
+                                />
+                              </Space>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="header.reference_no"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Reference Number
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Reference Number"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="header.reference_date"
+                        render={() => (
+                          <FormItem className="pl-[10px] w-full flex flex-col">
+                            <FormLabel className={LableStyle}>
+                              Reference Date
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Space direction="vertical" size={12}>
+                                <DatePicker
+                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
+                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
+                                  format="DD-MM-YYYY"
+                                  onChange={(value: Dayjs | null) => {
+                                    const formattedDate = value
+                                      ? value.format("DD-MM-YYYY")
+                                      : "";
+                                    form.setValue(
+                                      "header.reference_date",
+                                      formattedDate
+                                    );
+                                  }}
+                                />
+                              </Space>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="header.currency.currency"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Currency
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Select
+                                styles={customStyles}
+                                components={{ DropdownIndicator }}
+                                placeholder="Currency"
+                                className="border-0 basic-single"
+                                classNamePrefix="select border-0"
+                                isClearable={false} // Prevent clearing the value
+                                isSearchable={false} // Disable search if not needed
+                                options={
+                                  currencyList
+                                    ? transformCurrencyData(currencyList)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformCurrencyData(currencyList)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="header.currency.exchange_rate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Exchange Rate
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Exchange Rate"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="header.due_date"
+                        render={() => (
+                          <FormItem className="pl-[10px] w-full flex flex-col">
+                            <FormLabel className={LableStyle}>
+                              Due Date
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Space direction="vertical" size={12}>
+                                <DatePicker
+                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
+                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
+                                  format="DD-MM-YYYY"
+                                  onChange={(value: Dayjs | null) => {
+                                    const formattedDate = value
+                                      ? value.format("DD-MM-YYYY")
+                                      : "";
+                                    form.setValue(
+                                      "header.due_date",
+                                      formattedDate
+                                    );
+                                  }}
+                                />
+                              </Space>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <div className="">
                       <FormField
                         control={form.control}
@@ -656,48 +834,48 @@ const CreateSalesOrder: React.FC<Props> = ({
                       />
                     </div>
                     <div className="">
-                   
-                    <FormField
-                      control={form.control}
-                      name="project_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>Project</FormLabel>
-                          <FormControl>
-                            <Input
-                              className={InputStyle}
-                              placeholder="Project"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={form.control}
+                        name="project_name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Project
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Project"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="so_comment"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Comments (If any)
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Comments"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
-                  <div className="mt-[40px]">
-                    <FormField
-                      control={form.control}
-                      name="so_comment"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>
-                            Comments (If any)
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              className={InputStyle}
-                              placeholder="Comments"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  </div>
-                 
                 </CardContent>
               </Card>
               <Card className="rounded shadow bg-[#fff]">
@@ -710,6 +888,38 @@ const CreateSalesOrder: React.FC<Props> = ({
                   </p>
                 </CardHeader>
                 <CardContent className="mt-[10px]">
+                  <div>
+                    <div className="flex justify-end">
+                      <Badge className="p-0 text-[13px] bg-transparent border-none shadow-none font-[400] max-h-max text-cyan-600 py-[3px] px-[10px] cursor-pointer hover:bg-blue-100 hover:shadow shadow-slate-500 rounded-full">
+                        Add Vendor
+                      </Badge>
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="costcenter"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Cost Center
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <ReusableAsyncSelect
+                              placeholder="Cost Center"
+                              endpoint="backend/costCenter"
+                              transform={transformOptions}
+                              fetchOptionWith="payload"
+                              onChange={handleCostCenterChange}
+                              // value={selectedCostCenter}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
                     <div>
                       <FormField
@@ -719,6 +929,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Billing ID
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -727,17 +940,18 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
                                 components={{ DropdownIndicator }}
-                                // onChange={dispatch(fetchBillAddressList(form.getValues("cost_center")))}
+                                onChange={handleBillIdChange}
+                                // onInputChange={()=>dispatch(fetchBillAddressList(form.getValues("costcenter")))}
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
-                                // options={
-                                //   data && data?.billingAddressList
-                                //     ? transformOptionData(
-                                //         data?.billingAddressList
-                                //       )
-                                //     : []
-                                // }
+                                options={
+                                  data && data?.billingAddressList
+                                    ? transformOptionData(
+                                        data?.billingAddressList
+                                      )
+                                    : []
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -755,6 +969,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Pan No.
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -776,6 +993,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               GSTIN / UIN
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -798,6 +1018,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                         <FormItem>
                           <FormLabel className={LableStyle}>
                             Address Line 1
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -821,6 +1044,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                         <FormItem>
                           <FormLabel className={LableStyle}>
                             Address Line 2
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Textarea

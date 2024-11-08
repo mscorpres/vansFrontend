@@ -29,6 +29,7 @@ const initialState: ClientState = {
   updateData: null,
   projectDescription: null,
   countries: null,
+  currency: null,
   states: null,
   billingAddressList: null,
   clientAddressDetail: null,
@@ -106,12 +107,9 @@ export const fetchBillAddressList = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { id: string } // Define the type of the argument you expect
 >("/client/uploadBillAddressExcel", async (id: any) => {
-  const formData = new FormData();
-  formData.append("cost_center", id);
-  const response = await spigenAxios.post(
-    `backend/billingAddressList`,
-    formData
-  );
+  const response = await spigenAxios.post(`backend/billingAddressList`, {
+    cost_center: id,
+  });
 
   return response.data;
 });
@@ -120,9 +118,7 @@ export const fetchBillAddress = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { id: string } // Define the type of the argument you expect
 >("/client/fetchBillAddress", async (id: any) => {
-  const formData = new FormData();
-  formData.append("billing_code", id);
-  const response = await spigenAxios.post(`backend/billingAddress`, formData);
+  const response = await spigenAxios.post(`backend/billingAddress`, {"billing_code": id});
 
   return response.data;
 });
@@ -134,6 +130,23 @@ export const fetchCountries = createAsyncThunk<Country2[], void>(
     try {
       const response = await spigenAxios.get<CountryResponse>(
         "/tally/backend/countries"
+      );
+      return response.data.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+
+export const fetchCurrency = createAsyncThunk<any[], void>(
+  "client/fetchCurrency",
+  async () => {
+    try {
+      const response = await spigenAxios.get<any>(
+        "/backend/fetchAllCurrecy"
       );
       return response.data.data;
     } catch (error) {
@@ -162,25 +175,6 @@ export const fetchStates = createAsyncThunk<State2[], void>(
     }
   }
 );
-
-// Define the async thunk for fetching billing address list
-export const fetchBillingAddressList = createAsyncThunk<
-  BillingAddressListItem[],
-  { cost_center: string }
->("client/fetchBillingAddressList", async ({ cost_center }) => {
-  try {
-    const response = await spigenAxios.post<BillingAddressListResponse>(
-      "/backend/billingAddressList",
-      { cost_center: cost_center }
-    );
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw new Error("An unknown error occurred");
-  }
-});
 
 // Define the async thunk for fetching client address detail
 export const fetchClientAddressDetail = createAsyncThunk<
@@ -433,15 +427,15 @@ const clientSlice = createSlice({
         state.error = action.error.message || "Failed to fetch states";
       })
       // Handling billing address list actions
-      .addCase(fetchBillingAddressList.pending, (state) => {
+      .addCase(fetchBillAddressList.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchBillingAddressList.fulfilled, (state, action) => {
+      .addCase(fetchBillAddressList.fulfilled, (state, action) => {
         state.loading = false;
         state.billingAddressList = action.payload;
       })
-      .addCase(fetchBillingAddressList.rejected, (state, action) => {
+      .addCase(fetchBillAddressList.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch billing address list";
@@ -483,6 +477,19 @@ const clientSlice = createSlice({
         state.customerList = action.payload;
       })
       .addCase(fetchCustomerDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch component details";
+      })
+      .addCase(fetchCurrency.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCurrency.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currency = action.payload;
+      })
+      .addCase(fetchCurrency.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch component details";

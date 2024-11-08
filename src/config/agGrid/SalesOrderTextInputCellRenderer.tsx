@@ -150,35 +150,27 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "material") {
-      dispatch(fetchProductData({ comp_key: value })).then((response: any) => {
-        console.log(response);
-        if (response.meta.requestStatus === "fulfilled") {
-          const materialData = response.payload;
-          data["hsnCode"] = materialData?.hsn_code;
-          data["gstRate"] = materialData?.tax_percent;
-          updateData(data);
-        }
-      });
       dispatch(
         fetchComponentDetailByCode({ component_code: value, vencode: "CUS001" })
       ).then((response: any) => {
         if (response.meta.requestStatus === "fulfilled") {
           const componentData = response.payload;
-          data["orderQty"] = componentData?.closingQty;
+          console.log(componentData);
+          data["stock"] = componentData?.closingQty;
           data["hsnCode"] = componentData?.hsn;
           data["gstRate"] = componentData?.gstrate;
           data["rate"] = componentData?.rate;
+          data["partno"] = componentData?.partno;
           updateData(data);
         }
       });
     }
-    const discount = parseFloat(data.discount) || 0; // Ensure discount is a number
+    
     const localValue = parseFloat(data.localValue) || 0; // Ensure localValue is a number
-    data["assAmount"] = localValue - localValue * (discount / 100);
     let cgst = 0;
     let sgst = 0;
     let igst = 0;
-    const calculation = (data.assAmount * data.gstRate) / 100;
+    const calculation = (localValue * data.gstRate) / 100;
     if (data.gstType === "L") {
       // Intra-State
       cgst = calculation / 2;
@@ -215,10 +207,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     if (colDef.field === "orderQty") {
       data["localValue"] = newValue * parseFloat(data.rate);
     }
-    // Calculate assAmount based on localValue and discount
-    const discount = parseFloat(data.discount) || 0; // Ensure discount is a number
     const localValue = parseFloat(data.localValue) || 0; // Ensure localValue is a number
-    data["assAmount"] = localValue - localValue * (discount / 100);
 
     // Calculate GST based on the updated values
     const gstRate = parseFloat(data.gstRate) || 0;
@@ -230,10 +219,9 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     if (
       colDef.field === "rate" ||
       colDef.field === "orderQty" ||
-      colDef.field === "gstRate" ||
-      colDef.field === "discount"
+      colDef.field === "gstRate"
     ) {
-      const calculation = (data.assAmount * gstRate) / 100;
+      const calculation = (localValue * gstRate) / 100;
 
       if (data.gstType === "L") {
         // Intra-State
@@ -505,6 +493,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
         );
       case "hsnCode":
       case "remark":
+      case "itemDescription":
         return (
           <Input
             onChange={handleInputChange}
@@ -529,13 +518,15 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       case "cgst":
       case "sgst":
       case "igst":
+      case "partno":
+        case "stock":
         return (
           <Input
             readOnly
             value={value}
             type="text"
             placeholder={colDef.headerName}
-            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px] bg-slate-100"
           />
         );
 

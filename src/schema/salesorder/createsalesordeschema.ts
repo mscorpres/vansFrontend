@@ -8,6 +8,7 @@ const billFrom = z.object({
   billFromId: z.string({ required_error: "BillFromId is required" }),
   gstin: z.string({ required_error: "GST is required" }),
   pan: z.string({ required_error: "PAN is required" }),
+  state: z.string().optional(),
 });
 
 const billTo = z.object({
@@ -29,15 +30,28 @@ const shipTo = z.object({
   state: z.string({ required_error: "State is required" }),
 });
 
+const currencySchema = z.object({
+  currency: z.string({ required_error: "Currency is required" }),
+  exchange_rate: z.string({ required_error: "Exchange Rate is required" }),
+});
+
+const header = z.object({
+  customer_type: z.string({ required_error: "Customer Type is required" }),
+  customer_code: z.string({ required_error: "Customer Code is required" }),
+  po_number: z.string({ required_error: "PO Number is required" }),
+  po_date: z.string({ required_error: "PO Date is required" }),
+  reference_no: z.string({ required_error: "Reference Number is required" }),
+  currency: currencySchema,
+});
+
 const createSalesFormSchema = z.object({
   billFrom: billFrom,
   billTo: billTo,
   shipTo: shipTo,
+  header: header,
   costcenter: z.string({ required_error: "Cost Center is required" }),
-  customer_code: z.string({ required_error: "Customer Code is required" }),
   project_name: z.string({ required_error: "Project Name is required" }),
-  customer_type: z.string({ required_error: "Customer Type is required" }),
-  paymentterms:z.string().optional(),
+  paymentterms: z.string().optional(),
   quotationdetail: z.string().optional(),
   so_comment: z.string().optional(),
   termscondition: z.string().optional(),
@@ -45,7 +59,9 @@ const createSalesFormSchema = z.object({
 
 // Define schema for "materials" with custom error messages
 const materialsSchema = z.object({
-  so_type: z.array(z.string()).min(1, { message: "At least one SO Type is required" }),
+  so_type: z
+    .array(z.string())
+    .min(1, { message: "At least one SO Type is required" }),
   items: z.array(z.string()).optional().nullable(),
   qty: z.array(z.number()).optional().nullable(),
   hsn: z.array(z.string()).optional().nullable(),

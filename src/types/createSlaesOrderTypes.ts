@@ -144,6 +144,7 @@ export interface ClientState {
   componentDetails: any[] | null;
   customerList: CustomerListDetail[] | null;
   loading: boolean;
+  currency: string[] | null;
   error: string | null;
   countries: Country2[] | null;
   states: State2[] | null;
