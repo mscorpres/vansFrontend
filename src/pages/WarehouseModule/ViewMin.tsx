@@ -19,7 +19,7 @@ import {
   fetchManagePOList,
   printPO,
 } from "@/features/client/clientSlice";
-import { exportDateRange } from "@/components/shared/Options";
+import { exportDatepace, exportDateRange } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
 // import ViewCompoents from "./ViewCompoents";
 // import POCancel from "./POCancel";
@@ -214,9 +214,11 @@ const ViewMin: React.FC = () => {
   const fetchManageList = async () => {
     // setLoading(true);
     const values = await form.validateFields();
+    console.log("val", values);
+
     let date;
     if (values.wise.value == "datewise") {
-      date = exportDateRange(values.data);
+      date = exportDatepace(values.data);
     } else {
       date = values.data;
     }
@@ -290,15 +292,13 @@ const ViewMin: React.FC = () => {
           {selectedwise?.value === "datewise" ? (
             <Form.Item className="w-full" name="data">
               <Space direction="vertical" size={12} className="w-full">
-                <RangePicker
+                <DatePicker
                   className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
                   // onChange={(e: any) => form.setFieldValue("data", e?.value)}
-                  onChange={(value) =>
-                    form.setFieldValue(
-                      "data",
-                      value ? value.map((date) => date!.toDate()) : []
-                    )
-                  }
+                  onChange={(date, dateString) => {
+                    // Use `date` to get the Date object, or `dateString` for formatted value
+                    form.setFieldValue("data", date ? date.toDate() : null);
+                  }}
                   format={dateFormat}
                 />
               </Space>

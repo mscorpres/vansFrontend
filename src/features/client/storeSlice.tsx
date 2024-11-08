@@ -191,7 +191,7 @@ export const fetchTransactionForApproval = createAsyncThunk<any>(
         payload
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);

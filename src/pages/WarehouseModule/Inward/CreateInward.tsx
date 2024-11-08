@@ -214,7 +214,7 @@ const CreateInward: React.FC<Props> = ({
         // <FullPageLoading />
       }
       <Form form={form} layout="vertical">
-        <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-80px)] overflow-y-auto">
+        <div className="rounded p-[30px] shadow bg-[#fff] h-[calc(100vh-145px)] overflow-y-auto">
           <div className="grid grid-cols-1 gap-[30px]">
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
