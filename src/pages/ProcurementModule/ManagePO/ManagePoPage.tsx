@@ -146,7 +146,7 @@ const ManagePoPage: React.FC = () => {
     {
       field: "po_transaction",
       headerName: "Po Id ",
-      flex: 1,
+      width: "220",
       cellRenderer: CopyCellRenderer,
       filterParams: {
         floatingFilterComponentParams: {
@@ -181,7 +181,7 @@ const ManagePoPage: React.FC = () => {
     {
       field: "po_reg_date",
       headerName: "PO Reg. Date",
-      flex: 1,
+      width: "190",
       filter: "agDateColumnFilter",
       filterParams: {
         floatingFilterComponentParams: {
@@ -193,7 +193,7 @@ const ManagePoPage: React.FC = () => {
     {
       field: "po_approval_status",
       headerName: "Approval Status",
-      flex: 1,
+      width: "190",
     },
   ]);
   const type = [
@@ -310,7 +310,7 @@ const ManagePoPage: React.FC = () => {
                       value ? value.map((date) => date!.toDate()) : []
                     )
                   }
-                  format={dateFormat}
+                  format="DD/MM/YYYY"
                 />
               </Space>
             </Form.Item>

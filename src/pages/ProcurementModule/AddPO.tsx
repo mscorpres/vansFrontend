@@ -16,7 +16,7 @@ import { AppDispatch } from "@/store";
 
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { createSellRequest } from "@/features/salesmodule/SalesSlice";
-import {Form } from "antd";
+import { Form } from "antd";
 import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
@@ -112,8 +112,7 @@ const AddPO: React.FC<Props> = ({
       newRow,
     ]);
   };
-  const removeRows = () => {
-  };
+  const removeRows = () => {};
   const defaultColDef = useMemo<ColDef>(() => {
     return {
       floatingFilter: false,
@@ -163,15 +162,15 @@ const AddPO: React.FC<Props> = ({
   const onBtExport = useCallback(() => {
     gridRef.current!.api.exportDataAsExcel();
   }, []);
-  
+
   useEffect(() => {
     dispatch(fetchComponentDetail({ search: "" }));
     dispatch(fetchCurrency());
   }, []);
 
   const handleSubmit = async () => {
- 
     let arr = rowData;
+    console.log("formVal", formVal);
 
     let payload = {
       vendorname: formVal.vendorName.value,
@@ -209,7 +208,6 @@ const AddPO: React.FC<Props> = ({
 
     // return;
     try {
-
       if (isApprove == "edit") {
         dispatch(updatePo(payload));
       } else if (isApprove == "approve") {
@@ -391,7 +389,7 @@ const AddPO: React.FC<Props> = ({
         0
       );
       const value = +Number(values).toFixed(2);
-     
+
       const cgsts = singleArr?.reduce(
         (partialSum, a) => partialSum + +Number(a?.cgst).toFixed(2),
         0
