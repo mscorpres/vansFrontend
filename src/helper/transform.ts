@@ -18,6 +18,15 @@ export const transformOptionData = (data: any[]) => {
     }));
   }
 };
+export const transformOptionDataphy = (data: any[]) => {
+  // console.log("data", data);
+  if (data?.length) {
+    return data?.map((item) => ({
+      label: item.part_no,
+      value: item.part_no,
+    }));
+  }
+};
 export const transformOptionBomData = (data: any[]) => {
   // console.log("data", data);
   if (data?.length) {

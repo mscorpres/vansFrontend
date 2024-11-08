@@ -62,7 +62,6 @@ const R3 = () => {
 
   const thebranch = form.watch("part");
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let { date } = formData;
     let dataString = exportDateRangespace(date);
 
@@ -73,7 +72,6 @@ const R3 = () => {
     };
     // return;
     const response = await execFun(() => fetchR3(payload), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.data.map((r, index) => {
@@ -82,19 +80,14 @@ const R3 = () => {
           ...r,
         };
       });
-      console.log("arr", arr);
 
       setRowData(arr);
     } else {
-      //   addToast(data.message.msg, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
+      
     }
   };
   const fetchBom = async (payload) => {
     const response = await execFun(() => fetchBomForProduct(payload), "fetch");
-    console.log("re", response);
     if (response.data.code == 200) {
       let { data } = response;
       let arr = data.data.map((r) => {
@@ -102,7 +95,6 @@ const R3 = () => {
           ...r,
         };
       });
-      console.log("arr", arr);
       setAsyncOptions(transformOptionBomData(arr));
     }
   };
@@ -261,7 +253,7 @@ const R3 = () => {
               name="bom"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={LableStyle}>State</FormLabel>
+                  <FormLabel className={LableStyle}>BOM</FormLabel>
                   <FormControl>
                     <Select
                       styles={customStyles}

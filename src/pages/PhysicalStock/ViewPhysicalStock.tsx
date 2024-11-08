@@ -11,9 +11,11 @@ import { fetchListOfCompletedFgOut } from "@/components/shared/Api/masterApi";
 import { exportDatepace } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
+import { allphysical } from "@/features/client/storeSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "@/store";
 import { Button } from "@/components/ui/button";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import { useSelector } from "react-redux";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -26,40 +28,32 @@ const FormSchema = z.object({
     }),
 });
 
-const ViewFgOut = () => {
+const ViewPhysicalStock = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
+  const { RangePicker } = DatePicker;
+
   const { loading } = useSelector((state: RootState) => state.store);
+  const dispatch = useDispatch<AppDispatch>();
   const fetchFGList = async () => {
     const values = await form.validateFields();
     let dataString = exportDatepace(values.dateRange);
 
     // return;
-    let payload = { date: dataString, method: "O" };
+    let payload = { date: dataString };
 
-    const response = await execFun(
-      () => fetchListOfCompletedFgOut(payload),
-      "fetch"
-    );
-    // return;
-    let { data } = response;
-    if (data.code === 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          id: index + 1,
-          ...r,
-        };
-      });
-      setRowData(arr);
-    
-    } else {
-      toast({
-        title: response.data.message,
-        className: "bg-red-700 text-center text-white",
-      });
-      setRowData([]);
-    }
+    dispatch(allphysical(payload)).then((r) => {
+      if (r.payload.code == 200) {
+        let arr = r.payload.data.map((r, index) => {
+          return {
+            id: index + 1,
+            ...r,
+          };
+        });
+        setRowData(arr);
+      }
+    });
   };
 
   const type = [
@@ -82,35 +76,47 @@ const ViewFgOut = () => {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
-      flex: 1,
+      width: 90,
     },
     {
-      headerName: "SKU",
-      field: "sku",
+      headerName: "Box Number",
+      field: "box_no",
       filter: "agTextColumnFilter",
       flex: 1,
     },
     {
-      headerName: "Product",
-      field: "name",
+      headerName: "Part Code",
+      field: "part_name",
       filter: "agTextColumnFilter",
       flex: 1,
     },
     {
-      headerName: "Out Qty",
-      field: "approveqty",
+      headerName: "Part Name",
+      field: "c_name",
       filter: "agTextColumnFilter",
       flex: 1,
     },
     {
-      headerName: "Out By",
-      field: "approveby",
+      headerName: "IMS Stock",
+      field: "ims_closing_stock",
+      filter: "agTextColumnFilter",
+      flex: 1,
+    },
+    {
+      headerName: "Physical Stock",
+      field: "physical_stock",
+      filter: "agTextColumnFilter",
+      flex: 1,
+    },
+    {
+      headerName: "Cost Center",
+      field: "cost_center_name",
       filter: "agTextColumnFilter",
       flex: 1,
     },
   ];
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "FG Out");
+    downloadCSV(rowData, columnDefs, "Physical Stock");
   };
   const handleDateChange = (date: moment.Moment | null) => {
     data = date ? date.format("DD-MM-YYYY") : ""; // Format the date for storage
@@ -178,7 +184,7 @@ const ViewFgOut = () => {
   );
 };
 
-export default ViewFgOut;
+export default ViewPhysicalStock;
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;

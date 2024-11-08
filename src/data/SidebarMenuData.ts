@@ -260,8 +260,8 @@ export const materialmenu = [
   {
     name: " Physical Stock",
     subMenu: [
-      { name: "Create Physical Stock", path: "/not-permission" },
-      { name: "View Physical Stock", path: "/not-permission" },
+      { name: "Create Physical Stock", path: "/physicalStock" },
+      { name: "View Physical Stock", path: "/viewphysicalStock" },
     ],
   },
 ];

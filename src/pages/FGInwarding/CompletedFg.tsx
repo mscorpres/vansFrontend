@@ -19,9 +19,7 @@ import styled from "styled-components";
 import { Checkbox, DatePicker, Space } from "antd";
 
 import Select from "react-select";
-import {
-  transformOptionData,
-} from "@/helper/transform";
+import { transformOptionData } from "@/helper/transform";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
@@ -29,9 +27,11 @@ import { fetchListOfCompletedFg } from "@/components/shared/Api/masterApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   exportDatepace,
+  exportDateRangespace,
 } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -58,19 +58,18 @@ const CompeletedFg = () => {
   const fetchFGList = async (formData: z.infer<typeof FormSchema>) => {
     let { dateRange, datainp } = formData;
 
-    let dataString = "";
+    let datas = "";
     if (wise === "datewise" && dateRange) {
-      dataString = exportDatepace(dateRange);
+      datas = exportDateRangespace(dateRange);
     } else if (wise === "skuwise" && datainp) {
-      dataString = datainp;
+      datas = datainp;
     }
 
-    // return;
     const response = await execFun(
-      () => fetchListOfCompletedFg(wise, dataString),
+      () => fetchListOfCompletedFg(wise, datas),
       "fetch"
     );
-    // return;
+
     let { data } = response;
     if (data.code === 200) {
       let arr = data.data.map((r, index) => {
@@ -80,7 +79,6 @@ const CompeletedFg = () => {
         };
       });
       setRowData(arr);
-  
     } else {
       toast({
         title: response.data.message.msg,
@@ -213,7 +211,8 @@ const CompeletedFg = () => {
                         <RangePicker
                           className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
                           onChange={(value) =>
-                            field.onChange(
+                            form.setValue(
+                              "dateRange",
                               value ? value.map((date) => date!.toDate()) : []
                             )
                           }
@@ -270,6 +269,8 @@ const CompeletedFg = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

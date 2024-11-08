@@ -87,6 +87,11 @@ import PrintLayout from "./layouts/PrintLayout";
 import ViewFgOut from "./pages/FGOut/ViewFgOut";
 import CustomerComponent from "./pages/masterModule/ComponentMap/CustomerComponent";
 import ComponentMapLayout from "./layouts/Master/ComponentMapLayout";
+import CreatePhyStock from "./layouts/CreatePhyStock";
+import CreatePhysicalStock from "./pages/PhysicalStock/CreatePhysicalStock";
+import PendingStock from "./pages/PhysicalStock/PendingStock";
+import RejectedStock from "./pages/PhysicalStock/RejectedStock";
+import ViewPhysicalStock from "./pages/PhysicalStock/ViewPhysicalStock";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -941,6 +946,55 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/master/client/view",
+  },
+  ////Physical Stock///////////////
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <CreatePhysicalStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/physicalStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <PendingStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/pendingStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <RejectedStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/rejectedStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <ViewPhysicalStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/viewphysicalStock",
   },
   {
     element: (

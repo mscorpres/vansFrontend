@@ -70,39 +70,24 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { saveFGs } from "@/features/client/storeSlice";
 import { IoMdDownload, IoMdPrint } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
-const FormSchema = z.object({
-  wise: z.string().optional(),
-});
-const FormFGSchema = z.object({
-  sku: z.string().optional(),
-  qty: z.string().optional(),
-});
+import FullPageLoading from "@/components/shared/FullPageLoading";
 
 const PendingFg = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [asyncOptions, setAsyncOptions] = useState([]);
   const [sheetOpenView, setSheetOpenView] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
-  // const form = useForm<z.infer<typeof FormSchema>>({
-  //   resolver: zodResolver(FormSchema),
-  // });
-  // const fgForm = useForm<z.infer<typeof FormFGSchema>>({
-  //   resolver: zodResolver(FormFGSchema),
-  // });
   const [fgForm] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const dispatch = useDispatch<AppDispatch>();
+
+  const { loading } = useSelector((state: RootState) => state.store);
   const fetchFGList = async () => {
     // const { wise } = formData;
     const values = fgForm.validateFields();
-    // // console.log("fetchBOMList", formData);
-    // return;
     const response = await execFun(
       () => fetchListOfPendingFg({ search: values.wise }),
       "fetch"
     );
-    // console.log("response", response);
-    // return;
     let { data } = response;
     if (data.code === 200) {
       let arr = data.data.map((r, index) => {
@@ -112,27 +97,10 @@ const PendingFg = () => {
         };
       });
       setRowData(arr);
-      //   addToast(response.message, {
-      //     appearance: "success",
-      //     autoDismiss: true,
-      //   });
     } else {
-      //   addToast(response.message, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
     }
   };
-  const sfgType = [
-    {
-      label: "Yes",
-      value: "yes",
-    },
-    {
-      label: "No",
-      value: "no",
-    },
-  ];
+
   const type = [
     {
       label: "Pending",
@@ -140,9 +108,7 @@ const PendingFg = () => {
     },
     ,
   ];
-  useEffect(() => {
-    fetchFGList();
-  }, []);
+
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -267,18 +233,11 @@ const PendingFg = () => {
       setShowConfirmation(false);
     });
   };
-  /*************  ✨ Codeium Command ⭐  *************/
-  /**
-   * Triggers the download of an Excel file containing the 'Verified Physical Stock' data.
-   * Utilizes the `downloadCSV` function to export the data from `rows` and `columnDefs`.
-   */
-  /******  e064d7a2-649b-4e52-af99-49b5817c4b73  *******/
+
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "Store Pending");
+    downloadCSV(rowData, columnDefs, "FG Pending");
   };
-  // const handleDownloadExcel = () => {
-  //   downloadCSV(rowData, columnDefs, "Store Pending");
-  // };
+
   useEffect(() => {
     if (sheetOpenView) {
       getinwardingDetails(sheetOpenView);
@@ -286,9 +245,9 @@ const PendingFg = () => {
   }, [sheetOpenView]);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[300px_1fr]">
       <div className="bg-[#fff]">
-        {" "} 
+        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -299,12 +258,8 @@ const PendingFg = () => {
             // onSubmit={form.handleSubmit(fetchFGList)}
             className="space-y-6 overflow-hidden p-[10px] h-[170px]"
           >
-            {/* <FormField
-              control={form.control}
-              name="wise"
-              render={({ field }) => ( */}
+      
             <Form.Item className="w-full" name="wise">
-              {/* <FormControl> */}
               <Select
                 styles={customStyles}
                 components={{ DropdownIndicator }}
@@ -317,24 +272,13 @@ const PendingFg = () => {
                 options={type}
                 onChange={(e: any) => form.setValue("wise", e.value)}
               />
-              {/* </FormControl> */}
-              {/* <FormMessage /> */}
+             
             </Form.Item>
             {/* )}
             /> */}
             {/* )} */}
             <div className="flex gap-[10px] justify-end">
-              {/* <Button
-                // type="submit"
-                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
-                // onClick={() => {}}
-                onClick={(e: any) => {
-                  e.preventDefault();
-                  fetchFGList();
-                }}
-              >
-                <IoMdPrint size={20} />
-              </Button> */}
+             
               <Button
                 // type="submit"
                 className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
@@ -373,6 +317,7 @@ const PendingFg = () => {
               <SheetTitle className="text-slate-600">FG Inwarding</SheetTitle>
             </SheetHeader>
             <div>
+              {loading && <FullPageLoading />}
               <Form form={fgForm}>
                 <form
                   //   onSubmit={form.handleSubmit(onSubmit)}
@@ -464,6 +409,7 @@ const PendingFg = () => {
         </Sheet>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

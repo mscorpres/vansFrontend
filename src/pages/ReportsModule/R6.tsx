@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,9 +8,7 @@ import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 
-import {
-  LableStyle,
-} from "@/constants/themeContants";
+import { LableStyle } from "@/constants/themeContants";
 import {
   Form,
   FormControl,
@@ -22,18 +20,14 @@ import {
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
-import {
-  transformOptionData,
-} from "@/helper/transform";
+import { transformOptionData } from "@/helper/transform";
 
 import Select from "react-select";
 import useApi from "@/hooks/useApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import {
-  
-  fetchR6,
-} from "@/components/shared/Api/masterApi";
+import { fetchR6 } from "@/components/shared/Api/masterApi";
 import { exportDateRangespace } from "@/components/shared/Options";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -55,13 +49,10 @@ const R6 = () => {
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
-  //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
   const theWise = form.watch("types");
-  const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let { date } = formData;
     let dataString = "";
     if (date) {
@@ -71,10 +62,8 @@ const R6 = () => {
       searchValues: theWise,
       searchData: dataString || selectedCustomer?.value,
     };
-    console.log("payload", payload);
 
     const response = await execFun(() => fetchR6(payload), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.data.map((r, index) => {
@@ -83,20 +72,14 @@ const R6 = () => {
           ...r,
         };
       });
-      console.log("arr", arr);
 
       setRowData(arr);
     } else {
-      
     }
   };
   const handleCompChange = (e: any) => {
-    // form.setValue("component", e.value);
     setSelectedCustomer(e);
   };
-  useEffect(() => {
-    // fetchComponentList();
-  }, []);
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -247,10 +230,10 @@ const R6 = () => {
                 name="component"
                 render={() => (
                   <FormItem>
-                    <FormLabel className={LableStyle}>Component Name</FormLabel>
+                    <FormLabel className={LableStyle}>Part Name</FormLabel>
                     <FormControl>
                       <ReusableAsyncSelect
-                        placeholder="Component Name"
+                        placeholder="Part Name"
                         endpoint="/rate/getcomponents"
                         transform={transformOptionData}
                         onChange={handleCompChange}
