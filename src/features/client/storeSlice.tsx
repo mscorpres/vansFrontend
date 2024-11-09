@@ -86,6 +86,8 @@ interface StoreState {
   pendingStk: any;
   rejStk: any;
   allStock: any;
+  rejectStock: any;
+  aproveStock: any;
 }
 
 const initialState: StoreState = {
@@ -109,6 +111,8 @@ const initialState: StoreState = {
   pendingStk: null,
   rejStk: null,
   allStock: null,
+  rejectStock: null,
+  aproveStock: null,
 };
 export const saveFGs = createAsyncThunk<any>(
   "/fgIN/saveFGs",
@@ -632,6 +636,44 @@ export const allphysical = createAsyncThunk<ResponseData>(
     }
   }
 );
+export const rejectStockItem = createAsyncThunk<ResponseData>(
+  "/physicalStock/rejectphysical_stock", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/physicalStock/rejectphysical_stock",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const approveStockItem = createAsyncThunk<ResponseData>(
+  "/physicalStock/approvephysical_stock", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/physicalStock/approvephysical_stock",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
 
 const storeSlice = createSlice({
   name: "client",
@@ -912,6 +954,30 @@ const storeSlice = createSlice({
         state.allStock = action.payload;
       })
       .addCase(allphysical.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(rejectStockItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(rejectStockItem.fulfilled, (state, action) => {
+        state.loading = false;
+        state.rejectStock = action.payload;
+      })
+      .addCase(rejectStockItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(approveStockItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(approveStockItem.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(approveStockItem.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       });

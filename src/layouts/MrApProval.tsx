@@ -19,7 +19,7 @@ const MrApproval = (props: { children: React.ReactNode }) => {
           </li>
           <li className="h-[50px]">
             <NavLink
-              to={"/warehouse/mrApproval/status"}
+              to={"/warehouse/mrApprovalstatus"}
               className={({ isActive }) =>
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }
