@@ -81,6 +81,8 @@ const PendingStock = () => {
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
         });
+        fetchQueryResults();
+        setRowData([]);
       } else {
         toast({
           title: res.payload.message,
@@ -102,6 +104,8 @@ const PendingStock = () => {
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
         });
+        setRowData([]);
+        fetchQueryResults();
       } else {
         toast({
           title: res.payload.message,
@@ -122,13 +126,13 @@ const PendingStock = () => {
             {/* <Button className=" bg-green-700 hover:bg-green-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
             <FaCheckCircle
               className="h-[15px] w-[15px] text-green-700"
-              onClick={() => rejectItem(e)}
+              onClick={() => aproveItem(e)}
             />
             {/* </Button>{" "} */}
             {/* <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600"> */}
             <FaTimesCircle
               className="h-[15px] w-[15px] text-red-700   "
-              onClick={() => aproveItem(e)}
+              onClick={() => rejectItem(e)}
             />
             {/* </Button>{" "} */}
           </div>
