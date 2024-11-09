@@ -73,6 +73,7 @@ interface StoreState {
   productData: any;
   minComponents: any;
   transactionApproval: any;
+  creatematerial: any;
   transactionFromBoxList: any;
   transferBoxList: any;
   availableStockBoxes: any;
@@ -97,6 +98,7 @@ const initialState: StoreState = {
   product: [],
   productData: [],
   transactionApproval: null,
+  creatematerial: null,
   transactionFromBoxList: null,
   transferBoxList: [],
   availableStockBoxes: null,
@@ -114,6 +116,25 @@ const initialState: StoreState = {
   rejectStock: null,
   aproveStock: null,
 };
+export const addComponent = createAsyncThunk<any, payload>(
+  "/component/addComponent",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post<shippingAddressPayload>(
+        "/component/addComponent",
+        payload
+      );
+      console.log("response in store", response);
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
 export const saveFGs = createAsyncThunk<any>(
   "/fgIN/saveFGs",
   async (payload) => {
@@ -280,6 +301,7 @@ export const stockOut = createAsyncThunk<settleTransferPayload>(
   async (payload) => {
     try {
       const response = await spigenAxios.post("/backend/stockOut", payload);
+      console.log("response yyyyyy", response);
 
       return response.data.data;
     } catch (error) {
@@ -299,7 +321,7 @@ export const minTransaction = createAsyncThunk<settleTransferPayload>(
         payload
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -680,7 +702,19 @@ const storeSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder
+    builder ///create material
+      .addCase(addComponent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addComponent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.creatematerial = action.payload;
+      })
+      .addCase(addComponent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch HSN";
+      })
       .addCase(saveFGs.pending, (state) => {
         state.loading = true;
         state.error = null;

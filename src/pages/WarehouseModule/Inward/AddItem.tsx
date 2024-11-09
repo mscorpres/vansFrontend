@@ -94,15 +94,14 @@ const AddPO: React.FC<Props> = ({
   const [search, setSearch] = useState("");
   const [sheetOpen, setSheetOpen] = useState([]);
   const [files, setFiles] = useState<File[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch<AppDispatch>();
   const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
-  const { minTransactiondata } = useSelector((state: RootState) => state.store);
-  const isLoading = useSelector(
-    (state) => storeSlice.minTransactiondata.loading
+  const { loading, minTransactiondata } = useSelector(
+    (state: RootState) => state.store
   );
 
   const { currencyList } = useSelector((state: RootState) => state.client);
@@ -134,7 +133,7 @@ const AddPO: React.FC<Props> = ({
       checked: false,
       type: "products",
       procurementMaterial: "",
-      materialDescription: "",
+      remark: "",
       asinNumber: "B01N1SE4EP",
       orderQty: 100,
       rate: 50,
@@ -156,8 +155,7 @@ const AddPO: React.FC<Props> = ({
       newRow,
     ]);
   };
-  const removeRows = () => {
-  };
+  const removeRows = () => {};
   const defaultColDef = useMemo<ColDef>(() => {
     return {
       floatingFilter: false,
@@ -240,23 +238,18 @@ const AddPO: React.FC<Props> = ({
       attachment: attachmentFile,
     };
     dispatch(minTransaction(payload)).then((res) => {
+      console.log("res", res);
+      if (res?.payload?.code == 200) {
+      } else {
+        toast({
+          title: res.payload.message.msg,
+          className: "bg-red-600 text-white items-center",
+        });
+        setShowConfirmation(false);
+      }
     });
   };
-  const fetchComponentList = async (search) => {
-    const response = await execFun(
-      () => getComponentsByNameAndNo(search),
-      "fetch"
-    );
-    if (response.status === "sucess") {
-      let arr = response.data.map((r) => {
-        return {
-          label: r.id,
-          value: r.text,
-        };
-      });
-      setAsyncOptions(arr);
-    }
-  };
+
   const columnDefs = [
     {
       headerName: "",
@@ -374,7 +367,7 @@ const AddPO: React.FC<Props> = ({
     },
     {
       headerName: "ITEM DESCRIPTION",
-      field: "materialDescription",
+      field: "remark",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -396,7 +389,7 @@ const AddPO: React.FC<Props> = ({
     return `${day}-${month}-${year}`;
   };
   const uploadDocs = async () => {
-    setLoading(true);
+    // setLoading(true);
     const formData = new FormData();
     formData.append("action", "uploadTempFile");
     files.map((comp) => {
@@ -412,11 +405,11 @@ const AddPO: React.FC<Props> = ({
         title: "Doc Uploaded successfully",
         className: "bg-green-600 text-white items-center",
       });
-      setLoading(false);
+      // setLoading(false);
       setSheetOpen(false);
       setAttachmentFile(response.data.data);
     }
-    setLoading(false);
+    // setLoading(false);
   };
 
   useEffect(() => {
@@ -603,7 +596,7 @@ const AddPO: React.FC<Props> = ({
             </div>{" "}
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
-            {minTransactiondata.laoding && <FullPageLoading />}
+            {loading && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
@@ -692,7 +685,7 @@ const AddPO: React.FC<Props> = ({
             <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
           </SheetHeader>{" "}
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-            {" "}
+            {/* {loading && <FullPageLoading />} */}
             <FileUploader
               value={files}
               onValueChange={handleFileChange}

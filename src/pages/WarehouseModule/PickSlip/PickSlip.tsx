@@ -86,7 +86,7 @@ const PickSlip = () => {
   //     (state: RootState) => state.createSalesOrder
   //   );
   const { hsnlist } = useSelector((state: RootState) => state.client);
-  const { availableStockBoxes } = useSelector(
+  const { loading, availableStockBoxes } = useSelector(
     (state: RootState) => state.store
   );
 
@@ -357,6 +357,7 @@ const PickSlip = () => {
     setSheetOpen(false);
     setFinalRows(selectedRows);
   };
+  console.log("loading", loading);
 
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] overflow-hidden">
@@ -431,6 +432,8 @@ const PickSlip = () => {
           </Button>{" "}
         </div>
         <div className="ag-theme-quartz h-[calc(100vh-200px)] w-full">
+          {" "}
+          {loading && <FullPageLoading />}
           <AgGridReact
             ref={gridRef}
             rowData={rowData}
@@ -463,6 +466,7 @@ const PickSlip = () => {
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}
+              disabled={rowData.length == 0}
             >
               Submit
             </Button>
