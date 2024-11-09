@@ -214,8 +214,6 @@ const ViewMin: React.FC = () => {
   const fetchManageList = async () => {
     // setLoading(true);
     const values = await form.validateFields();
-    console.log("val", values);
-
     let date;
     if (values.wise.value == "datewise") {
       date = exportDatepace(values.data);
