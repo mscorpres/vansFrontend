@@ -303,7 +303,7 @@ export const stockOut = createAsyncThunk<settleTransferPayload>(
       const response = await spigenAxios.post("/backend/stockOut", payload);
       console.log("response yyyyyy", response);
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);

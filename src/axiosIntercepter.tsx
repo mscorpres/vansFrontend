@@ -14,7 +14,7 @@ interface ErrorResponse {
   data?: {
     logout?: boolean;
   };
-  status?: string
+  status?: string;
 }
 
 interface OtherData {
@@ -57,7 +57,8 @@ spigenAxios.interceptors.response.use(
   (error: AxiosError<ErrorResponse>) => {
     if (error.response && typeof error.response.data === "object") {
       const errorData = error.response.data;
-console.log(errorData);
+      toast.error(errorData.message.msg);
+      console.log(errorData);
       if (errorData?.data?.logout) {
         toast.error(errorData.message || "Logout error.");
         localStorage.clear();
@@ -65,7 +66,7 @@ console.log(errorData);
         return Promise.reject(error);
       }
 
-      if (errorData.success === false||errorData?.status=="error") {
+      if (errorData.success === false || errorData?.status == "error") {
         toasts({
           title: errorData?.message,
           className: "bg-red-600 text-white items-center",

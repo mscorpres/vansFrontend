@@ -9,7 +9,7 @@ export const useApi = () => {
       let message = "";
       setLoading(loadingLabel, true);
       const response = await fun();
-      // console.log("response in use api", response);
+      console.log("response in use api", response);
 
       if (response.success !== undefined) {
         if (response.success && response.message) {

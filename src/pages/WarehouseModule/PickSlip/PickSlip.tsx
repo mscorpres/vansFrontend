@@ -230,6 +230,8 @@ const PickSlip = () => {
       boxqty: finalrows.map((r) => r.qty),
     };
     dispatch(stockOut(payload)).then((res: any) => {
+      console.log("res", res);
+
       if (res.payload.code == 200) {
         toast({
           title: res.payload.message,
@@ -239,7 +241,7 @@ const PickSlip = () => {
         setShowConfirmation(false);
       } else {
         toast({
-          title: res.payload.message,
+          title: res.payload.message.msg,
           className: "bg-red-600 text-white items-center",
         });
       }
@@ -362,7 +364,7 @@ const PickSlip = () => {
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
-        {loading1("fetch") && <FullPageLoading />}{" "}
+        {loading && <FullPageLoading />}{" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
