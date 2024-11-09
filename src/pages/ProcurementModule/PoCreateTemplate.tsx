@@ -18,11 +18,14 @@ const PoCreateTemplate = () => {
   const [form] = Form.useForm();
   const [paramVal, setParamVal] = useState("");
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const [bilStateCode, setBillStateCode] = useState("");
+  const [shipStateCode, setShipStateCode] = useState("");
+  const [codeType, setCodeType] = useState("");
   const selectedVendor = Form.useWatch("vendorName", form);
   const dispatch = useDispatch<AppDispatch>();
   console.log("tabvalue", tabvalue);
   const params = useParams();
-  console.log("params", params);
+  console.log("bilStateCode------------", shipStateCode, bilStateCode);
   useEffect(() => {
     const currentUrl = window.location.href;
     // console.log("currentUrl---", currentUrl.split("/"));
@@ -111,6 +114,17 @@ const PoCreateTemplate = () => {
       );
     }
   }, [params]);
+  useEffect(() => {
+    if (bilStateCode && shipStateCode) {
+      if (Number(shipStateCode) == Number(bilStateCode)) {
+        console.log("same");
+        setCodeType("L");
+      } else {
+        console.log("diffener");
+        setCodeType("I");
+      }
+    }
+  }, [shipStateCode, bilStateCode]);
 
   return (
     <div>
@@ -123,6 +137,10 @@ const PoCreateTemplate = () => {
             selectedVendor={selectedVendor}
             formVal={formVal}
             setFormVal={setFormVal}
+            bilStateCode={bilStateCode}
+            setBillStateCode={setBillStateCode}
+            shipStateCode={shipStateCode}
+            setShipStateCode={setShipStateCode}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">
@@ -138,6 +156,12 @@ const PoCreateTemplate = () => {
             isApprove={isApprove}
             setIsApprove={setIsApprove}
             params={params}
+            bilStateCode={bilStateCode}
+            setBillStateCode={setBillStateCode}
+            shipStateCode={shipStateCode}
+            setShipStateCode={setShipStateCode}
+            codeType={codeType}
+            setCodeType={setCodeType}
           />
         </TabsContent>
       </Tabs>

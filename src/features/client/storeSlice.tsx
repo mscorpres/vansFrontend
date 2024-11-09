@@ -73,6 +73,7 @@ interface StoreState {
   productData: any;
   minComponents: any;
   transactionApproval: any;
+  creatematerial: any;
   transactionFromBoxList: any;
   transferBoxList: any;
   availableStockBoxes: any;
@@ -86,6 +87,8 @@ interface StoreState {
   pendingStk: any;
   rejStk: any;
   allStock: any;
+  rejectStock: any;
+  aproveStock: any;
 }
 
 const initialState: StoreState = {
@@ -95,6 +98,7 @@ const initialState: StoreState = {
   product: [],
   productData: [],
   transactionApproval: null,
+  creatematerial: null,
   transactionFromBoxList: null,
   transferBoxList: [],
   availableStockBoxes: null,
@@ -109,7 +113,28 @@ const initialState: StoreState = {
   pendingStk: null,
   rejStk: null,
   allStock: null,
+  rejectStock: null,
+  aproveStock: null,
 };
+export const addComponent = createAsyncThunk<any, payload>(
+  "/component/addComponent",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post<shippingAddressPayload>(
+        "/component/addComponent",
+        payload
+      );
+      console.log("response in store", response);
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
 export const saveFGs = createAsyncThunk<any>(
   "/fgIN/saveFGs",
   async (payload) => {
@@ -262,7 +287,7 @@ export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
         "/backend/fetchAvailableStockBoxes",
         payload
       );
-      return response.data.data;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -276,8 +301,9 @@ export const stockOut = createAsyncThunk<settleTransferPayload>(
   async (payload) => {
     try {
       const response = await spigenAxios.post("/backend/stockOut", payload);
+      console.log("response yyyyyy", response);
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -295,7 +321,7 @@ export const minTransaction = createAsyncThunk<settleTransferPayload>(
         payload
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -632,13 +658,63 @@ export const allphysical = createAsyncThunk<ResponseData>(
     }
   }
 );
+export const rejectStockItem = createAsyncThunk<ResponseData>(
+  "/physicalStock/rejectphysical_stock", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/physicalStock/rejectphysical_stock",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const approveStockItem = createAsyncThunk<ResponseData>(
+  "/physicalStock/approvephysical_stock", // Action type
+  async (payload) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/physicalStock/approvephysical_stock",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
 
 const storeSlice = createSlice({
   name: "client",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder
+    builder ///create material
+      .addCase(addComponent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addComponent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.creatematerial = action.payload;
+      })
+      .addCase(addComponent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch HSN";
+      })
       .addCase(saveFGs.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -912,6 +988,30 @@ const storeSlice = createSlice({
         state.allStock = action.payload;
       })
       .addCase(allphysical.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(rejectStockItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(rejectStockItem.fulfilled, (state, action) => {
+        state.loading = false;
+        state.rejectStock = action.payload;
+      })
+      .addCase(rejectStockItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(approveStockItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(approveStockItem.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(approveStockItem.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       });

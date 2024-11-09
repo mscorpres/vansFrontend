@@ -40,6 +40,7 @@ import {
   getPhysicalStockfromBox,
 } from "@/features/client/storeSlice";
 import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
+import { toast } from "@/components/ui/use-toast";
 
 const type = [
   {
@@ -162,6 +163,8 @@ const TextInputCellRenderer = (props: any) => {
   const { hsnlist, getComponentData, costCenterList } = useSelector(
     (state: RootState) => state.client
   );
+  // console.log("hsnlist", props);
+
   const {
     transactionFromBoxList,
     transferBoxList,
@@ -266,7 +269,16 @@ const TextInputCellRenderer = (props: any) => {
         component: data["pickmaterial"],
       };
 
-      dispatch(fetchAvailableStockBoxes(payload));
+      dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
+        console.log("resp", res);
+        if (res?.payload.code == 500) {
+          toast({
+            title: "Out Boxes not available!",
+            // title: res.payload.message.msg,
+            className: "bg-red-700 text-white text-center",
+          });
+        }
+      });
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
@@ -824,7 +836,7 @@ const TextInputCellRenderer = (props: any) => {
         return (
           <Input
             value={value}
-            // type="text"
+            type="text"
             placeholder={colDef.headerName}
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
@@ -967,7 +979,7 @@ const TextInputCellRenderer = (props: any) => {
         return (
           <Select
             onPopupScroll={(e) => e.preventDefault()}
-            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
+            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px] w-full"
             // className="w-full"
             labelInValue
             filterOption={false}

@@ -140,6 +140,7 @@ export const fetchShippingAddressDetails = createAsyncThunk<
     throw new Error("An unknown error occurred");
   }
 });
+
 export const fetchBillingList = createAsyncThunk<
   shippingAddressPayload,
   { cost_center?: string }
@@ -253,7 +254,7 @@ export const searchingHsn = createAsyncThunk<hsnPayload>(
         payload
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -512,6 +513,7 @@ interface ClientState {
   data: any[];
   loading: boolean;
   error: string | null;
+  creatematerial: null;
 }
 
 const initialState: ClientState = {
@@ -534,6 +536,7 @@ const initialState: ClientState = {
   poMinList: null,
   editPoDetails: null,
   currencyList: null,
+  creatematerial: null,
 };
 
 const clientSlice = createSlice({
@@ -595,6 +598,7 @@ const clientSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch HSN";
       })
+    
       ///search uom List
       .addCase(listOfUoms.pending, (state) => {
         state.loading = true;

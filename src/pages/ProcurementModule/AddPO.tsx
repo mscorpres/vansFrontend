@@ -53,6 +53,8 @@ const AddPO: React.FC<Props> = ({
   isApprove,
   setIsApprove,
   params,
+  codeType,
+  setCodeType,
 }) => {
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
@@ -96,7 +98,7 @@ const AddPO: React.FC<Props> = ({
       rate: 50,
       currency: "USD",
       gstRate: 18,
-      gstType: "local",
+      gstType: codeType,
       localValue: 0,
       foreignValue: 0,
       cgst: 9,

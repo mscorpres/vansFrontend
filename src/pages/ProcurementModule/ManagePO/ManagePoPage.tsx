@@ -212,6 +212,7 @@ const ManagePoPage: React.FC = () => {
   ];
   const cancelTheSelectedPo = async (row: any) => {
     console.log("row", row);
+    setLoading(true);
     let payload = {
       poId: row?.po_transaction,
     };
@@ -224,12 +225,12 @@ const ManagePoPage: React.FC = () => {
         downloadFunction(data.buffer, data.filename);
       }
     });
-    // setLoading(false);
+    setLoading(false);
   };
   const dispatch = useDispatch<AppDispatch>();
   const getVendorList = async () => {
     // return;
-
+    setLoading(true);
     const response = await execFun(() => fetchListOfVendor(), "fetch");
     // return;
     let { data } = response;
@@ -241,7 +242,9 @@ const ManagePoPage: React.FC = () => {
         };
       });
       setAsyncOptions(arr);
+      setLoading(false);
     }
+    setLoading(false);
   };
   const fetchManageList = async () => {
     setLoading(true);
@@ -269,7 +272,7 @@ const ManagePoPage: React.FC = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       {" "}
-      {loading && <FullPageLoading />}
+      {(loading1("fetch") || loading == "fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">

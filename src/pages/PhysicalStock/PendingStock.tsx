@@ -13,7 +13,11 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store";
-import { pendingPhysical } from "@/features/client/storeSlice";
+import {
+  approveStockItem,
+  pendingPhysical,
+  rejectStockItem,
+} from "@/features/client/storeSlice";
 import { toast } from "@/components/ui/use-toast";
 import { ImCross } from "react-icons/im";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
@@ -64,6 +68,52 @@ const PendingStock = () => {
       }
     });
   };
+  const rejectItem = async (e) => {
+    console.log("e", e);
+    // return;
+    let payload = {
+      data: e.data.ID,
+    };
+    dispatch(rejectStockItem(payload)).then((res) => {
+      console.log("res", res);
+      if (res.payload.code == 200) {
+        toast({
+          title: res.payload.message,
+          className: "bg-green-600 text-white items-center",
+        });
+        fetchQueryResults();
+        setRowData([]);
+      } else {
+        toast({
+          title: res.payload.message,
+          className: "bg-red-600 text-white items-center",
+        });
+      }
+    });
+  };
+  const aproveItem = async (e) => {
+    console.log("e", e);
+    // return;
+    let payload = {
+      data: e.data.ID,
+    };
+    dispatch(approveStockItem(payload)).then((res) => {
+      console.log("res", res);
+      if (res.payload.code == 200) {
+        toast({
+          title: res.payload.message,
+          className: "bg-green-600 text-white items-center",
+        });
+        setRowData([]);
+        fetchQueryResults();
+      } else {
+        toast({
+          title: res.payload.message,
+          className: "bg-red-600 text-white items-center",
+        });
+      }
+    });
+  };
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -76,13 +126,13 @@ const PendingStock = () => {
             {/* <Button className=" bg-green-700 hover:bg-green-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
             <FaCheckCircle
               className="h-[15px] w-[15px] text-green-700"
-              // onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+              onClick={() => aproveItem(e)}
             />
             {/* </Button>{" "} */}
             {/* <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600"> */}
             <FaTimesCircle
               className="h-[15px] w-[15px] text-red-700   "
-              // onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+              onClick={() => rejectItem(e)}
             />
             {/* </Button>{" "} */}
           </div>

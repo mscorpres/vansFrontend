@@ -45,6 +45,10 @@ const CreatePoPage: React.FC<Props> = ({
   selectedVendor,
   setFormVal,
   formVal,
+  bilStateCode,
+  setBillStateCode,
+  shipStateCode,
+  setShipStateCode,
 }) => {
   const [searchData, setSearchData] = useState("");
   const dispatch = useDispatch();
@@ -133,7 +137,7 @@ const CreatePoPage: React.FC<Props> = ({
   useEffect(() => {
     if (shippingPODetails) {
       let arr = shippingPODetails;
-
+      setShipStateCode(shippingPODetails.statecode);
       form.setFieldValue("shipgst", arr?.gstin);
       form.setFieldValue("shippan", arr?.pan);
       form.setFieldValue("shipAddress", arr?.address);
@@ -160,7 +164,8 @@ const CreatePoPage: React.FC<Props> = ({
   useEffect(() => {
     if (vendorBillingDetails) {
       let arr = vendorBillingDetails;
-
+      console.log("vnedor", vendorBillingDetails);
+      setBillStateCode(vendorBillingDetails.statecode);
       form.setFieldValue("pan", arr?.pan);
       form.setFieldValue("billgst", arr?.gstin);
       form.setFieldValue("billAddress", arr?.address);

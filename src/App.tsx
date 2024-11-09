@@ -688,6 +688,20 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <MrApproval>
+            <NotPermissionPage />
+            {/* <SalesETransactionRegisterPage /> */}
+          </MrApproval>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/mrApprovalstatus",
+  },
+
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <MrApproval>
             <PendingMr />
             {/* <SalesETransactionRegisterPage /> */}
           </MrApproval>
@@ -996,11 +1010,12 @@ const router = createBrowserRouter([
     ),
     path: "/viewphysicalStock",
   },
+
   {
     element: (
       <Protected authentication={false}>
         <MainLayout>
-          <NotPermissionPage />
+          <BlockedPageRenderPage />
         </MainLayout>
       </Protected>
     ),
