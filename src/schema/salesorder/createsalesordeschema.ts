@@ -35,22 +35,29 @@ const currencySchema = z.object({
   exchange_rate: z.string({ required_error: "Exchange Rate is required" }),
 });
 
-const header = z.object({
-  customer_type: z.string({ required_error: "Customer Type is required" }),
-  customer_code: z.string({ required_error: "Customer Code is required" }),
-  po_number: z.string({ required_error: "PO Number is required" }),
-  po_date: z.string({ required_error: "PO Date is required" }),
-  reference_no: z.string({ required_error: "Reference Number is required" }),
-  currency: currencySchema,
-});
+// const header = z.object({
+//   customer_type: z.string({ required_error: "Customer Type is required" }),
+//   customer_code: z.string({ required_error: "Customer Code is required" }),
+//   po_number: z.string({ required_error: "PO Number is required" }),
+//   po_date: z.string({ required_error: "PO Date is required" }),
+//   reference_no: z.string({ required_error: "Reference Number is required" }),
+//   currency: currencySchema,
+// });
 
 const createSalesFormSchema = z.object({
   billFrom: billFrom,
   billTo: billTo,
   shipTo: shipTo,
-  header: header,
+  customer_type: z.string({ required_error: "Customer Type is required" }),
+  customer_code: z.string({ required_error: "Customer Code is required" }),
+  po_number: z.string({ required_error: "PO Number is required" }),
+  po_date: z.string({ required_error: "PO Date is required" }),
+  due_date: z.string({ required_error: "PO Date is required" }),
+  reference_no: z.string({ required_error: "Reference Number is required" }),
+  reference_date:z.string({required_error:"Reference Date is mandatory"}),
+  currency: currencySchema,
   costcenter: z.string({ required_error: "Cost Center is required" }),
-  project_name: z.string({ required_error: "Project Name is required" }),
+  project_name: z.string().optional(),
   paymentterms: z.string().optional(),
   quotationdetail: z.string().optional(),
   so_comment: z.string().optional(),

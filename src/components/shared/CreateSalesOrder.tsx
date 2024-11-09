@@ -37,6 +37,7 @@ import {
 import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
 import { stateOptions } from "@/General";
 import { DatePicker, Space } from "antd";
+import { toast } from "@/components/ui/use-toast";
 interface Props {
   setTab: Dispatch<SetStateAction<string>>;
   setPayloadData: Dispatch<SetStateAction<any>>;
@@ -50,7 +51,6 @@ interface Props {
 }
 type CreateSalesOrderForm = z.infer<typeof createSalesFormSchema>;
 const CreateSalesOrder: React.FC<Props> = ({
-  setTabvalue,
   setTab,
   setPayloadData,
   handleCustomerSelection,
@@ -67,7 +67,7 @@ const CreateSalesOrder: React.FC<Props> = ({
     console.log("Submitted Data from CreateSalesOrder:", data); // Debugging log
     if (data) {
       setPayloadData(data);
-      setTabvalue("add"); // Switch to AddSalesOrder tab
+      setTab("add"); // Switch to AddSalesOrder tab
     } else {
       console.error("Data is null or undefined");
     }
@@ -94,7 +94,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="header.customer_type"
+                        name="customer_type"
                         render={() => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -134,7 +134,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="header.customer_code"
+                        name="customer_code"
                         render={() => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -150,7 +150,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 transform={transformOptions}
                                 fetchOptionWith="payload"
                                 onChange={handleCustomerSelection}
-                                // onInputChange={handleInputChange}
+                                value={form.getValues("customer_code")}
                               />
                             </FormControl>
                             <FormMessage />
@@ -557,7 +557,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="header.po_number"
+                        name="po_number"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -581,7 +581,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="header.po_date"
+                        name="po_date"
                         render={() => (
                           <FormItem className="pl-[10px] w-full flex flex-col">
                             <FormLabel className={LableStyle}>
@@ -600,10 +600,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
                                       : "";
-                                    form.setValue(
-                                      "header.po_date",
-                                      formattedDate
-                                    );
+                                    form.setValue("po_date", formattedDate);
                                   }}
                                 />
                               </Space>
@@ -616,7 +613,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="header.reference_no"
+                        name="reference_no"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -660,7 +657,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                       ? value.format("DD-MM-YYYY")
                                       : "";
                                     form.setValue(
-                                      "header.reference_date",
+                                      "reference_date",
                                       formattedDate
                                     );
                                   }}
@@ -672,49 +669,52 @@ const CreateSalesOrder: React.FC<Props> = ({
                         )}
                       />
                     </div>
-                    <div>
-                      <FormField
-                        control={form.control}
-                        name="header.currency.currency"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Currency
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                styles={customStyles}
-                                components={{ DropdownIndicator }}
-                                placeholder="Currency"
-                                className="border-0 basic-single"
-                                classNamePrefix="select border-0"
-                                isClearable={false} // Prevent clearing the value
-                                isSearchable={false} // Disable search if not needed
-                                options={
-                                  currencyList
-                                    ? transformCurrencyData(currencyList)
-                                    : []
-                                }
-                                value={
-                                  // Find the corresponding option based on field.value (which is the stateCode)
-                                  transformCurrencyData(currencyList)?.find(
-                                    (option) => option.value === field.value
-                                  ) || null
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    <FormField
+                      control={form.control}
+                      name="currency.currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Currency
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
+                              placeholder="Currency"
+                              className="border-0 basic-single"
+                              classNamePrefix="select border-0"
+                              isClearable={false} // Prevent clearing the value
+                              isSearchable={false} // Disable search if not needed
+                              options={
+                                currencyList
+                                  ? transformCurrencyData(currencyList)
+                                  : []
+                              }
+                              value={
+                                // Find the corresponding option based on field.value
+                                transformCurrencyData(currencyList)?.find(
+                                  (option) => option.value === field.value
+                                ) || null
+                              }
+                              onChange={(selectedOption) => {
+                                // Update the form value with the selected option's value
+                                field.onChange(selectedOption?.value); // Use field.onChange to update the form value
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="header.currency.exchange_rate"
+                        name="currency.exchange_rate"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -738,7 +738,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="header.due_date"
+                        name="due_date"
                         render={() => (
                           <FormItem className="pl-[10px] w-full flex flex-col">
                             <FormLabel className={LableStyle}>
@@ -757,10 +757,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
                                       : "";
-                                    form.setValue(
-                                      "header.due_date",
-                                      formattedDate
-                                    );
+                                    form.setValue("due_date", formattedDate);
                                   }}
                                 />
                               </Space>
@@ -1066,9 +1063,22 @@ const CreateSalesOrder: React.FC<Props> = ({
           </div>
           <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300">
             <Button
-              onClick={() => setTab("add")}
+              onClick={() => {
+                const errors = form.formState.errors;
+                if (Object.keys(errors).length > 0) {
+                  // Iterate over the errors and show a toast
+                  Object.values(errors).forEach((error: any) => {
+                    toast({
+                      title: error.message || "Failed",
+                      className: "bg-red-600 text-white items-center",
+                    });
+                  });
+                }
+                  setTab("add");
+              }}
               className={`${primartButtonStyle} flex gap-[10px]`}
               type="submit"
+              disabled={form.errors}
             >
               Next
               <FaArrowRightLong className="" />

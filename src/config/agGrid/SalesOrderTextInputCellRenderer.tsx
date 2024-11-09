@@ -11,7 +11,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-// import { fetchProductData } from "@/features/salesmodule/createSalesOrderSlice";
 import { AppDispatch, RootState } from "@/store";
 import { CommandList } from "cmdk";
 import { useState } from "react";
@@ -19,18 +18,12 @@ import { FaSortDown, FaTrash } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { DatePicker, Select } from "antd";
 import { transformOptionData } from "@/helper/transform";
-// import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
-// import {
-//   DeletePayload,
-//   deleteProduct,
-// } from "@/features/salesmodule/SalesSlice";
 import { useParams } from "react-router-dom";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import moment from "moment";
 import {
   fetchComponentDetailByCode,
-  fetchProductData,
-} from "@/features/salesmodule/createSalesOrderSlice";
+  } from "@/features/salesmodule/createSalesOrderSlice";
 const frameworks = [
   {
     value: "/",
@@ -104,12 +97,10 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
   const [open, setOpen] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
-  const { value, colDef, data, api, column, currency, setRowData } = props;
+  const { value, colDef, data, api, column,  setRowData } = props;
   const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
-
-  const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
 
   const handleDeleteRow = (rowIndex: number) => {
     setSelectedRowIndex(rowIndex);
@@ -142,10 +133,6 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
   };
 
-  const handleCurrencyChange = (value: any) => {
-    data["currency"] = value;
-    setOpenCurrencyDialog(true);
-  };
   const handleChange = (value: string) => {
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
@@ -171,6 +158,10 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     let sgst = 0;
     let igst = 0;
     const calculation = (localValue * data.gstRate) / 100;
+    if(props.exRate?.currency!=="364907247"){
+      data["foreignValue"] = localValue*props.exRate?.exchange_rate
+    }
+
     if (data.gstType === "L") {
       // Intra-State
       cgst = calculation / 2;
@@ -208,7 +199,9 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       data["localValue"] = newValue * parseFloat(data.rate);
     }
     const localValue = parseFloat(data.localValue) || 0; // Ensure localValue is a number
-
+    if(props.exRate?.currency!=="364907247"){
+      data["foreignValue"] = localValue*props.exRate?.exchange_rate
+    }
     // Calculate GST based on the updated values
     const gstRate = parseFloat(data.gstRate) || 0;
     let cgst = 0;
@@ -245,10 +238,6 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     api.applyTransaction({ update: [data] });
     updateData(data);
-  };
-
-  const submitCurrencyRate = (field: string, value: any) => {
-    data[field] = value?.rate;
   };
 
   const capitalizeFirstLetter = (string: string) => {
@@ -302,7 +291,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
             }}
             options={transformOptionData(componentDetails || [])}
             onChange={(e) => handleChange(e.value)}
-            value={typeof value === "string" ? { value } : value?.text}
+            value={typeof value === "string" ? { value } : value?.name}
           />
         );
       case "asinNumber":
@@ -427,24 +416,6 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
               placeholder={colDef.headerName}
               className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
             />
-            <Select
-              className="w-1/3"
-              labelInValue
-              filterOption={false}
-              placeholder="Currency"
-              defaultValue={{ value: "364907247", label: "₹" }}
-              //   options={transformCurrencyData(currency || [])}
-              onChange={(e) => handleCurrencyChange(e.value)}
-              // value={value}
-            />
-            {/* <CurrencyRateDialog
-              open={openCurrencyDialog}
-              onClose={() => setOpenCurrencyDialog(false)}
-              currency={data.currency || ""}
-              price={parseFloat(data.rate) || 0}
-              inputHandler={submitCurrencyRate}
-              rowId={data.rowId}
-            /> */}
           </>
         );
       case "type":

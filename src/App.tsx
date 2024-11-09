@@ -589,7 +589,7 @@ const router = createBrowserRouter([
         </MainLayout>
       </Protected>
     ),
-    path: "/sales/order/shipments",
+    path: "/sales/order/shipment",
   },
   {
     element: (

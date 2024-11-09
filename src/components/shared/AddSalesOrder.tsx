@@ -16,15 +16,15 @@ import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 // import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
-import { createSellRequest } from "@/features/salesmodule/SalesSlice";
 import SalesOrderTextInputCellRenderer from "@/config/agGrid/SalesOrderTextInputCellRenderer";
-import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
+import { createSalesOrderRequest, fetchComponentDetail, updateSalesOrderRequest } from "@/features/salesmodule/createSalesOrderSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
 // }
 const AddSalesOrder = ({
   setTab,
-  payloadData,
   derivedType,
   form,
   setRowData,
@@ -43,8 +43,11 @@ const AddSalesOrder = ({
   const [cgstTotal, setCgstTotal] = useState(0);
   const [sgstTotal, setSgstTotal] = useState(0);
   const [igstTotal, setIgstTotal] = useState(0);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [search] = useState("");
   const dispatch = useDispatch<AppDispatch>();
+  const params = useParams();
+  const navigate = useNavigate();
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const uiState: AddPoUIStateType = {
@@ -73,7 +76,6 @@ const AddSalesOrder = ({
       igst: 0,
       dueDate: "",
       hsnCode: "",
-      itemDescription: "",
       fcValue: 0,
       lcValue: 0,
       isNew: true,
@@ -117,7 +119,7 @@ const AddSalesOrder = ({
           onSearch={handleSearch}
           currency={"currency"}
           setRowData={setRowData}
-          channel={"channel"}
+          exRate={form.getValues("currency")}
         />
       ),
       datePickerCellRenderer: DatePickerCellRenderer,
@@ -134,22 +136,64 @@ const AddSalesOrder = ({
     rowData?.length === 0 && addNewRow();
   }, []);
 
-  const handleSubmit = () => {
-    console.log("Payload Data:", payloadData); // Debugging log
-    if (!payloadData || Object.keys(payloadData).length === 0) {
-      console.error("Payload data is missing or undefined.");
-      // Handle error, e.g., show a message to the user
-      return;
-    }
 
-    try {
-      dispatch(createSellRequest(payloadData));
-      setTab("create");
-    } catch (error) {
-      console.error("Error submitting data:", error);
-      // Handle error, e.g., show a message to the user
-    }
+  const materials = {
+    item: rowData?.map((component: RowData) =>
+      typeof component.material === "object" && component.material !== null
+        ? (component.material as any).id ||
+          (component.material as any).value ||
+          ""
+        : component.material || ""
+    ),
+    qty: rowData?.map((component: RowData) =>
+      component?.orderQty === undefined
+        ? null
+        : +Number(+Number(component.orderQty)?.toFixed(2))
+    ),
+    rate: rowData?.map((component: RowData) => Number(component.rate) || 0),
+    gst_rate: rowData?.map(
+      (component: RowData) => Number(component.gstRate) || 0
+    ),
+    hsn_code: rowData?.map((component: RowData) => component.hsnCode || ""),
+    gst_type: rowData?.map((component: RowData) => component.gstType || ""),
+    comp_remark: rowData?.map((component: RowData) => component.remark || ""),
+    cgst_rate: rowData?.map((component: RowData) => component.cgst || 0),
+    sgst_rate: rowData?.map((component: RowData) => component.sgst || 0),
+    igst_rate: rowData?.map((component: RowData) => component.igst || 0),
+    updaterow: rowData?.map((component: RowData) => component.updateid || 0),
+
   };
+  const soId = (params.id as string)?.replace(/_/g, "/");
+
+
+  const handleSubmit = () => {
+    // if (confirmed) {
+      // Proceed with the submission
+      const payloadData2 : any = {
+        header: { ...form.getValues(), so_id: soId },
+        itemDetails:materials,
+      };
+      if (window.location.pathname.includes("update")) {
+        dispatch(updateSalesOrderRequest(payloadData2)).then((response: any) => {
+          if (response.payload.success) {
+            form.reset(); // Reset the form
+            setRowData([]);
+            navigate("/sales/order/register");
+          }
+        });
+      } else {
+        dispatch(createSalesOrderRequest(payloadData2)).then((response: any) => {
+          if (response.payload.success||response.payload.code=="200") {
+            form.reset(); // Reset the form
+            setRowData([]);
+            navigate("/sales/order/register");
+          }
+        });
+      }
+    // }
+    setShowConfirmation(false); // Close the modal
+  };
+  
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -327,11 +371,18 @@ const AddSalesOrder = ({
         </Button>
         <Button
           className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-          onClick={handleSubmit}
+          onClick={() => setShowConfirmation(true)}
         >
           Submit
         </Button>
       </div>
+      <ConfirmationModal
+        open={showConfirmation}
+        onClose={setShowConfirmation}
+        onOkay={()=>handleSubmit()}
+        title="Confirm Submit!"
+        description="Are you sure to submit details of all components of this Sales Order?"
+      />
     </Wrapper>
   );
 };
