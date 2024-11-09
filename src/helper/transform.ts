@@ -61,6 +61,14 @@ export const transformClientTds = (data: any[]) => {
   }));
 };
 
+export const transformStateOptions = (data: any[]) => {
+  console.log("data", data);
+  return data?.map((item) => ({
+    label: item.name,  // Changed from 'stateName' to 'name'
+    value: item.code,  // Changed from 'stateCode' to 'code'
+  }));
+};
+
 export const transformOptions = (
   data: any[]
 ): { label: string; value: string }[] => {

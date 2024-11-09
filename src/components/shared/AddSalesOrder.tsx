@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Plus, Upload } from "lucide-react";
-import { FaFileExcel } from "react-icons/fa";
 import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DatePickerCellRenderer from "@/config/agGrid/DatePickerCellRenderer";
 import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import styled from "styled-components";
@@ -26,14 +25,24 @@ import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSli
 const AddSalesOrder = ({
   setTab,
   payloadData,
+  derivedType,
+  form,
+  setRowData,
+  rowData,
 }: {
   setTab: React.Dispatch<React.SetStateAction<string>>;
   payloadData: any;
+  derivedType: string;
+  form: any;
+  rowData: any;
+  setRowData: any;
 }) => {
-  const [rowData, setRowData] = useState<RowData[]>([]);
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
   const [resetModel, setResetModel] = useState<boolean>(false);
+  const [cgstTotal, setCgstTotal] = useState(0);
+  const [sgstTotal, setSgstTotal] = useState(0);
+  const [igstTotal, setIgstTotal] = useState(0);
   const [search] = useState("");
   const dispatch = useDispatch<AppDispatch>();
 
@@ -56,7 +65,7 @@ const AddSalesOrder = ({
       // rate: 50,
       currency: "364907247",
       gstRate: 0,
-      gstType: "local",
+      gstType: derivedType,
       localValue: 0,
       foreignValue: 0,
       cgst: 0,
@@ -69,7 +78,7 @@ const AddSalesOrder = ({
       lcValue: 0,
       isNew: true,
     };
-    setRowData((prevData) => [...prevData, newRow]);
+    setRowData((prevData: any) => [...prevData, newRow]);
   };
 
   const defaultColDef = useMemo<ColDef>(() => {
@@ -117,16 +126,13 @@ const AddSalesOrder = ({
     []
   );
 
-  const onBtExport = useCallback(() => {
-    gridRef.current!.api.exportDataAsExcel();
-  }, []);
+  // const onBtExport = useCallback(() => {
+  //   gridRef.current!.api.exportDataAsExcel();
+  // }, []);
 
   useEffect(() => {
-    addNewRow();
+    rowData?.length === 0 && addNewRow();
   }, []);
-  // useEffect(() => {
-  //   // dispatch(fetchComponentDetail({ search: "" }));
-  // }, []);
 
   const handleSubmit = () => {
     console.log("Payload Data:", payloadData); // Debugging log
@@ -144,6 +150,50 @@ const AddSalesOrder = ({
       // Handle error, e.g., show a message to the user
     }
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (rowData && rowData?.length > 0) {
+        const cgstSum = rowData?.reduce(
+          (sum: number, item: any) => sum + (parseFloat(item.cgst) || 0),
+          0
+        );
+        const sgstSum = rowData?.reduce(
+          (sum: number, item: any) => sum + (parseFloat(item.sgst) || 0),
+          0
+        );
+        const igstSum = rowData?.reduce(
+          (sum: number, item: any) => sum + (parseFloat(item.igst) || 0),
+          0
+        );
+
+        setCgstTotal(cgstSum);
+        setSgstTotal(sgstSum);
+        setIgstTotal(igstSum);
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalId); // Clean up on unmount
+  }, [rowData]);
+
+  const totalSum = rowData?.reduce((sum: number, item: any) => {
+    // Convert rate and orderQty to numbers
+    const rate = parseFloat(item.rate);
+    const orderQty = item.orderQty;
+
+    // Ensure rate and orderQty are valid numbers before multiplying
+    if (!isNaN(rate) && !isNaN(orderQty)) {
+      if (!isNaN(rate) && !isNaN(orderQty)) {
+        // Calculate the total for the current item
+        const itemTotal = rate * orderQty;
+        return sum + itemTotal;
+      }
+    }
+    return sum;
+  }, 0);
+
+  // Round the total sum to 2 decimal places
+  const roundedTotalSum = Number(totalSum?.toFixed(2));
 
   return (
     <Wrapper>
@@ -176,46 +226,55 @@ const AddSalesOrder = ({
                 <ul>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
                     <div>
-                      <h3 className="font-[500]">
+                      <h3 className="font-[600]">
                         Sub-Total value before Taxes :
+                        <span className="font-normal">{`(+) ${
+                          roundedTotalSum ?? 0.0
+                        }`}</span>
                       </h3>
                     </div>
+                  </li>
+                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
                     <div>
-                      <p className="text-[14px]">0.00</p>
+                      <h3 className="font-[600]">
+                        CGST :{" "}
+                        <span className="font-normal">{`(+) ${cgstTotal?.toFixed(
+                          2
+                        )}`}</span>
+                      </h3>
                     </div>
                   </li>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
                     <div>
-                      <h3 className="font-[500]">CGST :</h3>
-                    </div>
-                    <div>
-                      <p className="text-[14px]">(+)0.00</p>
-                    </div>
-                  </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
-                      <h3 className="font-[500]">SGST :</h3>
-                    </div>
-                    <div>
-                      <p className="text-[14px]">(+)0.00</p>
+                      <h3 className="font-[600]">
+                        SGST :{" "}
+                        <span className="font-normal">{`(+) ${sgstTotal?.toFixed(
+                          2
+                        )}`}</span>
+                      </h3>
                     </div>
                   </li>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
                     <div>
-                      <h3 className="font-[500]">ISGST :</h3>
-                    </div>
-                    <div>
-                      <p className="text-[14px]">(+)0.00</p>
+                      <h3 className="font-[600]">
+                        ISGST :{" "}
+                        <span className="font-normal">{`(+) ${igstTotal?.toFixed(
+                          2
+                        )}`}</span>
+                      </h3>
                     </div>
                   </li>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
                     <div>
                       <h3 className="font-[600] text-cyan-600">
                         Sub-Total values after Taxes :
+                        <span className="font-normal text-cyan-950">{`(+) ${(
+                          roundedTotalSum +
+                          cgstTotal +
+                          sgstTotal +
+                          igstTotal
+                        ).toFixed(2)}`}</span>
                       </h3>
-                    </div>
-                    <div>
-                      <p className="text-[14px]">(+)0.00</p>
                     </div>
                   </li>
                 </ul>
@@ -232,13 +291,6 @@ const AddSalesOrder = ({
               <Plus className="font-[600]" /> Add Item
             </Button>
             <div className="flex items-center gap-[20px]">
-              <Button
-                onClick={onBtExport}
-                className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
-              >
-                <FaFileExcel className="text-white w-[20px] h-[20px]" /> Export
-                to Excel
-              </Button>
               <Button
                 onClick={() => setExcelModel(true)}
                 className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
@@ -267,9 +319,6 @@ const AddSalesOrder = ({
         </div>
       </div>
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-        <Button className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]">
-          Reset
-        </Button>
         <Button
           className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setTab("create")}
