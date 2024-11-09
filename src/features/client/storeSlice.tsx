@@ -287,7 +287,7 @@ export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
         "/backend/fetchAvailableStockBoxes",
         payload
       );
-      return response.data.data;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);

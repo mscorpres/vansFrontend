@@ -235,6 +235,7 @@ const AddPO: React.FC<Props> = ({
       cgst: arr.map((r) => r.cgst),
       sgst: arr.map((r) => r.sgst),
       igst: arr.map((r) => r.igst),
+      remark: arr.map((r) => r.remark),
       attachment: attachmentFile,
     };
     dispatch(minTransaction(payload)).then((res) => {

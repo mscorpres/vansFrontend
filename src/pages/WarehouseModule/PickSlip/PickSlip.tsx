@@ -204,8 +204,8 @@ const PickSlip = () => {
     }
   }, [isValue]);
   useEffect(() => {
-    if (availableStockBoxes) {
-      let a = availableStockBoxes.map((r) => {
+    if (availableStockBoxes?.length > 0) {
+      let a = availableStockBoxes?.map((r) => {
         return {
           ...r,
           qty: r.stock,
