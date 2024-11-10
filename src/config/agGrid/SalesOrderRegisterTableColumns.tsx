@@ -15,6 +15,7 @@ import {
   approveSo,
   cancelSalesOrder,
   createInvoice,
+  createShipment,
   fetchMaterialList,
   fetchSellRequestList,
   printSellOrder,
@@ -133,6 +134,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     });
   };
 
+  const onCreateShipment = (payload: any  )=>{
+    dispatch(createShipment(payload)).then((response: any) => {
+      console.log(response)
+      // if (response?.payload?.success) {
+      //   toast({
+      //     title: response?.payload?.message})
+    
+  });}
+
   const isDisabled = row?.approveStatus === "Approved";
 
   const menu = (
@@ -158,7 +168,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         Cancel
       </Menu.Item>
       <Menu.Item key="materialList" onClick={() => handleshowMaterialList(row)}>
-        Material List
+        Create Shipment
       </Menu.Item>
       <Menu.Item
         key="createInvoice"
@@ -190,9 +200,10 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         isDialogVisible={isInvoiceModalVisible}
         handleOk={handleInvoiceModalOk}
         handleCancel={handleInvoiceModalCancel}
-        row={{ req_id: row?.so_id }}
         form={invoiceForm}
         loading={loading}
+        heading="Create Invoice"
+        description={`Are you sure you want to create an invoice for SO ${row.so_id}?`}
       />
       <MaterialListModal
         visible={isMaterialListModalVisible}
@@ -200,6 +211,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         sellRequestDetails={sellRequestList}
         row={{ req_id: row?.so_id }}
         loading={loading}
+        onCreateShipment={onCreateShipment}
       />
       <ConfirmationModal
         open={showConfirmationModal}

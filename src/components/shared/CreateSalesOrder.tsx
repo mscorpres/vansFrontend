@@ -48,6 +48,7 @@ interface Props {
   handleCostCenterChange: (e: any) => void;
   handleBillIdChange: (e: any) => void;
   currencyList: any;
+  searchCustomerList:(e:any) => void;
 }
 type CreateSalesOrderForm = z.infer<typeof createSalesFormSchema>;
 const CreateSalesOrder: React.FC<Props> = ({
@@ -60,6 +61,7 @@ const CreateSalesOrder: React.FC<Props> = ({
   handleCostCenterChange,
   handleBillIdChange,
   currencyList,
+  searchCustomerList,
 }: any) => {
   const data = useSelector((state: RootState) => state.createSalesOrder);
 
@@ -135,7 +137,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                       <FormField
                         control={form.control}
                         name="customer_code"
-                        render={() => (
+                        render={(field) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Customer Name
@@ -144,14 +146,38 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <ReusableAsyncSelect
+                              {/* <ReusableAsyncSelect
                                 placeholder="Customer Name"
                                 endpoint="/others/customerList"
                                 transform={transformOptions}
                                 fetchOptionWith="payload"
                                 onChange={handleCustomerSelection}
-                                value={form.getValues("customer_code")}
+                              /> */}
+                              <FormControl>
+                              <Select
+                                styles={customStyles}
+                                components={{ DropdownIndicator }}
+                                placeholder="Customer Name"
+                                className="border-0 basic-single"
+                                classNamePrefix="select border-0"
+                                isDisabled={false}
+                                isClearable={true}
+                                isSearchable={true}
+                                options={transformOptionData(data?.customerList)}
+                                onInputChange={searchCustomerList}
+                                onChange={handleCustomerSelection}
+                                value={
+                                  data?.customerList
+                                    ? transformOptionData(
+                                        data?.customerList
+                                      ).find(
+                                        (option) =>
+                                          option.value === field.value
+                                      )
+                                    : null
+                                }
                               />
+                            </FormControl>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -578,7 +604,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                         )}
                       />
                     </div>
-                    <div>
+                    <div className="w-full">
                       <FormField
                         control={form.control}
                         name="po_date"
@@ -593,8 +619,8 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Space direction="vertical" size={12}>
                                 <DatePicker
-                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
+                                  className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
+                                  // className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
                                   format="DD-MM-YYYY"
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
@@ -634,7 +660,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                         )}
                       />
                     </div>
-                    <div>
+                    <div className="w-full">
                       <FormField
                         control={form.control}
                         name="header.reference_date"
@@ -649,8 +675,8 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Space direction="vertical" size={12}>
                                 <DatePicker
-                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
+                                  className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
+                                  // className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
                                   format="DD-MM-YYYY"
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
@@ -735,7 +761,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                         )}
                       />
                     </div>
-                    <div>
+                    <div className="w-full">
                       <FormField
                         control={form.control}
                         name="due_date"
@@ -750,8 +776,8 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Space direction="vertical" size={12}>
                                 <DatePicker
-                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
+                                  className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
+                                  // className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
                                   format="DD-MM-YYYY"
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value

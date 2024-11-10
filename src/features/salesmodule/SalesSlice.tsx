@@ -215,6 +215,32 @@ export const fetchMaterialList = createAsyncThunk(
   }
 );
 
+export const createShipment = createAsyncThunk(
+  "client/createShipment",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/createShipment",
+        payload
+      )) as any;
+
+      if (response?.data?.code==200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 export const createInvoice = createAsyncThunk(
   "client/createInvoice",
   async (payload: any, { rejectWithValue }) => {
@@ -333,6 +359,17 @@ const sellRequestSlice = createSlice({
       .addCase(createInvoice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to create invoice";
+      })
+      .addCase(createShipment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to cancel sell request";
+      })  
+      .addCase(createShipment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createShipment.fulfilled, (state) => {
+        state.loading = false;
       })
       
       .addCase(printSellOrder.pending, (state) => {

@@ -538,15 +538,15 @@ const clientSlice = createSlice({
           action.error.message || "Failed to fetch component details";
       })
       .addCase(fetchCustomerDetail.pending, (state) => {
-        state.loading = true;
+        // state.loading = true;
         state.error = null;
       })
       .addCase(fetchCustomerDetail.fulfilled, (state, action) => {
-        state.loading = false;
+        // state.loading = false;
         state.customerList = action.payload;
       })
       .addCase(fetchCustomerDetail.rejected, (state, action) => {
-        state.loading = false;
+        // state.loading = false;
         state.error =
           action.error.message || "Failed to fetch component details";
       })

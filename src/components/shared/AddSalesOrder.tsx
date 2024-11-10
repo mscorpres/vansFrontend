@@ -20,9 +20,9 @@ import SalesOrderTextInputCellRenderer from "@/config/agGrid/SalesOrderTextInput
 import { createSalesOrderRequest, fetchComponentDetail, updateSalesOrderRequest } from "@/features/salesmodule/createSalesOrderSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-// interface Props{
-//   setTab:Dispatch<SetStateAction<string>>;
-// }
+import { toast } from "@/components/ui/use-toast";
+
+
 const AddSalesOrder = ({
   setTab,
   derivedType,
@@ -176,6 +176,10 @@ const AddSalesOrder = ({
       if (window.location.pathname.includes("update")) {
         dispatch(updateSalesOrderRequest(payloadData2)).then((response: any) => {
           if (response.payload.success) {
+            toast({
+              className: "bg-green-600 text-white items-center",
+              description: response.payload.message ||"Sales Order created successfully",
+            })
             form.reset(); // Reset the form
             setRowData([]);
             navigate("/sales/order/register");
@@ -184,6 +188,10 @@ const AddSalesOrder = ({
       } else {
         dispatch(createSalesOrderRequest(payloadData2)).then((response: any) => {
           if (response.payload.success||response.payload.code=="200") {
+            toast({
+              className: "bg-green-600 text-white items-center",
+              description: response.payload.message ||"Sales Order updated successfully",
+            })
             form.reset(); // Reset the form
             setRowData([]);
             navigate("/sales/order/register");
