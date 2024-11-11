@@ -73,7 +73,7 @@ const CustomerComponent = () => {
   }, []);
 
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[450px_1fr]  overflow-hidden">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]  overflow-hidden">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -134,7 +134,7 @@ const CustomerComponent = () => {
             <Form.Item name="desc" label="Description">
               <Input
                 className={InputStyle}
-                placeholder="Enter Customer Part Name"
+                placeholder="Enter Description"
                 // {...field}
               />
             </Form.Item>
@@ -200,7 +200,13 @@ const columnDefs: ColDef<RowData>[] = [
     width: 250,
   },
   {
-    headerName: "Part Number",
+    headerName: "Customer Part Code",
+    field: "cust_comp",
+    filter: "agTextColumnFilter",
+    width: 250,
+  },
+  {
+    headerName: "Customer Part Number",
     field: "cust_part_no",
     filter: "agTextColumnFilter",
     width: 250,

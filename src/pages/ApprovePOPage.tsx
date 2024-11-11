@@ -1,7 +1,7 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import { Badge, Edit2, EyeIcon, Filter, Trash } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import { Filter } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
@@ -14,13 +14,7 @@ import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
 import useApi from "@/hooks/useApi";
 import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
-import {
-  cancelPO,
-  fetchCompletedPo,
-  fetchManagePOList,
-  fetchneededApprovalPO,
-  printPO,
-} from "@/features/client/clientSlice";
+import { fetchneededApprovalPO, printPO } from "@/features/client/clientSlice";
 import {
   exportDateRange,
   exportDateRangespace,
@@ -33,13 +27,9 @@ import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { useNavigate } from "react-router-dom";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
-const ActionMenu: React.FC<ActionMenuProps> = ({
-  setViewMinPo,
-  setCancel,
-  setView,
-  row,
-  cancelTheSelectedPo,
-}) => {
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import { toast } from "@/components/ui/use-toast";
+const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -80,13 +70,12 @@ const FormSchema = z.object({
 const { RangePicker } = DatePicker;
 // const dateFormat = "DD/MM/YYYY";
 const ApprovePOPage: React.FC = () => {
-  const { managePoList } = useSelector((state: RootState) => state.client);
-  // const form = useForm<z.infer<typeof FormSchema>>({
-  //   resolver: zodResolver(FormSchema),
-  // });
+  const { loading } = useSelector(
+    (state: RootState) => state.client
+  );
+
   const [form] = Form.useForm();
-  const { execFun, loading: loading1 } = useApi();
-  // const rowdata = podetail;
+
   const [wise, setWise] = useState("");
   const [rowData, setRowData] = useState([]);
   const [date, setDate] = useState("");
@@ -235,6 +224,11 @@ const ApprovePOPage: React.FC = () => {
         });
         console.log("arr,ar", arr);
         setRowData(arr);
+      } else {
+        toast({
+          title: res.payload.message,
+          className: "bg-red-700 text-white",
+        });
       }
     });
 
@@ -248,6 +242,9 @@ const ApprovePOPage: React.FC = () => {
       floatingFilter: true,
     };
   }, []);
+  useEffect(() => {
+    form.setFieldValue("data", "");
+  }, [selectedwise]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -308,7 +305,7 @@ const ApprovePOPage: React.FC = () => {
             </Form.Item>
           ) : (
             <Form.Item className="w-full" name="data">
-              <Input placeholder="PO number" />
+              <Input placeholder="Type here" />
             </Form.Item>
           )}
           <div className="w-full flex justify-end">
@@ -339,6 +336,7 @@ const ApprovePOPage: React.FC = () => {
         <Divider />
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+        {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}

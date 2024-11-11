@@ -1,53 +1,30 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
 import { transformOptionData } from "@/helper/transform";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import { InputStyle } from "@/constants/themeContants";
 
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Form, Space } from "antd";
+import { Form } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
 import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
 import {
-  componentList,
-  componentMapList,
-  getComponentsByNameAndNo,
   getProductList,
   insertProduct,
   listOfUom,
-  serviceList,
-  servicesaddition,
 } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import EditProduct from "./EditProduct";
 import { listOfUoms } from "@/features/client/clientSlice";
+import { RowData } from "@/data";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -66,16 +43,11 @@ const Product = () => {
   const { toast } = useToast();
   const dispatch = useDispatch<AppDispatch>();
   const { uomlist } = useSelector((state: RootState) => state.client);
-  // const form = useForm<z.infer<typeof FormSchema>>({
-  //   resolver: zodResolver(FormSchema),
-  // });
-  console.log("uomlist", uomlist);
 
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => getProductList(), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (response.status === 200) {
       let arr = data.data.map((r, index) => {
@@ -85,15 +57,7 @@ const Product = () => {
         };
       });
       setRowData(arr);
-      //   addToast(response.message, {
-      //     appearance: "success",
-      //     autoDismiss: true,
-      //   });
     } else {
-      //   addToast(response.message, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
     }
   };
   const listUom = async () => {
@@ -101,7 +65,7 @@ const Product = () => {
     const { data } = response;
 
     if (response.status == 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r) => {
         return {
           label: r.units_name,
           value: r.units_id,
@@ -112,7 +76,6 @@ const Product = () => {
   };
   const onsubmit = async () => {
     const value = await form.validateFields();
-    console.log("value", value);
     let payload = {
       p_sku: value.sku,
       p_name: value.product,
@@ -121,10 +84,8 @@ const Product = () => {
     };
     // return;
     const response = await execFun(() => insertProduct(payload), "fetch");
-    console.log("response", response);
 
     const { data } = response;
-    console.log("data", response);
     if (response.data.code == 200) {
       toast({
         title: data.message,
@@ -137,16 +98,6 @@ const Product = () => {
         className: "bg-red-600 text-white items-center",
       });
     }
-
-    // if (response.status == 200) {
-    //   let arr = data.data.map((r, index) => {
-    //     return {
-    //       label: r.units_name,
-    //       value: r.units_id,
-    //     };
-    //   });
-    //   setAsyncOptions(arr);
-    // }
   };
 
   useEffect(() => {
@@ -155,7 +106,7 @@ const Product = () => {
     dispatch(listOfUoms());
   }, []);
 
-  const columnDefs: ColDef<rowData>[] = [
+  const columnDefs: ColDef<RowData>[] = [
     {
       headerName: "ID",
       field: "id",
@@ -175,6 +126,12 @@ const Product = () => {
       width: 150,
     },
     {
+      headerName: "UOM",
+      field: "units_name",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
       headerName: "Customer Code",
       field: "p_customer",
       filter: "agTextColumnFilter",
@@ -190,7 +147,7 @@ const Product = () => {
       field: "action",
       headerName: "Action",
       flex: 1,
-      cellRenderer: (e) => {
+      cellRenderer: (e: any) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
             {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}

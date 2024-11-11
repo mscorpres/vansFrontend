@@ -1,6 +1,6 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import { Badge, Edit2, EyeIcon, Filter, Trash } from "lucide-react";
+import {  Filter } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,13 +12,21 @@ import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
-import useApi from "@/hooks/useApi";
 import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
 import {
-  cancelPO,
   fetchManagePOList,
   printPO,
 } from "@/features/client/clientSlice";
+import {
+  modelFixHeaderStyle,
+} from "@/constants/themeContants";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { InputStyle } from "@/constants/themeContants";
 import { exportDateRange } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
 import ViewCompoents from "./ViewCompoents";
@@ -28,13 +36,25 @@ import MINPO from "./MINPO";
 import { useNavigate } from "react-router-dom";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { IoCloudUpload } from "react-icons/io5";
+import {
+  FileInput,
+  FileUploader,
+  FileUploaderContent,
+  FileUploaderItem,
+} from "@/components/shared/FileUpload";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { toast } from "@/components/ui/use-toast";
+import { spigenAxios } from "@/axiosIntercepter";
+import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import { transformOptionData } from "@/helper/transform";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
   setView,
   row,
   cancelTheSelectedPo,
+  setSheetOpen,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -76,10 +96,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       >
         Print
       </Menu.Item>
-      <Menu.Item
-        key=" Attachment"
-        // onClick={() => setViewBranch(row)} // disabled={isDisabled}
-      >
+      <Menu.Item key=" Attachment" onClick={() => setSheetOpen(row)}>
         Add Attachment
       </Menu.Item>
     </Menu>
@@ -107,21 +124,18 @@ const FormSchema = z.object({
 const { RangePicker } = DatePicker;
 const dateFormat = "YYYY/MM/DD";
 const ManagePoPage: React.FC = () => {
-  const { managePoList } = useSelector((state: RootState) => state.client);
-  // const form = useForm<z.infer<typeof FormSchema>>({
-  //   resolver: zodResolver(FormSchema),
-  // });
+  const {  loading } = useSelector(
+    (state: RootState) => state.client
+  );
+
   const [form] = Form.useForm();
-  const { execFun, loading: loading1 } = useApi();
-  // const rowdata = podetail;
-  const [wise, setWise] = useState("");
   const [rowData, setRowData] = useState([]);
-  const [date, setDate] = useState("");
-  const [asyncOptions, setAsyncOptions] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [files, setFiles] = useState<File[] | null>(null);
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
   const [remarkDescription, setRemarkDescription] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [captions, setCaptions] = useState("");
   const [cancel, setCancel] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
@@ -140,6 +154,7 @@ const ManagePoPage: React.FC = () => {
           setCancel={setCancel}
           row={params.data}
           cancelTheSelectedPo={cancelTheSelectedPo}
+          setSheetOpen={setSheetOpen}
         />
       ),
     },
@@ -211,55 +226,71 @@ const ManagePoPage: React.FC = () => {
     },
   ];
   const cancelTheSelectedPo = async (row: any) => {
-    console.log("row", row);
-    setLoading(true);
     let payload = {
       poId: row?.po_transaction,
     };
-    console.log("payload", payload);
 
     dispatch(printPO({ poid: row?.po_transaction })).then((res: any) => {
-      console.log("res", res);
+  
       if (res.payload.code == 200) {
         let { data } = res.payload;
         downloadFunction(data.buffer, data.filename);
       }
     });
-    setLoading(false);
   };
   const dispatch = useDispatch<AppDispatch>();
-  const getVendorList = async () => {
-    // return;
-    setLoading(true);
-    const response = await execFun(() => fetchListOfVendor(), "fetch");
-    // return;
-    let { data } = response;
-    if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          label: r.name,
-          value: r.code,
-        };
-      });
-      setAsyncOptions(arr);
-      setLoading(false);
-    }
-    setLoading(false);
-  };
+
   const fetchManageList = async () => {
-    setLoading(true);
+    // setLoading(true);
     const values = await form.validateFields();
-    let date = exportDateRange(values.data);
-    let payload = { data: date, wise: values.wise.value };
+    let date;
+    let payload;
+    if (selectedwise?.value === "datewise") {
+      date = exportDateRange(values.data);
+      payload = { data: date, wise: values.wise.value };
+    } else if (selectedwise?.value === "vendorwise") {
+      payload = { data: values.data.value, wise: values.wise.value };
+    } else {
+      payload = { data: date, wise: values.wise.value };
+    }
     dispatch(fetchManagePOList(payload)).then((res: any) => {
-      // console.log("res", res);
+      if (res.payload.code == 200) {
+        setRowData(res.payload.response.data);
+      } else {
+        toast({
+          title: res.payload.message.msg,
+          className: "bg-red-700 text-white",
+        });
+      }
     });
 
-    if (managePoList) {
-      setRowData(managePoList);
-      setLoading(false);
+   
+  };
+  const handleFileChange = (newFiles: File[] | null) => {
+    setFiles(newFiles);
+  };
+  const uploadDocs = async () => {
+    const formData = new FormData();
+    files.map((comp) => {
+      formData.append("files", comp);
+      formData.append("doc_name", captions);
+      formData.append("po_id", sheetOpen?.po_transaction);
+    });
+    const response = await spigenAxios.post(
+      "/purchaseOrder/uploadAttachment",
+      formData
+    );
+    if (response.data.code == 200) {
+      // toast
+      toast({
+        title: "Doc Uploaded successfully",
+        className: "bg-green-600 text-white items-center",
+      });
+      // setLoading(false);
+      setSheetOpen(false);
+      setAttachmentFile(response.data.data);
     }
-    setLoading(false);
+    // setLoading(false);
   };
   const defaultColDef = useMemo(() => {
     return {
@@ -267,12 +298,8 @@ const ManagePoPage: React.FC = () => {
       floatingFilter: true,
     };
   }, []);
-  // console.log("loading", loading);
-
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      {" "}
-      {(loading1("fetch") || loading == "fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
@@ -313,13 +340,20 @@ const ManagePoPage: React.FC = () => {
                       value ? value.map((date) => date!.toDate()) : []
                     )
                   }
-                  format="DD/MM/YYYY"
+                  format={dateFormat}
                 />
               </Space>
             </Form.Item>
           ) : selectedwise?.value === "vendorwise" ? (
             <Form.Item className="w-full" name="data">
-              <Input placeholder="vendor number" />
+              <ReusableAsyncSelect
+                placeholder="Vendor Name"
+                endpoint="/backend/vendorList"
+                transform={transformOptionData}
+                onChange={(e) => form.setFieldValue("data", e)}
+                // value={selectedCustomer}
+                fetchOptionWith="payload"
+              />
             </Form.Item>
           ) : (
             <Form.Item className="w-full" name="data">
@@ -354,6 +388,7 @@ const ManagePoPage: React.FC = () => {
         <Divider />
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+        {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
@@ -386,7 +421,90 @@ const ManagePoPage: React.FC = () => {
         // onOkay={handleCancelPO}
         title="Confirm Submit!"
         description="Are you sure to submit details of all components of this Purchase Order?"
-      />
+      />{" "}
+      <Sheet open={sheetOpen?.po_transaction} onOpenChange={setSheetOpen}>
+        <SheetContent
+          className="min-w-[35%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          {/* {loading == true && <FullPageLoading />} */}
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
+          </SheetHeader>{" "}
+          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+            {loading && <FullPageLoading />}
+            <FileUploader
+              value={files}
+              onValueChange={handleFileChange}
+              dropzoneOptions={{
+                accept: {
+                  "image/*": [".jpg", ".jpeg", ".png", ".gif", ".pdf"],
+                },
+                maxFiles: 1,
+                maxSize: 4 * 1024 * 1024, // 4 MB
+                multiple: true,
+              }}
+            >
+              <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
+                <h2 className="text-xl font-semibold text-center mb-4">
+                  <div className=" text-center w-full justify-center flex">
+                    {" "}
+                    <div>Upload Your Files</div>
+                    <div>
+                      {" "}
+                      <IoCloudUpload
+                        className="text-cyan-700 ml-5 h-[20]"
+                        size={"1.5rem"}
+                      />
+                    </div>
+                  </div>
+                </h2>
+                <FileInput>
+                  <span className="text-slate-500 text-sm text-center w-full justify-center flex">
+                    Drag and drop files here, or click to select files
+                  </span>
+                </FileInput>{" "}
+              </div>{" "}
+              <div className=" m-[20px]">
+                <FileUploaderContent>
+                  {files?.map((file, index) => (
+                    <FileUploaderItem key={index} index={index}>
+                      <span>{file.name}</span>
+                    </FileUploaderItem>
+                  ))}
+                </FileUploaderContent>
+              </div>
+            </FileUploader>{" "}
+            <div className="w-full flex justify-center">
+              <div className="w-[80%] flex justify-center">
+                <Input
+                  placeholder="Enter Image Captions"
+                  className={InputStyle}
+                  onChange={(e) => setCaptions(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>{" "}
+          <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+            <Button
+              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+              // onClick={() => setTab("create")}
+            >
+              Back
+            </Button>{" "}
+            <Button
+              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              onClick={uploadDocs}
+              // loading={laoding}
+            >
+              {/* {isApprove ? "Approve" : "Submit"} */}
+              Upload
+            </Button>
+          </div>{" "}
+        </SheetContent>
+      </Sheet>{" "}
     </Wrapper>
   );
 };
