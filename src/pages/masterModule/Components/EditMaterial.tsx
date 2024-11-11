@@ -234,18 +234,18 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
       {loading1("fetch") && <FullPageLoading />}{" "}
-      <Form form={editForm} layout="vertical">
-        <Sheet open={sheetOpenEdit} onOpenChange={() => setSheetOpenEdit(null)}>
-          <SheetTrigger></SheetTrigger>
-          <SheetContent
-            className="min-w-[80%] p-0"
-            onInteractOutside={(e: any) => {
-              e.preventDefault();
-            }}
-          >
-            <SheetHeader className={modelFixHeaderStyle}>
-              <SheetTitle className="text-slate-600">{`Update Component:${sheetOpenEdit?.c_name}`}</SheetTitle>
-            </SheetHeader>
+      <Sheet open={sheetOpenEdit} onOpenChange={() => setSheetOpenEdit(null)}>
+        <SheetTrigger></SheetTrigger>
+        <SheetContent
+          className="min-w-[80%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">{`Update Component:${sheetOpenEdit?.c_name}`}</SheetTitle>
+          </SheetHeader>
+          <Form form={editForm} layout="vertical">
             <div>
               {/* <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto"> */}
               <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
@@ -781,9 +781,9 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 </Button>
               </div>
             </div>
-          </SheetContent>
-        </Sheet>
-      </Form>
+          </Form>
+        </SheetContent>
+      </Sheet>
       <Sheet open={sheetOpen == true} onOpenChange={setSheetOpen}>
         <SheetContent
           className="min-w-[35%] p-0"

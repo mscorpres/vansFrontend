@@ -3,22 +3,18 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { colourOptions } from "@/data";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { Badge } from "@/components/ui/badge";
-import styled from "styled-components";
-import { Link, useParams } from "react-router-dom";
-import FullPageLoading from "@/components/shared/FullPageLoading";
-import Select from "react-select";
-import { transformOptionData } from "@/helper/transform";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
-import { Button, Form } from "antd";
 import {
   InputStyle,
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
+import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import Select from "react-select";
+import { transformOptionData } from "@/helper/transform";
+import { Button, Form } from "antd";
+
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -44,17 +40,13 @@ const CreatePoPage: React.FC<Props> = ({
   form,
   selectedVendor,
   setFormVal,
-  formVal,
-  bilStateCode,
   setBillStateCode,
-  shipStateCode,
   setShipStateCode,
 }) => {
   const [searchData, setSearchData] = useState("");
   const dispatch = useDispatch();
   const {
     vendorBranchlist,
-    costCenterList,
     shippingPOList,
     shippingPODetails,
     vendorPODetails,
@@ -64,11 +56,11 @@ const CreatePoPage: React.FC<Props> = ({
   const poTypeOptions = [
     {
       label: "New",
-      value: "New",
+      value: "N",
     },
     {
       label: "Supplementary",
-      value: "supplementary",
+      value: "S",
     },
   ];
   const poVendorOptions = [
@@ -78,12 +70,11 @@ const CreatePoPage: React.FC<Props> = ({
     },
   ];
 
-  // const selectedVendor = Form.useWatch("vendorName", form);
-  //find in form
   const selBranch = Form.useWatch("branch", form);
   const selCostCenter = Form.useWatch("costCenter", form);
   const selShipping = Form.useWatch("shipId", form);
   const selBilling = Form.useWatch("billingId", form);
+  const selPoType = Form.useWatch("poType", form);
 
   const params = useParams();
   console.log("params", params);
@@ -154,17 +145,12 @@ const CreatePoPage: React.FC<Props> = ({
   useEffect(() => {
     if (selBilling) {
       dispatch(fetchBillingListDetails({ billing_code: selBilling?.value }));
-      // let arr = vendorPODetails;
-
-      // form.setFieldValue("vendorGst", arr?.gstid);
-      // form.setFieldValue("address", arr?.address);
     }
   }, [selBilling]);
 
   useEffect(() => {
     if (vendorBillingDetails) {
       let arr = vendorBillingDetails;
-      console.log("vnedor", vendorBillingDetails);
       setBillStateCode(vendorBillingDetails.statecode);
       form.setFieldValue("pan", arr?.pan);
       form.setFieldValue("billgst", arr?.gstin);
@@ -209,6 +195,22 @@ const CreatePoPage: React.FC<Props> = ({
                     />
                     {/* <p>error message</p> */}
                   </Form.Item>
+                  {selPoType?.value == "S" && (
+                    <Form.Item
+                      name="originalPO"
+                      label="Original PO"
+                      rules={rules.vendorType}
+                    >
+                      <ReusableAsyncSelect
+                        placeholder="Original PO"
+                        endpoint="/backend/searchPoByPoNo"
+                        transform={transformOptionData}
+                        onChange={(e) => form.setFieldValue("originalPO", e)}
+                        // value={selectedCustomer}
+                        fetchOptionWith="payload"
+                      />
+                    </Form.Item>
+                  )}
                   <Form.Item
                     name="vendorType"
                     label="Vendor Type"

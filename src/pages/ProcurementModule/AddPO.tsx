@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Upload } from "lucide-react";
+import { Plus } from "lucide-react";
 import { StatusPanelDef, ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -23,9 +23,13 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import RejectModal from "@/components/shared/RejectModal";
 import {
   fetchCurrency,
+  poApprove,
   rejectPo,
   updatePo,
 } from "@/features/client/clientSlice";
+import { toast } from "@/components/ui/use-toast";
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   setTab: string;
@@ -43,10 +47,8 @@ interface Props {
 
 const AddPO: React.FC<Props> = ({
   setTab,
-  payloadData,
   form,
   selectedVendor,
-  setFormVal,
   formVal,
   rowData,
   setRowData,
@@ -66,12 +68,14 @@ const AddPO: React.FC<Props> = ({
   const [removingList, setRemovingList] = useState([]);
   const [search, setSearch] = useState("");
   const dispatch = useDispatch<AppDispatch>();
-  const { componentDetails } = useSelector(
-    (state: RootState) => state.createSalesOrder
-  );
-  const { currencyList } = useSelector((state: RootState) => state.client);
 
-  const { execFun, loading: loading1 } = useApi();
+  const { currencyList, loading } = useSelector(
+    (state: RootState) => state.client
+  );
+
+  const navigate = useNavigate();
+
+  // const { execFun, loading: loading1 } = useApi();
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const selVendor = Form.useWatch("vendorName", form);
   const uiState: AddPoUIStateType = {
@@ -172,7 +176,38 @@ const AddPO: React.FC<Props> = ({
 
   const handleSubmit = async () => {
     let arr = rowData;
+
     console.log("formVal", formVal);
+    let editpayload = {
+      vendor_name: "VEN0029",
+      vendor_type: "v01",
+      vendor_branch: "SIV689805780",
+      vendor_address: "PLOT # 431-A, IND.\nAREA PHASE - 2,\n",
+      paymentterms: "n",
+      quotationterms: "j",
+      termsandcondition: "yu",
+      costcenter: "2023122105635288",
+      projectname: "j",
+      pocomment: "h",
+      ship_address_id: "YLB8M4JT",
+      ship_address:
+        "Groud Floor, 43-A, Pocket - D SFS Flats\nKondli Gharoli, Mayur Vihar Phase 3\nNew Delhi 110096",
+      component: ["1678607897820"],
+      qty: ["400"],
+      rate: ["200"],
+      currency: ["364907247"],
+      exchange_rate: ["1"],
+      date: ["25-07-2024"],
+      hsn: ["--"],
+      gsttype: ["I"],
+      gstrate: ["18"],
+      sgst: ["0"],
+      igst: ["14400"],
+      cgst: ["0"],
+      remark: ["TDK"],
+      updaterow: ["906"],
+      poid: "NAVS/PO/24-25/0010",
+    };
 
     let payload = {
       vendorname: formVal.vendorName.value,
@@ -191,10 +226,10 @@ const AddPO: React.FC<Props> = ({
       pocostcenter: formVal.costCenter.value,
       poproject_name: formVal.project,
       pocomment: formVal.comment,
-      pocreatetype: "N",
-      original_po: null,
-      currency: ["364907247"],
-      exchange: ["1"],
+      pocreatetype: formVal.pocreatetype,
+      // original_po: null,
+      currency: formVal.currency,
+      exchange: formVal.exchange,
       component: arr.map((r) => r?.procurementMaterial),
       qty: arr.map((r) => r.orderQty),
       rate: arr.map((r) => r.rate),
@@ -205,14 +240,66 @@ const AddPO: React.FC<Props> = ({
       cgst: arr.map((r) => r.cgst),
       sgst: arr.map((r) => r.sgst),
       igst: arr.map((r) => r.igst),
-      // remark: arr.map((r) => r.orderQty),
+      remark: arr.map((r) => r.remark),
+      original_po: formVal.originalPO?.value,
     };
+    console.log("payload-------------", payload);
+    console.log("isApprove-------------", isApprove);
 
     // return;
     try {
       if (isApprove == "edit") {
-        dispatch(updatePo(payload));
+        let payload2 = {
+          vendor_name: formVal.vendorName.value,
+          vendor_type: "v01",
+          vendor_branch: formVal.branch.value,
+          vendor_address: formVal.address,
+          ship_address_id: formVal.shipId.value,
+          ship_address: formVal.shipAddress,
+          termsandcondition: formVal.terms,
+          quotationterms: formVal.quotation,
+          paymentterms: formVal.paymentTerms,
+          costcenter: formVal.costCenter.value,
+          projectname: formVal.project,
+          pocomment: formVal.comment,
+          pocreatetype: formVal.pocreatetype,
+
+          // original_po: null,
+          currency: formVal.currency,
+          exchange: formVal.exchange,
+          component: arr.map((r) => r?.procurementMaterial),
+          qty: arr.map((r) => r.orderQty),
+          rate: arr.map((r) => r.rate),
+          duedate: arr.map((r) => formattedDate(r.dueDate)),
+          hsncode: arr.map((r) => r.hsnCode),
+          gsttype: arr.map((r) => r.gstType),
+          gstrate: arr.map((r) => r.gstRate),
+          cgst: arr.map((r) => r.cgst),
+          sgst: arr.map((r) => r.sgst),
+          igst: arr.map((r) => r.igst),
+          remark: arr.map((r) => r.remark),
+          updaterow: arr.map((r) => r.updateingId),
+        };
+        dispatch(updatePo(payload2)).then((res) => {
+          console.log("this is the response", res);
+        });
       } else if (isApprove == "approve") {
+        console.log("params", params);
+        let a = {
+          poid: params,
+        };
+        dispatch(poApprove(a)).then((response) => {
+          if (response.payload.code == 200) {
+            setShowConfirmation(false);
+            navigate("/approve-po");
+            setIsApprove(false);
+          } else {
+            toast({
+              title: response.payload.message.msg,
+              className: "bg-red-700 text-white",
+            });
+          }
+        });
       } else {
         dispatch(createSellRequest(payload));
       }
@@ -222,21 +309,7 @@ const AddPO: React.FC<Props> = ({
       // Handle error, e.g., show a message to the user
     }
   };
-  const fetchComponentList = async (search) => {
-    const response = await execFun(
-      () => getComponentsByNameAndNo(search),
-      "fetch"
-    );
-    if (response.status === "sucess") {
-      let arr = response.data.map((r) => {
-        return {
-          label: r.id,
-          value: r.text,
-        };
-      });
-      setAsyncOptions(arr);
-    }
-  };
+  
   const columnDefs = [
     {
       headerName: "",
@@ -374,6 +447,11 @@ const AddPO: React.FC<Props> = ({
     ).then((response: any) => {
       if (response.payload.success == "200") {
         setShowRejectConfirm(true);
+      } else {
+        toast({
+          title: response.payload.message.msg,
+          className: "bg-red-700 text-white",
+        });
       }
     });
   };
@@ -579,6 +657,7 @@ const AddPO: React.FC<Props> = ({
             </div> */}
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
+            {loading && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
@@ -611,10 +690,20 @@ const AddPO: React.FC<Props> = ({
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}
         onOkay={handleSubmit}
-        submitText={isApprove ? "Approve" : "Submit"}
+        submitText={
+          isApprove == "approve"
+            ? "Approve"
+            : isApprove == "edit"
+            ? "Update"
+            : "Submit"
+        }
         title="Confirm Submit!"
         description={`Are you sure to ${
-          isApprove ? "approve" : "submit"
+          isApprove == "approve"
+            ? "Approve"
+            : isApprove == "edit"
+            ? "Update"
+            : "Submit"
         } details of all components of this Purchase Order?`}
       />
       <RejectModal
@@ -650,7 +739,11 @@ const AddPO: React.FC<Props> = ({
           className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setShowConfirmation(true)}
         >
-          {isApprove ? "Approve" : "Submit"}
+          {isApprove == "approve"
+            ? "Approve"
+            : isApprove == "edit"
+            ? "Update"
+            : "Submit"}
         </Button>
       </div>
     </Wrapper>

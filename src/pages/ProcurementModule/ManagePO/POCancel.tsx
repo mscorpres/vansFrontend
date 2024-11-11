@@ -11,11 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { cancelFetchedPO } from "@/features/client/clientSlice";
 import { AppDispatch } from "@/store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 interface Props {
   cancel: boolean;
   setCancel: (value: boolean) => void;
@@ -27,12 +27,13 @@ const POCancel: React.FC<Props> = ({
   cancel,
   setCancel,
   setShowConfirmation,
-  showConfirmation,
-  // handleCancelPO,
   remarkDescription,
   setRemarkDescription,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { managePoList, loading } = useSelector(
+    (state: RootState) => state.client
+  );
   const handleCancelPO = () => {
     dispatch(
       cancelFetchedPO({
@@ -40,11 +41,17 @@ const POCancel: React.FC<Props> = ({
         remark: remarkDescription,
       })
     ).then((response: any) => {
-      if (response?.payload?.status == "success") {
+
+      if (response?.payload?.code == 200) {
+        toast({
+          title: response?.payload?.message.msg,
+          className: "bg-red-600 text-white items-center",
+        });
         setCancel(false);
+        setShowConfirmation(false);
       } else {
         toast({
-          title: response?.error?.message,
+          title: response?.payload?.message.msg,
           className: "bg-red-600 text-white items-center",
         });
       }
@@ -52,6 +59,7 @@ const POCancel: React.FC<Props> = ({
   };
   return (
     <Dialog open={cancel} onOpenChange={setCancel}>
+      {loading && <FullPageLoading />}
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-slate-600">

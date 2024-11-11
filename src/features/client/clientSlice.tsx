@@ -60,16 +60,13 @@ export const fetchClient = createAsyncThunk<
   return response.data;
 });
 export const listOfVendorBranchList = createAsyncThunk<
-  uomPayload,
+  any,
   { vendorcode?: string }
 >("/backend/vendorBranchList", async ({ vendorcode }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/backend/vendorBranchList",
-      {
-        vendorcode: vendorcode,
-      }
-    );
+    const response = await spigenAxios.post<any>("/backend/vendorBranchList", {
+      vendorcode: vendorcode,
+    });
     console.log("response", response.data);
 
     return response.data.data;
@@ -304,7 +301,7 @@ export const fetchManagePOList = createAsyncThunk<
       { data: data, wise: wise }
     );
 
-    return response.data.response.data;
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -312,6 +309,42 @@ export const fetchManagePOList = createAsyncThunk<
     throw new Error("An unknown error occurred");
   }
 });
+export const poMIN = createAsyncThunk<uomPayload>(
+  "/purchaseOrder/poMIN",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post<uomPayload>(
+        "/purchaseOrder/poMIN",
+        payload
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const poApprove = createAsyncThunk<uomPayload>(
+  "/purchaseOrder/po_approve",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.post<uomPayload>(
+        "/purchaseOrder/po_approve",
+        payload
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
 export const fetchManagePOVeiwComponentList = createAsyncThunk<
   uomPayload,
   { poid: string }
@@ -340,7 +373,7 @@ export const cancelFetchedPO = createAsyncThunk<
       { purchase_order: poid, remark: remark }
     );
 
-    return response.data.response.data;
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -531,6 +564,9 @@ const initialState: ClientState = {
   vendorBillingDetails: null,
   getComponentData: null,
   managePoList: null,
+  minpoList: null,
+  approvePoList: null,
+  cpmPoList: null,
   managePoViewComponentList: null,
   cancelPO: null,
   poMinList: null,
@@ -598,7 +634,7 @@ const clientSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch HSN";
       })
-    
+
       ///search uom List
       .addCase(listOfUoms.pending, (state) => {
         state.loading = true;
@@ -733,6 +769,58 @@ const clientSlice = createSlice({
         state.managePoList = action.payload;
       })
       .addCase(fetchManagePOList.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(poMIN.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(poMIN.fulfilled, (state, action) => {
+        state.loading = false;
+        state.minpoList = action.payload;
+      })
+      .addCase(poMIN.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(poApprove.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(poApprove.fulfilled, (state, action) => {
+        state.loading = false;
+        state.approvePoList = action.payload;
+      })
+      .addCase(poApprove.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(fetchneededApprovalPO.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchneededApprovalPO.fulfilled, (state, action) => {
+        state.loading = false;
+        state.approvePoList = action.payload;
+      })
+      .addCase(fetchneededApprovalPO.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(fetchCompletedPo.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCompletedPo.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cpmPoList = action.payload;
+      })
+      .addCase(fetchCompletedPo.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch Cost Center List";

@@ -1,4 +1,4 @@
-import React from "react";
+
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
@@ -6,22 +6,18 @@ import { Button } from "@/components/ui/button";
 
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import { transformOptionData } from "@/helper/transform";
-import { Edit2, Filter, Plus, Trash2 } from "lucide-react";
+import {Filter, Plus,  } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Form, Space } from "antd";
 import { searchingHsn } from "@/features/client/clientSlice";
 import { toast } from "@/components/ui/use-toast";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-
 import useApi from "@/hooks/useApi";
 import {
-  componentList,
   fetchHSN,
   mapHSN,
 } from "@/components/shared/Api/masterApi";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { FaFileExcel } from "react-icons/fa";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
@@ -40,9 +36,6 @@ const FormSchema = z.object({
 
 const Hsn = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [asyncOptions, setAsyncOptions] = useState([]);
-  const [suomOtions, setSuomOtions] = useState([]);
-  const [grpOtions, setGrpOtions] = useState([]);
   const [callreset, setCallReset] = useState(false);
   const [search, setSearch] = useState("");
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
@@ -164,7 +157,7 @@ const Hsn = () => {
 
     let payload = {
       component: value.partName.value,
-      hsn: rowData.map((r) => r.hsnCodeselect),
+      hsn: rowData.map((r) => r.hsnSearch.value),
       tax: rowData.map((r) => r.gstRate),
     };
 
@@ -178,11 +171,9 @@ const Hsn = () => {
         title: data.message,
         className: "bg-green-600 text-white items-center",
       });
-      fetchComponentMap();
-      form.reset({
-        partName: "",
-      });
+      form.resetFields();
       setRowData([]);
+      // getTheListHSN();
     } else {
       toast({
         title: data.message.msg,

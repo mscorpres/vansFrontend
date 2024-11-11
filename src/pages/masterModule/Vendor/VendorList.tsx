@@ -8,7 +8,6 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
 import {
   InputStyle,
   LableStyle,
@@ -23,44 +22,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Download,
-  Edit2,
-  EyeIcon,
-  Filter,
-  GitFork,
-  Plus,
-  Trash,
-} from "lucide-react";
+import { Download, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Dropdown, Menu, Space } from "antd";
+import { Divider, Dropdown, Menu } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import {
-  componentList,
-  componentMapList,
   fetchAllListOfVendor,
-  fetchBomTypeWise,
   fetchState,
-  getComponentsByNameAndNo,
-  getProductList,
-  listOfUom,
-  serviceList,
-  servicesaddition,
   vendoradd,
   vendorGetAllBranchList,
   vendorGetAllDetailsFromSelectedBranch,
@@ -68,12 +41,10 @@ import {
   vendorUpdateSave,
   vendorUpdateSelectedBranch,
 } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
 import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
-import CustomTooltip from "@/components/shared/CustomTooltip";
 import {
   Sheet,
   SheetContent,
@@ -81,9 +52,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { add } from "lodash";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { MoreOutlined } from "@ant-design/icons";
+import { RowData } from "@/data";
+import { ColDef } from "ag-grid-community";
 const FormSchema = z.object({
   wise: z.string().optional(),
   branch: z.string().optional(),
@@ -105,7 +77,6 @@ const FormSchema = z.object({
 
 const VendorList = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [asyncOptions, setAsyncOptions] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [viewAllBranch, setViewAllBranch] = useState([]);
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
@@ -117,7 +88,6 @@ const VendorList = () => {
     resolver: zodResolver(FormSchema),
   });
   const thebranch = form.watch("branch");
-  console.log("thebranch", thebranch);
   const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     const dispatch = useDispatch<AppDispatch>();
 
@@ -164,7 +134,6 @@ const VendorList = () => {
   const fetchVendorList = async (formData: z.infer<typeof FormSchema>) => {
     // return;
     const response = await execFun(() => fetchAllListOfVendor(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
@@ -189,11 +158,10 @@ const VendorList = () => {
   const getStateList = async () => {
     // return;
     const response = await execFun(() => fetchState(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r) => {
         return {
           label: r.name,
           value: r.code,
@@ -231,37 +199,6 @@ const VendorList = () => {
       headerName: "",
       width: 150,
       cellRenderer: (params: any) => <ActionMenu row={params} />,
-      // cellRenderer: (params: any) => {
-      //   return (
-      //     <div className="flex gap-[5px] items-center justify-center h-full">
-      //       <Button
-      //         onClick={() => {
-      //           setSheetOpenView(params);
-      //         }}
-      //         className="rounded h-[25px] w-[25px] felx justify-center items-center p-0 bg-cyan-500 hover:bg-cyan-600"
-      //       >
-      //         <EyeIcon className="h-[15px] w-[15px] text-white" />
-      //       </Button>
-      //       {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
-      //       <Edit2
-      //         className="h-[20px] w-[20px] text-cyan-700"
-      //         onClick={() => {
-      //           setSheetOpenEdit(params);
-      //         }}
-      //       />
-      //       {/* </Button> */}
-      //       <Button
-      //         className="bg-yellow-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-yellow-600"
-      //         onClick={() => {
-      //           setSheetOpenBranch(params.data.vendor_code);
-      //         }}
-      //       >
-      //         {/* <Trash className="h-[15px] w-[15px] text-white" /> */}
-      //         <GitFork />
-      //       </Button>
-      //     </div>
-      //   );
-      // },
     },
     {
       headerName: "Name",
@@ -283,6 +220,7 @@ const VendorList = () => {
       width: 250,
     },
   ];
+
   const getBranchList = async (id) => {
     // setLoading(true);
 
@@ -343,8 +281,6 @@ const VendorList = () => {
     setLoading(true);
   };
   const updateViewBranch = async (data) => {
-    console.log("Submitted Data from s:", data);
-
     let p = {
       label: data?.label,
       state: data?.state,

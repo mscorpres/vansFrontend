@@ -7,36 +7,17 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  cardHeaderBg,
-  InputStyle,
-  LableStyle,
-  modelFixFooterStyle,
   modelFixHeaderStyle,
-  primartButtonStyle,
 } from "@/constants/themeContants";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import columnDefs, {
-  dummyRowData,
-} from "@/config/agGrid/salesmodule/shipmentUpdateTable";
+
 import { AgGridReact } from "ag-grid-react";
 import SalesShipmentUpadetTextCellrender from "@/config/agGrid/cellRenders.tsx/SalesShipmentUpadetTextCellrender";
-import { AppDispatch, RootState } from "@/store";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchManagePOVeiwComponentList } from "@/features/client/clientSlice";
 import { fetchViewComponentsOfManage } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-const ViewCompoents: React.FC<Props> = ({ view, setView, loading }) => {
-  console.log("view", view);
+const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
   const [rowData, setRowData] = useState([]);
-  const dispatch = useDispatch<AppDispatch>();
-  const { managePoViewComponentList } = useSelector(
-    (state: RootState) => state.client
-  );
+  const [loading, setLoading] = useState(false);
   const { execFun, loading: loading1 } = useApi();
   const components = useMemo(
     () => ({
@@ -46,7 +27,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView, loading }) => {
   );
   const [columnDefs] = useState<ColDef[]>([
     {
-      field: "#",
+      field: "id",
       headerName: "id",
       flex: 1,
       filterParams: {
@@ -209,7 +190,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView, loading }) => {
         ),
       "fetch"
     );
-    console.log("response", response);
+    setLoading(true);
     let { data } = response;
     if (data.code == 200) {
       let arr = data?.data.data.map((r, id) => {
@@ -219,10 +200,10 @@ const ViewCompoents: React.FC<Props> = ({ view, setView, loading }) => {
           ...r,
         };
       });
-      console.log("arr", arr);
-
       setRowData(arr);
+      setLoading(false);
     }
+    setLoading(false);
   };
   useEffect(() => {
     if (view?.po_transaction || view?.po_transaction_code) {

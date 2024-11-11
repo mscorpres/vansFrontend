@@ -1,17 +1,15 @@
-// import AddSalesOrder from "@/components/shared/AddSalesOrder";
-// import CreateSalesOrder from "@/components/shared/CreateSalesOrder";
+
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
 import CreatePoPage from "./CreatePoPage";
 import AddPO from "./AddPO";
 import { Form } from "antd";
 import { useParams } from "react-router-dom";
-import { AppDispatch, RootState } from "@/store";
+import { AppDispatch } from "@/store";
 import { fetchDataPOEdit } from "@/features/client/clientSlice";
 import { useDispatch } from "react-redux";
 const PoCreateTemplate = () => {
   const [tabvalue, setTabvalue] = useState<string>("create");
-  // const [data, setData] = useState<any>();
   const [payloadData, setPayloadData] = useState<any>(null);
   const [formVal, setFormVal] = useState([]);
   const [isApprove, setIsApprove] = useState(false);
@@ -23,12 +21,9 @@ const PoCreateTemplate = () => {
   const [codeType, setCodeType] = useState("");
   const selectedVendor = Form.useWatch("vendorName", form);
   const dispatch = useDispatch<AppDispatch>();
-  console.log("tabvalue", tabvalue);
   const params = useParams();
-  console.log("bilStateCode------------", shipStateCode, bilStateCode);
   useEffect(() => {
     const currentUrl = window.location.href;
-    // console.log("currentUrl---", currentUrl.split("/"));
     let urlParts = currentUrl.split("/");
     const secondLastItem = [urlParts.length - 2];
     if (urlParts[secondLastItem] == "approve") {
@@ -40,8 +35,6 @@ const PoCreateTemplate = () => {
     }
     if (params) {
       setParamVal(params.id?.replaceAll("_", "/"));
-      // console.log("secondLastItems", urlParts[secondLastItem]);
-      //  && urlParts[secondLastItem]==app
       dispatch(fetchDataPOEdit({ pono: params.id?.replaceAll("_", "/") })).then(
         (res) => {
           // console.log("res", res);
@@ -52,18 +45,19 @@ const PoCreateTemplate = () => {
               value: arr.bill[0]?.addrbillid,
             };
             // console.log("billingid", billingid);
-
+            let ventype = {
+              label: arr.vendor[0]?.vendortype_label,
+              value: arr.vendor[0]?.vendortype_value,
+            };
             let shippingid = {
               label: arr.ship?.addrshipname,
               value: arr.ship?.addrshipid,
             };
-            console.log("shippingid", shippingid);
             //vendor
             // form.setFieldValue("poType", "New");
-            form.setFieldValue("vendorType", {
-              label: arr.vendor[0]?.vendortype_label,
-              value: arr.vendor[0]?.vendortype_value,
-            });
+            form.setFieldValue("project", arr.vendor[0]?.projectname);
+
+            form.setFieldValue("vendorType", ventype);
             form.setFieldValue("vendorName", arr.vendor[0]?.vendorcode);
             form.setFieldValue("branch", arr.vendor[0]?.vendorbranch);
             form.setFieldValue("vendorGst", arr.vendor[0]?.vendorgst);
@@ -95,7 +89,7 @@ const PoCreateTemplate = () => {
               orderQty: r.orderqty,
               rate: r.rate,
               gstRate: r.gstrate,
-              gstType: { value: r.gsttype[0].id, label: r.gsttype[0].text },
+              gstType: r.gsttype[0].id,
               materialDescription: r.remark,
               hsnCode: r.hsncode,
               dueDate: r.duedate,
@@ -104,9 +98,9 @@ const PoCreateTemplate = () => {
               igst: r.igst,
               sgst: r.sgst,
               cgst: r.cgst,
+              updateingId: r?.updateid,
             };
           });
-          console.log("matLst", matLst);
 
           setRowData(matLst);
           // setPayloadData(res.payload);

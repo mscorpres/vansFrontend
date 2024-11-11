@@ -73,7 +73,7 @@ const ComponentMap = () => {
   }, []);
 
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[450px_1fr]  overflow-hidden">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]  overflow-hidden">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -186,7 +186,7 @@ const columnDefs: ColDef<rowData>[] = [
   },
   {
     headerName: "Vendor Part Name",
-    field: "vendor_part_no",
+    field: "vendor_comp",
     filter: "agTextColumnFilter",
     width: 250,
   },

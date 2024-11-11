@@ -1,7 +1,7 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import { Badge, Edit2, EyeIcon, Filter, Trash } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import {  EyeIcon, Filter, Trash } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
@@ -16,11 +16,9 @@ import useApi from "@/hooks/useApi";
 import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
 import {
   fetchCompletedPo,
-  fetchManagePOList,
   printPO,
 } from "@/features/client/clientSlice";
 import {
-  exportDateRange,
   exportDateRangespace,
 } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
@@ -30,10 +28,11 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { useNavigate } from "react-router-dom";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
-import FullPageLoading from "@/components/shared/FullPageLoading";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { toast } from "@/components/ui/use-toast";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -84,12 +83,12 @@ const FormSchema = z.object({
 const { RangePicker } = DatePicker;
 // const dateFormat = "DD/MM/YYYY";
 const CompletedPOPage: React.FC = () => {
-  const { managePoList } = useSelector((state: RootState) => state.client);
-  // const form = useForm<z.infer<typeof FormSchema>>({
-  //   resolver: zodResolver(FormSchema),
-  // });
+  const {  loading } = useSelector(
+    (state: RootState) => state.client
+  );
+ 
   const [form] = Form.useForm();
-  const { execFun, loading: loading1 } = useApi();
+  // const { execFun, loading: loading1 } = useApi();
   // const rowdata = podetail;
   const [wise, setWise] = useState("");
   const [rowData, setRowData] = useState([]);
@@ -99,7 +98,6 @@ const CompletedPOPage: React.FC = () => {
   const [viewMinPo, setViewMinPo] = useState(false);
   const [remarkDescription, setRemarkDescription] = useState(false);
   const [cancel, setCancel] = useState(false);
-  const [loading, setLoading] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
 
@@ -191,8 +189,6 @@ const CompletedPOPage: React.FC = () => {
   console.log("view", view);
 
   const printTheSelectedPo = async (row: any) => {
-    console.log("row", row);
-    setLoading(true);
     let payload = {
       poid: row?.po_transaction ?? row?.po_transaction_code,
     };
@@ -206,9 +202,7 @@ const CompletedPOPage: React.FC = () => {
         let { data } = res.payload;
         downloadFunction(data.buffer, data.filename);
       }
-      setLoading(false);
     });
-    setLoading(false);
   };
   const dispatch = useDispatch<AppDispatch>();
   const getVendorList = async () => {
@@ -241,7 +235,7 @@ const CompletedPOPage: React.FC = () => {
 
     let payload = { data: datas, wise: values.wise.value };
     console.log("payload", payload);
-    setLoading(true);
+    //setLoading(true);
     dispatch(fetchCompletedPo(payload)).then((res: any) => {
       console.log("res", res);
       if (res.payload.code == 200) {
@@ -252,10 +246,15 @@ const CompletedPOPage: React.FC = () => {
         });
         console.log("arr,ar", list);
         setRowData(list);
+      } else {
+        toast({
+          title: res.payload.message,
+          className: "bg-red-700 text-white",
+        });
       }
-      setLoading(false);
+      //setLoading(false);
     });
-    setLoading(false);
+    //setLoading(false);
 
     // if (managePoList) {
     //   setRowData(managePoList);
@@ -267,10 +266,12 @@ const CompletedPOPage: React.FC = () => {
       floatingFilter: true,
     };
   }, []);
+  useEffect(() => {
+    form.setFieldValue("data", "");
+  }, [selectedwise]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      {loading == true && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
@@ -359,6 +360,7 @@ const CompletedPOPage: React.FC = () => {
         <Divider />
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+        {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
