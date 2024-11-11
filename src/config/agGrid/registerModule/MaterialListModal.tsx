@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef, CsvExportModule } from "ag-grid-community";
 import {
@@ -8,23 +8,19 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import { TruncateCellRenderer } from "@/General";
 import { Button } from "@/components/ui/button";
-import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
-import { Form } from "antd";
-import { toast } from "@/components/ui/use-toast";
-import ShipmentTextInputCellRendrer from "@/shared/ShipmentTextInputCellRendrer";
+import { Download } from "lucide-react";
+import { TruncateCellRenderer } from "@/General";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 interface MaterialListModalProps {
   visible: boolean;
   onClose: () => void;
-  sellRequestDetails: any[];
+  sellRequestDetails: any;
   row: {
     req_id: string;
   };
   loading: boolean;
-  onCreateShipment: (payload: any) => void; // Callback to trigger shipment creation
 }
 
 const MaterialListModal: React.FC<MaterialListModalProps> = ({
@@ -33,175 +29,109 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
   sellRequestDetails,
   row,
   loading,
-  onCreateShipment,
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]); // State to store selected items
-  const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
-  const [form] = Form.useForm();
-
-  // Handle selection change
-  const onSelectionChanged = () => {
-    const selectedRows = gridRef.current?.api.getSelectedRows();
-    setSelectedItems(selectedRows || []);
-  };
-
-  // Handle cell value change (i.e., when quantity is edited)
-  const onCellValueChanged = (event: any) => {
-    if (event.colDef.field === "qty") {
-      const updatedRows = [...sellRequestDetails];
-      const updatedRow = updatedRows.find((row) => row.id === event.data.id);
-      if (updatedRow) {
-        updatedRow.qty = event.newValue; // Update the quantity in your data
-        setSelectedItems(prevSelectedItems => {
-          return prevSelectedItems.map(item =>
-            item.id === updatedRow.id ? updatedRow : item
-          );
-        });
-      }
-    }
-  };
-
-  // Create shipment payload from selected items
-  const handleCreateShipment = () => {
-    const itemDetails = {
-      item: selectedItems.map((item) => item.item),
-      qty: selectedItems.map((item) => item.qty),
-      rate: selectedItems.map((item) => item.rate),
-      currency: selectedItems.map((item) => item.currency || "USD"),
-      exchange_rate: selectedItems.map((item) => item.exchange_rate || 1.0),
-      due_date: selectedItems.map((item) => item.due_date || "2024-12-31"),
-      hsn_code: selectedItems.map((item) => item.hsnCode),
-      gst_type: selectedItems.map((item) => item.gst_type),
-      gst_rate: selectedItems.map((item) => item.gstRate),
-      cgst_rate: selectedItems.map((item) => item.cgstRate),
-      sgst_rate: selectedItems.map((item) => item.sgstRate),
-      igst_rate: selectedItems.map((item) => item.igstRate),
-      comp_remark: form.getFieldValue("remark"),
-      item_remark: selectedItems.map((item) => item.itemRemark),
-    };
-    console.log(itemDetails, "item", selectedItems);
-    onCreateShipment({ itemDetails:{...itemDetails}, so_id: row.req_id });
-    form.resetFields();
-  };
-
-  const components = useMemo(
-    () => ({
-      textInputCellRenderer: ShipmentTextInputCellRendrer,
-      truncateCellRenderer: TruncateCellRenderer,
-    }),
-    []
-  );
 
   const columnDefs: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
     {
-      headerName: "Select All",
-      checkboxSelection: true, // Enables checkbox for each row
-      headerCheckboxSelection: true, // Enable Select All checkbox in the header
-      headerCheckboxSelectionFilteredOnly: false, // Select all rows, not just filtered rows
-      maxWidth: 150,
-    },
-    {
-      headerName: "SO ID",
-      field: "so_id",
-      width: 150,
-    },
-    {
       headerName: "Item",
       field: "item",
-      width: 200,
     },
     {
-      headerName: "Material",
+      headerName: "Item Name",
       field: "itemName",
-      width: 300,
-      cellRenderer: "truncateCellRenderer",
+      width: 200,
+      cellRenderer: TruncateCellRenderer,
     },
     {
-      headerName: "Material Specification",
+      headerName: "Item Description",
       field: "itemSpecification",
-      cellRenderer: "truncateCellRenderer",
+      autoHeight: true,
+      width: 300,
     },
-    { headerName: "SKU Code", field: "itemPartNo" },
-    {
-      headerName: "Qty",
-      field: "qty",
-      editable: true, // Make the column editable
-      cellRenderer: "textInputCellRenderer", // Use the custom input renderer
-    },
-    { headerName: "UoM", field: "uom" },
+    { headerName: "Item Part Number", field: "itemPartNo" },
+    { headerName: "Qty", field: "qty" },
+    { headerName: "Rate", field: "rate" },
     { headerName: "GST Rate", field: "gstRate" },
-    { headerName: "Price", field: "rate" },
-    { headerName: "HSN/SAC", field: "hsnCode" },
+    { headerName: "UOM", field: "uom" },
+    { headerName: "Hsn Code", field: "hsnCode" },
+    { headerName: "CGST Rate", field: "cgstRate" },
+    { headerName: "SGST Rate", field: "sgstRate" },
+    { headerName: "IGST Rate", field: "igstRate" },
     { headerName: "Remark", field: "itemRemark" },
   ];
 
-  return (
-    <>
-      <Sheet open={visible} onOpenChange={onClose}>
-        <SheetHeader></SheetHeader>
-        <SheetContent
-          side={"bottom"}
-          onInteractOutside={(e: any) => {
-            e.preventDefault();
-          }}
-        >
-          <div className="flex justify-between items-center mb-4">
-            <SheetTitle>Create Shipment of {row?.req_id}</SheetTitle>
-          </div>
+  const onBtExport = useCallback(() => {
+    if (gridRef.current) {
+      gridRef.current.api.exportDataAsCsv();
+    }
+  }, []);
 
-          <div className="ag-theme-quartz h-[calc(100vh-140px)]">
-            <AgGridReact
-              ref={gridRef}
-              modules={[CsvExportModule]}
-              rowData={sellRequestDetails}
-              columnDefs={columnDefs}
-              suppressCellFocus={true}
-              rowSelection="multiple" // Enable multiple row selection
-              components={components}
-              overlayNoRowsTemplate={OverlayNoRowsTemplate}
-              loading={loading}
-              onSelectionChanged={onSelectionChanged} // Listen to selection changes
-              onCellValueChanged={onCellValueChanged} // Listen to cell value changes (for editing qty)
-            />
+  return (
+    <Sheet open={visible} onOpenChange={onClose}>
+      <SheetHeader></SheetHeader>
+      <SheetContent
+        side={"bottom"}
+        onInteractOutside={(e: any) => {
+          e.preventDefault();
+        }}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <SheetTitle>
+              Material Out of {sellRequestDetails?.header?.shipment_id} for{" "}
+              {row?.req_id}
+            </SheetTitle>
+            <SheetTitle>
+              Customer Name:{" "}
+              {sellRequestDetails?.header?.customer_name?.customer_name}
+            </SheetTitle>
           </div>
-          <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+          <div className="flex-grow flex justify-center">
+            {/* Centering container */}
             <Button
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={onClose}
+              type="button"
+              onClick={onBtExport}
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
             >
-              Back
-            </Button>
-            <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={() => {
-                if (selectedItems.length === 0) {
-                  toast({
-                    title: "No items selected! Please select at least one item.",
-                    className: "bg-red-600 text-white items-center",
-                  });
-                } else {
-                  setOpenConfirmDialog(true);
-                }
-              }}
-            >
-              Submit
+              <Download />
             </Button>
           </div>
-        </SheetContent>
-        <SheetFooter></SheetFooter>
-      </Sheet>
-      <CreateInvoiceDialog
-        isDialogVisible={openConfirmDialog}
-        handleCancel={() => setOpenConfirmDialog(false)}
-        heading="Create Shipment"
-        description="Are you sure you want to create Shipment?"
-        form={form}
-        loading={loading}
-        handleOk={handleCreateShipment}
-      />
-    </>
+        </div>
+
+        <div className="ag-theme-quartz h-[calc(100vh-170px)]">
+          <AgGridReact
+            ref={gridRef}
+            modules={[CsvExportModule]}
+            rowData={sellRequestDetails?.items}
+            columnDefs={columnDefs}
+            suppressCellFocus={true}
+            components={{
+              truncateCellRenderer: TruncateCellRenderer,
+            }}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
+            loading={loading}
+          />
+        </div>
+        <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+          <Button
+            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+            onClick={onClose}
+          >
+            Back
+          </Button>
+          <Button
+            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+            onClick={onClose}
+          >
+            Submit
+          </Button>
+        </div>
+      </SheetContent>
+
+      <SheetFooter></SheetFooter>
+    </Sheet>
   );
 };
 

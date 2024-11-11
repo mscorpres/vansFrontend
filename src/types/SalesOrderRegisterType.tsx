@@ -9,6 +9,7 @@ export interface RowData {
     soStatus: string;
     so_id: string;
     supplierName:string;
+    shipment_id:string
     
   }
 export type Payload = {

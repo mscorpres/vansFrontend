@@ -5,7 +5,7 @@ import { Button, Menu, Dropdown, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { useState } from "react";
-import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
+import MaterialListModal from "@/config/agGrid/registerModule/CreateShipmentListModal";
 // import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
@@ -21,6 +21,7 @@ import {
   printSellOrder,
 } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
+import { toast } from "@/components/ui/use-toast";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -41,7 +42,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dateRange = useSelector(
     (state: RootState) => state.sellRequest.dateRange
   );
- 
+
   const handleUpdate = (row: any) => {
     const soId = row?.so_id; // Replace with actual key for employee ID
     window.open(`/sales/order/update/${soId.replaceAll("/", "_")}`, "_blank");
@@ -65,7 +66,18 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const confirmApprove = () => {
-    dispatch(approveSo({ so_id: row?.so_id }));
+    dispatch(approveSo({ so_id: row?.so_id })).then((response: any) => {
+      if (response?.payload?.code == 200) {
+        toast({
+          className: "bg-green-600 text-white items-center",
+          description:
+            response.payload.message || "Sales Order Approved successfully",
+        });
+        dispatch(
+          fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
+        );
+      }
+    });
     setShowConfirmationModal(false);
   };
 
@@ -110,7 +122,10 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           if (resultAction.payload?.success) {
             setIsInvoiceModalVisible(false);
             dispatch(
-              fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
+              fetchSellRequestList({
+                type: "date_wise",
+                data: dateRange,
+              }) as any
             );
           }
         });
@@ -134,14 +149,14 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     });
   };
 
-  const onCreateShipment = (payload: any  )=>{
+  const onCreateShipment = (payload: any) => {
     dispatch(createShipment(payload)).then((response: any) => {
-      console.log(response)
+      console.log(response);
       // if (response?.payload?.success) {
       //   toast({
       //     title: response?.payload?.message})
-    
-  });}
+    });
+  };
 
   const isDisabled = row?.approveStatus === "Approved";
 
@@ -164,18 +179,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       >
         Approve
       </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal} disabled={isDisabled}>
+      <Menu.Item key="cancel" onClick={showCancelModal}>
         Cancel
       </Menu.Item>
       <Menu.Item key="materialList" onClick={() => handleshowMaterialList(row)}>
         Create Shipment
-      </Menu.Item>
-      <Menu.Item
-        key="createInvoice"
-        onClick={showInvoiceModal}
-        disabled={isDisabled}
-      >
-        Create Invoice
       </Menu.Item>
       <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)}>
         Print

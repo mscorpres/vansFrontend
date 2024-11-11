@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -193,6 +193,7 @@ const SalesShipmentPage: React.FC = () => {
           paginationAutoPageSize={true}
           components={components}
           loadingOverlayComponent={OverlayNoRowsTemplate}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

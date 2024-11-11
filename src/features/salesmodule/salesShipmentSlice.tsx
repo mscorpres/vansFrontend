@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { spigenAxios } from "@/axiosIntercepter";
+import { toast } from "@/components/ui/use-toast";
 
 
 export interface ApiResponse<T> {
@@ -46,12 +47,14 @@ interface SellShipmentRequest {
 interface SellShipmentState {
   data: SellShipmentRequest[];
   successMessage?: string | null;
+  shipmentMaterialList: any[]|null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: SellShipmentState = {
   data: [],
+  shipmentMaterialList:null,
   loading: false,
   error: null,
 };
@@ -81,7 +84,23 @@ interface CreateDeliveryChallanPayload {
   return response.data;
 });
 
-  
+export const fetchMaterialList = createAsyncThunk(
+  "client/soMaterialList",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/shipmentMaterialList",
+        payload
+      )) as any;
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
 
 
 export const fetchSalesOrderShipmentList = createAsyncThunk<
@@ -171,6 +190,18 @@ const sellShipmentSlice = createSlice({
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch sales order shipment list";
+      })
+      .addCase(fetchMaterialList.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMaterialList.fulfilled, (state, action) => {
+        state.shipmentMaterialList = action.payload.data;
+        state.loading = false;
+      })
+      .addCase(fetchMaterialList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to cancel sell request";
       })
         .addCase(updateSOshipment.pending, (state) => {
           state.loading = true;
