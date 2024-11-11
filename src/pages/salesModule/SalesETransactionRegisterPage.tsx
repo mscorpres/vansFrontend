@@ -35,7 +35,6 @@ import { DatePicker, Input, Space } from "antd";
 import { gridOptions } from "@/config/agGrid/ModuleRegistry";
 import {
   columnDefs,
-  CrDbColumnDefs,
   EwayBillColumnDefs,
   TruncateCellRenderer,
 } from "@/config/agGrid/SalesEtransactionTableColumns";

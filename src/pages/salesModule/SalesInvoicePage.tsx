@@ -72,7 +72,6 @@ const SalesInvoicePage: React.FC = () => {
   const { data, loading } = useSelector(
     (state: RootState) => state.sellInvoice
   );
-  console.log(data);
   const [rowData, setRowData] = useState<any[]>([]); // Local state for row data
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),

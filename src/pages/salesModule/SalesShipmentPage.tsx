@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
-import { Filter } from "lucide-react";
+import { Download, Filter } from "lucide-react";
 import styled from "styled-components";
 import { columnDefs } from "@/config/agGrid/SalesOrderShippingTableColumn";
 import { DatePicker, Space } from "antd";
@@ -56,7 +56,10 @@ const FormSchema = z.object({
 });
 const SalesShipmentPage: React.FC = () => {
   const dispatch = useDispatch();
+  const gridRef = useRef<AgGridReact<any>>(null);
   const [type, setType] = useState<string>("date_wise");
+  const [rowData, setRowData] = useState<any[]>([]);
+  const [isSearchPerformed, setIsSearchPerformed] = useState<boolean>(false);
   const { data,loading } = useSelector(
     (state: RootState) => state.sellShipment
   );
@@ -102,6 +105,22 @@ const SalesShipmentPage: React.FC = () => {
     }),
     []
   );
+
+  const onBtExport = useCallback(() => {
+    if (gridRef.current) {
+      gridRef.current.api.exportDataAsCsv();
+    }
+  }, []);
+
+  useEffect(() => {
+    setRowData(data as any);
+  }, [data]);
+
+  useEffect(() => {
+    setRowData([]);
+    setIsSearchPerformed(false);
+  }, [type]);
+
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] ">
@@ -173,19 +192,30 @@ const SalesShipmentPage: React.FC = () => {
                 )}
               />
             )}
+             <div className="flex space-x-2 float-end pr-2">
+                  {isSearchPerformed && ( // Only show the download button if search is performed
+                    <Button
+                      type="button"
+                      onClick={onBtExport}
+                      className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                    >
+                      <Download />
+                    </Button>
+                  )}
             <Button
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
             >
               Submit
             </Button>
+          </div>
           </form>
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact
           loadingCellRenderer={loadingCellRenderer}
-          rowData={data}
+          rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={{ filter: true, sortable: true }}
           pagination={true}

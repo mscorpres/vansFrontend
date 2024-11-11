@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +12,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Filter } from "lucide-react";
+import { Download, Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Space } from "antd";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchSellRequestList, setDateRange } from "@/features/salesmodule/SalesSlice";
+import {
+  fetchSellRequestList,
+  setDateRange,
+} from "@/features/salesmodule/SalesSlice";
 import { RootState } from "@/store";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
@@ -52,10 +55,13 @@ const FormSchema = z.object({
 });
 
 const RegisterSalesOrderPage: React.FC = () => {
+  const gridRef = useRef<AgGridReact<any>>(null);
   const { toast } = useToast();
   const [type, setType] = useState<string>("date_wise");
   const dispatch = useDispatch();
-  const { data: rowData, loading } = useSelector(
+  const [isSearchPerformed, setIsSearchPerformed] = useState<boolean>(false);
+  const [rowData, setRowData] = useState<any[]>([]);
+  const { data, loading } = useSelector(
     (state: RootState) => state.sellRequest
   );
 
@@ -94,6 +100,20 @@ const RegisterSalesOrderPage: React.FC = () => {
   };
 
   const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
+
+  const onBtExport = useCallback(() => {
+    if (gridRef.current) {
+      gridRef.current.api.exportDataAsCsv();
+    }
+  }, []);
+  useEffect(() => {
+    setRowData(data as any);
+  }, [data]);
+
+  useEffect(() => {
+    setRowData([]);
+    setIsSearchPerformed(false);
+  }, [type]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -165,12 +185,23 @@ const RegisterSalesOrderPage: React.FC = () => {
                 )}
               />
             )}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            >
-              Submit
-            </Button>
+            <div className="flex space-x-2 float-end pr-2">
+              {isSearchPerformed && ( // Only show the download button if search is performed
+                <Button
+                  type="button"
+                  onClick={onBtExport}
+                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                >
+                  <Download />
+                </Button>
+              )}
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              >
+                Submit
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

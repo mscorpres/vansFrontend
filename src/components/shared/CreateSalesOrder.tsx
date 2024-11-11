@@ -129,7 +129,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 name="color"
                                 options={customerOptions}
                                 defaultValue={"c01"}
-                                value={customerOptions.find((c) => c.value === "c01")}
+                                // value={customerOptions.find((c) => c.value === field.value)}
                               />
                             </FormControl>
                             <FormMessage />
