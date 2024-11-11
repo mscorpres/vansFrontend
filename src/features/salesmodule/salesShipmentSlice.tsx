@@ -133,6 +133,35 @@ export const cancelShipment = createAsyncThunk(
   }
 );
 
+export const approveShipment = createAsyncThunk(
+  "sellRequest/approveShipment",
+  async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
+    try {
+      const response = await spigenAxios.post<any>("/salesOrder/approveShipment", {
+        shipment_id: so_id,
+      });
+
+      if (!response.data) {
+        throw new Error("No data received");
+      }
+      if (response?.data?.code == 200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle error using rejectWithValue
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+
 export const createInvoice = createAsyncThunk(
   "client/createInvoice",
   async (payload: any, { rejectWithValue }) => {
@@ -262,6 +291,17 @@ const sellShipmentSlice = createSlice({
       .addCase(cancelShipment.pending, (state) => {
         state.loading = true;
         state.error = null;
+      })
+      .addCase(approveShipment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(approveShipment.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(approveShipment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to create sell request";
       })
       .addCase(cancelShipment.fulfilled, (state) => {
         state.loading = false;

@@ -10,13 +10,13 @@ import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/Confir
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import {
-  approveSo,
   fetchSellRequestList,
   printSellOrder,
 } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
 import {
+  approveShipment,
   cancelShipment,
   createInvoice,
   fetchMaterialList,
@@ -64,7 +64,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const confirmApprove = () => {
-    dispatch(approveSo({ so_id: row?.shipment_id }));
+    dispatch(approveShipment({ so_id: row?.shipment_id }));
     setShowConfirmationModal(false);
   };
 

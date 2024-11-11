@@ -1,6 +1,10 @@
 import React, { useState, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, CsvExportModule } from "ag-grid-community";
+import {
+  ColDef,
+  CsvExportModule,
+  RowSelectionOptions,
+} from "ag-grid-community";
 import {
   Sheet,
   SheetContent,
@@ -80,14 +84,6 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
   const columnDefs: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
     {
-      headerName: "Select All",
-      // checkboxSelection: (params) => params.node.data.checked,
-      checkboxSelection: true, // Enables checkbox for each row
-      headerCheckboxSelection: true, // Enable Select All checkbox in the header
-      headerCheckboxSelectionFilteredOnly: false, // Select all rows, not just filtered rows
-      maxWidth: 150,
-    },
-    {
       headerName: "SO ID",
       field: "so_id",
       width: 150,
@@ -141,7 +137,13 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
     { headerName: "HSN/SAC", field: "hsnCode" },
     { headerName: "Remark", field: "itemRemark" },
   ];
-  
+  const rowSelection = useMemo<
+    RowSelectionOptions | "single" | "multiple"
+  >(() => {
+    return {
+      mode: "multiRow",
+    };
+  }, []);
   return (
     <>
       <Sheet open={visible} onOpenChange={onClose}>
@@ -163,11 +165,11 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
               rowData={sellRequestDetails}
               columnDefs={columnDefs}
               suppressCellFocus={true}
-              rowSelection="multiple" // Enable multiple row selection
               components={components}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
               loading={loading}
-              onSelectionChanged={onSelectionChanged} // Listen to selection changes
+              onSelectionChanged={onSelectionChanged} // Listen to selection changes'
+              rowSelection={rowSelection}
             />
           </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
