@@ -24,7 +24,7 @@ import {
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { z } from "zod";
 import {
   Form,
@@ -37,6 +37,7 @@ import {
 import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
 import { stateOptions } from "@/General";
 import { DatePicker, Space } from "antd";
+import { toast } from "@/components/ui/use-toast";
 interface Props {
   setTab: Dispatch<SetStateAction<string>>;
   setPayloadData: Dispatch<SetStateAction<any>>;
@@ -47,10 +48,10 @@ interface Props {
   handleCostCenterChange: (e: any) => void;
   handleBillIdChange: (e: any) => void;
   currencyList: any;
+  searchCustomerList:(e:any) => void;
 }
 type CreateSalesOrderForm = z.infer<typeof createSalesFormSchema>;
 const CreateSalesOrder: React.FC<Props> = ({
-  setTabvalue,
   setTab,
   setPayloadData,
   handleCustomerSelection,
@@ -60,6 +61,7 @@ const CreateSalesOrder: React.FC<Props> = ({
   handleCostCenterChange,
   handleBillIdChange,
   currencyList,
+  searchCustomerList,
 }: any) => {
   const data = useSelector((state: RootState) => state.createSalesOrder);
 
@@ -67,12 +69,20 @@ const CreateSalesOrder: React.FC<Props> = ({
     console.log("Submitted Data from CreateSalesOrder:", data); // Debugging log
     if (data) {
       setPayloadData(data);
-      setTabvalue("add"); // Switch to AddSalesOrder tab
+      setTab("add"); // Switch to AddSalesOrder tab
     } else {
       console.error("Data is null or undefined");
     }
   };
   console.log(form.getValues(), currencyList);
+
+  const customerOptions=[
+    {
+      label: "CUSTOMER",
+      value: "c01",
+    },
+  ]
+
   return (
     <div className="h-[calc(100vh-150px)]">
       {data.loading && <FullPageLoading />}
@@ -94,7 +104,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="header.customer_type"
+                        name="customer_type"
                         render={() => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -117,13 +127,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                                   form.setValue("customer_type", e.value)
                                 }
                                 name="color"
-                                options={[
-                                  {
-                                    label: "CUSTOMER",
-                                    value: "c01",
-                                  },
-                                ]}
+                                options={customerOptions}
                                 defaultValue={"c01"}
+                                value={customerOptions.find((c) => c.value === "c01")}
                               />
                             </FormControl>
                             <FormMessage />
@@ -134,8 +140,8 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="header.customer_code"
-                        render={() => (
+                        name="customer_code"
+                        render={(field) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Customer Name
@@ -150,8 +156,33 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 transform={transformOptions}
                                 fetchOptionWith="payload"
                                 onChange={handleCustomerSelection}
-                                // onInputChange={handleInputChange}
+                                // value={form.watch("customer_code")}
                               />
+                              {/* <FormControl>
+                              <Select
+                                styles={customStyles}
+                                components={{ DropdownIndicator }}
+                                placeholder="Customer Name"
+                                className="border-0 basic-single"
+                                classNamePrefix="select border-0"
+                                isDisabled={false}
+                                isClearable={true}
+                                isSearchable={true}
+                                options={transformOptionData(data?.customerList)}
+                                onInputChange={searchCustomerList}
+                                onChange={handleCustomerSelection}
+                                value={
+                                  data?.customerList
+                                    ? transformOptionData(
+                                        data?.customerList
+                                      ).find(
+                                        (option) =>
+                                          option.value === field.value
+                                      )
+                                    : null
+                                }
+                              />
+                            </FormControl> */}
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -557,7 +588,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="header.po_number"
+                        name="po_number"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -578,10 +609,10 @@ const CreateSalesOrder: React.FC<Props> = ({
                         )}
                       />
                     </div>
-                    <div>
+                    <div className="w-full">
                       <FormField
                         control={form.control}
-                        name="header.po_date"
+                        name="po_date"
                         render={() => (
                           <FormItem className="pl-[10px] w-full flex flex-col">
                             <FormLabel className={LableStyle}>
@@ -593,17 +624,14 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Space direction="vertical" size={12}>
                                 <DatePicker
-                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
+                                  className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
                                   format="DD-MM-YYYY"
+                                  value={form.watch("po_date") ? dayjs(form.watch("po_date"), "DD-MM-YYYY") : null}
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
                                       : "";
-                                    form.setValue(
-                                      "header.po_date",
-                                      formattedDate
-                                    );
+                                    form.setValue("po_date", formattedDate);
                                   }}
                                 />
                               </Space>
@@ -616,7 +644,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="header.reference_no"
+                        name="reference_no"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -637,10 +665,10 @@ const CreateSalesOrder: React.FC<Props> = ({
                         )}
                       />
                     </div>
-                    <div>
+                    <div className="w-full">
                       <FormField
                         control={form.control}
-                        name="header.reference_date"
+                        name="reference_date"
                         render={() => (
                           <FormItem className="pl-[10px] w-full flex flex-col">
                             <FormLabel className={LableStyle}>
@@ -652,15 +680,15 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Space direction="vertical" size={12}>
                                 <DatePicker
-                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
+                                  className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
                                   format="DD-MM-YYYY"
+                                  value={form.watch("reference_date") ? dayjs(form.watch("reference_date"), "DD-MM-YYYY") : null}
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
                                       : "";
                                     form.setValue(
-                                      "header.reference_date",
+                                      "reference_date",
                                       formattedDate
                                     );
                                   }}
@@ -672,49 +700,52 @@ const CreateSalesOrder: React.FC<Props> = ({
                         )}
                       />
                     </div>
-                    <div>
-                      <FormField
-                        control={form.control}
-                        name="header.currency.currency"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Currency
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                styles={customStyles}
-                                components={{ DropdownIndicator }}
-                                placeholder="Currency"
-                                className="border-0 basic-single"
-                                classNamePrefix="select border-0"
-                                isClearable={false} // Prevent clearing the value
-                                isSearchable={false} // Disable search if not needed
-                                options={
-                                  currencyList
-                                    ? transformCurrencyData(currencyList)
-                                    : []
-                                }
-                                value={
-                                  // Find the corresponding option based on field.value (which is the stateCode)
-                                  transformCurrencyData(currencyList)?.find(
-                                    (option) => option.value === field.value
-                                  ) || null
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    <FormField
+                      control={form.control}
+                      name="currency.currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Currency
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
+                              placeholder="Currency"
+                              className="border-0 basic-single"
+                              classNamePrefix="select border-0"
+                              isClearable={false} // Prevent clearing the value
+                              isSearchable={false} // Disable search if not needed
+                              options={
+                                currencyList
+                                  ? transformCurrencyData(currencyList)
+                                  : []
+                              }
+                              value={
+                                // Find the corresponding option based on field.value
+                                transformCurrencyData(currencyList)?.find(
+                                  (option) => option.value === field.value
+                                ) || null
+                              }
+                              onChange={(selectedOption) => {
+                                // Update the form value with the selected option's value
+                                field.onChange(selectedOption?.value); // Use field.onChange to update the form value
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="header.currency.exchange_rate"
+                        name="currency.exchange_rate"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -735,10 +766,10 @@ const CreateSalesOrder: React.FC<Props> = ({
                         )}
                       />
                     </div>
-                    <div>
+                    <div className="w-full">
                       <FormField
                         control={form.control}
-                        name="header.due_date"
+                        name="due_date"
                         render={() => (
                           <FormItem className="pl-[10px] w-full flex flex-col">
                             <FormLabel className={LableStyle}>
@@ -750,17 +781,14 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Space direction="vertical" size={12}>
                                 <DatePicker
-                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
+                                  className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
                                   format="DD-MM-YYYY"
+                                  value={form.watch("due_date") ? dayjs(form.watch("due_date"), "DD-MM-YYYY") : null}
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
                                       : "";
-                                    form.setValue(
-                                      "header.due_date",
-                                      formattedDate
-                                    );
+                                    form.setValue("due_date", formattedDate);
                                   }}
                                 />
                               </Space>
@@ -1066,9 +1094,22 @@ const CreateSalesOrder: React.FC<Props> = ({
           </div>
           <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300">
             <Button
-              onClick={() => setTab("add")}
+              onClick={() => {
+                const errors = form.formState.errors;
+                if (Object.keys(errors).length > 0) {
+                  // Iterate over the errors and show a toast
+                  Object.values(errors).forEach((error: any) => {
+                    toast({
+                      title: error.message || "Failed",
+                      className: "bg-red-600 text-white items-center",
+                    });
+                  });
+                }
+                  // setTab("add");
+              }}
               className={`${primartButtonStyle} flex gap-[10px]`}
               type="submit"
+              disabled={form.errors}
             >
               Next
               <FaArrowRightLong className="" />

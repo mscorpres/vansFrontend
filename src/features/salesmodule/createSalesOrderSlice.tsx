@@ -3,8 +3,6 @@
 import { spigenAxios } from "@/axiosIntercepter";
 import {
   BillingAddress,
-  BillingAddressListItem,
-  BillingAddressListResponse,
   BillingAddressResponse,
   Client,
   ClientAddressDetail,
@@ -38,6 +36,49 @@ const initialState: ClientState = {
   loading: false,
   error: null,
 };
+
+interface SellRequestPayload {
+  headers: {
+    channel: string;
+    customer: string;
+    customer_branch: string;
+    customer_address1: string;
+    customer_address2: string;
+    customer_gstin: string;
+    bill_id: string;
+    billing_address1: string;
+    billing_address2: string;
+    isSameClientAdd: string;
+    shipping_id: string;
+    shipping_address1: string;
+    shipping_address2: string;
+    shipping_pinCode: string;
+    [key: string]: any; 
+  };
+  materials: {
+    items: string[];
+    qty: number[];
+    price: number[];
+    gst_rate: number[];
+    so_type: string[];
+    hsn: string[];
+    cgst: number[];
+    sgst: number[];
+    igst: number[];
+    gst_type: string[];
+    currency: string[];
+    exchange_rate: number[];
+    due_date: string[];
+    remark: string[];
+  };
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string | null;
+}
+
 // Define the async thunk for fetching client details
 export const fetchClientDetails = createAsyncThunk<Client, string>(
   "client/fetchClientDetails",
@@ -320,6 +361,22 @@ export const fetchDataForUpdate = createAsyncThunk(
   }
 );
 
+export const createSalesOrderRequest = createAsyncThunk<
+  ApiResponse<any>,
+  SellRequestPayload
+>("/sellRequest/createSalesOrderRequest", async (payload) => {
+  const response = await spigenAxios.post("/soCreate/createSalesOrder", payload);
+  return response.data;
+});
+
+export const updateSalesOrderRequest = createAsyncThunk<
+  ApiResponse<any>,
+  SellRequestPayload
+>("/sellRequest/updateSalesOrderRequest", async (payload) => {
+  const response = await spigenAxios.post("/salesOrder/updateSalesOrder", payload);
+  return response.data;
+});
+
 export const fetchBranchDetail = createAsyncThunk<
   ComponentDetail[], // Expected return type
   { client: string } // Argument type
@@ -367,7 +424,7 @@ const clientSlice = createSlice({
       })
       .addCase(fetchDataForUpdate.fulfilled, (state, action) => {
         state.loading = false;
-        state.clientDetails = action.payload;
+        state.updateData = action.payload.data;
       })
       .addCase(fetchDataForUpdate.rejected, (state, action) => {
         state.loading = false;
@@ -396,6 +453,18 @@ const clientSlice = createSlice({
         state.projectDescription = action.payload;
       })
       .addCase(fetchProjectDescription.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch project description";
+      })
+      .addCase(createSalesOrderRequest.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createSalesOrderRequest.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(createSalesOrderRequest.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch project description";
@@ -469,15 +538,15 @@ const clientSlice = createSlice({
           action.error.message || "Failed to fetch component details";
       })
       .addCase(fetchCustomerDetail.pending, (state) => {
-        state.loading = true;
+        // state.loading = true;
         state.error = null;
       })
       .addCase(fetchCustomerDetail.fulfilled, (state, action) => {
-        state.loading = false;
+        // state.loading = false;
         state.customerList = action.payload;
       })
       .addCase(fetchCustomerDetail.rejected, (state, action) => {
-        state.loading = false;
+        // state.loading = false;
         state.error =
           action.error.message || "Failed to fetch component details";
       })

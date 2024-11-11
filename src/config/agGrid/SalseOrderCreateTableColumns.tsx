@@ -1,12 +1,14 @@
 export interface RowData {
   type?: string;
   material?: string;
+  lcValue?: number;
   asinNumber?: string;
   orderQty?: number;
   rate?: number;
   currency?: string;
   gstRate?: number;
   gstType?: string;
+  fcValue?: number;
   localValue?: number;
   foreignValue?: number;
   cgst?: number;
@@ -14,14 +16,15 @@ export interface RowData {
   igst?: number;
   dueDate?: string;
   hsnCode?: string;
-  itemDescription?: string;
-  fcValue?: number;
-  lcValue?: number;
   isNew?: boolean;
+  remark?: string;
+  exchangeRate?: number;
+  updateid?: string;
 }
 
+
 export const columnDefs = [
-  { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
+  { headerName: "", valueGetter: "node.rowIndex + 1",cellRenderer: "textInputCellRenderer",maxWidth: 100,field:"delete" },
  
   {
     headerName: "Component / Part",
@@ -32,7 +35,7 @@ export const columnDefs = [
     minWidth: 500,
   },
   {
-    headerName: "Customer Name / PART",
+    headerName: "Customer PART Name",
     field: "partno",
     editable: false,
     flex: 1,
@@ -64,16 +67,8 @@ export const columnDefs = [
     minWidth: 200,
   },
   {
-    headerName: "Currency",
-    field: "currency",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 250,
-  },
-  {
     headerName: "LC Value",
-    field: "lcValue",
+    field: "localValue",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",
@@ -81,15 +76,7 @@ export const columnDefs = [
   },
   {
     headerName: "FC Value",
-    field: "fcValue",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
-  {
-    headerName: "Due Date",
-    field: "dueDate",
+    field: "foreignValue",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",
@@ -146,7 +133,7 @@ export const columnDefs = [
   },
   {
     headerName: "Item Desc",
-    field: "itemDescription",
+    field: "remark",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",

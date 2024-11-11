@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { spigenAxios } from "@/axiosIntercepter";
 import { toast } from "@/components/ui/use-toast";
 
-
 interface SellRequestPayload {
   headers: {
     channel: string;
@@ -19,7 +18,7 @@ interface SellRequestPayload {
     shipping_address1: string;
     shipping_address2: string;
     shipping_pinCode: string;
-    [key: string]: any; 
+    [key: string]: any;
   };
   materials: {
     items: string[];
@@ -69,7 +68,6 @@ interface materialListItemData {
   itemRemark: string;
 }
 
-
 export const createSellRequest = createAsyncThunk<
   ApiResponse<any>,
   SellRequestPayload
@@ -96,7 +94,6 @@ interface SellRequest {
   create_dt: string;
   status: string;
 }
-
 
 interface SellRequestState {
   data: SellRequest[];
@@ -131,22 +128,14 @@ export const fetchSellRequestList = createAsyncThunk<
   return response.data;
 });
 
-export const fetchSalesOrderShipmentList = createAsyncThunk<
-  ApiResponse<any>,
-  { data: string; wise: any }
->("sellRequest/fetchSalesOrderShipmentList", async (payload) => {
-  const response = await spigenAxios.post("so_challan_shipment/fetchSalesOrderShipmentList", payload);
-  return response.data;
-});
 
 export const approveSo = createAsyncThunk(
   "sellRequest/approveSo",
   async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>(
-        "/salesOrder/approveSo",
-        { so_id: so_id }
-      );
+      const response = await spigenAxios.post<any>("/salesOrder/approveSo", {
+        so_id: so_id,
+      });
 
       if (!response.data) {
         throw new Error("No data received");
@@ -172,7 +161,7 @@ export const cancelSalesOrder = createAsyncThunk(
         payload
       )) as any;
 
-      if (response?.data?.code==200) {
+      if (response?.data?.code == 200) {
         toast({
           title: response?.data?.message,
           className: "bg-green-600 text-white items-center",
@@ -198,7 +187,33 @@ export const fetchMaterialList = createAsyncThunk(
         payload
       )) as any;
 
-      if (response?.data?.code==200) {
+      if (response?.data?.code == 200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+export const createShipment = createAsyncThunk(
+  "client/createShipment",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/createShipment",
+        payload
+      )) as any;
+
+      if (response?.data?.code == 200) {
         toast({
           title: response?.data?.message,
           className: "bg-green-600 text-white items-center",
@@ -224,7 +239,7 @@ export const createInvoice = createAsyncThunk(
         payload
       )) as any;
 
-      if (response?.data?.code==200) {
+      if (response?.data?.code == 200) {
         toast({
           title: response?.data?.message,
           className: "bg-green-600 text-white items-center",
@@ -299,7 +314,7 @@ const sellRequestSlice = createSlice({
       .addCase(approveSo.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to create sell request";
-      })  
+      })
       .addCase(cancelSalesOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -310,7 +325,7 @@ const sellRequestSlice = createSlice({
       .addCase(cancelSalesOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to cancel sell request";
-      })    
+      })
       .addCase(fetchMaterialList.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -322,7 +337,7 @@ const sellRequestSlice = createSlice({
       .addCase(fetchMaterialList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to cancel sell request";
-      })  
+      })
       .addCase(createInvoice.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -334,7 +349,18 @@ const sellRequestSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to create invoice";
       })
-      
+      .addCase(createShipment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to cancel sell request";
+      })
+      .addCase(createShipment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createShipment.fulfilled, (state) => {
+        state.loading = false;
+      })
+
       .addCase(printSellOrder.pending, (state) => {
         state.loading = true;
       })
@@ -350,8 +376,8 @@ const sellRequestSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchSellRequestList.fulfilled, (state, action) => {
-        console.log("Data received in slice:", action.payload.data); 
-        state.data = action.payload.data; 
+        console.log("Data received in slice:", action.payload.data);
+        state.data = action.payload.data;
         state.loading = false;
       })
       .addCase(fetchSellRequestList.rejected, (state, action) => {
@@ -359,32 +385,9 @@ const sellRequestSlice = createSlice({
         state.error = action.error?.message || null;
         state.loading = false;
       })
-      
-     
-      .addCase(fetchSalesOrderShipmentList.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchSalesOrderShipmentList.fulfilled, (state, action) => {
-        if (action.payload.success) {
-          state.data = action.payload.data;
-          state.error = null;
-        } else {
-          state.error = action.payload.message || "Failed to fetch sales order shipment list";
-        }
-        state.loading = false;
-      })
-      .addCase(fetchSalesOrderShipmentList.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || "Failed to fetch sales order shipment list";
-      })
 
-
-      
-  
   },
 });
 
-export const { setDateRange, } =
-  sellRequestSlice.actions;
+export const { setDateRange } = sellRequestSlice.actions;
 export default sellRequestSlice.reducer;

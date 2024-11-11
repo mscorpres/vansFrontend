@@ -1,133 +1,170 @@
 import * as React from "react";
-import { ChevronsUpDown } from "lucide-react";
+import { CircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Command,
+    CommandDialog,
   CommandEmpty,
+  CommandGroup,
   CommandInput,
   CommandItem,
+  CommandSeparator,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import { CommandList } from "cmdk";
 import { useNavigate } from "react-router-dom";
-import { BsLink45Deg } from "react-icons/bs";
+import { twMerge } from "tailwind-merge";
+import clsx, { ClassValue } from "clsx";
+import { DialogProps } from "@radix-ui/react-dialog";
 
-const frameworks = [
+const navLinks = [
   {
-    value: "/",
+    href: "/",
     label: "Home",
+    value: "home",
   },
   {
-    value: "/login",
-    label: "Login",
-  },
-
-  ////
-  {
-    value: "/master/material",
+    href: "/master/material",
     label: "Material",
+    value: "material",
   },
   {
-    value: "/master/service",
+    href: "/master/service",
     label: "Service",
+    value: "service",
   },
-  ////
-
   {
-    value: "/create-po",
+    href: "/create-po",
     label: "Create PO",
+    value: "create-po",
   },
   {
-    value: "/manage-po",
+    href: "/manage-po",
     label: "Manage PO",
+    value: "manage-po",
   },
   {
-    value: "/add-po",
-    label: "Add PO",
-  },
-  {
-    value: "/sales/order/create",
+    href: "/sales/order/create",
     label: "Create Sales Order",
+    value: "create-sales-order",
   },
   {
-    value: "/sales/order/register",
-    label: " Sales Order Register",
+    href: "/sales/order/register",
+    label: "Sales Order Register",
+    value: "sales-order-register",
   },
   {
-    value: "/sales/order/shipments",
-    label: "Shipments",
+    href: "/sales/order/shipment",
+    label: "Sales Order Shipments",
+    value: "shipments",
   },
   {
-    value: "/sales/order/invoice",
-    label: "Invoice",
+    href: "/sales/order/invoice",
+    label: "Invoice Register",
+    value: "invoice",
+  },
+  // {
+  //   href: "/sales/order/allocated",
+  //   label: "Allocated Invoices",
+  //   value: "allocated-invoices",
+  // },
+  {
+    href: "/sales/order/e-transaction-register",
+    label: "E Transaction Register",
+    value: "e-transaction-register",
   },
   {
-    value: "/sales/order/allocated",
-    label: "Allocated Invoices",
-  },
-  {
-    value: "/sales/order/e-transaction-register",
-    label: " E Transaction Register",
-  },
-  {
-    value: "/master/product/sfg",
+    href: "/master/product/",
     label: "Products",
+    value: "products",
   },
   {
-    value: "/master/billing-address",
+    href: "/master/billing-address",
     label: "Billing Address",
+    value: "billing-address",
   },
   {
-    value: "/master/shipping-address",
+    href: "/master/shipping-address",
     label: "Shipping Address",
+    value: "shipping-address",
   },
 ];
 
-function QuickLinks() {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+
+export default function QuickLink({ ...props }: DialogProps) {
   const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if ((e.key === "f" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
+        if (
+          (e.target instanceof HTMLElement && e.target.isContentEditable) ||
+          e.target instanceof HTMLInputElement ||
+          e.target instanceof HTMLTextAreaElement ||
+          e.target instanceof HTMLSelectElement
+        ) {
+          return;
+        }
+
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  const runCommand = React.useCallback((command: () => unknown) => {
+    setOpen(false);
+    command();
+  }, []);
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          Quick links
-          <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0  ">
-        <Command>
-          <CommandInput placeholder="Search framework..." />
-          <CommandEmpty>No framework found.</CommandEmpty>
-          <CommandList className="max-h-[400px] overflow-y-auto p-[10px]">
-            {frameworks.map((framework) => (
+    <>
+      <Button
+        variant="outline"
+        className={cn(
+          "relative h-[40px] w-[350px] justify-start rounded-[0.5rem] bg-white text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64"
+        )}
+        onClick={() => setOpen(true)}
+        {...props}
+      >
+        <span className="hidden lg:inline-flex">Quick links...</span>
+        <span className="inline-flex lg:hidden">Search...</span>
+        <kbd className="pointer-events-none absolute right-[10px] top-[10px] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          <span className="text-xs">⌘</span>f
+        </kbd>
+      </Button>
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Type a command or search..." />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Links">
+            {navLinks.map((item) => (
               <CommandItem
-                key={framework.value}
-                value={framework.value}
-                className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px]"
-                onSelect={(currentValue) => {
-                  setValue(currentValue === value ? "" : currentValue);
-                  setOpen(false);
-                  navigate(framework.value);
+                key={item.value}
+                value={item.value}
+                onSelect={() => {
+                  runCommand(() => navigate(item.href as string));
                 }}
+                className="pointer-events-auto data-[disabled]:pointer-events-auto data-[disabled]:opacity-70 cursor-pointer aria-selected:bg-zinc-200"
               >
-                <BsLink45Deg className={"w-[20px] h-[20px]  "} />
-                {framework.label}
+                <div className="flex items-center justify-center w-4 h-4 mr-2">
+                  <CircleIcon className="w-3 h-3" />
+                </div>
+                {item.label}
               </CommandItem>
             ))}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+          </CommandGroup>
+
+          <CommandSeparator />
+        </CommandList>
+      </CommandDialog>
+    </>
   );
 }
-export default QuickLinks;
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}

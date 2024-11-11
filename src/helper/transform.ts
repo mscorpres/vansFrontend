@@ -1,8 +1,6 @@
 // src/utils/transform.ts
 
 export const transformCustomerData = (data: any[]) => {
-  console.log("data", data);
-
   return data?.map((item) => ({
     label: item.name,
     value: item.code,
@@ -46,7 +44,6 @@ export const transformCurrencyData = (data: any[]) => {
   }
 };
 export const transformPlaceData = (data: any[]) => {
-  console.log("data", data);
   return data?.map((item) => ({
     label: item.name,
     value: item.code.toString(),
@@ -54,7 +51,6 @@ export const transformPlaceData = (data: any[]) => {
 };
 
 export const transformClientTds = (data: any[]) => {
-  console.log("data", data);
   return data?.map((item) => ({
     label: item.tds_name,
     value: item.tds_key,
@@ -62,7 +58,6 @@ export const transformClientTds = (data: any[]) => {
 };
 
 export const transformStateOptions = (data: any[]) => {
-  console.log("data", data);
   return data?.map((item) => ({
     label: item.name,  // Changed from 'stateName' to 'name'
     value: item.code,  // Changed from 'stateCode' to 'code'

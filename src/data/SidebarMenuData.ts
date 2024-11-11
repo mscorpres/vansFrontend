@@ -177,13 +177,13 @@ export const materialmenu = [
   {
     name: "Sales Order",
     subMenu: [
-      { name: "Create", path: "/sales/order/create" },
-      { name: "Register", path: "/sales/order/register" },
-      { name: "Shipment", path: "/sales/order/shipments" },
-      { name: "Invoice", path: "/sales/order/invoice" },
-      { name: "Allocated Invoices", path: "/sales/order/allocated" },
+      { name: "Create Sales Order", path: "/sales/order/create" },
+      { name: "Sales Order Register", path: "/sales/order/register" },
+      { name: "Sales Order Shipment", path: "/sales/order/shipment" },
+      { name: "Invoice Register", path: "/sales/order/invoice" },
+      // { name: "Allocated Invoices", path: "/sales/order/allocated" },
       {
-        name: "E Transaction Invoices",
+        name: "e-Transaction Invoices",
         path: "/sales/order/e-transaction-register",
       },
     ],

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef, CsvExportModule } from "ag-grid-community";
 import {
@@ -8,13 +8,15 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 import { TruncateCellRenderer } from "@/General";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 interface MaterialListModalProps {
   visible: boolean;
   onClose: () => void;
-  sellRequestDetails: any[];
+  sellRequestDetails: any;
   row: {
     req_id: string;
   };
@@ -33,40 +35,38 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
   const columnDefs: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
     {
-      headerName: "SO ID",
-      field: "so_id",
-      width: 150,
-    },
-    {
       headerName: "Item",
       field: "item",
-      width: 200,
     },
     {
-      headerName: "Material",
+      headerName: "Item Name",
       field: "itemName",
-      width: 300,
+      width: 200,
       cellRenderer: TruncateCellRenderer,
     },
     {
-      headerName: "Material Specification",
+      headerName: "Item Description",
       field: "itemSpecification",
-      cellRenderer: TruncateCellRenderer,
+      autoHeight: true,
+      width: 300,
     },
-    { headerName: "SKU Code", field: "itemPartNo" },
+    { headerName: "Item Part Number", field: "itemPartNo" },
     { headerName: "Qty", field: "qty" },
-    { headerName: "UoM", field: "uom" },
+    { headerName: "Rate", field: "rate" },
     { headerName: "GST Rate", field: "gstRate" },
-    { headerName: "Price", field: "rate" },
-    { headerName: "HSN/SAC", field: "hsnCode" },
+    { headerName: "UOM", field: "uom" },
+    { headerName: "Hsn Code", field: "hsnCode" },
+    { headerName: "CGST Rate", field: "cgstRate" },
+    { headerName: "SGST Rate", field: "sgstRate" },
+    { headerName: "IGST Rate", field: "igstRate" },
     { headerName: "Remark", field: "itemRemark" },
   ];
 
-  // const onBtExport = useCallback(() => {
-  //   if (gridRef.current) {
-  //     gridRef.current.api.exportDataAsCsv();
-  //   }
-  // }, []);
+  const onBtExport = useCallback(() => {
+    if (gridRef.current) {
+      gridRef.current.api.exportDataAsCsv();
+    }
+  }, []);
 
   return (
     <Sheet open={visible} onOpenChange={onClose}>
@@ -78,8 +78,18 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
         }}
       >
         <div className="flex justify-between items-center mb-4">
-          <SheetTitle>Material List of {row?.req_id}</SheetTitle>
-          {/* <div className="flex-grow flex justify-center">
+          <div>
+            <SheetTitle>
+              Material Out of {sellRequestDetails?.header?.shipment_id} for{" "}
+              {row?.req_id}
+            </SheetTitle>
+            <SheetTitle>
+              Customer Name:{" "}
+              {sellRequestDetails?.header?.customer_name?.customer_name}
+            </SheetTitle>
+          </div>
+          <div className="flex-grow flex justify-center">
+            {/* Centering container */}
             <Button
               type="button"
               onClick={onBtExport}
@@ -87,14 +97,14 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
             >
               <Download />
             </Button>
-          </div> */}
+          </div>
         </div>
 
-        <div className="ag-theme-quartz h-[calc(100vh-140px)]">
+        <div className="ag-theme-quartz h-[calc(100vh-170px)]">
           <AgGridReact
             ref={gridRef}
             modules={[CsvExportModule]}
-            rowData={sellRequestDetails}
+            rowData={sellRequestDetails?.items}
             columnDefs={columnDefs}
             suppressCellFocus={true}
             components={{
@@ -104,7 +114,22 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
             loading={loading}
           />
         </div>
+        <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+          <Button
+            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+            onClick={onClose}
+          >
+            Back
+          </Button>
+          <Button
+            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+            onClick={onClose}
+          >
+            Submit
+          </Button>
+        </div>
       </SheetContent>
+
       <SheetFooter></SheetFooter>
     </Sheet>
   );

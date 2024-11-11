@@ -13,9 +13,8 @@ interface CreateInvoiceDialogProps {
   isDialogVisible: boolean;
   handleOk: () => void;
   handleCancel: () => void;
-  row: {
-    req_id: string;
-  };
+  heading: string;
+  description: string;
   form: FormInstance;
   loading?: boolean;
 }
@@ -24,7 +23,8 @@ export function CreateInvoiceDialog({
   isDialogVisible,
   handleOk,
   handleCancel,
-  row,
+  heading,
+  description,
   form,
   loading,
 }: CreateInvoiceDialogProps) {
@@ -41,11 +41,11 @@ export function CreateInvoiceDialog({
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>Create Invoice</DialogTitle>
+              <DialogTitle>{heading}</DialogTitle>
             </DialogHeader>
             <Form form={form} layout="vertical">
               <p className="pb-5 text-[18px]">
-                Are you sure you want to create an invoice for SO {row.req_id}?
+                {description}
               </p>
 
               <Form.Item name="remark" label="Remark">
