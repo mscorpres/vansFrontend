@@ -53,6 +53,7 @@ const CreateSalesOrderPage = () => {
     if (updateData) {
       const header: any = updateData.header;
       form.setValue("customer_code", header?.customer?.code);
+      form.setValue("customer_type", header?.customer_type);
       searchCustomerList(header?.customer?.code)
       dispatch(fetchCustomerBranches({ client: header?.customer?.code })).then(
         (response: any) => {

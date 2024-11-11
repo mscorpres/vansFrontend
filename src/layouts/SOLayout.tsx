@@ -18,13 +18,13 @@ const SOLayout = (props: { children: React.ReactNode }) => {
             </NavLink>
           </li>
           <li className="h-[50px]">
-            <NavLink to={"/sales/order/invoice"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
-            Invoice Register
+            <NavLink to={"/sales/order/shipment"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
+            Sales Order Shipment
             </NavLink>
           </li>
           <li className="h-[50px]">
-            <NavLink to={"/sales/order/shipment"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
-            Sales Order Shipment
+            <NavLink to={"/sales/order/invoice"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
+            Invoice Register
             </NavLink>
           </li>
           {/* <li className="h-[50px]">

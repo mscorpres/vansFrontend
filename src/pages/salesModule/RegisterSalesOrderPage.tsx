@@ -31,6 +31,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { rangePresets } from "@/General";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import moment from "moment";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const { RangePicker } = DatePicker;
 const dateFormat = "DD/MM/YYYY";
@@ -183,6 +184,7 @@ const RegisterSalesOrderPage: React.FC = () => {
           paginationPageSize={10}
           suppressCellFocus={true}
           paginationAutoPageSize={true}
+          loadingOverlayComponent={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

@@ -24,7 +24,7 @@ import {
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { z } from "zod";
 import {
   Form,
@@ -75,6 +75,14 @@ const CreateSalesOrder: React.FC<Props> = ({
     }
   };
   console.log(form.getValues(), currencyList);
+
+  const customerOptions=[
+    {
+      label: "CUSTOMER",
+      value: "c01",
+    },
+  ]
+
   return (
     <div className="h-[calc(100vh-150px)]">
       {data.loading && <FullPageLoading />}
@@ -119,13 +127,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                                   form.setValue("customer_type", e.value)
                                 }
                                 name="color"
-                                options={[
-                                  {
-                                    label: "CUSTOMER",
-                                    value: "c01",
-                                  },
-                                ]}
+                                options={customerOptions}
                                 defaultValue={"c01"}
+                                value={customerOptions.find((c) => c.value === "c01")}
                               />
                             </FormControl>
                             <FormMessage />
@@ -146,14 +150,15 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              {/* <ReusableAsyncSelect
+                              <ReusableAsyncSelect
                                 placeholder="Customer Name"
                                 endpoint="/others/customerList"
                                 transform={transformOptions}
                                 fetchOptionWith="payload"
                                 onChange={handleCustomerSelection}
-                              /> */}
-                              <FormControl>
+                                // value={form.watch("customer_code")}
+                              />
+                              {/* <FormControl>
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
@@ -177,7 +182,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                     : null
                                 }
                               />
-                            </FormControl>
+                            </FormControl> */}
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -620,8 +625,8 @@ const CreateSalesOrder: React.FC<Props> = ({
                               <Space direction="vertical" size={12}>
                                 <DatePicker
                                   className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
-                                  // className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
                                   format="DD-MM-YYYY"
+                                  value={form.watch("po_date") ? dayjs(form.watch("po_date"), "DD-MM-YYYY") : null}
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
@@ -663,7 +668,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="w-full">
                       <FormField
                         control={form.control}
-                        name="header.reference_date"
+                        name="reference_date"
                         render={() => (
                           <FormItem className="pl-[10px] w-full flex flex-col">
                             <FormLabel className={LableStyle}>
@@ -676,8 +681,8 @@ const CreateSalesOrder: React.FC<Props> = ({
                               <Space direction="vertical" size={12}>
                                 <DatePicker
                                   className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
-                                  // className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
                                   format="DD-MM-YYYY"
+                                  value={form.watch("reference_date") ? dayjs(form.watch("reference_date"), "DD-MM-YYYY") : null}
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
@@ -777,8 +782,8 @@ const CreateSalesOrder: React.FC<Props> = ({
                               <Space direction="vertical" size={12}>
                                 <DatePicker
                                   className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
-                                  // className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700 pt-5"
                                   format="DD-MM-YYYY"
+                                  value={form.watch("due_date") ? dayjs(form.watch("due_date"), "DD-MM-YYYY") : null}
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
@@ -1100,7 +1105,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     });
                   });
                 }
-                  setTab("add");
+                  // setTab("add");
               }}
               className={`${primartButtonStyle} flex gap-[10px]`}
               type="submit"

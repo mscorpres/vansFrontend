@@ -56,7 +56,7 @@ const initialState: SellShipmentState = {
   error: null,
 };
 interface FetchSellShipmentPayload {
-  wise: any;
+  type: any;
   data: string;
 }
 
@@ -88,7 +88,7 @@ export const fetchSalesOrderShipmentList = createAsyncThunk<
   ApiResponse<SellShipmentRequest[]>,
   FetchSellShipmentPayload
 >("sellRequest/fetchSalesOrderShipmentList", async (payload) => {
-  const response = await spigenAxios.post("so_challan_shipment/fetchSalesOrderShipmentList", payload);
+  const response = await spigenAxios.post("salesOrder/shipmentDetails", payload);
   return response.data;
 });
 
@@ -158,23 +158,20 @@ const sellShipmentSlice = createSlice({
         state.successMessage = null;
       })
       
-        .addCase(fetchSalesOrderShipmentList.pending, (state) => {
-          state.loading = true;
-          state.error = null;
-        })
-        .addCase(fetchSalesOrderShipmentList.fulfilled, (state, action) => {
-          if (action.payload.success) {
-            state.data = action.payload.data;
-            state.error = null;
-          } else {
-            state.error = action.payload.message || "Failed to fetch sales order shipment list";
-          }
-          state.loading = false;
-        })
-        .addCase(fetchSalesOrderShipmentList.rejected, (state, action) => {
-          state.loading = false;
-          state.error = action.error.message || "Failed to fetch sales order shipment list";
-        })
+      .addCase(fetchSalesOrderShipmentList.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSalesOrderShipmentList.fulfilled, (state, action) => {
+        state.data = action.payload.data;
+
+        state.loading = false;
+      })
+      .addCase(fetchSalesOrderShipmentList.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch sales order shipment list";
+      })
         .addCase(updateSOshipment.pending, (state) => {
           state.loading = true;
           state.error = null;

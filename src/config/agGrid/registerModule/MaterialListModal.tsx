@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef, CsvExportModule } from "ag-grid-community";
 import {
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
 import { Form } from "antd";
 import { toast } from "@/components/ui/use-toast";
+import ShipmentTextInputCellRendrer from "@/shared/ShipmentTextInputCellRendrer";
 
 interface MaterialListModalProps {
   visible: boolean;
@@ -39,10 +40,26 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
   const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
   const [form] = Form.useForm();
 
-  // This function is called whenever the selection changes
+  // Handle selection change
   const onSelectionChanged = () => {
     const selectedRows = gridRef.current?.api.getSelectedRows();
     setSelectedItems(selectedRows || []);
+  };
+
+  // Handle cell value change (i.e., when quantity is edited)
+  const onCellValueChanged = (event: any) => {
+    if (event.colDef.field === "qty") {
+      const updatedRows = [...sellRequestDetails];
+      const updatedRow = updatedRows.find((row) => row.id === event.data.id);
+      if (updatedRow) {
+        updatedRow.qty = event.newValue; // Update the quantity in your data
+        setSelectedItems(prevSelectedItems => {
+          return prevSelectedItems.map(item =>
+            item.id === updatedRow.id ? updatedRow : item
+          );
+        });
+      }
+    }
   };
 
   // Create shipment payload from selected items
@@ -51,32 +68,38 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
       item: selectedItems.map((item) => item.item),
       qty: selectedItems.map((item) => item.qty),
       rate: selectedItems.map((item) => item.rate),
-      currency: selectedItems.map((item) => item.currency || "USD"), // Assuming USD as default
+      currency: selectedItems.map((item) => item.currency || "USD"),
       exchange_rate: selectedItems.map((item) => item.exchange_rate || 1.0),
       due_date: selectedItems.map((item) => item.due_date || "2024-12-31"),
       hsn_code: selectedItems.map((item) => item.hsnCode),
-      gst_type: selectedItems.map((item) => item.gstType),
+      gst_type: selectedItems.map((item) => item.gst_type),
       gst_rate: selectedItems.map((item) => item.gstRate),
       cgst_rate: selectedItems.map((item) => item.cgstRate),
       sgst_rate: selectedItems.map((item) => item.sgstRate),
       igst_rate: selectedItems.map((item) => item.igstRate),
-      comp_remark: form.getFieldValue("remark"), // You can make this dynamic if needed
+      comp_remark: form.getFieldValue("remark"),
       item_remark: selectedItems.map((item) => item.itemRemark),
     };
     console.log(itemDetails, "item", selectedItems);
-    // Call the callback function to create shipment
-    onCreateShipment({ ...itemDetails, so_id: row.req_id });
+    onCreateShipment({ itemDetails:{...itemDetails}, so_id: row.req_id });
     form.resetFields();
   };
+
+  const components = useMemo(
+    () => ({
+      textInputCellRenderer: ShipmentTextInputCellRendrer,
+      truncateCellRenderer: TruncateCellRenderer,
+    }),
+    []
+  );
 
   const columnDefs: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
     {
       headerName: "Select All",
-      checkboxSelection: true,
-      width: 150,
-      headerCheckboxSelection: true, // Adds header checkbox for "Select All"
-      headerCheckboxSelectionFilteredOnly: true, // Only select visible rows (if filtering is applied)
+      checkboxSelection: true, // Enables checkbox for each row
+      headerCheckboxSelection: true, // Enable Select All checkbox in the header
+      headerCheckboxSelectionFilteredOnly: false, // Select all rows, not just filtered rows
       maxWidth: 150,
     },
     {
@@ -101,7 +124,12 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
       cellRenderer: "truncateCellRenderer",
     },
     { headerName: "SKU Code", field: "itemPartNo" },
-    { headerName: "Qty", field: "qty" },
+    {
+      headerName: "Qty",
+      field: "qty",
+      editable: true, // Make the column editable
+      cellRenderer: "textInputCellRenderer", // Use the custom input renderer
+    },
     { headerName: "UoM", field: "uom" },
     { headerName: "GST Rate", field: "gstRate" },
     { headerName: "Price", field: "rate" },
@@ -120,7 +148,7 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
           }}
         >
           <div className="flex justify-between items-center mb-4">
-            <SheetTitle>Material List of {row?.req_id}</SheetTitle>
+            <SheetTitle>Create Shipment of {row?.req_id}</SheetTitle>
           </div>
 
           <div className="ag-theme-quartz h-[calc(100vh-140px)]">
@@ -131,12 +159,11 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
               columnDefs={columnDefs}
               suppressCellFocus={true}
               rowSelection="multiple" // Enable multiple row selection
-              components={{
-                truncateCellRenderer: TruncateCellRenderer,
-              }}
+              components={components}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
               loading={loading}
               onSelectionChanged={onSelectionChanged} // Listen to selection changes
+              onCellValueChanged={onCellValueChanged} // Listen to cell value changes (for editing qty)
             />
           </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
@@ -151,8 +178,7 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
               onClick={() => {
                 if (selectedItems.length === 0) {
                   toast({
-                    title:
-                      "No items selected! Please select at least one item.",
+                    title: "No items selected! Please select at least one item.",
                     className: "bg-red-600 text-white items-center",
                   });
                 } else {

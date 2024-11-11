@@ -136,11 +136,11 @@ const AddSalesOrder = ({
     rowData?.length === 0 && addNewRow();
   }, []);
 
-
+console.log(rowData)
   const materials = {
     item: rowData?.map((component: RowData) =>
       typeof component.material === "object" && component.material !== null
-        ? (component.material as any).id ||
+        ? (component.material as any).code ||
           (component.material as any).value ||
           ""
         : component.material || ""
