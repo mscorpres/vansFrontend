@@ -12,13 +12,11 @@ import { AddPoUIStateType } from "@/types/AddPOTypes";
 import AddPOPopovers from "@/components/shared/AddPOPopovers";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "@/store";
+import { AppDispatch, RootState } from "@/store";
 
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { createSellRequest } from "@/features/salesmodule/SalesSlice";
 import { Form } from "antd";
-import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
-import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import RejectModal from "@/components/shared/RejectModal";
 import {
@@ -30,6 +28,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { useNavigate } from "react-router-dom";
+import { RowData } from "@/data";
 
 interface Props {
   setTab: string;
@@ -37,7 +36,7 @@ interface Props {
   form: any;
   selectedVendor: string;
   setFormVal: [];
-  formVal: [];
+  formVal: any;
   rowData: [];
   setRowData: [];
   isApprove: [];
@@ -65,7 +64,6 @@ const AddPO: React.FC<Props> = ({
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
   const [taxDetails, setTaxDetails] = useState([]);
-  const [removingList, setRemovingList] = useState([]);
   const [search, setSearch] = useState("");
   const dispatch = useDispatch<AppDispatch>();
 
@@ -196,19 +194,19 @@ const AddPO: React.FC<Props> = ({
       pocomment: formVal.comment,
       pocreatetype: formVal?.poType.value,
       // original_po: null,
-      currency: arr.map((r) => r.currency),
-      exchange: arr.map((r) => r.exchange),
-      component: arr.map((r) => r?.procurementMaterial),
-      qty: arr.map((r) => r.orderQty),
-      rate: arr.map((r) => r.rate),
-      duedate: arr.map((r) => formattedDate(r.dueDate)),
-      hsncode: arr.map((r) => r.hsnCode),
-      gsttype: arr.map((r) => r.gstType),
-      gstrate: arr.map((r) => r.gstRate),
-      cgst: arr.map((r) => r.cgst),
-      sgst: arr.map((r) => r.sgst),
-      igst: arr.map((r) => r.igst),
-      remark: arr.map((r) => r.remark),
+      currency: arr.map((r: any) => r.currency),
+      exchange: arr.map((r: any) => r.exchange),
+      component: arr.map((r: any) => r?.procurementMaterial),
+      qty: arr.map((r: any) => r.orderQty),
+      rate: arr.map((r: any) => r.rate),
+      duedate: arr.map((r: any) => formattedDate(r.dueDate)),
+      hsncode: arr.map((r: any) => r.hsnCode),
+      gsttype: arr.map((r: any) => r.gstType),
+      gstrate: arr.map((r: any) => r.gstRate),
+      cgst: arr.map((r: any) => r.cgst),
+      sgst: arr.map((r: any) => r.sgst),
+      igst: arr.map((r: any) => r.igst),
+      remark: arr.map((r: any) => r.remark),
       original_po: formVal.originalPO?.value,
     };
 
@@ -230,24 +228,24 @@ const AddPO: React.FC<Props> = ({
           pocomment: formVal.comment,
           pocreatetype: formVal?.poType.value ?? formVal?.poType,
           poid: params.id.replaceAll("_", "/"),
-          currency: arr.map((r) => r.currency),
-          exchange_rate: arr.map((r) => r.exchange),
+          currency: arr.map((r: any) => r.currency),
+          exchange_rate: arr.map((r: any) => r.exchange),
           // original_po: null,
 
-          component: arr.map((r) => r?.componentKey),
-          qty: arr.map((r) => r.orderQty),
-          rate: arr.map((r) => r.rate),
-          date: arr.map((r) => r.dueDate),
-          hsn: arr.map((r) => r.hsnCode),
-          gsttype: arr.map((r) => r.gstType),
-          gstrate: arr.map((r) => r.gstRate),
-          cgst: arr.map((r) => r.cgst),
-          sgst: arr.map((r) => r.sgst),
-          igst: arr.map((r) => r.igst),
-          remark: arr.map((r) => r.remark),
-          updaterow: arr.map((r) => r.updateingId),
+          component: arr.map((r: any) => r?.componentKey),
+          qty: arr.map((r: any) => r.orderQty),
+          rate: arr.map((r: any) => r.rate),
+          date: arr.map((r: any) => r.dueDate),
+          hsn: arr.map((r: any) => r.hsnCode),
+          gsttype: arr.map((r: any) => r.gstType),
+          gstrate: arr.map((r: any) => r.gstRate),
+          cgst: arr.map((r: any) => r.cgst),
+          sgst: arr.map((r: any) => r.sgst),
+          igst: arr.map((r: any) => r.igst),
+          remark: arr.map((r: any) => r.remark),
+          updaterow: arr.map((r: any) => r.updateingId),
         };
-        dispatch(updatePo(payload2)).then((response) => {
+        dispatch(updatePo(payload2)).then((response: any) => {
           console.log("this is the response", response);
           // console.log("response", response);
 
@@ -272,7 +270,7 @@ const AddPO: React.FC<Props> = ({
         let a = {
           poid: params,
         };
-        dispatch(poApprove(a)).then((response) => {
+        dispatch(poApprove(a)).then((response: any) => {
           if (response.payload.code == 200) {
             setShowConfirmation(false);
             toast({
@@ -290,7 +288,7 @@ const AddPO: React.FC<Props> = ({
           }
         });
       } else {
-        dispatch(createSellRequest(payload)).then((response) => {
+        dispatch(createSellRequest(payload)).then((response: any) => {
           console.log("response", response);
 
           if (response.payload.code == 200) {
@@ -471,7 +469,7 @@ const AddPO: React.FC<Props> = ({
 
   useEffect(() => {
     const calculateTaxDetails = () => {
-      let singleArr = rowData;
+      let singleArr: any = rowData;
       const values = singleArr?.reduce(
         (partialSum, a) => partialSum + +Number(a?.localValue).toFixed(2),
         0

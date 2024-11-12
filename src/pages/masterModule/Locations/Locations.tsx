@@ -1,26 +1,13 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import {  useEffect, useState } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
 import {
   InputStyle,
-  LableStyle,
-  primartButtonStyle,
 } from "@/constants/themeContants";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
 import { Input } from "@/components/ui/input";
@@ -31,28 +18,21 @@ import useApi from "@/hooks/useApi";
 import {
   fetchLocationList,
   getParentLocationOptions,
+  insertLoations,
 } from "@/components/shared/Api/masterApi";
-const FormSchema = z.object({
-  dateRange: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  soWise: z.string().optional(),
-});
-
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import { Form } from "antd";
+import { toast } from "@/components/ui/use-toast";
+import { RowData } from "@/data";
 const Locations = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
+  const [form] = Form.useForm();
+
   const { execFun, loading: loading1 } = useApi();
-  let arr = [];
-  const customFlatArray = (array, prev) => {
-    array?.map((row) => {
+  let arr: any = [];
+  const customFlatArray = (array: any, prev: any) => {
+    array?.map((row: any) => {
       let parent = "--";
       let obj = row;
       if (!row.children) {
@@ -96,7 +76,7 @@ const Locations = () => {
     let { data } = response;
     if (response.status === 200) {
       let a = customFlatArray(data.data);
-      let arr = a.map((r, id) => {
+      let arr = a.map((r: any, id: any) => {
         return { id: id + 1, ...r };
       });
       console.log("arr", arr);
@@ -117,7 +97,7 @@ const Locations = () => {
       let { data } = response;
       //   let arr = convertSelectOptions(data);
       //
-      let arr = data?.map((r, index) => {
+      let arr = data?.map((r: any, index: any) => {
         return {
           label: r.text,
           value: r.id,
@@ -126,6 +106,33 @@ const Locations = () => {
       console.log("arr", arr);
 
       setAsyncOptions(arr);
+    }
+  };
+  const handleSubmit = async () => {
+    const values = await form.validateFields();
+    let payload = {
+      location_address: values.address,
+      location_name: values.location,
+      location_type: values.locationType.value,
+      location_under: values.locationUnder.value,
+    };
+
+    const response = await execFun(() => insertLoations(payload), "fetch");
+    console.log("response", response);
+    let { data } = response;
+    if (data.code == 200) {
+      toast({
+        title: data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      fetchGroupOptionslist();
+      fetchGrouplist();
+      form.resetFields();
+    } else {
+      toast({
+        title: data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
 
@@ -183,126 +190,87 @@ const Locations = () => {
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
-        <Form {...form}>
+        <Form form={form}>
           <form
-            // onSubmit={form.handleSubmit(onSubmit)}
+            // onSubmit={form.handleSubmit(onsubmit)}
             className="space-y-6 overflow-hidden p-[10px] h-full"
           >
             {" "}
             <div className="">
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LableStyle}>Location</FormLabel>
-                    <FormControl>
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Locations Name"
-                        // {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Form.Item name="location">
+                <Input
+                  className={InputStyle}
+                  placeholder="Enter Locations Name"
+                />
+              </Form.Item>
             </div>{" "}
             <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
               <div className="">
-                <FormField
-                  control={form.control}
-                  name="locationUnder"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel className={LableStyle}>
-                        Location Under
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          styles={customStyles}
-                          components={{ DropdownIndicator }}
-                          placeholder=" Enter Location"
-                          className="border-0 basic-single"
-                          classNamePrefix="select border-0"
-                          isDisabled={false}
-                          isClearable={true}
-                          isSearchable={true}
-                          options={asyncOptions}
-                          //   onChange={(e) => console.log(e)}
-                          //   value={
-                          //     data.clientDetails
-                          //       ? {
-                          //           label: data.clientDetails.city.name,
-                          //           value: data.clientDetails.city.name,
-                          //         }
-                          //       : null
-                          //   }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Form.Item name="locationUnder">
+                  <Select
+                    styles={customStyles}
+                    components={{ DropdownIndicator }}
+                    placeholder=" Enter Location"
+                    className="border-0 basic-single"
+                    classNamePrefix="select border-0"
+                    isDisabled={false}
+                    isClearable={true}
+                    isSearchable={true}
+                    options={asyncOptions}
+                    //   onChange={(e) => console.log(e)}
+                    //   value={
+                    //     data.clientDetails
+                    //       ? {
+                    //           label: data.clientDetails.city.name,
+                    //           value: data.clientDetails.city.name,
+                    //         }
+                    //       : null
+                    //   }
+                  />
+                </Form.Item>
               </div>
               <div className="">
-                <FormField
-                  control={form.control}
-                  name="locationType"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel className={LableStyle}>
-                        Location Type
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          styles={customStyles}
-                          components={{ DropdownIndicator }}
-                          placeholder=" Enter Type"
-                          className="border-0 basic-single"
-                          classNamePrefix="select border-0"
-                          isDisabled={false}
-                          isClearable={true}
-                          isSearchable={true}
-                          options={locType}
-                          //   onChange={(e) => console.log(e)}
-                          //   value={
-                          //     data.clientDetails
-                          //       ? {
-                          //           label: data.clientDetails.city.name,
-                          //           value: data.clientDetails.city.name,
-                          //         }
-                          //       : null
-                          //   }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Form.Item name="locationType">
+                  <Select
+                    styles={customStyles}
+                    components={{ DropdownIndicator }}
+                    placeholder=" Enter Type"
+                    className="border-0 basic-single"
+                    classNamePrefix="select border-0"
+                    isDisabled={false}
+                    isClearable={true}
+                    isSearchable={true}
+                    options={locType}
+                    //   onChange={(e) => console.log(e)}
+                    //   value={
+                    //     data.clientDetails
+                    //       ? {
+                    //           label: data.clientDetails.city.name,
+                    //           value: data.clientDetails.city.name,
+                    //         }
+                    //       : null
+                    //   }
+                  />
+                </Form.Item>
+                {/* )}
+                /> */}
               </div>
             </div>
             <div className="">
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LableStyle}>Enter Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Address"
-                        // {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Form.Item name="address">
+                <Input
+                  className={InputStyle}
+                  placeholder="Enter Address"
+                  // {...field}
+                />
+              </Form.Item>
             </div>{" "}
             <Button
               type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSubmit();
+              }}
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
             >
               Submit
@@ -311,6 +279,7 @@ const Locations = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-50px)]">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
