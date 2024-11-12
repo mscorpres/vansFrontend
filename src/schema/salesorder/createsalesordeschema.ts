@@ -42,6 +42,8 @@ const createSalesFormSchema = z.object({
   customer_type: z.string({ required_error: "Customer Type is required" }),
   customer_code: z.string({ required_error: "Customer Code is required" }),
   customer_name: z.string().optional(),
+  costcenter_name: z.string().optional(),
+  billIdName: z.string().optional(),
   po_number: z.string({ required_error: "PO Number is required" }),
   po_date: z.string({ required_error: "PO Date is required" }),
   due_date: z.string({ required_error: "PO Date is required" }),

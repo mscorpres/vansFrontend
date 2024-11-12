@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,9 +32,7 @@ import {
 import ShipMentsActionCellRender from "@/config/agGrid/cellRenders.tsx/ShipMentsActionCellRender";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 import { RootState } from "@/store";
-import {
-  setDateRange,
-} from "@/features/salesmodule/SalesSlice";
+import { setDateRange } from "@/features/salesmodule/SalesSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { rangePresets } from "@/General";
 import { Input } from "@/components/ui/input";
@@ -60,7 +64,7 @@ const SalesShipmentPage: React.FC = () => {
   const [type, setType] = useState<string>("date_wise");
   const [rowData, setRowData] = useState<any[]>([]);
   const [isSearchPerformed, setIsSearchPerformed] = useState<boolean>(false);
-  const { data,loading } = useSelector(
+  const { data, loading } = useSelector(
     (state: RootState) => state.sellShipment
   );
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -85,8 +89,9 @@ const SalesShipmentPage: React.FC = () => {
       const resultAction = await dispatch(
         fetchSalesOrderShipmentList({ type, data: dataString }) as any
       ).unwrap();
-      console.log("Result Action:", resultAction);
       if (resultAction.code === 200) {
+        setRowData(resultAction.data);
+        setIsSearchPerformed(true);
         toast({
           title: "Register fetched successfully",
           className: "bg-green-600 text-white items-center",
@@ -121,7 +126,6 @@ const SalesShipmentPage: React.FC = () => {
     setIsSearchPerformed(false);
   }, [type]);
 
-
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] ">
       {loading && <FullPageLoading />}
@@ -132,7 +136,12 @@ const SalesShipmentPage: React.FC = () => {
         </div>
         <div className="p-[10px]">
           <Select
-            onValueChange={(value: string) => setType(value)}
+            onValueChange={(value: string) => {
+              setType(value);
+              if (value === "shipid_wise") {
+                form.setValue("dateRange", undefined);
+              }
+            }}
             defaultValue={type}
           >
             <SelectTrigger>
@@ -185,35 +194,36 @@ const SalesShipmentPage: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
-                      <Input {...field} placeholder="Invoice number" />
+                      <Input {...field} placeholder="Shipment Nnumber" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             )}
-             <div className="flex space-x-2 float-end pr-2">
-                  {isSearchPerformed && ( // Only show the download button if search is performed
-                    <Button
-                      type="button"
-                      onClick={onBtExport}
-                      className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                    >
-                      <Download />
-                    </Button>
-                  )}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            >
-              Submit
-            </Button>
-          </div>
+            <div className="flex space-x-2 float-end pr-2">
+              {isSearchPerformed && ( // Only show the download button if search is performed
+                <Button
+                  type="button"
+                  onClick={onBtExport}
+                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                >
+                  <Download />
+                </Button>
+              )}
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              >
+                Submit
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact
+        ref={gridRef}
           loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs}
@@ -222,7 +232,7 @@ const SalesShipmentPage: React.FC = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           components={components}
-          loadingOverlayComponent={OverlayNoRowsTemplate}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
         />
       </div>

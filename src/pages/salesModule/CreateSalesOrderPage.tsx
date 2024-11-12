@@ -28,6 +28,7 @@ const CreateSalesOrderPage = () => {
   const [tabvalue, setTabvalue] = useState<string>("create");
   const [branches, setBranches] = useState([]);
   const [payloadData, setPayloadData] = useState<any>(null);
+  const [backCreate, setBackCreate] = useState(false);
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [derivedType, setDerivedType] = useState<any>(null);
   const { updateData, loading, currency } = useSelector(
@@ -54,8 +55,9 @@ const CreateSalesOrderPage = () => {
       const header: any = updateData.header;
       form.setValue("customer_code", header?.customer?.code);
       form.setValue("customer_name", header?.customer?.name);
+      searchCustomerList(header?.customer?.name);
       form.setValue("customer_type", header?.customer_type);
-      searchCustomerList(header?.customer?.code)
+      searchCustomerList(header?.customer?.code);
       dispatch(fetchCustomerBranches({ client: header?.customer?.code })).then(
         (response: any) => {
           if (response.meta.requestStatus === "fulfilled") {
@@ -67,7 +69,7 @@ const CreateSalesOrderPage = () => {
           }
         }
       );
-      form.setValue("billTo.branch", header?.customer?.branch);
+      form.setValue("billTo.branch", header?.customer?.branch?.branchid);
       form.setValue("billTo.pincode", header?.customer?.pincode);
       form.setValue("billTo.gst", header?.customer?.gstin);
       form.setValue("billTo.state", header?.customer?.state?.code);
@@ -97,6 +99,10 @@ const CreateSalesOrderPage = () => {
       form.setValue("due_date", header.due_date);
       form.setValue("project_name", header.project_name);
       form.setValue("so_comment", header.so_comment);
+      form.setValue("costcenter", header.costcenter?.code);
+      form.setValue("costcenter_name", header.costcenter?.name);
+      form.setValue("billIdName", header.bill_from?.billing?.name);
+      form.setValue("billFrom.billFromId", header?.bill_from?.billing?.code);
 
       if (header?.ship_to?.state?.code == header?.bill_from?.state?.code) {
         setDerivedType("L");
@@ -175,8 +181,8 @@ const CreateSalesOrderPage = () => {
   };
 
   const handleCostCenterChange = (e: any) => {
-    console.log(e);
     form.setValue("costcenter", e.value);
+    form.setValue("costcenter_name", e.label);
     const payload = {
       cost_center: e.value,
     };
@@ -187,6 +193,7 @@ const CreateSalesOrderPage = () => {
 
   const handleBillIdChange = (e: any) => {
     form.setValue("billFrom.billFromId", e.value);
+    form.setValue("billIdName", e.label);
     dispatch(fetchBillAddress(e.value)).then((response: any) => {
       const data = response.payload.data;
       form.setValue("billFrom.address1", data.addressLine1);
@@ -204,8 +211,8 @@ const CreateSalesOrderPage = () => {
 
   const searchCustomerList = (e: any) => {
     const response = dispatch(fetchCustomerDetail({ search: e }));
-      console.log(response);
-    }
+    console.log(response);
+  };
 
   return (
     <div>
@@ -223,6 +230,7 @@ const CreateSalesOrderPage = () => {
             handleBillIdChange={handleBillIdChange}
             currencyList={currency}
             searchCustomerList={searchCustomerList}
+            backCreate={backCreate}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">
@@ -233,6 +241,7 @@ const CreateSalesOrderPage = () => {
             rowData={rowData}
             setRowData={setRowData}
             form={form}
+            setBackCreate={setBackCreate}
           />
         </TabsContent>
       </Tabs>
