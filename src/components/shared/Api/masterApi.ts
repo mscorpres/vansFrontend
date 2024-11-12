@@ -156,7 +156,7 @@ export const fetchBillingAddess = async () => {
 };
 
 export const fetchShippingAddress = async () => {
-  const response = await spigenAxios.get("shippingAddress/getAll", {
+  const response = await spigenAxios.get("/shippingAddress/getAll", {
     params: {
       _: "1718170508727",
     },

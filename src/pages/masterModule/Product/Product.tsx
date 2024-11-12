@@ -26,6 +26,7 @@ import EditProduct from "./EditProduct";
 import { listOfUoms } from "@/features/client/clientSlice";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -87,6 +88,7 @@ const Product = () => {
 
     const { data } = response;
     if (response.data.code == 200) {
+     
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -283,6 +285,7 @@ const Product = () => {
         )}
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-50px)]">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

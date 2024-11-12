@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -142,11 +142,11 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
 
     // return;
     // return;
+    setLoading(true);
     const response = await spigenAxios.post(
       "/component/updateComponent",
       payload
     );
-    setLoading(true);
 
     if (response.data.code == 200) {
       toast({
@@ -155,7 +155,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       });
       editForm.resetFields();
       setLoading(false);
-      sheetOpenEdit(false);
+      setSheetOpenEdit(false);
     } else {
       toast({
         title: "Failed to update component", // You can show an error message here if the code is not 200
@@ -218,11 +218,12 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
           <Form form={editForm} layout="vertical">
             <div>
               {" "}
-              {(loading1("fetch") || loading == true) && (
-                <FullPageLoading />
-              )}{" "}
               {/* <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto"> */}
               <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
+                {" "}
+                {(loading1("fetch") || loading == true) && (
+                  <FullPageLoading />
+                )}{" "}
                 <div className="grid grid-cols-2 gap-[30px]">
                   <Card className="rounded shadow bg-[#fff]">
                     <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -979,7 +980,6 @@ const rules = {
       message: "Please provide GST Tax Types!",
     },
   ],
-
 
   brand: [
     {

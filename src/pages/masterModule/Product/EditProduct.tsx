@@ -11,11 +11,9 @@ import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
-import { Form,  } from "antd";
+import { Form } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  InputStyle,
-} from "@/constants/themeContants";
+import { InputStyle } from "@/constants/themeContants";
 import {
   FileInput,
   FileUploader,
@@ -284,7 +282,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
       });
-      setOpen(false);
+      setSheetOpenEdit(false);
     } else {
       toast({
         title: response.data.message.msg,
@@ -337,7 +335,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 //   onSubmit={form.handleSubmit(onSubmit)}
                 className=""
               >
-                <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
+                <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
                   <div className="grid grid-cols-2 gap-[30px]">
                     <Card className="rounded shadow bg-[#fff]">
                       <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
