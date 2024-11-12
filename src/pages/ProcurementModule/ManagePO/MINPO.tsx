@@ -200,27 +200,27 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
 
     let payload = {
       poid: viewMinPo?.po_transaction,
-      currency: arr.map((r) => r.currency),
-      exchange: arr.map((r) => r.exchange),
-      component: arr.map((r) => r?.componentKey),
-      access_code: arr.map((r) => r.access_code),
-      qty: arr.map((r) => r.orderQty),
-      rate: arr.map((r) => r.rate),
-      invoiceDate: arr.map((r) => formattedDate(r.dueDate)),
-      invoice: arr.map((r) => r.invoice),
+      currency: arr.map((r: any) => r.currency),
+      exchange: arr.map((r: any) => r.exchange),
+      component: arr.map((r: any) => r?.componentKey),
+      access_code: arr.map((r: any) => r.access_code),
+      qty: arr.map((r: any) => r.orderQty),
+      rate: arr.map((r: any) => r.rate),
+      invoiceDate: arr.map((r: any) => formattedDate(r.dueDate)),
+      invoice: arr.map((r: any) => r.invoice),
       invoices: attachmentFile,
-      hsncode: arr.map((r) => r.hsnCode),
-      gsttype: arr.map((r) => r.gstType),
-      gstrate: arr.map((r) => r.gstRate),
-      cgst: arr.map((r) => r.cgst),
-      sgst: arr.map((r) => r.sgst),
-      igst: arr.map((r) => r.igst),
-      remark: arr.map((r) => r.remark),
+      hsncode: arr.map((r: any) => r.hsnCode),
+      gsttype: arr.map((r: any) => r.gstType),
+      gstrate: arr.map((r: any) => r.gstRate),
+      cgst: arr.map((r: any) => r.cgst),
+      sgst: arr.map((r: any) => r.sgst),
+      igst: arr.map((r: any) => r.igst),
+      remark: arr.map((r: any) => r.remark),
     };
 
     // return;
     try {
-      dispatch(poMIN(payload)).then((resp) => {
+      dispatch(poMIN(payload)).then((resp: any) => {
         if (resp.payload.code == 200) {
           toast({
             title: resp.payload.message,
