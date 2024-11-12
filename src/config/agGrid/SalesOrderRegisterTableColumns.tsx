@@ -5,7 +5,7 @@ import { Button, Menu, Dropdown, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { useMemo, useState } from "react";
-import MaterialListModal from "@/config/agGrid/registerModule/CreateShipmentListModal";
+import CreateShipmentListModal from "@/config/agGrid/registerModule/CreateShipmentListModal";
 // import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
@@ -22,6 +22,8 @@ import {
 } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import { toast } from "@/components/ui/use-toast";
+import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
+import { TruncateCellRenderer } from "@/General";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -63,6 +65,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const handleshowMaterialList = (row: RowData) => {
     dispatch(fetchMaterialList({ so_id: row?.so_id }));
     setIsMaterialListModalVisible(true);
+  };
+
+  const handleshowMaterialListForApprove = (row: RowData) => {
+    dispatch(fetchMaterialList({ so_id: row?.so_id }));
+    setShowConfirmationModal(true);
   };
 
   const confirmApprove = () => {
@@ -152,15 +159,20 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const onCreateShipment = (payload: any) => {
     dispatch(createShipment(payload)).then((response: any) => {
       console.log(response);
-      // if (response?.payload?.success) {
-      //   toast({
-      //     title: response?.payload?.message})
+      if (response?.payload?.code == 200) {
+        setIsMaterialListModalVisible(false);
+        handleMaterialListModalClose();
+      }
     });
   };
 
   const isDisabled = row?.approveStatus === "Approved";
 
-  const tableData = useMemo(() => sellRequestList?.map((item) => ({ ...item,})) || [], [sellRequestList]);
+  const tableData = useMemo(
+    () => sellRequestList?.map((item) => ({ ...item })) || [],
+    [sellRequestList]
+  );
+  console.log(tableData)
 
   const menu = (
     <Menu>
@@ -176,7 +188,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       </Menu.Item>
       <Menu.Item
         key="approve"
-        onClick={() => setShowConfirmationModal(true)}
+        onClick={() => handleshowMaterialListForApprove(row)}
         disabled={isDisabled}
       >
         Approve
@@ -215,7 +227,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         heading="Create Invoice"
         description={`Are you sure you want to create an invoice for SO ${row.so_id}?`}
       />
-      <MaterialListModal
+      <CreateShipmentListModal
         visible={isMaterialListModalVisible}
         onClose={handleMaterialListModalClose}
         sellRequestDetails={tableData}
@@ -223,17 +235,20 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         loading={loading}
         onCreateShipment={onCreateShipment}
       />
-      <ConfirmationModal
-        open={showConfirmationModal}
-        onOkay={confirmApprove}
-        onClose={() => setShowConfirmationModal(false)}
-        title="Confirm Approve!"
-        description={`Are you sure you want to approve this sales order ${row?.so_id}?`}
+      <MaterialListModal
+        visible={showConfirmationModal}
+        onClose={()=>setShowConfirmationModal(false)}
+        sellRequestDetails={tableData}
+        row={{req_id:row?.so_id}}
+        loading={loading}
+        columnDefs={materialListColumnDefs}
+        title={`Approve Sales Order for ${row?.so_id}`}
+        submitText="Approve"
+        handleSubmit={confirmApprove}
       />
     </>
   );
 };
-
 export default ActionMenu;
 
 export const columnDefs: ColDef<any>[] = [
@@ -289,3 +304,38 @@ export const columnDefs: ColDef<any>[] = [
     filter: "agTextColumnFilter",
   },
 ];
+
+const materialListColumnDefs: ColDef[] = [
+    { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
+    {
+      headerName: "SO ID",
+      field: "so_id",
+      width: 150,
+    },
+    {
+      headerName: "Item",
+      field: "item",
+      width: 200,
+    },
+    {
+      headerName: "Material",
+      field: "itemName",
+      width: 300,
+      cellRenderer: "truncateCellRenderer",
+    },
+    {
+      headerName: "Material Specification",
+      field: "itemSpecification",
+      cellRenderer: "truncateCellRenderer",
+    },
+    { headerName: "SKU Code", field: "itemPartNo" },
+    {
+      headerName: "Qty",
+      field: "qty",
+    },
+    { headerName: "UoM", field: "uom" },
+    { headerName: "GST Rate", field: "gstRate" },
+    { headerName: "Price", field: "rate" },
+    { headerName: "HSN/SAC", field: "hsnCode" },
+    { headerName: "Remark", field: "itemRemark" },
+  ];

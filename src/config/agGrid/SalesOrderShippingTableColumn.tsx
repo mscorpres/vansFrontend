@@ -21,6 +21,7 @@ import {
   createInvoice,
   fetchMaterialList,
 } from "@/features/salesmodule/salesShipmentSlice";
+import { TruncateCellRenderer } from "@/General";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -35,7 +36,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     useState(false);
   const [form] = Form.useForm();
   const [invoiceForm] = Form.useForm(); // Form instance for the invoice modal
-  const { sellRequestList, loading } = useSelector(
+  const { loading } = useSelector(
     (state: RootState) => state.sellRequest
   );
 
@@ -61,6 +62,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const handleshowMaterialList = (row: RowData) => {
     dispatch(fetchMaterialList({ shipment_id: row?.shipment_id }));
     setIsMaterialListModalVisible(true);
+  };
+
+  const handleshowMaterialListForApprove = (row: RowData) => {
+    dispatch(fetchMaterialList({ shipment_id: row?.shipment_id }));
+    setShowConfirmationModal(true);
   };
 
   const confirmApprove = () => {
@@ -104,9 +110,10 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         const payload: any = {
           shipment_id: row?.shipment_id,
           remark: values.remark,
+          so_id: row?.so_id,
         };
         dispatch(createInvoice(payload)).then((resultAction: any) => {
-          if (resultAction.payload?.success) {
+          if (resultAction.payload?.code == 200) {
             setIsInvoiceModalVisible(false);
             dispatch(
               fetchSellRequestList({
@@ -136,16 +143,49 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     });
   };
 
+  const materialListColumns: ColDef[] = [
+    { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
+    {
+      headerName: "Item",
+      field: "item",
+    },
+    {
+      headerName: "Item Name",
+      field: "itemName",
+      width: 200,
+      cellRenderer: TruncateCellRenderer,
+    },
+    {
+      headerName: "Item Description",
+      field: "itemSpecification",
+      autoHeight: true,
+      width: 300,
+    },
+    { headerName: "Item Part Number", field: "itemPartNo" },
+    { headerName: "Qty", field: "qty" },
+    { headerName: "Rate", field: "rate" },
+    { headerName: "GST Rate", field: "gstRate" },
+    { headerName: "UOM", field: "uom" },
+    { headerName: "Hsn Code", field: "hsnCode" },
+    { headerName: "CGST Rate", field: "cgstRate" },
+    { headerName: "SGST Rate", field: "sgstRate" },
+    { headerName: "IGST Rate", field: "igstRate" },
+    { headerName: "Remark", field: "itemRemark" },
+  ];
+
   const isDisabled = row?.approveStatus === "Approved";
 
   const menu = (
     <Menu>
       <Menu.Item
         key="approve"
-        onClick={() => setShowConfirmationModal(true)}
+        onClick={() => handleshowMaterialListForApprove(row)}
         disabled={isDisabled}
       >
         Approve
+      </Menu.Item>
+      <Menu.Item key="cancel" onClick={showCancelModal} disabled={isDisabled}>
+        Cancel
       </Menu.Item>
       <Menu.Item
         key="update"
@@ -155,9 +195,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         disabled={isDisabled}
       >
         Material Out
-      </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal} disabled={isDisabled}>
-        Cancel
       </Menu.Item>
       <Menu.Item
         key="createInvoice"
@@ -198,16 +235,25 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <MaterialListModal
         visible={isMaterialListModalVisible}
         onClose={handleMaterialListModalClose}
-        sellRequestDetails={shipmentMaterialList}
+        sellRequestDetails={shipmentMaterialList?.items}
         row={{ req_id: row?.so_id }}
         loading={loading2}
+        columnDefs={materialListColumns}
+        title={`Material Out of ${shipmentMaterialList?.header?.shipment_id} Against ${row?.so_id}`}
+        title2={`Customer Name : ${shipmentMaterialList?.header?.customer_name?.customer_name}`}
+        submitText="Material Out"
+        handleSubmit={()=>{}}
       />
-      <ConfirmationModal
-        open={showConfirmationModal}
-        onOkay={confirmApprove}
+       <MaterialListModal
+        visible={showConfirmationModal}
         onClose={() => setShowConfirmationModal(false)}
-        title="Confirm Approve!"
-        description={`Are you sure you want to approve this shipment ${row?.shipment_id}?`}
+        sellRequestDetails={shipmentMaterialList?.items}
+        row={{ req_id: row?.so_id }}
+        loading={loading2}
+        columnDefs={materialListColumns}
+        title={`Approve Shipment Order for ${row?.shipment_id}`}
+        submitText="Approve"
+        handleSubmit={confirmApprove}
       />
     </>
   );
