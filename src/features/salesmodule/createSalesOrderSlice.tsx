@@ -470,15 +470,14 @@ const clientSlice = createSlice({
           action.error.message || "Failed to fetch project description";
       })
       // Handling country actions
-      .addCase(fetchCountries.pending, (state) => {
+      .addCase(fetchBillAddress.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchCountries.fulfilled, (state, action) => {
+      .addCase(fetchBillAddress.fulfilled, (state) => {
         state.loading = false;
-        state.countries = action.payload;
       })
-      .addCase(fetchCountries.rejected, (state, action) => {
+      .addCase(fetchBillAddress.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch countries";
       })

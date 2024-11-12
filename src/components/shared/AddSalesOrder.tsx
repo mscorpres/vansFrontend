@@ -32,6 +32,7 @@ const AddSalesOrder = ({
   form,
   setRowData,
   rowData,
+  setBackCreate
 }: {
   setTab: React.Dispatch<React.SetStateAction<string>>;
   payloadData: any;
@@ -39,6 +40,7 @@ const AddSalesOrder = ({
   form: any;
   rowData: any;
   setRowData: any;
+  setBackCreate: any
 }) => {
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
@@ -379,7 +381,7 @@ const AddSalesOrder = ({
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
         <Button
           className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-          onClick={() => setTab("create")}
+          onClick={() => {setTab("create");setBackCreate(true)}}
         >
           Back
         </Button>

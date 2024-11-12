@@ -48,7 +48,8 @@ interface Props {
   handleCostCenterChange: (e: any) => void;
   handleBillIdChange: (e: any) => void;
   currencyList: any;
-  searchCustomerList:(e:any) => void;
+  searchCustomerList: (e: any) => void;
+  backCreate: boolean;
 }
 type CreateSalesOrderForm = z.infer<typeof createSalesFormSchema>;
 const CreateSalesOrder: React.FC<Props> = ({
@@ -61,7 +62,7 @@ const CreateSalesOrder: React.FC<Props> = ({
   handleCostCenterChange,
   handleBillIdChange,
   currencyList,
-  searchCustomerList,
+  backCreate,
 }: any) => {
   const data = useSelector((state: RootState) => state.createSalesOrder);
 
@@ -76,12 +77,13 @@ const CreateSalesOrder: React.FC<Props> = ({
   };
   console.log(form.getValues(), currencyList);
 
-  const customerOptions=[
+  const customerOptions = [
     {
       label: "CUSTOMER",
       value: "c01",
     },
-  ]
+  ];
+  const update = window.location.pathname.includes("update");
 
   return (
     <div className="h-[calc(100vh-150px)]">
@@ -141,7 +143,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                       <FormField
                         control={form.control}
                         name="customer_code"
-                        render={(field) => (
+                        render={() => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Customer Name
@@ -151,38 +153,17 @@ const CreateSalesOrder: React.FC<Props> = ({
                             </FormLabel>
                             <FormControl>
                               <ReusableAsyncSelect
-                                placeholder="Customer Name"
+                                placeholder={
+                                  update || backCreate
+                                    ? form.getValues("customer_name")
+                                    : "Customer Name"
+                                }
                                 endpoint="/others/customerList"
                                 transform={transformOptions}
                                 fetchOptionWith="payload"
                                 onChange={handleCustomerSelection}
                                 // value={form.watch("customer_code")}
                               />
-                              {/* <FormControl>
-                              <Select
-                                styles={customStyles}
-                                components={{ DropdownIndicator }}
-                                placeholder="Customer Name"
-                                className="border-0 basic-single"
-                                classNamePrefix="select border-0"
-                                isDisabled={false}
-                                isClearable={true}
-                                isSearchable={true}
-                                options={transformOptionData(data?.customerList)}
-                                onInputChange={searchCustomerList}
-                                onChange={handleCustomerSelection}
-                                value={
-                                  data?.customerList
-                                    ? transformOptionData(
-                                        data?.customerList
-                                      ).find(
-                                        (option) =>
-                                          option.value === field.value
-                                      )
-                                    : null
-                                }
-                              />
-                            </FormControl> */}
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -626,7 +607,14 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 <DatePicker
                                   className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
                                   format="DD-MM-YYYY"
-                                  value={form.watch("po_date") ? dayjs(form.watch("po_date"), "DD-MM-YYYY") : null}
+                                  value={
+                                    form.watch("po_date")
+                                      ? dayjs(
+                                          form.watch("po_date"),
+                                          "DD-MM-YYYY"
+                                        )
+                                      : null
+                                  }
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
@@ -682,7 +670,14 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 <DatePicker
                                   className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
                                   format="DD-MM-YYYY"
-                                  value={form.watch("reference_date") ? dayjs(form.watch("reference_date"), "DD-MM-YYYY") : null}
+                                  value={
+                                    form.watch("reference_date")
+                                      ? dayjs(
+                                          form.watch("reference_date"),
+                                          "DD-MM-YYYY"
+                                        )
+                                      : null
+                                  }
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
@@ -758,6 +753,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                               <Input
                                 className={InputStyle}
                                 placeholder="Exchange Rate"
+                                min={1}
                                 {...field}
                               />
                             </FormControl>
@@ -783,7 +779,14 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 <DatePicker
                                   className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
                                   format="DD-MM-YYYY"
-                                  value={form.watch("due_date") ? dayjs(form.watch("due_date"), "DD-MM-YYYY") : null}
+                                  value={
+                                    form.watch("due_date")
+                                      ? dayjs(
+                                          form.watch("due_date"),
+                                          "DD-MM-YYYY"
+                                        )
+                                      : null
+                                  }
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
@@ -935,12 +938,15 @@ const CreateSalesOrder: React.FC<Props> = ({
                           </FormLabel>
                           <FormControl>
                             <ReusableAsyncSelect
-                              placeholder="Cost Center"
+                              placeholder={
+                                update || backCreate
+                                  ? form.getValues("costcenter_name")
+                                  : "Cost Center"
+                              }
                               endpoint="backend/costCenter"
                               transform={transformOptions}
                               fetchOptionWith="payload"
                               onChange={handleCostCenterChange}
-                              // value={selectedCostCenter}
                             />
                           </FormControl>
                           <FormMessage />
@@ -964,12 +970,15 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Select
                                 styles={customStyles}
-                                placeholder="Bill From Address"
+                                placeholder={
+                                  update || backCreate
+                                    ? form.getValues("billIdName")
+                                    : "Bill From Address"
+                                }
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
                                 components={{ DropdownIndicator }}
                                 onChange={handleBillIdChange}
-                                // onInputChange={()=>dispatch(fetchBillAddressList(form.getValues("costcenter")))}
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
@@ -1105,7 +1114,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     });
                   });
                 }
-                  // setTab("add");
+                // setTab("add");
               }}
               className={`${primartButtonStyle} flex gap-[10px]`}
               type="submit"

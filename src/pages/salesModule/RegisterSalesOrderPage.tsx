@@ -40,7 +40,7 @@ const { RangePicker } = DatePicker;
 const dateFormat = "DD/MM/YYYY";
 const wises = [
   { label: "Date Wise", value: "date_wise" },
-  { label: "SO(s)Wise", value: "SONO" },
+  { label: "SO(s)Wise", value: "soid_wise" },
 ] as const;
 
 const FormSchema = z.object({
@@ -78,7 +78,7 @@ const RegisterSalesOrderPage: React.FC = () => {
       const endDate = moment(dateRange[1]).format("DD-MM-YYYY");
       dataString = `${startDate}-${endDate}`;
       dispatch(setDateRange(dataString as any));
-    } else if (type === "SONO" && soWise) {
+    } else if (type === "soid_wise" && soWise) {
       dataString = soWise;
       dispatch(setDateRange(dataString as any));
     }
@@ -87,8 +87,9 @@ const RegisterSalesOrderPage: React.FC = () => {
       const resultAction = await dispatch(
         fetchSellRequestList({ type, data: dataString }) as any
       ).unwrap();
-      console.log("Result Action:", resultAction);
       if (resultAction.code === 200) {
+        setRowData(resultAction.data);
+        setIsSearchPerformed(true);
         toast({
           title: "Register fetched successfully",
           className: "bg-green-600 text-white items-center",
@@ -102,6 +103,7 @@ const RegisterSalesOrderPage: React.FC = () => {
   const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
 
   const onBtExport = useCallback(() => {
+    console.log("object", gridRef.current);
     if (gridRef.current) {
       gridRef.current.api.exportDataAsCsv();
     }
@@ -125,7 +127,12 @@ const RegisterSalesOrderPage: React.FC = () => {
         </div>
         <div className="p-[10px]">
           <Select
-            onValueChange={(value: string) => setType(value)}
+            onValueChange={(value: string) => {
+              setType(value);
+              if (value === "soid_wise") {
+                form.setValue("dateRange", undefined);
+              }
+            }}
             defaultValue={type}
           >
             <SelectTrigger>
@@ -178,7 +185,7 @@ const RegisterSalesOrderPage: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
-                      <Input {...field} placeholder="Invoice number" />
+                      <Input {...field} placeholder="SO number" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -207,6 +214,7 @@ const RegisterSalesOrderPage: React.FC = () => {
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact
+        ref={gridRef}
           loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs as any}
