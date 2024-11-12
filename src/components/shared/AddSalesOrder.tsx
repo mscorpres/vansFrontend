@@ -17,11 +17,14 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 // import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import SalesOrderTextInputCellRenderer from "@/config/agGrid/SalesOrderTextInputCellRenderer";
-import { createSalesOrderRequest, fetchComponentDetail, updateSalesOrderRequest } from "@/features/salesmodule/createSalesOrderSlice";
+import {
+  createSalesOrderRequest,
+  fetchComponentDetail,
+  updateSalesOrderRequest,
+} from "@/features/salesmodule/createSalesOrderSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { toast } from "@/components/ui/use-toast";
-
 
 const AddSalesOrder = ({
   setTab,
@@ -136,7 +139,7 @@ const AddSalesOrder = ({
     rowData?.length === 0 && addNewRow();
   }, []);
 
-console.log(rowData)
+  console.log(rowData);
   const materials = {
     item: rowData?.map((component: RowData) =>
       typeof component.material === "object" && component.material !== null
@@ -161,47 +164,46 @@ console.log(rowData)
     sgst_rate: rowData?.map((component: RowData) => component.sgst || 0),
     igst_rate: rowData?.map((component: RowData) => component.igst || 0),
     updaterow: rowData?.map((component: RowData) => component.updateid || 0),
-
   };
   const soId = (params.id as string)?.replace(/_/g, "/");
 
-
   const handleSubmit = () => {
     // if (confirmed) {
-      // Proceed with the submission
-      const payloadData2 : any = {
-        header: { ...form.getValues(), so_id: soId },
-        itemDetails:materials,
-      };
-      if (window.location.pathname.includes("update")) {
-        dispatch(updateSalesOrderRequest(payloadData2)).then((response: any) => {
-          if (response.payload.success) {
-            toast({
-              className: "bg-green-600 text-white items-center",
-              description: response.payload.message ||"Sales Order created successfully",
-            })
-            form.reset(); // Reset the form
-            setRowData([]);
-            navigate("/sales/order/register");
-          }
-        });
-      } else {
-        dispatch(createSalesOrderRequest(payloadData2)).then((response: any) => {
-          if (response.payload.success||response.payload.code=="200") {
-            toast({
-              className: "bg-green-600 text-white items-center",
-              description: response.payload.message ||"Sales Order updated successfully",
-            })
-            form.reset(); // Reset the form
-            setRowData([]);
-            navigate("/sales/order/register");
-          }
-        });
-      }
+    // Proceed with the submission
+    const payloadData2: any = {
+      header: { ...form.getValues(), so_id: soId },
+      itemDetails: materials,
+    };
+    if (window.location.pathname.includes("update")) {
+      dispatch(updateSalesOrderRequest(payloadData2)).then((response: any) => {
+        if (response.payload.success) {
+          toast({
+            className: "bg-green-600 text-white items-center",
+            description:
+              response.payload.message || "Sales Order created successfully",
+          });
+          form.reset(); // Reset the form
+          setRowData([]);
+          navigate("/sales/order/register");
+        }
+      });
+    } else {
+      dispatch(createSalesOrderRequest(payloadData2)).then((response: any) => {
+        if (response.payload.success || response.payload.code == "200") {
+          toast({
+            className: "bg-green-600 text-white items-center",
+            description:
+              response.payload.message || "Sales Order updated successfully",
+          });
+          form.reset(); // Reset the form
+          setRowData([]);
+          navigate("/sales/order/register");
+        }
+      });
+    }
     // }
     setShowConfirmation(false); // Close the modal
   };
-  
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -255,16 +257,20 @@ console.log(rowData)
           <Card className="rounded-sm shadow-sm shadow-slate-500">
             <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
               <CardTitle className="font-[550] text-slate-600">
-                Client Detail
+                Customer Detail
               </CardTitle>
             </CardHeader>
             <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
               <h3 className="font-[500]">Name</h3>
-              <p className="text-[14px]">Flipkart</p>
+              <p className="text-[14px]">{form.getValues("customer_name")}</p>
               <h3 className="font-[500]">Address</h3>
-              <p className="text-[14px]">Noida sector 135</p>
+              <p className="text-[14px]">
+                {form.getValues("billTo.address1") +
+                  ", " +
+                  form.getValues("billTo.address2")}
+              </p>
               <h3 className="font-[500]">GSTIN</h3>
-              <p className="text-[14px]">29AACCF0683K1ZD</p>
+              <p className="text-[14px]">{form.getValues("billTo.gst")}</p>
             </CardContent>
           </Card>
           <Card className="rounded-sm shadow-sm shadow-slate-500">
@@ -387,7 +393,7 @@ console.log(rowData)
       <ConfirmationModal
         open={showConfirmation}
         onClose={setShowConfirmation}
-        onOkay={()=>handleSubmit()}
+        onOkay={() => handleSubmit()}
         title="Confirm Submit!"
         description="Are you sure to submit details of all components of this Sales Order?"
       />

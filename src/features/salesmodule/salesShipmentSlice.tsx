@@ -63,6 +63,11 @@ interface FetchSellShipmentPayload {
   data: string;
 }
 
+interface CancelPayload {
+  cancelReason: string;
+  shipment_id: string;
+}
+
 
 interface CreateDeliveryChallanPayload {
     shipment_id: string[];
@@ -102,6 +107,86 @@ export const fetchMaterialList = createAsyncThunk(
   }
 );
 
+export const cancelShipment = createAsyncThunk(
+  "client/cancelShipment",
+  async (payload: CancelPayload, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "salesOrder/cancelShipment",
+        payload
+      )) as any;
+
+      if (response?.data?.code == 200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+export const approveShipment = createAsyncThunk(
+  "sellRequest/approveShipment",
+  async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
+    try {
+      const response = await spigenAxios.post<any>("/salesOrder/approveShipment", {
+        shipment_id: so_id,
+      });
+
+      if (!response.data) {
+        throw new Error("No data received");
+      }
+      if (response?.data?.code == 200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle error using rejectWithValue
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+
+export const createInvoice = createAsyncThunk(
+  "client/createInvoice",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/createInvoice",
+        payload
+      )) as any;
+
+      if (response?.data?.code == 200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
 
 export const fetchSalesOrderShipmentList = createAsyncThunk<
   ApiResponse<SellShipmentRequest[]>,
@@ -202,6 +287,39 @@ const sellShipmentSlice = createSlice({
       .addCase(fetchMaterialList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to cancel sell request";
+      })
+      .addCase(cancelShipment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(approveShipment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(approveShipment.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(approveShipment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to create sell request";
+      })
+      .addCase(cancelShipment.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(cancelShipment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to cancel sell request";
+      })
+      .addCase(createInvoice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createInvoice.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(createInvoice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to create invoice";
       })
         .addCase(updateSOshipment.pending, (state) => {
           state.loading = true;

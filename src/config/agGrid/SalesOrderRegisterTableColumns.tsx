@@ -4,7 +4,7 @@ import { MoreOutlined } from "@ant-design/icons";
 import { Button, Menu, Dropdown, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import MaterialListModal from "@/config/agGrid/registerModule/CreateShipmentListModal";
 // import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
@@ -160,6 +160,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const isDisabled = row?.approveStatus === "Approved";
 
+  const tableData = useMemo(() => sellRequestList?.map((item) => ({ ...item,})) || [], [sellRequestList]);
+
   const menu = (
     <Menu>
       <Menu.Item
@@ -216,7 +218,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <MaterialListModal
         visible={isMaterialListModalVisible}
         onClose={handleMaterialListModalClose}
-        sellRequestDetails={sellRequestList}
+        sellRequestDetails={tableData}
         row={{ req_id: row?.so_id }}
         loading={loading}
         onCreateShipment={onCreateShipment}

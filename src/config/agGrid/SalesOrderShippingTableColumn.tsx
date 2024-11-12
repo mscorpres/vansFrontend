@@ -10,16 +10,17 @@ import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/Confir
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import {
-  approveSo,
-  cancelSalesOrder,
-  createInvoice,
-  createShipment,
   fetchSellRequestList,
   printSellOrder,
 } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
-import { fetchMaterialList } from "@/features/salesmodule/salesShipmentSlice";
+import {
+  approveShipment,
+  cancelShipment,
+  createInvoice,
+  fetchMaterialList,
+} from "@/features/salesmodule/salesShipmentSlice";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -63,7 +64,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const confirmApprove = () => {
-    dispatch(approveSo({ so_id: row?.shipment_id }));
+    dispatch(approveShipment({ so_id: row?.shipment_id }));
     setShowConfirmationModal(false);
   };
 
@@ -73,9 +74,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       .then((values) => {
         const payload = {
           cancelReason: values.remark,
-          so_id: row?.so_id,
+          shipment_id: row?.shipment_id,
         };
-        dispatch(cancelSalesOrder(payload)).then((response: any) => {
+        dispatch(cancelShipment(payload)).then((response: any) => {
           console.log(response);
           if (response?.payload?.code == 200) {
             form.resetFields(); // Clear the form fields after submission
@@ -101,7 +102,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       .validateFields()
       .then((values) => {
         const payload: any = {
-          so_id: row?.so_id,
+          shipment_id: row?.shipment_id,
           remark: values.remark,
         };
         dispatch(createInvoice(payload)).then((resultAction: any) => {
@@ -183,6 +184,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         row={{ req_id: row?.so_id }}
         form={form}
         loading={loading}
+        module="Shipment "
       />
       <CreateInvoiceDialog
         isDialogVisible={isInvoiceModalVisible}
@@ -220,36 +222,24 @@ export const columnDefs: ColDef<any>[] = [
     cellRenderer: (params: any) => <ActionMenu row={params.data} />,
   },
   {
-    headerName: "ID",
-    field: "id",
-    filter: "agNumberColumnFilter",
-    maxWidth: 100,
-  },
-  {
     headerName: "Shipment ID",
     field: "shipment_id",
     filter: "agTextColumnFilter",
   },
   { headerName: "SO ID", field: "so_id", filter: "agTextColumnFilter" },
   {
-    headerName: "Item Part Code",
-    field: "item_part_no",
-    filter: "agTextColumnFilter",
-  },
-  {
-    headerName: "Item Part Name",
-    field: "item_name",
-    filter: "agTextColumnFilter",
-  },
-  { headerName: "Item Qty", field: "item_qty", filter: "agNumberColumnFilter" },
-  {
-    headerName: "Item Rate",
-    field: " item_rate",
+    headerName: "Shipment Date",
+    field: "shipment_date",
     filter: "agNumberColumnFilter",
   },
   {
-    headerName: "Shipment Date",
-    field: "shipment_dt",
+    headerName: "PO Number",
+    field: "po_number",
+    filter: "agTextColumnFilter",
+  },
+  {
+    headerName: "PO Date",
+    field: "po_date",
     filter: "agDateColumnFilter",
   },
   {

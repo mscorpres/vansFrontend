@@ -53,6 +53,7 @@ const CreateSalesOrderPage = () => {
     if (updateData) {
       const header: any = updateData.header;
       form.setValue("customer_code", header?.customer?.code);
+      form.setValue("customer_name", header?.customer?.name);
       form.setValue("customer_type", header?.customer_type);
       searchCustomerList(header?.customer?.code)
       dispatch(fetchCustomerBranches({ client: header?.customer?.code })).then(
@@ -128,6 +129,7 @@ const CreateSalesOrderPage = () => {
 
   const handleCustomerSelection = (e: any) => {
     form.setValue("customer_code", e.value);
+    form.setValue("customer_name", e.label);
     dispatch(fetchCustomerBranches({ client: e.value })).then(
       (response: any) => {
         if (response.meta.requestStatus === "fulfilled") {

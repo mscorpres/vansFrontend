@@ -1,6 +1,10 @@
 import React, { useState, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, CsvExportModule } from "ag-grid-community";
+import {
+  ColDef,
+  CsvExportModule,
+  RowSelectionOptions,
+} from "ag-grid-community";
 import {
   Sheet,
   SheetContent,
@@ -46,22 +50,6 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
     setSelectedItems(selectedRows || []);
   };
 
-  // Handle cell value change (i.e., when quantity is edited)
-  const onCellValueChanged = (event: any) => {
-    if (event.colDef.field === "qty") {
-      const updatedRows = [...sellRequestDetails];
-      const updatedRow = updatedRows.find((row) => row.id === event.data.id);
-      if (updatedRow) {
-        updatedRow.qty = event.newValue; // Update the quantity in your data
-        setSelectedItems(prevSelectedItems => {
-          return prevSelectedItems.map(item =>
-            item.id === updatedRow.id ? updatedRow : item
-          );
-        });
-      }
-    }
-  };
-
   // Create shipment payload from selected items
   const handleCreateShipment = () => {
     const itemDetails = {
@@ -81,7 +69,7 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
       item_remark: selectedItems.map((item) => item.itemRemark),
     };
     console.log(itemDetails, "item", selectedItems);
-    onCreateShipment({ itemDetails:{...itemDetails}, so_id: row.req_id });
+    onCreateShipment({ itemDetails: { ...itemDetails }, so_id: row.req_id });
     form.resetFields();
   };
 
@@ -95,13 +83,6 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
 
   const columnDefs: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
-    {
-      headerName: "Select All",
-      checkboxSelection: true, // Enables checkbox for each row
-      headerCheckboxSelection: true, // Enable Select All checkbox in the header
-      headerCheckboxSelectionFilteredOnly: false, // Select all rows, not just filtered rows
-      maxWidth: 150,
-    },
     {
       headerName: "SO ID",
       field: "so_id",
@@ -127,8 +108,28 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
     {
       headerName: "Qty",
       field: "qty",
-      editable: true, // Make the column editable
-      cellRenderer: "textInputCellRenderer", // Use the custom input renderer
+      cellRenderer: (params: any) => {
+        const { value, colDef, data, api, column } = params;
+
+        // Make sure we don't touch the `checked` property when editing qty
+        const onChangeQty = (e: React.ChangeEvent<HTMLInputElement>) => {
+          const newValue = e.target.value;
+          data[colDef.field] = newValue; // Update only the qty field
+          api.refreshCells({
+            rowNodes: [params.node],
+            columns: [column, "qty"],
+          });
+        };
+
+        return (
+          <input
+            type="number"
+            value={value}
+            onChange={onChangeQty}
+            className="p-2 border border-gray-300 rounded-md"
+          />
+        );
+      },
     },
     { headerName: "UoM", field: "uom" },
     { headerName: "GST Rate", field: "gstRate" },
@@ -136,7 +137,13 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
     { headerName: "HSN/SAC", field: "hsnCode" },
     { headerName: "Remark", field: "itemRemark" },
   ];
-
+  const rowSelection = useMemo<
+    RowSelectionOptions | "single" | "multiple"
+  >(() => {
+    return {
+      mode: "multiRow",
+    };
+  }, []);
   return (
     <>
       <Sheet open={visible} onOpenChange={onClose}>
@@ -158,12 +165,11 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
               rowData={sellRequestDetails}
               columnDefs={columnDefs}
               suppressCellFocus={true}
-              rowSelection="multiple" // Enable multiple row selection
               components={components}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
               loading={loading}
-              onSelectionChanged={onSelectionChanged} // Listen to selection changes
-              onCellValueChanged={onCellValueChanged} // Listen to cell value changes (for editing qty)
+              onSelectionChanged={onSelectionChanged} // Listen to selection changes'
+              rowSelection={rowSelection}
             />
           </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
@@ -178,7 +184,8 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
               onClick={() => {
                 if (selectedItems.length === 0) {
                   toast({
-                    title: "No items selected! Please select at least one item.",
+                    title:
+                      "No items selected! Please select at least one item.",
                     className: "bg-red-600 text-white items-center",
                   });
                 } else {
