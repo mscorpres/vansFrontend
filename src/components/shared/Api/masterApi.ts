@@ -1,5 +1,5 @@
 import { spigenAxios } from "@/axiosIntercepter";
-export const createUomEntry = async (wise, data) => {
+export const createUomEntry = async (wise: any, data: any) => {
   const response = await spigenAxios.post("/uom/insert", {
     wise,
     data,
@@ -205,6 +205,10 @@ export const getParentLocationOptions = async (search: any) => {
   const response = await spigenAxios.post("/location/fetchLocation", {
     searchTerm: search,
   });
+  return response;
+};
+export const insertLoations = async (payload: any) => {
+  const response = await spigenAxios.post("/location/insertLocation", payload);
   return response;
 };
 export const fetchAllVendorList = async (search: any) => {
