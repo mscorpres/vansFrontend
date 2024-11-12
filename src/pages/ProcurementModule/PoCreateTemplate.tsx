@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
 import CreatePoPage from "./CreatePoPage";
@@ -86,7 +85,10 @@ const PoCreateTemplate = () => {
               procurementMaterial: r?.selectedComponent[0]?.text,
 
               vendorName: r.make,
+              currency: r.currency,
+              // currency: r.exchangerate,
               orderQty: r.orderqty,
+              componentKey: r?.componentKey,
               rate: r.rate,
               gstRate: r.gstrate,
               gstType: r.gsttype[0].id,

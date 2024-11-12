@@ -100,7 +100,7 @@ const AddPO: React.FC<Props> = ({
       asinNumber: "B01N1SE4EP",
       orderQty: 100,
       rate: 50,
-      currency: "USD",
+      currency: "28567096",
       gstRate: 18,
       gstType: codeType,
       localValue: 0,
@@ -177,38 +177,6 @@ const AddPO: React.FC<Props> = ({
   const handleSubmit = async () => {
     let arr = rowData;
 
-    console.log("formVal", formVal);
-    let editpayload = {
-      vendor_name: "VEN0029",
-      vendor_type: "v01",
-      vendor_branch: "SIV689805780",
-      vendor_address: "PLOT # 431-A, IND.\nAREA PHASE - 2,\n",
-      paymentterms: "n",
-      quotationterms: "j",
-      termsandcondition: "yu",
-      costcenter: "2023122105635288",
-      projectname: "j",
-      pocomment: "h",
-      ship_address_id: "YLB8M4JT",
-      ship_address:
-        "Groud Floor, 43-A, Pocket - D SFS Flats\nKondli Gharoli, Mayur Vihar Phase 3\nNew Delhi 110096",
-      component: ["1678607897820"],
-      qty: ["400"],
-      rate: ["200"],
-      currency: ["364907247"],
-      exchange_rate: ["1"],
-      date: ["25-07-2024"],
-      hsn: ["--"],
-      gsttype: ["I"],
-      gstrate: ["18"],
-      sgst: ["0"],
-      igst: ["14400"],
-      cgst: ["0"],
-      remark: ["TDK"],
-      updaterow: ["906"],
-      poid: "NAVS/PO/24-25/0010",
-    };
-
     let payload = {
       vendorname: formVal.vendorName.value,
       vendortype: "v01",
@@ -226,10 +194,10 @@ const AddPO: React.FC<Props> = ({
       pocostcenter: formVal.costCenter.value,
       poproject_name: formVal.project,
       pocomment: formVal.comment,
-      pocreatetype: formVal.pocreatetype,
+      pocreatetype: formVal?.poType.value,
       // original_po: null,
-      currency: formVal.currency,
-      exchange: formVal.exchange,
+      currency: arr.map((r) => r.currency),
+      exchange: arr.map((r) => r.exchange),
       component: arr.map((r) => r?.procurementMaterial),
       qty: arr.map((r) => r.orderQty),
       rate: arr.map((r) => r.rate),
@@ -243,8 +211,6 @@ const AddPO: React.FC<Props> = ({
       remark: arr.map((r) => r.remark),
       original_po: formVal.originalPO?.value,
     };
-    console.log("payload-------------", payload);
-    console.log("isApprove-------------", isApprove);
 
     // return;
     try {
@@ -262,16 +228,17 @@ const AddPO: React.FC<Props> = ({
           costcenter: formVal.costCenter.value,
           projectname: formVal.project,
           pocomment: formVal.comment,
-          pocreatetype: formVal.pocreatetype,
-
+          pocreatetype: formVal?.poType.value ?? formVal?.poType,
+          poid: params.id.replaceAll("_", "/"),
+          currency: arr.map((r) => r.currency),
+          exchange_rate: arr.map((r) => r.exchange),
           // original_po: null,
-          currency: formVal.currency,
-          exchange: formVal.exchange,
-          component: arr.map((r) => r?.procurementMaterial),
+
+          component: arr.map((r) => r?.componentKey),
           qty: arr.map((r) => r.orderQty),
           rate: arr.map((r) => r.rate),
-          duedate: arr.map((r) => formattedDate(r.dueDate)),
-          hsncode: arr.map((r) => r.hsnCode),
+          date: arr.map((r) => r.dueDate),
+          hsn: arr.map((r) => r.hsnCode),
           gsttype: arr.map((r) => r.gstType),
           gstrate: arr.map((r) => r.gstRate),
           cgst: arr.map((r) => r.cgst),
@@ -280,8 +247,25 @@ const AddPO: React.FC<Props> = ({
           remark: arr.map((r) => r.remark),
           updaterow: arr.map((r) => r.updateingId),
         };
-        dispatch(updatePo(payload2)).then((res) => {
-          console.log("this is the response", res);
+        dispatch(updatePo(payload2)).then((response) => {
+          console.log("this is the response", response);
+          // console.log("response", response);
+
+          if (response.payload.code == 200) {
+            setShowConfirmation(false);
+            toast({
+              title: response.payload.message,
+              className: "bg-green-700 text-white",
+            });
+            form.resetFields();
+            setRowData([]);
+            // navigate("/sales/order/register");
+          } else {
+            toast({
+              title: response.payload.message,
+              className: "bg-red-700 text-white",
+            });
+          }
         });
       } else if (isApprove == "approve") {
         console.log("params", params);
@@ -291,6 +275,11 @@ const AddPO: React.FC<Props> = ({
         dispatch(poApprove(a)).then((response) => {
           if (response.payload.code == 200) {
             setShowConfirmation(false);
+            toast({
+              title: response.payload.message,
+              className: "bg-green-700 text-white",
+            });
+            setRowData([]);
             navigate("/approve-po");
             setIsApprove(false);
           } else {
@@ -301,7 +290,26 @@ const AddPO: React.FC<Props> = ({
           }
         });
       } else {
-        dispatch(createSellRequest(payload));
+        dispatch(createSellRequest(payload)).then((response) => {
+          console.log("response", response);
+
+          if (response.payload.code == 200) {
+            setShowConfirmation(false);
+            toast({
+              title: response.payload.message,
+              className: "bg-green-700 text-white",
+            });
+            form.resetFields();
+            setRowData([]);
+
+            // navigate("/sales/order/register");
+          } else {
+            toast({
+              title: response.payload.message.msg,
+              className: "bg-red-700 text-white",
+            });
+          }
+        });
       }
       // setTab("create");
     } catch (error) {
@@ -309,7 +317,7 @@ const AddPO: React.FC<Props> = ({
       // Handle error, e.g., show a message to the user
     }
   };
-  
+
   const columnDefs = [
     {
       headerName: "",
