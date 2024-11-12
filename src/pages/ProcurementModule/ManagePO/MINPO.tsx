@@ -7,9 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { modelFixHeaderStyle } from "@/constants/themeContants";
 import { Button } from "@/components/ui/button";
 import { IoCloudUpload } from "react-icons/io5";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,10 +15,7 @@ import { AgGridReact } from "ag-grid-react";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { AppDispatch, RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchDataPOforMIN,
-  poMIN,
-} from "@/features/client/clientSlice";
+import { fetchDataPOforMIN, poMIN } from "@/features/client/clientSlice";
 import {
   FileInput,
   FileUploader,
@@ -45,9 +40,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [vendorDetails, setVendorDetails] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
-  const {} = useSelector(
-    (state: RootState) => state.client
-  );
+  const { loading } = useSelector((state: RootState) => state.client);
   const { execFun, loading: loading1 } = useApi();
   const components = useMemo(
     () => ({
@@ -59,7 +52,6 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
           search={search}
         />
       ),
-    
     }),
     []
   );
@@ -205,7 +197,6 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   ];
   const handleSubmit = async () => {
     let arr = rowData;
-
 
     let payload = {
       poid: viewMinPo?.po_transaction,
@@ -383,7 +374,6 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
         }
       }
     );
-   
   };
   useEffect(() => {
     if (viewMinPo) {

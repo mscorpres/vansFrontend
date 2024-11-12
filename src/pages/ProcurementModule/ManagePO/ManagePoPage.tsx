@@ -1,6 +1,6 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import {  Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,13 +13,8 @@ import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
 import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
-import {
-  fetchManagePOList,
-  printPO,
-} from "@/features/client/clientSlice";
-import {
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { fetchManagePOList, printPO } from "@/features/client/clientSlice";
+import { modelFixHeaderStyle } from "@/constants/themeContants";
 import {
   Sheet,
   SheetContent,
@@ -124,9 +119,7 @@ const FormSchema = z.object({
 const { RangePicker } = DatePicker;
 const dateFormat = "YYYY/MM/DD";
 const ManagePoPage: React.FC = () => {
-  const {  loading } = useSelector(
-    (state: RootState) => state.client
-  );
+  const { loading } = useSelector((state: RootState) => state.client);
 
   const [form] = Form.useForm();
   const [rowData, setRowData] = useState([]);
@@ -231,7 +224,6 @@ const ManagePoPage: React.FC = () => {
     };
 
     dispatch(printPO({ poid: row?.po_transaction })).then((res: any) => {
-  
       if (res.payload.code == 200) {
         let { data } = res.payload;
         downloadFunction(data.buffer, data.filename);
@@ -263,8 +255,6 @@ const ManagePoPage: React.FC = () => {
         });
       }
     });
-
-   
   };
   const handleFileChange = (newFiles: File[] | null) => {
     setFiles(newFiles);
