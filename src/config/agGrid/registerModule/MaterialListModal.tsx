@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, CsvExportModule } from "ag-grid-community";
+import { CsvExportModule } from "ag-grid-community";
 import {
   Sheet,
   SheetContent,
@@ -21,46 +21,25 @@ interface MaterialListModalProps {
     req_id: string;
   };
   loading: boolean;
+  columnDefs: any;
+  title: string;
+  title2?: string;
+  submitText:string,
+  handleSubmit:()=> void
 }
 
 const MaterialListModal: React.FC<MaterialListModalProps> = ({
   visible,
   onClose,
   sellRequestDetails,
-  row,
   loading,
+  columnDefs,
+  title,
+  title2,
+  submitText,
+  handleSubmit
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
-
-  const columnDefs: ColDef[] = [
-    { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
-    {
-      headerName: "Item",
-      field: "item",
-    },
-    {
-      headerName: "Item Name",
-      field: "itemName",
-      width: 200,
-      cellRenderer: TruncateCellRenderer,
-    },
-    {
-      headerName: "Item Description",
-      field: "itemSpecification",
-      autoHeight: true,
-      width: 300,
-    },
-    { headerName: "Item Part Number", field: "itemPartNo" },
-    { headerName: "Qty", field: "qty" },
-    { headerName: "Rate", field: "rate" },
-    { headerName: "GST Rate", field: "gstRate" },
-    { headerName: "UOM", field: "uom" },
-    { headerName: "Hsn Code", field: "hsnCode" },
-    { headerName: "CGST Rate", field: "cgstRate" },
-    { headerName: "SGST Rate", field: "sgstRate" },
-    { headerName: "IGST Rate", field: "igstRate" },
-    { headerName: "Remark", field: "itemRemark" },
-  ];
 
   const onBtExport = useCallback(() => {
     if (gridRef.current) {
@@ -79,16 +58,10 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
       >
         <div className="flex justify-between items-center mb-4">
           <div>
-            <SheetTitle>
-              Material Out of {sellRequestDetails?.header?.shipment_id} for{" "}
-              {row?.req_id}
-            </SheetTitle>
-            <SheetTitle>
-              Customer Name:{" "}
-              {sellRequestDetails?.header?.customer_name?.customer_name}
-            </SheetTitle>
+            <SheetTitle>{title}</SheetTitle>
+            <SheetTitle>{title2}</SheetTitle>
           </div>
-          <div className="flex-grow flex justify-center">
+          {title2&&<div className="flex-grow flex justify-center">
             {/* Centering container */}
             <Button
               type="button"
@@ -97,14 +70,14 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
             >
               <Download />
             </Button>
-          </div>
+          </div>}
         </div>
 
         <div className="ag-theme-quartz h-[calc(100vh-170px)]">
           <AgGridReact
             ref={gridRef}
             modules={[CsvExportModule]}
-            rowData={sellRequestDetails?.items}
+            rowData={sellRequestDetails}
             columnDefs={columnDefs}
             suppressCellFocus={true}
             components={{
@@ -123,9 +96,9 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
           </Button>
           <Button
             className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-            onClick={onClose}
+            onClick={handleSubmit}
           >
-            Submit
+            {submitText}
           </Button>
         </div>
       </SheetContent>

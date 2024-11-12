@@ -20,7 +20,7 @@ import { Form } from "antd";
 import { toast } from "@/components/ui/use-toast";
 import ShipmentTextInputCellRendrer from "@/shared/ShipmentTextInputCellRendrer";
 
-interface MaterialListModalProps {
+interface CreateShipmentListModalProps {
   visible: boolean;
   onClose: () => void;
   sellRequestDetails: any[];
@@ -31,7 +31,7 @@ interface MaterialListModalProps {
   onCreateShipment: (payload: any) => void; // Callback to trigger shipment creation
 }
 
-const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
+const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
   visible,
   onClose,
   sellRequestDetails,
@@ -71,6 +71,7 @@ const CreateShipmentListModal: React.FC<MaterialListModalProps> = ({
     console.log(itemDetails, "item", selectedItems);
     onCreateShipment({ itemDetails: { ...itemDetails }, so_id: row.req_id });
     form.resetFields();
+    setOpenConfirmDialog(false);
   };
 
   const components = useMemo(

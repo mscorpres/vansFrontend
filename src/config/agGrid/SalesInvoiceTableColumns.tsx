@@ -25,7 +25,7 @@ const ActionMenu: React.FC<any> = ({ row }) => {
 
   const handleViewInvoice = (row: any) => {
     setViewInvoice(true);
-    dispatch(fetchInvoiceDetail({ invoiceNo: row.invoiceNo }));
+    dispatch(fetchInvoiceDetail({ invoiceNo: row.invoiceNo })); 
   };
 
 const handlePrintInvoice = async (orderId: string) => {
@@ -135,12 +135,6 @@ export const columnDefs: ColDef<RowData>[] = [
     valueGetter: "node.rowIndex + 1",
     maxWidth: 50,
     filter: false,
-  },
-  {
-    headerName: "SO ID",
-    field: "soId",
-    filter: "agNumberColumnFilter",
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "SO Invoice ID",
