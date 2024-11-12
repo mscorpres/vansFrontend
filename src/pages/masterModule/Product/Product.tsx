@@ -13,7 +13,7 @@ import styled from "styled-components";
 import { Form } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
-import { RootState } from "@/store";
+import { AppDispatch, RootState } from "@/store";
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import {
@@ -25,6 +25,7 @@ import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import EditProduct from "./EditProduct";
 import { listOfUoms } from "@/features/client/clientSlice";
 import { RowData } from "@/data";
+import { ColDef } from "ag-grid-community";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -42,7 +43,6 @@ const Product = () => {
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const { toast } = useToast();
   const dispatch = useDispatch<AppDispatch>();
-  const { uomlist } = useSelector((state: RootState) => state.client);
 
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
@@ -50,7 +50,7 @@ const Product = () => {
     const response = await execFun(() => getProductList(), "fetch");
     let { data } = response;
     if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
           ...r,
@@ -65,7 +65,7 @@ const Product = () => {
     const { data } = response;
 
     if (response.status == 200) {
-      let arr = data.data.map((r) => {
+      let arr = data.data.map((r: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
@@ -176,7 +176,16 @@ const Product = () => {
             className="space-y-6 overflow-hidden p-[10px] h-[1000px]"
           >
             <div className="grid grid-cols-2 gap-[40px] ">
-              <Form.Item name="sku" label="SKU">
+              <Form.Item
+                name="sku"
+                label="SKU"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter SKU!",
+                  },
+                ]}
+              >
                 <Input
                   className={InputStyle}
                   placeholder="Enter SKU"
@@ -184,7 +193,16 @@ const Product = () => {
                 />
               </Form.Item>
 
-              <Form.Item name="uom" label="UOM">
+              <Form.Item
+                name="uom"
+                label="UOM"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter UOM!",
+                  },
+                ]}
+              >
                 <Select
                   styles={customStyles}
                   components={{ DropdownIndicator }}
@@ -207,7 +225,16 @@ const Product = () => {
                 />
               </Form.Item>
             </div>
-            <Form.Item name="product" label="Product">
+            <Form.Item
+              name="product"
+              label="Product"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter Product!",
+                },
+              ]}
+            >
               <Input
                 className={InputStyle}
                 placeholder="Enter Product"
@@ -216,7 +243,16 @@ const Product = () => {
             </Form.Item>
 
             <div className="">
-              <Form.Item name="customerName" label="  Customer Name/Code">
+              <Form.Item
+                name="customerName"
+                label="  Customer Name/Code"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter Customer Name/Code!",
+                  },
+                ]}
+              >
                 <ReusableAsyncSelect
                   placeholder="Customer Name"
                   endpoint="/others/customerList"

@@ -43,6 +43,7 @@ import { toast } from "@/components/ui/use-toast";
 import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
+import { rangePresets } from "@/General";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -226,7 +227,7 @@ const ManagePoPage: React.FC = () => {
     dispatch(printPO({ poid: row?.po_transaction })).then((res: any) => {
       if (res.payload.code == 200) {
         let { data } = res.payload;
-        downloadFunction(data.buffer, data.filename);
+        downloadFunction(data.buffer.data, data.filename);
       }
     });
   };
@@ -331,6 +332,7 @@ const ManagePoPage: React.FC = () => {
                     )
                   }
                   format={dateFormat}
+                  presets={rangePresets}
                 />
               </Space>
             </Form.Item>

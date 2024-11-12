@@ -4,7 +4,6 @@ import { Filter } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
@@ -12,11 +11,8 @@ import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
-import useApi from "@/hooks/useApi";
-import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
 import { fetchneededApprovalPO, printPO } from "@/features/client/clientSlice";
 import {
-  exportDateRange,
   exportDateRangespace,
 } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
@@ -29,8 +25,8 @@ import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
-const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
-  const dispatch = useDispatch<AppDispatch>();
+import { rangePresets } from "@/General";
+const ActionMenu: React.FC<ActionMenuProp> = ({ row }) => {
   const navigate = useNavigate();
 
   const menu = (
@@ -57,36 +53,21 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     </>
   );
 };
-const FormSchema = z.object({
-  wise: z.string().optional(),
-  data: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-});
+
 const { RangePicker } = DatePicker;
 // const dateFormat = "DD/MM/YYYY";
 const ApprovePOPage: React.FC = () => {
-  const { loading } = useSelector(
-    (state: RootState) => state.client
-  );
+  const { loading } = useSelector((state: RootState) => state.client);
 
   const [form] = Form.useForm();
 
-  const [wise, setWise] = useState("");
   const [rowData, setRowData] = useState([]);
-  const [date, setDate] = useState("");
-  const [asyncOptions, setAsyncOptions] = useState("");
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
   const [remarkDescription, setRemarkDescription] = useState(false);
   const [cancel, setCancel] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
-  const dateFormat = "DD/MM/YYYY";
 
   const [columnDefs] = useState<ColDef[]>([
     {
@@ -174,34 +155,16 @@ const ApprovePOPage: React.FC = () => {
     },
   ];
   const cancelTheSelectedPo = async (row: any) => {
-    console.log("row", row);
-    let payload = {
+    let payload: any = {
       poId: row?.po_transaction,
     };
     dispatch(printPO(payload)).then((res: any) => {
-      console.log("res", res);
     });
   };
   const dispatch = useDispatch<AppDispatch>();
-  const getVendorList = async () => {
-    // return;
 
-    const response = await execFun(() => fetchListOfVendor(), "fetch");
-    // return;
-    let { data } = response;
-    if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          label: r.name,
-          value: r.code,
-        };
-      });
-      setAsyncOptions(arr);
-    }
-  };
   const fetchManageList = async () => {
     const values = await form.validateFields();
-    console.log("values", values);
     let data;
     if (values.wise.value === "datewise") {
       data = exportDateRangespace(values.data);
@@ -212,17 +175,14 @@ const ApprovePOPage: React.FC = () => {
     }
 
     let payload = { data: data, wise: values.wise.value };
-    console.log("payload", payload);
 
     dispatch(fetchneededApprovalPO(payload)).then((res: any) => {
-      console.log("res", res);
       if (res.payload.code == 200) {
         let arr = res.payload.data;
 
-        arr.map((r) => {
+        arr.map((r: any) => {
           return { ...r };
         });
-        console.log("arr,ar", arr);
         setRowData(arr);
       } else {
         toast({
@@ -236,12 +196,7 @@ const ApprovePOPage: React.FC = () => {
     //   setRowData(managePoList);
     // }
   };
-  const defaultColDef = useMemo(() => {
-    return {
-      filter: "agTextColumnFilter",
-      floatingFilter: true,
-    };
-  }, []);
+ 
   useEffect(() => {
     form.setFieldValue("data", "");
   }, [selectedwise]);
@@ -289,6 +244,7 @@ const ApprovePOPage: React.FC = () => {
                     )
                   }
                   format={"DD/MM/YYYY"}
+                  presets={rangePresets}
                 />
               </Space>
             </Form.Item>

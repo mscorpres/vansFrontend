@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { StatusPanelDef, ColDef } from "@ag-grid-community/core";
+import { StatusPanelDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import DatePickerCellRenderer from "@/config/agGrid/DatePickerCellRenderer";
 import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
@@ -55,7 +55,6 @@ const AddPO: React.FC<Props> = ({
   setIsApprove,
   params,
   codeType,
-  setCodeType,
 }) => {
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
@@ -64,7 +63,6 @@ const AddPO: React.FC<Props> = ({
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
   const [taxDetails, setTaxDetails] = useState([]);
-  const [search, setSearch] = useState("");
   const dispatch = useDispatch<AppDispatch>();
 
   const { currencyList, loading } = useSelector(
@@ -116,13 +114,6 @@ const AddPO: React.FC<Props> = ({
       newRow,
     ]);
   };
-  const removeRows = () => {};
-  const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      floatingFilter: false,
-      editable: false,
-    };
-  }, []);
 
   const statusBar = useMemo<{
     statusPanels: StatusPanelDef[];
@@ -162,10 +153,6 @@ const AddPO: React.FC<Props> = ({
     }),
     []
   );
-
-  const onBtExport = useCallback(() => {
-    gridRef.current!.api.exportDataAsExcel();
-  }, []);
 
   useEffect(() => {
     dispatch(fetchComponentDetail({ search: "" }));
@@ -246,8 +233,6 @@ const AddPO: React.FC<Props> = ({
           updaterow: arr.map((r: any) => r.updateingId),
         };
         dispatch(updatePo(payload2)).then((response: any) => {
-          console.log("this is the response", response);
-          // console.log("response", response);
 
           if (response.payload.code == 200) {
             setShowConfirmation(false);
@@ -257,6 +242,7 @@ const AddPO: React.FC<Props> = ({
             });
             form.resetFields();
             setRowData([]);
+            setIsApprove(false);
             // navigate("/sales/order/register");
           } else {
             toast({
@@ -266,9 +252,8 @@ const AddPO: React.FC<Props> = ({
           }
         });
       } else if (isApprove == "approve") {
-        console.log("params", params);
         let a = {
-          poid: params,
+          poid: params.id,
         };
         dispatch(poApprove(a)).then((response: any) => {
           if (response.payload.code == 200) {
@@ -289,7 +274,6 @@ const AddPO: React.FC<Props> = ({
         });
       } else {
         dispatch(createSellRequest(payload)).then((response: any) => {
-          console.log("response", response);
 
           if (response.payload.code == 200) {
             setShowConfirmation(false);
@@ -471,23 +455,24 @@ const AddPO: React.FC<Props> = ({
     const calculateTaxDetails = () => {
       let singleArr: any = rowData;
       const values = singleArr?.reduce(
-        (partialSum, a) => partialSum + +Number(a?.localValue).toFixed(2),
+        (partialSum: any, a: any) =>
+          partialSum + +Number(a?.localValue).toFixed(2),
         0
       );
       const value = +Number(values).toFixed(2);
 
       const cgsts = singleArr?.reduce(
-        (partialSum, a) => partialSum + +Number(a?.cgst).toFixed(2),
+        (partialSum: any, a: any) => partialSum + +Number(a?.cgst).toFixed(2),
         0
       );
       const cgst = +Number(cgsts).toFixed(2);
       const sgsts = singleArr?.reduce(
-        (partialSum, a) => partialSum + +Number(a?.sgst).toFixed(2),
+        (partialSum: any, a: any) => partialSum + +Number(a?.sgst).toFixed(2),
         0
       );
       const sgst = +Number(sgsts).toFixed(2);
       const igsts = singleArr?.reduce(
-        (partialSum, a) => partialSum + +Number(a?.igst).toFixed(2),
+        (partialSum: any, a: any) => partialSum + +Number(a?.igst).toFixed(2),
         0
       );
 

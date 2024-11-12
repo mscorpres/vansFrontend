@@ -1,13 +1,10 @@
-
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  InputStyle,
-} from "@/constants/themeContants";
+import { InputStyle } from "@/constants/themeContants";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
 import { Input } from "@/components/ui/input";
@@ -72,17 +69,12 @@ const Locations = () => {
   };
   const fetchGrouplist = async () => {
     const response = await execFun(() => fetchLocationList(), "fetch");
-    console.log("response -", response);
     let { data } = response;
     if (response.status === 200) {
       let a = customFlatArray(data.data);
       let arr = a.map((r: any, id: any) => {
         return { id: id + 1, ...r };
       });
-      console.log("arr", arr);
-      console.log("a", a);
-      //   setLocationData(arr);
-      console.log("arr", arr);
       setRowData(arr);
       //   addToast(response.message, {
       //     appearance: "success",
@@ -92,7 +84,6 @@ const Locations = () => {
   };
   const fetchGroupOptionslist = async () => {
     const response = await execFun(() => getParentLocationOptions(), "fetch");
-    console.log("response", response);
     if (response.status == 200) {
       let { data } = response;
       //   let arr = convertSelectOptions(data);
@@ -103,7 +94,6 @@ const Locations = () => {
           value: r.id,
         };
       });
-      console.log("arr", arr);
 
       setAsyncOptions(arr);
     }
@@ -118,7 +108,6 @@ const Locations = () => {
     };
 
     const response = await execFun(() => insertLoations(payload), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       toast({
@@ -197,7 +186,15 @@ const Locations = () => {
           >
             {" "}
             <div className="">
-              <Form.Item name="location">
+              <Form.Item
+                name="location"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter location!",
+                  },
+                ]}
+              >
                 <Input
                   className={InputStyle}
                   placeholder="Enter Locations Name"
@@ -206,7 +203,15 @@ const Locations = () => {
             </div>{" "}
             <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
               <div className="">
-                <Form.Item name="locationUnder">
+                <Form.Item
+                  name="locationUnder"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter parent Location!",
+                    },
+                  ]}
+                >
                   <Select
                     styles={customStyles}
                     components={{ DropdownIndicator }}
@@ -230,7 +235,15 @@ const Locations = () => {
                 </Form.Item>
               </div>
               <div className="">
-                <Form.Item name="locationType">
+                <Form.Item
+                  name="locationType"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter location Type!",
+                    },
+                  ]}
+                >
                   <Select
                     styles={customStyles}
                     components={{ DropdownIndicator }}
@@ -257,7 +270,15 @@ const Locations = () => {
               </div>
             </div>
             <div className="">
-              <Form.Item name="address">
+              <Form.Item
+                name="address"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter address!",
+                  },
+                ]}
+              >
                 <Input
                   className={InputStyle}
                   placeholder="Enter Address"

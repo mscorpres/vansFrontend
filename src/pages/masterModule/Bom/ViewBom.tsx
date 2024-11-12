@@ -10,23 +10,31 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import {
-  modelFixFooterStyle,
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { modelFixHeaderStyle } from "@/constants/themeContants";
 import { AgGridReact } from "ag-grid-react";
-const ViewBom = ({ openView, setSheetOpenView }) => {
+import { RowData } from "@/data";
+import { ColDef } from "ag-grid-community";
+const ViewBom = ({ openView: any, setSheetOpenView }) => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const { execFun, loading: loading1 } = useApi();
   const getData = async () => {
     const response = await execFun(() => fetchbomComponents(openView), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       let { data } = response;
-      let arr = data?.data.map((r, id) => {
-        return { id: id + 1, ...r };
+      let arr = data?.data.map((r: any, id: any) => {
+        return {
+          id: id + 1,
+          map_cust_description: r.map_cust_description.length
+            ? r.map_cust_description
+            : "-",
+          map_cust_part_no: r.map_cust_part_no.length
+            ? r.map_cust_part_no
+            : "-",
+          ven_comp: r.ven_comp.length ? r.ven_comp : "-",
+          ven_com_desc: r.ven_com_desc.length ? r.ven_com_desc : "-",
+          ...r,
+        };
       });
-      console.log("arrq", arr);
       setRowData(arr);
     }
   };
@@ -51,6 +59,7 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
             <SheetTitle className="text-slate-600">View BOM</SheetTitle>
           </SheetHeader>{" "}
           <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+            {loading1("fetch") && <FullPageLoading />}
             <AgGridReact
               //   loadingCellRenderer={loadingCellRenderer}
               rowData={rowData}
@@ -90,19 +99,19 @@ const columnDefs: ColDef<rowData>[] = [
   },
   {
     headerName: "Customer Part No.",
-    field: "vendor",
+    field: "map_cust_part_no",
     filter: "agTextColumnFilter",
-    width: 150,
+    width: 190,
   },
   {
     headerName: "Vendor Part Name",
-    field: "vendor_name",
+    field: "ven_comp",
     filter: "agTextColumnFilter",
     width: 250,
   },
   {
     headerName: "Vendor Component Name",
-    field: "vendor_part_no",
+    field: "ven_com_desc",
     filter: "agTextColumnFilter",
     width: 150,
   },
@@ -122,6 +131,6 @@ const columnDefs: ColDef<rowData>[] = [
     headerName: "Req Qty",
     field: "qty",
     filter: "agTextColumnFilter",
-    width: 100,
+    width: 150,
   },
 ];

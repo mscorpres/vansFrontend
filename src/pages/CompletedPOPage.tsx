@@ -1,10 +1,9 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import {  EyeIcon, Filter, Trash } from "lucide-react";
+import { Filter } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
@@ -12,37 +11,25 @@ import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
-import useApi from "@/hooks/useApi";
-import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
-import {
-  fetchCompletedPo,
-  printPO,
-} from "@/features/client/clientSlice";
-import {
-  exportDateRangespace,
-} from "@/components/shared/Options";
+import { fetchCompletedPo, printPO } from "@/features/client/clientSlice";
+import { exportDateRangespace } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
 import ViewCompoents from "./ProcurementModule/ManagePO/ViewCompoents";
 import POCancel from "./ProcurementModule/ManagePO/POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./ProcurementModule/ManagePO/MINPO";
-import { useNavigate } from "react-router-dom";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { rangePresets } from "@/General";
 const ActionMenu: React.FC<ActionMenuProps> = ({
-  setViewMinPo,
-  setCancel,
   setView,
   row,
   printTheSelectedPo,
 }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-
   const menu = (
     <Menu>
       <Menu.Item
@@ -70,30 +57,14 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
     </>
   );
 };
-const FormSchema = z.object({
-  wise: z.string().optional(),
-  data: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-});
+
 const { RangePicker } = DatePicker;
 // const dateFormat = "DD/MM/YYYY";
 const CompletedPOPage: React.FC = () => {
-  const {  loading } = useSelector(
-    (state: RootState) => state.client
-  );
- 
+  const { loading } = useSelector((state: RootState) => state.client);
+
   const [form] = Form.useForm();
-  // const { execFun, loading: loading1 } = useApi();
-  // const rowdata = podetail;
-  const [wise, setWise] = useState("");
   const [rowData, setRowData] = useState([]);
-  const [date, setDate] = useState("");
-  const [asyncOptions, setAsyncOptions] = useState("");
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
   const [remarkDescription, setRemarkDescription] = useState(false);
@@ -101,7 +72,6 @@ const CompletedPOPage: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
 
-  const dateFormat = "DD/MM/YYYY";
 
   const [columnDefs] = useState<ColDef[]>([
     {
@@ -186,44 +156,23 @@ const CompletedPOPage: React.FC = () => {
       value: "vendorwise",
     },
   ];
-  console.log("view", view);
 
   const printTheSelectedPo = async (row: any) => {
-    let payload = {
-      poid: row?.po_transaction ?? row?.po_transaction_code,
-    };
-    console.log("payload", payload);
+  
 
     dispatch(
       printPO({ poid: row?.po_transaction ?? row?.po_transaction_code })
     ).then((res: any) => {
-      console.log("res", res);
       if (res.payload.code == 200) {
         let { data } = res.payload;
-        downloadFunction(data.buffer, data.filename);
+        downloadFunction(data.buffer.data, data.filename);
       }
     });
   };
   const dispatch = useDispatch<AppDispatch>();
-  const getVendorList = async () => {
-    // return;
 
-    const response = await execFun(() => fetchListOfVendor(), "fetch");
-    // return;
-    let { data } = response;
-    if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          label: r.name,
-          value: r.code,
-        };
-      });
-      setAsyncOptions(arr);
-    }
-  };
   const fetchManageList = async () => {
     const values = await form.validateFields();
-    console.log("date", date);
     let datas;
     if (values.wise.value === "datewise") {
       datas = exportDateRangespace(values.data);
@@ -234,17 +183,14 @@ const CompletedPOPage: React.FC = () => {
     }
 
     let payload = { data: datas, wise: values.wise.value };
-    console.log("payload", payload);
     //setLoading(true);
     dispatch(fetchCompletedPo(payload)).then((res: any) => {
-      console.log("res", res);
       if (res.payload.code == 200) {
         let arr = res.payload.data;
 
-        let list = arr.data.map((r) => {
+        let list = arr.data.map((r: any) => {
           return { ...r };
         });
-        console.log("arr,ar", list);
         setRowData(list);
       } else {
         toast({
@@ -260,12 +206,7 @@ const CompletedPOPage: React.FC = () => {
     //   setRowData(managePoList);
     // }
   };
-  const defaultColDef = useMemo(() => {
-    return {
-      filter: "agTextColumnFilter",
-      floatingFilter: true,
-    };
-  }, []);
+
   useEffect(() => {
     form.setFieldValue("data", "");
   }, [selectedwise]);
@@ -313,6 +254,7 @@ const CompletedPOPage: React.FC = () => {
                     )
                   }
                   format="DD/MM/YYYY"
+                  presets={rangePresets}
                 />
               </Space>
             </Form.Item>

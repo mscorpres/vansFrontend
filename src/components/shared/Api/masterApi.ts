@@ -15,14 +15,14 @@ export const listOfUom = async () => {
 };
 export const componentList = async () => {
   const response = await spigenAxios.get("/component", {
-    _: 1717993845490,
+    params: { _: 1717993845490 },
   });
 
   return response;
 };
 export const serviceList = async () => {
   const response = await spigenAxios.get("/component/service", {
-    _: 1718005226978,
+    params: { _: 1718005226978 },
   });
 
   return response;
@@ -149,17 +149,18 @@ export const fetchStateList = async (val: any) => {
 };
 export const fetchBillingAddess = async () => {
   const response = await spigenAxios.get("/billingAddress/getAll", {
-    _: "1718169626779",
+    params: { _: "1718169626779" },
   });
   //console.log("here in api", response);
   return response;
 };
 
-export const fetchShippingAddess = async () => {
+export const fetchShippingAddress = async () => {
   const response = await spigenAxios.get("shippingAddress/getAll", {
-    _: "1718170508727",
+    params: {
+      _: "1718170508727",
+    },
   });
-  //console.log("here in api", response);
   return response;
 };
 export const fetchBomTypeWise = async (wise: any) => {
@@ -167,8 +168,11 @@ export const fetchBomTypeWise = async (wise: any) => {
     wise: wise,
   });
   //console.log("here in api", response);
+  //console.log("here in api", response);
+  //console.log("here in aupdateComponentpi", response);
   return response;
 };
+
 export const fetchMapComponent = async (search: any) => {
   const response = await spigenAxios.get(`bom/fetchMapComponent/${search}`);
   //console.log("here in api", response);
@@ -181,22 +185,22 @@ export const fetchProductInBom = async (search: any) => {
   //console.log("here in api", response);
   return response;
 };
-export const fetchCountryList = async (search: any) => {
+export const fetchCountryList = async () => {
   const response = await spigenAxios.get("/others/countries");
   //console.log("here in api", response);
   return response;
 };
-export const fetchState = async (search: any) => {
+export const fetchState = async () => {
   const response = await spigenAxios.get("/others/states");
   //console.log("here in api", response);
   return response;
 };
-export const createNewClientEntry = async (obj) => {
+export const createNewClientEntry = async (obj: any) => {
   const response = await spigenAxios.post("/client/createclient", obj);
   //console.log("here in api", response);
   return response;
 };
-export const viewListClientEntry = async (obj) => {
+export const viewListClientEntry = async (obj: any) => {
   const response = await spigenAxios.get("client/viewclients", obj);
   //console.log("here in api", response);
   return response;
@@ -213,16 +217,24 @@ export const insertLoations = async (payload: any) => {
 };
 export const fetchAllVendorList = async (search: any) => {
   const response = await spigenAxios.get("/vendor/getAll", {
-    searchTerm: search,
+    params: { searchTerm: search },
   });
   return response;
 };
-export const fetchAllBranchList = async (code: any) => {
-  const response = await spigenAxios.post("vendor/getAllBranchList", {
-    vendor_id: code,
-  });
-  return response;
-};
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Fetches a list of all branches associated with a specific vendor.
+ *
+ * @param code - The vendor ID for which to retrieve branch information.
+ * @returns A promise that resolves to the response containing the list of branches.
+ */
+/******  9df202e2-e37a-4b4d-ac0a-d7d2aa08869f  *******/ export const fetchAllBranchList =
+  async (code: any) => {
+    const response = await spigenAxios.post("vendor/getAllBranchList", {
+      vendor_id: code,
+    });
+    return response;
+  };
 export const fetchAllBranchDetails = async (code: any) => {
   const response = await spigenAxios.post("/vendor/getBranchDetails", {
     addresscode: code,
@@ -235,19 +247,19 @@ export const fetchAllDetailsOfVendor = async (code: any) => {
   });
   return response;
 };
-export const fetchAllListOfVendor = async (code: any) => {
+export const fetchAllListOfVendor = async () => {
   const response = await spigenAxios.get("/vendor/getAll", {
-    _: 1725514863391,
+    params: { _: 1725514863391 },
   });
   return response;
 };
 export const fetchListOfVendor = async (search: any) => {
   const response = await spigenAxios.get("/backend/vendorList", {
-    search: search,
+    params: { search: search },
   });
   return response;
 };
-export const fetchListOfPendingFg = async (search: any) => {
+export const fetchListOfPendingFg = async () => {
   const response = await spigenAxios.post("/fgIN/pending");
   return response;
 };
@@ -258,7 +270,7 @@ export const fetchListOfCompletedFg = async (wise: any, dataString: any) => {
   });
   return response;
 };
-export const fetchListOfCompletedFgOut = async (payload) => {
+export const fetchListOfCompletedFgOut = async (payload: any) => {
   const response = await spigenAxios.post("/fgout/fetchFgOutRpt", payload);
   return response;
 };
@@ -344,7 +356,7 @@ export const getProductDetailsForEdit = async (payload: any) => {
 };
 export const getListOFViewCustomers = async (payload: any) => {
   const response = await spigenAxios.get("/client/viewclients", {
-    componentKey: payload,
+    params: { componentKey: payload },
   });
   return response;
 };
@@ -385,6 +397,10 @@ export const updateComponentofMaterial = async (payload: any) => {
     "/component/updateComponent",
     payload
   );
+  return response;
+};
+export const updateProductMaterial = async (payload: any) => {
+  const response = await spigenAxios.post("products/updateProduct", payload);
   return response;
 };
 export const saveComponentMap = async (payload: any) => {

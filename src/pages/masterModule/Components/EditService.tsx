@@ -78,7 +78,6 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       () => getComponentDetailsForServices(sheetOpenEdit),
       "fetch"
     );
-    console.log("response0", response);
     if (response.status == 200) {
       let { data } = response;
       let arr = data.data[0];
@@ -87,7 +86,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         serviceName: arr.name,
         serviceCategory: arr.name,
         description: arr.description,
-        gstTaxRate: arr.gst_rate,
+        gstTaxRate: { label: arr.gst_rate.text, value: arr.gst_rate.id },
         taxType:
           arr.tax_type == "I"
             ? {
@@ -102,7 +101,6 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         sacCode: arr.sac,
         uom: { label: arr.uomname, value: arr.uomid },
       };
-      console.log("obj", obj);
 
       form.setFieldsValue(obj);
     } else {
@@ -117,7 +115,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     const { data } = response;
 
     if (response.status == 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
@@ -128,7 +126,6 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   };
   const saveEdit = async () => {
     const values = await form.validateFields();
-    console.log("values", values);
     let payload = {
       componentKey: sheetOpenEdit,
       uom: values.uom.value,
@@ -185,6 +182,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 //   onSubmit={form.handleSubmit(onSubmit)}
                 className=""
               >
+                {loading1("fetch") && <FullPageLoading />}
                 <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
                   <div className="grid grid-cols-1 gap-[30px]">
                     <Card className="rounded shadow bg-[#fff]">
@@ -237,6 +235,12 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             className="w-full"
                             name="enabled"
                             label="Enabled"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please enter Enabled!",
+                              },
+                            ]}
                           >
                             <Select
                               styles={customStyles}
@@ -286,7 +290,16 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             />
                           </Form.Item>
 
-                          <Form.Item label="GST Tax Rate" name="gstTaxRate">
+                          <Form.Item
+                            label="GST Tax Rate"
+                            name="gstTaxRate"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please enter GST Tax Rate!",
+                              },
+                            ]}
+                          >
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -297,6 +310,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                               isClearable={true}
                               isSearchable={true}
                               options={gstRateList}
+                              menuPlacement="top"
                             />
                           </Form.Item>
 
