@@ -1,6 +1,6 @@
 import { fetchbomComponents } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   Sheet,
@@ -14,7 +14,7 @@ import { modelFixHeaderStyle } from "@/constants/themeContants";
 import { AgGridReact } from "ag-grid-react";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
-const ViewBom = ({ openView: any, setSheetOpenView }) => {
+const ViewBom = ({ openView, setSheetOpenView }) => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const { execFun, loading: loading1 } = useApi();
   const getData = async () => {
@@ -24,17 +24,18 @@ const ViewBom = ({ openView: any, setSheetOpenView }) => {
       let arr = data?.data.map((r: any, id: any) => {
         return {
           id: id + 1,
-          map_cust_description: r.map_cust_description.length
-            ? r.map_cust_description
-            : "-",
-          map_cust_part_no: r.map_cust_part_no.length
-            ? r.map_cust_part_no
-            : "-",
-          ven_comp: r.ven_comp.length ? r.ven_comp : "-",
-          ven_com_desc: r.ven_com_desc.length ? r.ven_com_desc : "-",
+          map_cust_description: r.map_cust_description ?? "--", // Replace null or undefined with "--"
+          map_cust_part_no: r.map_cust_part_no ?? "--", // Replace null or undefined with "--"
+          ven_comp: r.ven_comp ? (r.ven_comp === "" ? "--" : r.ven_comp) : "--", // Handle both null and empty string
+          ven_com_desc: r.ven_com_desc
+            ? r.ven_com_desc === ""
+              ? "--"
+              : r.ven_com_desc
+            : "--", // Handle both null and empty string
           ...r,
         };
       });
+
       setRowData(arr);
     }
   };
@@ -47,7 +48,7 @@ const ViewBom = ({ openView: any, setSheetOpenView }) => {
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       {" "}
       {loading1("fetch") && <FullPageLoading />}
-      <Sheet open={openView.length} onOpenChange={setSheetOpenView}>
+      <Sheet open={openView?.length} onOpenChange={setSheetOpenView}>
         <SheetTrigger></SheetTrigger>
         <SheetContent
           className="min-w-[100%] p-0"
@@ -113,7 +114,7 @@ const columnDefs: ColDef<rowData>[] = [
     headerName: "Vendor Component Name",
     field: "ven_com_desc",
     filter: "agTextColumnFilter",
-    width: 150,
+    width: 200,
   },
   {
     headerName: "UOM",

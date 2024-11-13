@@ -172,6 +172,21 @@ export const fetchBomTypeWise = async (wise: any) => {
   //console.log("here in aupdateComponentpi", response);
   return response;
 };
+export const fetchPartCodeDetails = async (thepartCode: any) => {
+  const response = await spigenAxios.get(
+    `/bom/fetchMapComponent/${thepartCode}`
+  );
+  return response;
+};
+export const insertBom = async (payload: any) => {
+  const response = await spigenAxios.post("bom/insert", payload);
+  return response;
+};
+export const fetchProductBySku = async (wise: any) => {
+
+  const response = await spigenAxios.get(`/products/bySku?sku=${wise}`);
+  return response;
+};
 
 export const fetchMapComponent = async (search: any) => {
   const response = await spigenAxios.get(`bom/fetchMapComponent/${search}`);
@@ -183,6 +198,14 @@ export const fetchProductInBom = async (search: any) => {
     subject_id: search,
   });
   //console.log("here in api", response);
+  return response;
+};
+export const updateselectedBomComponent = async (payload: any) => {
+  const response = await spigenAxios.post(`/bom/updateBomComponent`, payload);
+  return response;
+};
+export const fetchBomDocsFiles = async (payload: any) => {
+  const response = await spigenAxios.post(`/bom/fetchBomDocsFiles`, payload);
   return response;
 };
 export const fetchCountryList = async () => {
@@ -472,6 +495,29 @@ export const fetchEdditBomStage2 = async (payload: any) => {
     {
       subject_id: payload,
     }
+  );
+  return response;
+};
+
+export const removeAltComponent = async (payload: any) => {
+  const response = await spigenAxios.post("/bom/removeAltComponent", payload);
+  return response;
+};
+export const addNewAltComponent = async (payload: any) => {
+  const response = await spigenAxios.post("bom/addNewAltComponent", payload);
+  return response;
+};
+export const getAllAlternativeComponents = async (payload: any) => {
+  const response = await spigenAxios.post(
+    "/bom/getAllAlternativeComponents",
+    payload
+  );
+  return response;
+};
+export const getAlternativeComponents = async (payload: any) => {
+  const response = await spigenAxios.post(
+    "/bom/getAlternativeComponents",
+    payload
   );
   return response;
 };

@@ -43,7 +43,7 @@ const initialState: ClientState = {
   updateBOMs: null,
 };
 // Create the slice
-const clientSlice = createSlice({
+const productSlice = createSlice({
   name: "client",
   initialState,
   reducers: {},
@@ -64,4 +64,4 @@ const clientSlice = createSlice({
   },
 });
 
-export default clientSlice.reducer;
+export default productSlice.reducer;
