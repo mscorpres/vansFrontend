@@ -15,6 +15,8 @@ import { CgArrowTopRight } from "react-icons/cg";
 import { Printer } from "lucide-react";
 import { TruncateCellRenderer } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 
 interface ViewInvoiceModalProps {
   visible: boolean;
@@ -109,11 +111,12 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
     (item) => parseFloat(item.igstRate) || 0
   );
 
-  const totalValue = sellRequestDetails?.materialData?.reduce(
-    (acc, item) => acc + (item.rate ?? 0) * (item.qty ?? 0),
-    0
-  ) ?? 0;
-  
+  const totalValue =
+    sellRequestDetails?.materialData?.reduce(
+      (acc, item) => acc + (item.rate ?? 0) * (item.qty ?? 0),
+      0
+    ) ?? 0;
+
   const totalCGST = itemCGSTs?.reduce((acc, value) => acc + value, 0);
   const totalSGST = itemSGSTs?.reduce((acc, value) => acc + value, 0);
   const totalIGST = itemIGSTs?.reduce((acc, value) => acc + value, 0);
@@ -178,7 +181,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                 <p className="text-[14px]">{data?.billTo?.gst}</p>
                 <h3 className="font-[600]">Address</h3>
                 <p className="text-[14px]">
-                  {data?.billTo?.address1 || "" + data?.billTo?.address2}
+                  {(data?.billTo?.address1 ?? "") +" "+ data?.billTo?.address2}
                 </p>
               </CardContent>
             </Card>
@@ -195,7 +198,8 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                 <p className="text-[14px]">{data?.billFrom?.gstin}</p>
                 <h3 className="font-[600]">Address</h3>
                 <p className="text-[14px]">
-                  {data?.billFrom?.address1 || "" + data?.billFrom?.address2}
+                  {(data?.billFrom?.address1 ?? "") +" "+
+                    (data?.billFrom?.address2 ?? "")}
                 </p>
               </CardContent>
             </Card>
@@ -300,7 +304,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                 onClick={() => handleEwayClick("Invoice")}
                 variant={"outline"}
               >
-                Generate e-Invoice{" "}
+                Generate e-Invoice
                 <CgArrowTopRight className="h-[20px] w-[20px] font-[600]" />
               </Button>
               <Button
@@ -313,15 +317,46 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                 Generate e-Way Bill{" "}
                 <CgArrowTopRight className="h-[20px] w-[20px] font-[600]" />
               </Button>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  handlePrintInvoice(sellRequestDetails?.headerData?.invoiceNo)
-                }
-              >
-                Print
-                <Printer className="pl-1 h-[20px] w-[20px] font-[600]" />
-              </Button>
+              <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      Print{" "}
+                      <Printer className="pl-1 h-[20px] w-[20px] font-[600]" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        handlePrintInvoice(
+                          sellRequestDetails?.header?.invoiceNo,
+                          "Original"
+                        )
+                      }
+                    >
+                      Original
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        handlePrintInvoice(
+                          sellRequestDetails?.header?.invoiceNo,
+                          "Duplicate"
+                        )
+                      }
+                    >
+                      Duplicate
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        handlePrintInvoice(
+                          sellRequestDetails?.header?.invoiceNo,
+                          "Transporter"
+                        )
+                      }
+                    >
+                      Transporter
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
             </div>
             <div className="ag-theme-quartz flex-1">
               <AgGridReact

@@ -39,11 +39,9 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { Button } from "@/components/ui/button";
 import { DatePicker, Space } from "antd";
 import { toast } from "@/components/ui/use-toast";
-import { fetchStates } from "@/features/salesmodule/createSalesOrderSlice";
-
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-import { TruncateCellRenderer } from "@/General";
+import { stateOptions, TruncateCellRenderer } from "@/General";
 import ShowInvoiceModal from "@/config/agGrid/invoiceModule/ShowInvoiceModal";
 import {
   createEwayBill,
@@ -51,6 +49,7 @@ import {
   fetchDataForInvoice,
   generateEInvoice,
 } from "@/features/salesmodule/salesInvoiceSlice";
+import { transformStateOptions } from "@/helper/transform";
 
 export default function CreateEwayBill() {
   const dispatch = useDispatch<AppDispatch>();
@@ -70,20 +69,10 @@ export default function CreateEwayBill() {
   const { ewayBillData, loading } = useSelector(
     (state: RootState) => state.sellInvoice
   );
-  const { states } = useSelector((state: RootState) => state.createSalesOrder);
   const [rowData, setRowData] = useState(ewayBillData || []);
   const [orderId, setOrderId] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   // const transTypeSelected = Form?.useWatch("transactionType", form);
-
-  useEffect(() => {
-    dispatch(fetchStates());
-  }, []);
-
-  const stateOptions: any = states?.map((state) => ({
-    value: state, // Store the entire state object
-    label: state.name,
-  }));
 
   useEffect(() => {
     const shipId = (params?.id as string).replace(/_/g, "/");
@@ -91,7 +80,7 @@ export default function CreateEwayBill() {
     dispatch(action({ shipment_id: shipId })).then((res: any) => {
       if (res.payload?.success) {
         var data = res.payload?.data[0];
-        console.log(data, "dataa");
+        setTotalSum(data?.total_amount||0)
         form.setValue("header.documentNo", data?.documentNo);
         setOrderId(data?.documentDetail?.documentNo);
         form.setValue(
@@ -99,7 +88,7 @@ export default function CreateEwayBill() {
           data?.documentDetail?.documentDate
         );
         form.setValue("billFrom.legalName", data?.bill_from?.legalName);
-        form.setValue("billFrom.state", data?.bill_from?.state);
+        form.setValue("billFrom.state", data?.bill_from?.state?.state_code);
         form.setValue("billFrom.location", data?.bill_from?.location);
         form.setValue("billFrom.gstin", data?.bill_from?.gstin);
         form.setValue("billFrom.pincode", data?.bill_from?.pincode);
@@ -108,7 +97,7 @@ export default function CreateEwayBill() {
         form.setValue("billFrom.addressLine2", data?.bill_from?.address2);
 
         form.setValue("billTo.legalName", data?.bill_to?.client);
-        form.setValue("billTo.state", data?.bill_to?.state);
+        form.setValue("billTo.state", data?.bill_to?.state?.state_code);
         form.setValue("billTo.location", data?.bill_to?.location);
         form.setValue("billTo.gstin", data?.bill_to?.gst);
         form.setValue("billTo.pincode", data?.bill_to?.pincode);
@@ -117,7 +106,7 @@ export default function CreateEwayBill() {
         form.setValue("billTo.addressLine2", data?.bill_to?.address2);
 
         form.setValue("dispatchFrom.legalName", data?.ship_from?.legalName);
-        form.setValue("dispatchFrom.state", data?.ship_from?.state);
+        form.setValue("dispatchFrom.state", data?.ship_from?.state?.state_code);
         form.setValue("dispatchFrom.pan", data?.ship_from?.pan);
         form.setValue("dispatchFrom.addressLine1", data?.ship_from?.address1);
         form.setValue("dispatchFrom.addressLine2", data?.ship_from?.address2);
@@ -126,7 +115,7 @@ export default function CreateEwayBill() {
         form.setValue("shipTo.pincode", data?.ship_to?.pincode);
         form.setValue("shipTo.pan", data?.ship_to?.panno);
         form.setValue("shipTo.gstin", data?.ship_to?.gst);
-        form.setValue("shipTo.state", data?.ship_to?.state);
+        form.setValue("shipTo.state", data?.ship_to?.state?.state_code);
         form.setValue("shipTo.addressLine1", data?.ship_to?.address1);
         form.setValue("shipTo.addressLine2", data?.ship_to?.address2);
       }
@@ -604,18 +593,22 @@ export default function CreateEwayBill() {
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
-                                options={stateOptions}
+                                options={
+                                  stateOptions
+                                    ? transformStateOptions(stateOptions)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateOptions)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
                                 onChange={(selectedOption) => {
                                   field.onChange(
                                     selectedOption ? selectedOption.value : null
                                   );
                                 }}
-                                value={
-                                  stateOptions?.find(
-                                    (option: any) =>
-                                      option.value.code === field.value?.code // Match by code
-                                  ) || null
-                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -830,18 +823,22 @@ export default function CreateEwayBill() {
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
-                                options={stateOptions}
+                                options={
+                                  stateOptions
+                                    ? transformStateOptions(stateOptions)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateOptions)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
                                 onChange={(selectedOption) => {
                                   field.onChange(
                                     selectedOption ? selectedOption.value : null
                                   );
                                 }}
-                                value={
-                                  stateOptions?.find(
-                                    (option: any) =>
-                                      option.value.code === field.value?.code // Match by code
-                                  ) || null
-                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -1029,7 +1026,17 @@ export default function CreateEwayBill() {
                                   isDisabled={false}
                                   isClearable={true}
                                   isSearchable={true}
-                                  options={stateOptions}
+                                  options={
+                                    stateOptions
+                                      ? transformStateOptions(stateOptions)
+                                      : []
+                                  }
+                                  value={
+                                    // Find the corresponding option based on field.value (which is the stateCode)
+                                    transformStateOptions(stateOptions)?.find(
+                                      (option) => option.value === field.value
+                                    ) || null
+                                  }
                                   onChange={(selectedOption) => {
                                     field.onChange(
                                       selectedOption
@@ -1037,12 +1044,7 @@ export default function CreateEwayBill() {
                                         : null
                                     );
                                   }}
-                                  value={
-                                    stateOptions?.find(
-                                      (option: any) =>
-                                        option.value.code === field.value?.code // Match by code
-                                    ) || null
-                                  }
+                                
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1188,7 +1190,17 @@ export default function CreateEwayBill() {
                                   isDisabled={false}
                                   isClearable={true}
                                   isSearchable={true}
-                                  options={stateOptions}
+                                  options={
+                                    stateOptions
+                                      ? transformStateOptions(stateOptions)
+                                      : []
+                                  }
+                                  value={
+                                    // Find the corresponding option based on field.value (which is the stateCode)
+                                    transformStateOptions(stateOptions)?.find(
+                                      (option) => option.value === field.value
+                                    ) || null
+                                  }
                                   onChange={(selectedOption) => {
                                     field.onChange(
                                       selectedOption
@@ -1196,12 +1208,7 @@ export default function CreateEwayBill() {
                                         : null
                                     );
                                   }}
-                                  value={
-                                    stateOptions?.find(
-                                      (option: any) =>
-                                        option.value.code === field.value?.code // Match by code
-                                    ) || null
-                                  }
+                                  
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1374,68 +1381,7 @@ export default function CreateEwayBill() {
                         )}
                       />
                     </div>
-                    {/* <div className="">
-                      <FormField
-                        control={form.control}
-                        name={
-                          form.getValues("dispatchFrom.pincode")
-                            ? "dispatchFrom.pincode"
-                            : "billFrom.pincode"
-                        }
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              From Pincode
-                              {isEwayBill && (
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
-                              )}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="From Pincode"
-                                readOnly
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name={
-                          form.getValues("shipTo.pincode")
-                            ? "shipTo.pinCode"
-                            : "billTo.pincode"
-                        }
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              To Pincode
-                              {isEwayBill && (
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
-                              )}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="To Pincode"
-                                readOnly
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div> */}
+                 
                     <div className="">
                       <FormField
                         control={form.control}
@@ -1675,10 +1621,6 @@ export default function CreateEwayBill() {
             <div className="h-[50px] flex items-center justify-center gap-[20px] px-[20px] pt-10">
               <Button
                 className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px] w-[148px] h-[50px] font-[600]"
-                // onClick={form.handleSubmit((data) => {
-                //   dispatch(createEwayBill(data));
-                //   // Handle form submission here
-                // })}
                 disabled={Object.keys(form.formState.errors).length > 0}
                 onClick={handleSubmit}
               >
@@ -1695,8 +1637,8 @@ export default function CreateEwayBill() {
               />
               <ConfirmationModal
                 open={showConfirmation}
-                onClose={setShowConfirmation}
-                onOkay={() => handleConfirmationClose}
+                onClose={()=>setShowConfirmation(false)}
+                onOkay={() => handleConfirmationClose(true)}
                 title="Confirm Submit!"
                 description="Are you sure want to submit?"
               />
