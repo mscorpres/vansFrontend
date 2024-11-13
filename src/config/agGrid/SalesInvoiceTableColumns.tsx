@@ -28,9 +28,9 @@ const ActionMenu: React.FC<any> = ({ row }) => {
     dispatch(fetchInvoiceDetail({ invoiceNo: row.invoiceNo })); 
   };
 
-const handlePrintInvoice = async (orderId: string) => {
+  const handlePrintInvoice = async (orderId: string, printInvType: string) => {
     dispatch(
-      printSellInvoice({ invoiceNo: orderId, })
+      printSellInvoice({ invoiceNo: orderId, printInvType: printInvType})
     ).then((response: any) => {
       if (response?.payload?.success) {
         printFunction(response?.payload?.data.buffer.data);

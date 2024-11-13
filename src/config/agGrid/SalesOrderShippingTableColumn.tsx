@@ -8,7 +8,6 @@ import { useState } from "react";
 // import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
-import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import {
   fetchSellRequestList,
   printSellOrder,
@@ -22,6 +21,7 @@ import {
   fetchMaterialList,
 } from "@/features/salesmodule/salesShipmentSlice";
 import { TruncateCellRenderer } from "@/General";
+import PickSlipModal from "@/config/agGrid/PickSlipModal";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -194,7 +194,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         }}
         disabled={isDisabled}
       >
-        Material Out
+       PickSlip
       </Menu.Item>
       <Menu.Item
         key="createInvoice"
@@ -232,15 +232,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         heading="Create Invoice"
         description={`Are you sure you want to create an invoice for SO ${row.so_id} and shipment ${row.shipment_id}?`}
       />
-      <MaterialListModal
+      <PickSlipModal
         visible={isMaterialListModalVisible}
         onClose={handleMaterialListModalClose}
-        sellRequestDetails={shipmentMaterialList?.items}
+        sellRequestDetails={shipmentMaterialList}
         row={{ req_id: row?.so_id }}
         loading={loading2}
-        columnDefs={materialListColumns}
-        title={`Material Out of ${shipmentMaterialList?.header?.shipment_id} Against ${row?.so_id}`}
-        title2={`Customer Name : ${shipmentMaterialList?.header?.customer_name?.customer_name}`}
         submitText="Material Out"
         handleSubmit={()=>{}}
       />

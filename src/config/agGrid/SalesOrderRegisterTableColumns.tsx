@@ -10,7 +10,6 @@ import CreateShipmentListModal from "@/config/agGrid/registerModule/CreateShipme
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import {
   approveSo,
   cancelSalesOrder,
@@ -23,7 +22,6 @@ import {
 import { printFunction } from "@/components/shared/PrintFunctions";
 import { toast } from "@/components/ui/use-toast";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
-import { TruncateCellRenderer } from "@/General";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -114,9 +112,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         console.error("Validation Failed:", errorInfo);
       });
   };
-  const showInvoiceModal = () => {
-    setIsInvoiceModalVisible(true);
-  };
+
   const handleInvoiceModalOk = () => {
     invoiceForm
       .validateFields()
@@ -196,11 +192,14 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item key="cancel" onClick={showCancelModal}>
         Cancel
       </Menu.Item>
-      <Menu.Item key="materialList" onClick={() => handleshowMaterialList(row)}>
+      <Menu.Item key="materialList" onClick={() => handleshowMaterialList(row)} disabled={row?.approveStatus==="Pending"}>
         Create Shipment
       </Menu.Item>
       <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)}>
         Print
+      </Menu.Item>
+      <Menu.Item key="shortClose" onClick={() => handlePrintOrder(row?.so_id)}>
+        Short Close
       </Menu.Item>
     </Menu>
   );

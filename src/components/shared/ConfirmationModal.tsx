@@ -44,7 +44,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <Button onClick={() => onClose(false)} variant={"outline"}>
             {cancelText}
           </Button>
-          <Button onClick={onOkay} className="bg-green-600 text-white">
+          <Button onClick={()=>onOkay()} className="bg-green-600 text-white">
             {submitText}
           </Button>
         </div>

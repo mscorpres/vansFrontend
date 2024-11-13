@@ -53,10 +53,16 @@ const CreateSalesOrderPage = () => {
   useEffect(() => {
     if (updateData) {
       const header: any = updateData.header;
-      form.setValue("customer_code", header?.customer?.code);
+      form.setValue("customer_code", header?.customer?.code, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
       form.setValue("customer_name", header?.customer?.name);
       searchCustomerList(header?.customer?.name);
-      form.setValue("customer_type", header?.customer_type);
+      form.setValue("customer_type", "c01", {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
       searchCustomerList(header?.customer?.code);
       dispatch(fetchCustomerBranches({ client: header?.customer?.code })).then(
         (response: any) => {
@@ -90,7 +96,7 @@ const CreateSalesOrderPage = () => {
       form.setValue("po_number", header?.po_number);
       form.setValue("po_date", header?.po_date);
       form.setValue("reference_no", header?.reference_no);
-      form.setValue("reference_date", header?.reference_date);
+      form.setValue("ref_date", header?.reference_date);
       form.setValue("currency.currency", header?.currency);
       form.setValue("currency.exchange_rate", header?.exchange_rate);
       form.setValue("paymentterms", header.paymentterms);
@@ -134,7 +140,10 @@ const CreateSalesOrderPage = () => {
   }, [updateData, form]);
 
   const handleCustomerSelection = (e: any) => {
-    form.setValue("customer_code", e.value);
+    form.setValue("customer_code", e.value, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
     form.setValue("customer_name", e.label);
     dispatch(fetchCustomerBranches({ client: e.value })).then(
       (response: any) => {
@@ -150,24 +159,63 @@ const CreateSalesOrderPage = () => {
   };
 
   const handleBranchSelection = (e: any) => {
-    form.setValue("billTo.branch", e.value);
+    form.setValue("billTo.branch", e.value, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
     dispatch(fetchBranchDetail({ client: e.value })).then((response: any) => {
       if (response.meta.requestStatus === "fulfilled") {
         const billingAddress = response.payload.billingAddress;
         const ShippingAddress = response.payload.shippingAddress;
-        form.setValue("billTo.address1", billingAddress.addressLine1);
-        form.setValue("billTo.address2", billingAddress.addressLine2);
-        form.setValue("billTo.state", billingAddress.state?.stateCode);
-        form.setValue("billTo.pincode", billingAddress.pinCode);
-        form.setValue("billTo.gst", billingAddress.gst);
+        form.setValue("billTo.address1", billingAddress.addressLine1, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("billTo.address2", billingAddress.addressLine2, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("billTo.state", billingAddress.state?.stateCode, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("billTo.pincode", billingAddress.pinCode, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("billTo.gst", billingAddress.gst, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
 
-        form.setValue("shipTo.address1", ShippingAddress.addressLine1);
-        form.setValue("shipTo.address2", ShippingAddress.addressLine2);
-        form.setValue("shipTo.state", ShippingAddress.state?.stateCode);
-        form.setValue("shipTo.pincode", ShippingAddress.pinCode);
-        form.setValue("shipTo.gst", ShippingAddress.gst);
-        form.setValue("shipTo.company", ShippingAddress.company);
-        form.setValue("shipTo.panno", ShippingAddress.panno);
+        form.setValue("shipTo.address1", ShippingAddress.addressLine1, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("shipTo.address2", ShippingAddress.addressLine2, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("shipTo.state", ShippingAddress.state?.stateCode, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("shipTo.pincode", ShippingAddress.pinCode, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("shipTo.gst", ShippingAddress.gst, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("shipTo.company", ShippingAddress.company, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        form.setValue("shipTo.panno", ShippingAddress.panno, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
 
         if (
           form.getValues("billTo.state") == form.getValues("billFrom.state")
@@ -181,7 +229,10 @@ const CreateSalesOrderPage = () => {
   };
 
   const handleCostCenterChange = (e: any) => {
-    form.setValue("costcenter", e.value);
+    form.setValue("costcenter", e.value, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
     form.setValue("costcenter_name", e.label);
     const payload = {
       cost_center: e.value,
@@ -192,15 +243,33 @@ const CreateSalesOrderPage = () => {
   };
 
   const handleBillIdChange = (e: any) => {
-    form.setValue("billFrom.billFromId", e.value);
+    form.setValue("billFrom.billFromId", e.value, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
     form.setValue("billIdName", e.label);
     dispatch(fetchBillAddress(e.value)).then((response: any) => {
       const data = response.payload.data;
-      form.setValue("billFrom.address1", data.addressLine1);
-      form.setValue("billFrom.address2", data.addressLine2);
-      form.setValue("billFrom.gstin", data.gstin);
-      form.setValue("billFrom.pan", data.pan);
-      form.setValue("billFrom.state", data.statecode);
+      form.setValue("billFrom.address1", data.addressLine1, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      form.setValue("billFrom.address2", data.addressLine2, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      form.setValue("billFrom.gstin", data.gstin, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      form.setValue("billFrom.pan", data.pan, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      form.setValue("billFrom.state", data.statecode, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
       if (form.getValues("billTo.state") == form.getValues("billFrom.state")) {
         setDerivedType("L");
       } else {
