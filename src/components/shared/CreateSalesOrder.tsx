@@ -662,7 +662,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="w-full">
                       <FormField
                         control={form.control}
-                        name="reference_date"
+                        name="ref_date"
                         render={() => (
                           <FormItem className="pl-[10px] w-full flex flex-col">
                             <FormLabel className={LableStyle}>
@@ -677,9 +677,9 @@ const CreateSalesOrder: React.FC<Props> = ({
                                   className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
                                   format="DD-MM-YYYY"
                                   value={
-                                    form.watch("reference_date")
+                                    form.watch("ref_date")
                                       ? dayjs(
-                                          form.watch("reference_date"),
+                                          form.watch("ref_date"),
                                           "DD-MM-YYYY"
                                         )
                                       : null
@@ -689,7 +689,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                       ? value.format("DD-MM-YYYY")
                                       : "";
                                     form.setValue(
-                                      "reference_date",
+                                      "ref_date",
                                       formattedDate,
                                       {
                                         shouldValidate: true,

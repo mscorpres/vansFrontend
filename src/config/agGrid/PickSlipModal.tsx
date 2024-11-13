@@ -39,6 +39,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
   const [sheetOpen , setSheetOpen] = useState(false);
+  const [selectedBoxes, setSelectedBoxes] = useState<any>(null);
   const dispatch = useDispatch();
   const { availableStock } = useSelector(
     (state: RootState) => state.sellShipment
@@ -57,6 +58,12 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       }
     });
   }
+
+  const handleSelectedBoxes = (selectedData: any) => {
+    setSelectedBoxes(selectedData);  // Store the selected boxes
+    setSheetOpen(false); // Close the sheet/modal after selection
+    console.log("Selected Boxes:", selectedData);
+  };
 
   const columnDefs: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
@@ -81,12 +88,13 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       field: "outBoxQty", // Assuming `outBoxQty` is the field for outbox quantity in your data
       cellRenderer: (params: any) => {
         return (
-          <div className="p-2 border border-gray-300 rounded-md" onClick={()=> {console.log(params);handleBoxesClick(params)}}>
+          <div className="p-2 border border-gray-300 rounded-md" onClick={()=> {handleBoxesClick(params)}}>
             
-            {params.value}
+            {selectedBoxes?.length > 0 ? selectedBoxes?.map((box: any) => box?.box_name).join(', ') : 'Select Out Box(es)'}
             </div>
         );
       },
+      autoHeight: true,
     },
     { headerName: "Item Part Number", field: "itemPartNo" },
     { headerName: "Qty", field: "qty" },
@@ -114,11 +122,10 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
           e.preventDefault();
         }}
       >
-        <div className="flex justify-between items-center mt-4 ">
+        <div className="flex justify-between items-center mb-2">
           <div>
             <SheetTitle>{`Material Out of ${sellRequestDetails?.header?.shipment_id}`}</SheetTitle>
-            <SheetTitle>{`Customer Name : ${sellRequestDetails?.header?.customer_name?.customer_name}`}</SheetTitle>
-            <SheetTitle>{`Cost Center : ${sellRequestDetails?.header?.costcenter?.name}`}</SheetTitle>
+            <SheetTitle>{`Customer Name : ${sellRequestDetails?.header?.customer_name?.customer_name} Cost Center : ${sellRequestDetails?.header?.costcenter?.name}`}</SheetTitle>
           </div>
         </div>
 
@@ -150,7 +157,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
             {submitText}
           </Button>
         </div>
-        <BoxesListSheet open={sheetOpen} close={setSheetOpen} data ={tableData}/>
+        <BoxesListSheet open={sheetOpen} close={setSheetOpen} data ={tableData} onSelect={handleSelectedBoxes}/>
       </SheetContent>
 
       <SheetFooter></SheetFooter>

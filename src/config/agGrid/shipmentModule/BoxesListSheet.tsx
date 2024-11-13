@@ -1,13 +1,14 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ColDef, RowSelectionOptions } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@/components/ui/button";
 
-const BoxesListSheet = ({ open, close, data }: any) => {
+const BoxesListSheet = ({ open, close, data, onSelect  }: any) => {
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [totalSum, setTotalSum] = useState(0);
+  const gridRef = useRef<AgGridReact<any>>(null);
 
   const rowSelection = useMemo<RowSelectionOptions | "single" | "multiple">(() => {
     return {
@@ -52,10 +53,16 @@ const BoxesListSheet = ({ open, close, data }: any) => {
   }, [selectedRows]);
 
   // Handle row selection change
-  const onSelectionChanged = (params: any) => {
-    const selectedNodes = params.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node: any) => node.data);
-    setSelectedRows(selectedData);
+  const onSelectionChanged = () => {
+    const selectedRow = gridRef.current?.api.getSelectedRows();
+    console.log(selectedRow)
+    setSelectedRows(selectedRow || []);
+  };
+
+  const handleOkClose = () => {
+    // Send the selected data back to the parent component
+    const selectedData = selectedRows;  // For simplicity, assuming `data` is what we want to send back
+    onSelect(selectedData); // Pass the selected data back to the parent
   };
 
   return (
@@ -77,6 +84,7 @@ const BoxesListSheet = ({ open, close, data }: any) => {
 
           <div className="ag-theme-quartz h-[calc(100vh-170px)]">
             <AgGridReact
+              ref={gridRef}
               rowSelection={rowSelection}
               rowData={data}
               columnDefs={columnDefs}
@@ -99,7 +107,7 @@ const BoxesListSheet = ({ open, close, data }: any) => {
             </Button>
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-              // onClick={handleSubmit}
+              onClick={handleOkClose}
             >
               OK & Close
             </Button>

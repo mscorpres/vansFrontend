@@ -48,7 +48,7 @@ const createSalesFormSchema = z.object({
   po_date: z.string({ required_error: "PO Date is required" }),
   due_date: z.string({ required_error: "PO Date is required" }),
   reference_no: z.string({ required_error: "Reference Number is required" }),
-  reference_date:z.string({required_error:"Reference Date is mandatory"}),
+  ref_date:z.string({required_error:"Reference Date is mandatory"}),
   currency: currencySchema,
   costcenter: z.string({ required_error: "Cost Center is required" }),
   project_name: z.string().optional(),
