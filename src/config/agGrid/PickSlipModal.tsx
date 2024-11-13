@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef, CsvExportModule } from "ag-grid-community";
 import {
@@ -14,8 +14,7 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import BoxesListSheet from "@/config/agGrid/shipmentModule/BoxesListSheet";
 import { RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAvailableStockBoxes } from "@/features/client/storeSlice";
-import { fetchAvailableStock } from "@/features/salesmodule/salesShipmentSlice";
+import { fetchAvailableStock, stockOut } from "@/features/salesmodule/salesShipmentSlice";
 
 interface PickSlipModalProps {
   visible: boolean;
@@ -25,7 +24,6 @@ interface PickSlipModalProps {
     req_id: string;
   };
   loading: boolean;
-  submitText: string;
   handleSubmit: () => void;
 }
 
@@ -34,8 +32,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   onClose,
   sellRequestDetails,
   loading,
-  submitText,
-  handleSubmit,
+//   handleSubmit,
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
   const [sheetOpen , setSheetOpen] = useState(false);
@@ -52,7 +49,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
         c_center:sellRequestDetails?.header?.costcenter?.code,
         component:params.data?.item,
     }
-    dispatch(fetchAvailableStock(payload)).then((response: any) => {
+    dispatch(fetchAvailableStock(payload)as any).then((response: any) => {
       if (response.payload.code === 200) {
         console.log(response.payload.data);
       }
@@ -113,6 +110,27 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     [availableStock]
   );
 
+  const onSubmit = () => {
+    // Create the payload for submission
+    const payload = {
+      customer: sellRequestDetails?.header?.customer_name?.customer_code, // Assuming customer_code is available
+      component: sellRequestDetails?.items?.map((item: any) => item?.item), // Assuming item_id is available for components
+      qty: sellRequestDetails?.items?.map((item: any) => item?.qty), // Qty from items
+      box: selectedBoxes?.map((box: any) => box?.box_name), // Assuming box_name is the identifier
+      remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark), // Item remark
+      costcenter: sellRequestDetails?.header?.costcenter?.code, // Cost center
+      boxqty: selectedBoxes?.map((box: any) => box?.box_qty), // Assuming box_qty is available in the selected box data
+    };
+
+    console.log("Payload to submit: ", payload);
+    dispatch(stockOut(payload) as any).then((res: any) => {
+        console.log(res)
+    })
+
+    // Call the actual submit function or API request here
+    // handleSubmit(payload); // If handleSubmit is supposed to be an API call handler
+  };
+
   return (
     <Sheet open={visible} onOpenChange={onClose}>
       <SheetHeader></SheetHeader>
@@ -152,9 +170,9 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
           </Button>
           <Button
             className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-            onClick={handleSubmit}
+            onClick={onSubmit}
           >
-            {submitText}
+            Pick Slip & Material Out
           </Button>
         </div>
         <BoxesListSheet open={sheetOpen} close={setSheetOpen} data ={tableData} onSelect={handleSelectedBoxes}/>

@@ -135,6 +135,10 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     setIsInvoiceModalVisible(false);
   };
 
+  const handleMaterialOut =() =>{
+
+  }
+
   const handlePrintOrder = async (orderId: string) => {
     dispatch(printSellOrder({ so_id: orderId })).then((response: any) => {
       if (response?.payload?.success) {
@@ -238,8 +242,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         sellRequestDetails={shipmentMaterialList}
         row={{ req_id: row?.so_id }}
         loading={loading2}
-        submitText="Material Out"
-        handleSubmit={()=>{}}
+        // handleSubmit={()=>handleMaterialOut()}
       />
        <MaterialListModal
         visible={showConfirmationModal}

@@ -1599,7 +1599,8 @@ export default function CreateEwayBill() {
                   Items Details: {rowData?.length} Items
                 </h3>
                 <h3 className="text-[17px] font-[600] text-slate-600">
-                  Total Amount: {totalSum.toFixed(2)}
+                  Total Amount: 
+                  {/* {totalSum?.toFixed(2)} */}
                 </h3>
               </CardHeader>
 

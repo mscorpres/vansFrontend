@@ -209,6 +209,25 @@ export const fetchAvailableStock = createAsyncThunk(
   }
 );
 
+export const stockOut = createAsyncThunk(
+  "client/stockOut",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/stockOut",
+        payload
+      )) as any;
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 export const fetchSalesOrderShipmentList = createAsyncThunk<
   ApiResponse<SellShipmentRequest[]>,
   FetchSellShipmentPayload
@@ -351,6 +370,17 @@ const sellShipmentSlice = createSlice({
         state.loading = false;
       })
       .addCase(createInvoice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to create invoice";
+      })
+      .addCase(stockOut.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(stockOut.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(stockOut.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to create invoice";
       })
