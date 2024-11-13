@@ -154,10 +154,9 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     // Extract the box_name and stock values and push them into the state arrays
     const newBoxes = selectData.map((item) => item.box_name);
     const newQtys = selectData.map((item) => item.stock);
-
     // Update the state
-    setBox((prevBox) => [...prevBox, ...newBoxes]); // Append new boxes to the existing ones
-    setQty((prevQty) => [...prevQty, ...newQtys]); // Append new qtys to the existing ones
+    setBox((prevBox) => [...prevBox, newBoxes.join(",")]);
+    setQty((prevQty) => [...prevQty, newQtys.join(",")]);
     setSheetOpen(false);
   };
   console.log(box, qty);

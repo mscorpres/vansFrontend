@@ -347,7 +347,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() =>
-                      handlePrintInvoice(sellRequestDetails?.headerData?.invoiceNo, "Transporter")
+                      handlePrintInvoice(sellRequestDetails?.headerData?.invoiceNo, "Triplicate")
                     }
                   >
                     Transporter

@@ -30,7 +30,7 @@ const ActionMenu: React.FC<any> = ({ row }) => {
 
   const handlePrintInvoice = async (orderId: string, printInvType: string) => {
     dispatch(
-      printSellInvoice({ invoiceNo: orderId, printInvType: printInvType})
+      printSellInvoice({ invoiceNo: orderId, printType: printInvType})
     ).then((response: any) => {
       if (response?.payload?.success) {
         printFunction(response?.payload?.data.buffer.data);

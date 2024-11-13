@@ -8,7 +8,8 @@ import { useDispatch } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { printSellInvoice } from "@/features/salesmodule/salesInvoiceSlice";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-import {  printFunction } from "@/components/shared/PrintFunctions";
+import { printFunction } from "@/components/shared/PrintFunctions";
+import { cancelEInvoice, cancelEwayBill } from "@/features/salesmodule/salesTransactionSlice";
 
 const ActionMenu: React.FC<any> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,33 +20,18 @@ const ActionMenu: React.FC<any> = ({ row }) => {
 
   const handlePrintInvoice = async (orderId: string, section: string) => {
     if (section === "e-waybill") {
-      dispatch(printEwayBill({ ewayBillNo: orderId })).then(
-        (resultAction: any) => {
-          if (resultAction.payload?.success) {
-            toast({
-              title:
-                typeof resultAction?.payload?.message === "string"
-                  ? resultAction?.payload?.message
-                  : JSON.stringify(resultAction?.payload?.message),
-              className: "bg-green-600 text-white items-center",
-            });
-          } 
-        }
-      );
+      toast({
+        title: "Cannot Generate print of Eway Bill",
+        className: "bg-green-600 text-white items-center",
+      });
     } else {
       dispatch(
-        printSellInvoice({ invoiceNo: orderId })).then((response: any) => {
-          if (response?.payload?.success) {
-            printFunction(response?.payload?.data.buffer.data);
-          }
-        });
-      //   .then((res: any) => {
-      //     console.log("res", res);
-      //     if (res.payload.code == 200) {
-      //       let { data } = res.payload;
-      //       downloadFunction(data.buffer, data.filename);
-      //     }
-      //   })
+        printSellInvoice({ invoiceNo: orderId, printType: "Original" })
+      ).then((response: any) => {
+        if (response?.payload?.success) {
+          printFunction(response?.payload?.data.buffer.data);
+        }
+      });
     }
   };
 
@@ -54,8 +40,8 @@ const ActionMenu: React.FC<any> = ({ row }) => {
       .validateFields()
       .then((values) => {
         const payload = createPayload(values);
-
         const action = getCancelAction(payload);
+        console.log(payload,action)
         dispatch(action).then((response: any) => {
           if (response?.payload?.success) {
             toast({
@@ -85,21 +71,19 @@ const ActionMenu: React.FC<any> = ({ row }) => {
       };
     } else if (module === "e-waybill") {
       return {
-        ewayBillNo: row?.eway_bill_no,
+        ewayBillNo: row?.ewaybillno,
         cancellReason: values.reason,
-        comment: values.remark,
+        remark: values.remark,
       };
-    } 
+    }
   };
 
   const getCancelAction = (payload: any) => {
-    // if (module === "e-invoice") {
-    //   return cancelEInvoice(payload);
-    // } else if (module === "e-waybill") {
-    //   return cancelEwayBill(payload);
-    // } else {
-    //   return cancelCrDbEInvoice(payload); // Assuming this is default action for others
-    // }
+    if (module === "e-invoice") {
+      return cancelEInvoice(payload);
+    } else if (module === "e-waybill") {
+      return cancelEwayBill(payload);
+    }
   };
   const menu = (
     <Menu>
@@ -108,10 +92,8 @@ const ActionMenu: React.FC<any> = ({ row }) => {
         onClick={() => {
           if (row?.eInvoiceNo) {
             setModule("e-invoice");
-          } else if (row?.eway_bill_no) {
+          } else if (row?.ewaybillno) {
             setModule("e-waybill");
-          } else {
-            setModule("note");
           }
           setCancelModalVisible(true);
         }}
@@ -325,8 +307,7 @@ export const EwayBillColumnDefs: ColDef<any>[] = [
     filter: "agDateColumnFilter",
     cellRenderer: "truncateCellRenderer",
   },
-  
- 
+
   {
     headerName: "Shipping Address",
     field: "shippingaddress2",
@@ -334,6 +315,4 @@ export const EwayBillColumnDefs: ColDef<any>[] = [
     width: 400,
     cellRenderer: CopyCellRenderer,
   },
- 
- 
 ];
