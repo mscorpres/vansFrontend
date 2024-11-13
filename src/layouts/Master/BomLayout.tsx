@@ -9,7 +9,7 @@ const BomLayout = (props: { children: React.ReactNode }) => {
         <ul className="group flex items-center  h-[50px] ">
           <li className="h-[50px]">
             <NavLink
-              to={"/master/bom/create"}
+              to={"/master/bomcreate"}
               className={({ isActive }) =>
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }

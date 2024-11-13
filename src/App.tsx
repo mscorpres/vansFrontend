@@ -238,20 +238,20 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          {/* <BomLayout> */}
-          <CreatingBoxRecipe />
-          {/* </BomLayout> */}
+          <BomLayout>
+            <CreatingBoxRecipe />
+          </BomLayout>
         </MainLayout>
       </Protected>
     ),
-    path: "/master/bom/create",
+    path: "/master/bomcreate",
   },
   {
     element: (
       <Protected authentication>
         <MainLayout>
           {/* <BomLayout> */}
-            <EditBom />
+          <EditBom />
           {/* </BomLayout> */}
         </MainLayout>
       </Protected>
