@@ -57,7 +57,7 @@ spigenAxios.interceptors.response.use(
   (error: AxiosError<ErrorResponse>) => {
     if (error.response && typeof error.response.data === "object") {
       const errorData = error.response.data;
-      toast.error(errorData.message.msg);
+      toast.error(errorData?.message.msg || errorData.errors);
       console.log(errorData);
       if (errorData?.data?.logout) {
         toast.error(errorData.message || "Logout error.");

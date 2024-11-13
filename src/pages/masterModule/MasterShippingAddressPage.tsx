@@ -39,12 +39,12 @@ import {
 import GoBackConfermationModel from "@/components/GoBackConfermationModel";
 import { transformPlaceData } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { fetchShippingAddess } from "@/components/shared/Api/masterApi";
 import { AgGridReact } from "ag-grid-react";
 import useApi from "@/hooks/useApi";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
+import { fetchShippingAddress } from "@/components/shared/Api/masterApi";
 
 const schema = z.object({
   label: z.string().min(2, {
@@ -144,7 +144,7 @@ const MasterShippingAddressPage: React.FC = () => {
     }
   };
   const getList = async () => {
-    const response = await execFun(() => fetchShippingAddess(), "fetch");
+    const response = await execFun(() => fetchShippingAddress(), "fetch");
 
     let { data } = response;
     if (data.code === 200) {

@@ -41,11 +41,10 @@ const POCancel: React.FC<Props> = ({
         remark: remarkDescription,
       })
     ).then((response: any) => {
-
       if (response?.payload?.code == 200) {
         toast({
           title: response?.payload?.message.msg,
-          className: "bg-red-600 text-white items-center",
+          className: "bg-green-600 text-white items-center",
         });
         setCancel(false);
         setShowConfirmation(false);

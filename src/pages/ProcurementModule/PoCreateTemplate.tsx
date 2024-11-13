@@ -36,14 +36,12 @@ const PoCreateTemplate = () => {
       setParamVal(params.id?.replaceAll("_", "/"));
       dispatch(fetchDataPOEdit({ pono: params.id?.replaceAll("_", "/") })).then(
         (res) => {
-          // console.log("res", res);
           if (res.payload.status == "success") {
             let arr = res.payload.data;
             let billinid = {
               label: arr.bill[0]?.addrbillname,
               value: arr.bill[0]?.addrbillid,
             };
-            // console.log("billingid", billingid);
             let ventype = {
               label: arr.vendor[0]?.vendortype_label,
               value: arr.vendor[0]?.vendortype_value,
@@ -54,6 +52,7 @@ const PoCreateTemplate = () => {
             };
             //vendor
             // form.setFieldValue("poType", "New");
+
             form.setFieldValue("project", arr.vendor[0]?.projectname);
 
             form.setFieldValue("vendorType", ventype);
@@ -65,8 +64,9 @@ const PoCreateTemplate = () => {
             form.setFieldValue("quotation", arr.vendor[0]?.termsofquotation);
             form.setFieldValue("terms", arr.vendor[0]?.termsofcondition);
             form.setFieldValue("paymentTerms", arr.vendor[0]?.paymentterms);
-            form.setFieldValue("project", arr.vendor[0]?.project);
+            // form.setFieldValue("project", arr.vendor[0]?.project);
             form.setFieldValue("comment", arr.vendor[0]?.pocomment);
+            form.setFieldValue("poType", arr.vendor[0]?.potype);
             //billing
             form.setFieldValue("billingId", billinid),
               form.setFieldValue("pan", arr.bill?.billpanno);
@@ -113,10 +113,8 @@ const PoCreateTemplate = () => {
   useEffect(() => {
     if (bilStateCode && shipStateCode) {
       if (Number(shipStateCode) == Number(bilStateCode)) {
-        console.log("same");
         setCodeType("L");
       } else {
-        console.log("diffener");
         setCodeType("I");
       }
     }

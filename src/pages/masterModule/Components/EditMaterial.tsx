@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -6,7 +6,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Form, Switch, Typography } from "antd";
+import { Form, Switch } from "antd";
 
 import {
   getdetailsOfUpdateComponent,
@@ -33,7 +33,6 @@ import { InputStyle } from "@/constants/themeContants";
 import { Button } from "@/components/ui/button";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { gstRateList, taxType } from "@/components/shared/Options";
-import { Label } from "@/components/ui/label";
 import { spigenAxios } from "@/axiosIntercepter";
 import { toast } from "@/components/ui/use-toast";
 import { IoCloudUpload } from "react-icons/io5";
@@ -42,10 +41,8 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [editForm] = Form.useForm();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [captions, setCaptions] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
   const [files, setFiles] = useState<File[] | null>(null);
-  const [loading, setLoading] = useState(null);
-  const [preview, setPreview] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const isEnabledOptions = [
     {
@@ -57,25 +54,25 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       value: "no",
     },
   ];
-  console.log("sheetOpen", sheetOpen);
 
-  const getDetails = async (sheetOpenEdit) => {
+  const getDetails = async (sheetOpenEdit: any) => {
     let payload = { componentKey: sheetOpenEdit.component_key };
     const response = await execFun(
       () => getdetailsOfUpdateComponent(payload),
       "fetch"
     );
-    console.log("response", response);
     let { data } = response;
     if (response.status === 200) {
       let arr = data.data[0];
-      console.log("arr", arr);
       let a = {
         compCode: arr.partcode,
         componentName: arr.name,
         uom: { label: arr.uomname, value: arr.uomid },
         soq: { label: arr.soqname, value: arr.soqid },
-
+        taxTypes: { label: arr.tax_type.text, value: arr.tax_type.id },
+        gstTaxRate: { label: arr.gst_rate.text, value: arr.gst_rate.id },
+        alert: arr.enable_status == "Y" ? "Yes" : "No",
+        // enabled: arr.enable_status == "Y" ? "Yes" : "No",
         moqQty: arr.moqqty,
         hsn: arr.hsncode,
         componentMake: arr.c_make,
@@ -99,16 +96,13 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         purchaseCost: arr.pocost,
         OtherCost: arr.othercost,
       };
-      console.log("a", a);
 
       editForm.setFieldsValue(a);
     }
   };
   const submitTheForm = async () => {
-    setLoading(true);
     const values = editForm.getFieldsValue();
-    console.log("values", values);
-
+    // if (values) {
     let payload = {
       componentKey: sheetOpenEdit?.component_key,
       componentname: values.componentName,
@@ -144,15 +138,16 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       //doubtfull param
       //   alert: values.taxType,category: values.moqQty,
     };
-    console.log("payload", payload);
+    // }
 
     // return;
+    // return;
+    setLoading(true);
     const response = await spigenAxios.post(
       "/component/updateComponent",
       payload
     );
 
-    console.log("response", response);
     if (response.data.code == 200) {
       toast({
         title: response.data.message, // Assuming 'message' is in the response
@@ -160,6 +155,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       });
       editForm.resetFields();
       setLoading(false);
+      setSheetOpenEdit(false);
     } else {
       toast({
         title: "Failed to update component", // You can show an error message here if the code is not 200
@@ -168,38 +164,12 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     }
     setLoading(false);
   };
-  // const handleFileChange = (event) => {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     setSelectedFile(file);
-  //     setPreview(URL.createObjectURL(file)); // Create a URL for preview
-  //   }
-  // };
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
-
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-
-    try {
-      const response = await fetch("/upload-endpoint", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      console.log("Upload success:", data);
-    } catch (error) {
-      console.error("Upload failed:", error);
-    }
-  };
   const handleFileChange = (newFiles: File[] | null) => {
     setFiles(newFiles);
   };
   const uploadDocs = async () => {
     // setLoading(true);
-    console.log("captions", captions);
-    console.log("capsheetOpenEdittions", sheetOpenEdit);
     // const values = await editForm.validateFields();
     // console.log("valeus", values);
     // return;
@@ -221,7 +191,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       });
       // setLoading(false);
       setSheetOpen(false);
-      setAttachmentFile(response.data.data);
+      // setAttachmentFile(response.data.data);
     }
     // setLoading(false);
   };
@@ -233,7 +203,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
-      {loading1("fetch") && <FullPageLoading />}{" "}
+      {(loading1("fetch") || loading == true) && <FullPageLoading />}{" "}
       <Sheet open={sheetOpenEdit} onOpenChange={() => setSheetOpenEdit(null)}>
         <SheetTrigger></SheetTrigger>
         <SheetContent
@@ -247,8 +217,13 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
           </SheetHeader>
           <Form form={editForm} layout="vertical">
             <div>
+              {" "}
               {/* <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto"> */}
               <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
+                {" "}
+                {(loading1("fetch") || loading == true) && (
+                  <FullPageLoading />
+                )}{" "}
                 <div className="grid grid-cols-2 gap-[30px]">
                   <Card className="rounded shadow bg-[#fff]">
                     <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -747,7 +722,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                       <Form.Item
                         name="alert"
                         label="Enable Alerts"
-                        rules={rules.alert}
+                        // rules={rules.alert}
                       >
                         <Switch
                         // style={{
@@ -760,7 +735,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                   </Card>
                 </div>
               </div>
-
               <div className={modelFixFooterStyle}>
                 <Button
                   variant={"outline"}
@@ -776,6 +750,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                   type="submit"
                   className="bg-cyan-700 hover:bg-cyan-600"
                   onClick={submitTheForm}
+                  // disabled={editForm.validateFields()}
                 >
                   Submit
                 </Button>
@@ -1005,24 +980,7 @@ const rules = {
       message: "Please provide GST Tax Types!",
     },
   ],
-  gstTaxRate: [
-    {
-      required: true,
-      message: "Please provide GST Tax Types!",
-    },
-  ],
-  gstTaxRate: [
-    {
-      required: true,
-      message: "Please provide GST Tax Types!",
-    },
-  ],
-  gstTaxRate: [
-    {
-      required: true,
-      message: "Please provide GST Tax Types!",
-    },
-  ],
+
   brand: [
     {
       required: true,

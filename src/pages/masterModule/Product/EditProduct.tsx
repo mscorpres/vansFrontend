@@ -11,13 +11,9 @@ import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
-import { Form, Typography } from "antd";
+import { Form } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import { InputStyle } from "@/constants/themeContants";
 import {
   FileInput,
   FileUploader,
@@ -29,9 +25,9 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Button } from "@/components/ui/button";
 import {
-  getComponentDetailsForServices,
   getProductDetailsForEdit,
   saveProductDetails,
+  updateProductMaterial,
 } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -51,6 +47,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { listOfUoms } from "@/features/client/clientSlice";
 import { gstRateList } from "@/components/shared/Options";
 import { IoCloudUpload } from "react-icons/io5";
+import { AppDispatch, RootState } from "@/store";
 const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [open, setOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -63,11 +60,11 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const typeOption = [
     {
       label: "FG",
-      value: "fg",
+      value: "default",
     },
     {
       label: "Semi FG",
-      value: "fg",
+      value: "semi",
     },
   ];
   const isEnabled = [
@@ -83,25 +80,24 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const taxDetails = [
     {
       label: "Regualar",
-      value: "Y",
+      value: "REG",
     },
     {
       label: "Exempted",
-      value: "N",
+      value: "EXE",
     },
   ];
   const handleFileChange = (newFiles: File[] | null) => {
     setFiles(newFiles);
   };
-  const fetchComponentDetails = async (sheetOpenEdit) => {
+  const fetchComponentDetails = async (sheetOpenEdit: any) => {
     const response = await execFun(
       () => getProductDetailsForEdit(sheetOpenEdit),
       "fetch"
     );
-    console.log("response0", response);
     if (response.status == 200) {
       let { data } = response;
-      let arr = data.data[0];
+      let arr: any = data.data[0];
       let obj = {
         // serviceCode: arr.partcode,
         // serviceName: arr.name,
@@ -109,6 +105,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         // description: arr.description,
         // sacCode: arr.sac,
         sku: arr.sku,
+        pKey: arr.pKey,
         productName: arr.productname,
         type: arr.producttype_name,
         category: arr.productcategory,
@@ -117,8 +114,19 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         costPrice: arr.costprice,
         enabled: arr.enablestatus_name,
         description: arr.description,
-        tax: arr.tax_type_name,
-        gst: arr.gstrate_name,
+        // tax: arr.tax_type_name,
+        tax: {
+          value: arr.tax_type_name.id,
+          label: arr.tax_type_name?.text,
+        },
+        type: {
+          value: arr.producttype_name.id,
+          label: arr.producttype_name?.text,
+        },
+        gst: {
+          value: arr.gstrate_name.id,
+          label: arr.gstrate_name?.text,
+        },
         hsn: arr.hsncode,
         brand: arr.brand,
         ean: arr.ean,
@@ -132,12 +140,12 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         stockLoc: arr.minstock,
         labourCost: arr.laboutcost,
         jwCost: arr.jobworkcost,
+
         packingCost: arr.packingcost,
         otherCost: arr.othercost,
         // sku: arr.sku,
         // uom: { label: arr.uomname, value: arr.uomid },
       };
-      console.log("obj----------------", obj);
 
       form.setFieldsValue(obj);
     } else {
@@ -149,14 +157,13 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   };
   const createEntry = async () => {
     const values = await form.validateFields();
-    console.log("values", values);
 
     let payload = {
       producttKey: values.sku,
       p_name: values.productName,
       category: values.category,
       mrp: values.mrp,
-      producttype: values.type,
+      producttype: values.type.value ?? values.type,
       // isenabled: values,
       gsttype: values.tax,
       gstrate: values.gst,
@@ -178,7 +185,6 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       jobworkcost: values.jwCost,
       description: values.description,
     };
-    console.log("payload", payload);
     // return;
     const response = await execFun(() => saveProductDetails(payload), "fetch");
     if (response.status == "success") {
@@ -193,16 +199,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       className: "bg-red-600 text-white items-center",
     });
   };
-  console.log("sheeet", sheetOpenEdit);
-  const saveEdit = async () => {
-    const values = await form.validateFields();
-    console.log("values", values);
-    return;
-    const response = await execFun(() => servicesaddition(values), "update");
-    if (response.status == 200) {
-      setSheetOpenEdit(false);
-    }
-  };
+
   useEffect(() => {
     if (sheetOpenEdit) {
       fetchComponentDetails(sheetOpenEdit);
@@ -214,7 +211,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       a = await dispatch(listOfUoms());
     }
 
-    let arr = a.payload.map((r, index) => {
+    let arr = a.payload.map((r: any, index: any) => {
       return {
         label: r.units_name,
         value: r.units_id,
@@ -247,17 +244,18 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   };
   const submitTheForm = async () => {
     const values = form.getFieldsValue();
-    console.log("values", values);
 
     let hehe = {
       p_name: values.productName,
-      category: "--",
+      productKey: sheetOpenEdit,
+      category: values.category,
+      producttype: values.type.value ?? values.type,
       mrp: values.mrp,
-      producttype: values.type.value,
+      // producttype: values.type.value,
       isenabled: values.enabled.value,
       gsttype: values.tax.value,
       gstrate: values.gst.value,
-      uom: values.uom.value,
+      uom: values.uom.value ?? values.uom,
       location: "--",
       hsn: values.hsn,
       brand: values.brand,
@@ -274,14 +272,23 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       othercost: values.otherCost,
       jobworkcost: values.jwCost,
       description: values.description,
-      //doubtfull
-      // producttKey: "2023811171652470",
     };
-    // console.log("payload", payload);
-    console.log("hehe", hehe);
 
-    return;
-    const response = await execFun(updateComponentofMaterial(values), "fetch");
+    // return;
+    const response = await execFun(() => updateProductMaterial(hehe), "fetch");
+
+    if (response.data.code == 200) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      setSheetOpenEdit(false);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
   };
   useEffect(() => {
     if (uomlist) {
@@ -328,7 +335,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 //   onSubmit={form.handleSubmit(onSubmit)}
                 className=""
               >
-                <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
+                <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
                   <div className="grid grid-cols-2 gap-[30px]">
                     <Card className="rounded shadow bg-[#fff]">
                       <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -425,7 +432,16 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           </Form.Item>
                         </div>{" "}
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
-                          <Form.Item name="enabled" label="Enabled">
+                          <Form.Item
+                            name="enabled"
+                            label="Enabled"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please enter enabled status!",
+                              },
+                            ]}
+                          >
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
