@@ -360,8 +360,10 @@ const AddClient: React.FC<Props> = ({
                                 isClearable={true}
                                 isSearchable={true}
                                 options={countryList}
-                                onChange={(value: any) =>
-                                  form.setValue("country", value)
+                                onChange={
+                                  (value: any) => console.log("Country", value)
+
+                                  // form.setValue("country", value.value)
                                 }
                                 // onChange={(e) => console.log(e)}
                                 // value={

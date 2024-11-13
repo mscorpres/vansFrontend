@@ -7,7 +7,7 @@ import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { MoreOutlined } from "@ant-design/icons";
 import { Filter } from "lucide-react";
 import styled from "styled-components";
-import {  Dropdown, Menu, Form } from "antd";
+import { Dropdown, Menu, Form } from "antd";
 
 import Select from "react-select";
 
@@ -106,6 +106,7 @@ const CreateBom = () => {
   useEffect(() => {
     if (sheetOpenEdit.length) {
       window.open(`/master/bom/edit/${sheetOpenEdit}`, "_blank");
+      setSheetOpenEdit([]);
     }
   }, [sheetOpenEdit]);
 

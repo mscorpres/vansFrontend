@@ -7,11 +7,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  InputStyle,
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
-import {  Form, Input, Menu, Select } from "antd";
+import { InputStyle, modelFixHeaderStyle } from "@/constants/themeContants";
+import { Form, Input, Menu, Select } from "antd";
 
 import { Button } from "@/components/ui/button";
 import { Download, Filter, Plus, Trash2, Upload } from "lucide-react";
@@ -117,7 +114,8 @@ const EditBom = () => {
     const response = await execFun(
       () => fetchProductInBom(sheetOpenEdit),
       "fetch"
-    );    let { data } = response;
+    );
+    let { data } = response;
     if (data.code) {
       form.setFieldValue("bom", data.data.subject);
       form.setFieldValue("name", data.data.product);
@@ -155,12 +153,11 @@ const EditBom = () => {
         };
       });
 
-         setRowData(arr);
+      setRowData(arr);
     }
   };
 
   const components = useMemo(() => {
-   
     return {
       textInputCellRenderer: (props: any) => (
         <TextInputCellRenderer
@@ -564,7 +561,7 @@ const EditBom = () => {
 
     // return;
     const response = await execFun(() => addNewAltComponent(payload), "fetch");
-    if (response.data.code == 200) {;
+    if (response.data.code == 200) {
       toast({
         title: response.data.message.msg,
         className: "bg-green-700 text-white",
@@ -581,7 +578,6 @@ const EditBom = () => {
     setFiles(newFiles);
   };
   const uploadDocs = async () => {
-  
     const formData = new FormData();
     formData.append("caption", captions);
     formData.append("subject", sheetOpenEdit);
@@ -635,8 +631,7 @@ const EditBom = () => {
       getUploadedDoc(sheetOpen);
     }
   }, [sheetOpen]);
-  useEffect(() => {
-  }, [search]);
+  useEffect(() => {}, [search]);
   const handleSearch = (searchKey: string, type: any) => {
     if (searchKey) {
       dispatch(fetchComponentDetail({ search: searchKey, type }));
@@ -659,7 +654,6 @@ const EditBom = () => {
     <Wrapper className="h-[calc(100vh-60px)] overflow-hidden">
       <AddPOPopovers uiState={uiState} />
       {loading1("fetch") && <FullPageLoading />}
-     
       {alternatemodal == false ? (
         <div className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] flex ">
           <div className="bg-[#fff] ">
@@ -696,7 +690,7 @@ const EditBom = () => {
                 onClick={() => setSheetOpen(true)}
                 className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
               >
-                <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel
+                <Upload className="text-white w-[20px] h-[20px]" /> Upload Docs
                 Here
               </Button>
             </div>
@@ -725,12 +719,12 @@ const EditBom = () => {
                 >
                   Reset
                 </Button> */}
-                <Button
+                {/* <Button
                   className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
                   onClick={handleBack}
                 >
                   Back
-                </Button>
+                </Button> */}
                 {/* <Button
                   className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
                   onClick={handleNext}

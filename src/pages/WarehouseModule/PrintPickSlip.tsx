@@ -38,6 +38,7 @@ import {
 } from "@/features/client/storeSlice";
 import { transformOptions } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import { rangePresets } from "@/General";
 const ActionMenu: React.FC<ActionMenuProps> = ({ row, printTheSelectedPo }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -284,6 +285,7 @@ const PrintPickSlip: React.FC = () => {
                     )
                   }
                   format={dateFormat}
+                  presets={rangePresets}
                 />
               </Space>
             </Form.Item>

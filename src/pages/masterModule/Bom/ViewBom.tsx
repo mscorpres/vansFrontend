@@ -102,7 +102,7 @@ const columnDefs: ColDef<rowData>[] = [
     headerName: "Customer Part No.",
     field: "map_cust_part_no",
     filter: "agTextColumnFilter",
-    width: 190,
+    width: 200,
   },
   {
     headerName: "Vendor Part Name",
@@ -114,7 +114,7 @@ const columnDefs: ColDef<rowData>[] = [
     headerName: "Vendor Component Name",
     field: "ven_com_desc",
     filter: "agTextColumnFilter",
-    width: 200,
+    width: 250,
   },
   {
     headerName: "UOM",

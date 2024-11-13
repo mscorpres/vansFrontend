@@ -1,20 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { clientFormSchema } from "@/schema/masterModule/customerSchema";
-import ReusableTable from "@/components/shared/ReusableTable";
-import columnDefs from "@/config/agGrid/mastermodule/CustomerTable";
-import { transformCustomerTableData } from "@/helper/TableTransformation";
 import ClientActionCellRender from "@/config/agGrid/mastermodule/ClientActionCellRender";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Badge } from "@/components/ui/badge";
@@ -25,32 +16,22 @@ import { createClient } from "@/features/client/clientSlice";
 import styled from "styled-components";
 import { AgGridReact } from "ag-grid-react";
 import {
-  addbranchToClient,
+  fetchCountryList,
+  fetchState,
   getListOFbranchDetails,
   getListOFViewCustomers,
   getListOFViewCustomersOfSelected,
 } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
-import { Edit2, EyeIcon } from "lucide-react";
+import { Edit2 } from "lucide-react";
 import Select from "react-select";
-import { BsGearFill } from "react-icons/bs";
 import {
   InputStyle,
-  LableStyle,
-  primartButtonStyle,
 } from "@/constants/themeContants";
 import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { MoreOutlined } from "@ant-design/icons";
 import {
   Sheet,
@@ -59,18 +40,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { Dropdown, Form, Menu } from "antd";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import CreateBom from "./Bom/CreateBom";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { fetchCountries } from "@/features/salesmodule/createSalesOrderSlice";
 
 const MasterCustomerPage: React.FC = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [addBranch, setAddBranch] = useState(false);
   const [viewBranch, setViewBranch] = useState(false);
   const [openView, setOpenView] = useState(false);
-  const [sheetOpenEdit, setSheetOpenEdit] = useState(false);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [branchList, setBranchList] = useState([]);
@@ -150,6 +130,22 @@ const MasterCustomerPage: React.FC = () => {
     }),
     []
   );
+  const getStateList = async () => {
+    // return;
+    const response = await execFun(() => fetchState(), "fetch");
+    console.log("response", response);
+    // return;
+    let { data } = response;
+    if (response.status === 200) {
+      let arr = data.data.map((r, index) => {
+        return {
+          label: r.name,
+          value: r.code,
+        };
+      });
+      setStateList(arr);
+    }
+  };
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -380,8 +376,26 @@ const MasterCustomerPage: React.FC = () => {
 
     // const response = await execFun(() => addbranchToClient(), "fetch");
   };
+  const getCountryList = async () => {
+    // return;
+    const response = await execFun(() => fetchCountryList(), "fetch");
+    console.log("response", response);
+    // return;
+    let { data } = response;
+    if (response.status === 200) {
+      let arr = data.data.map((r, index) => {
+        return {
+          label: r.name,
+          value: r.code,
+        };
+      });
+      setCountryList(arr);
+    }
+  };
   useEffect(() => {
     fetchList();
+    getCountryList();
+    getStateList();
   }, []);
   useEffect(() => {
     if (viewBranch) {
@@ -456,7 +470,7 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="State" label="State">
+                          <Form.Item name="state" label="State">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -466,9 +480,9 @@ const MasterCustomerPage: React.FC = () => {
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              options={countryList}
+                              options={stateList}
                               onChange={(value: any) =>
-                                form.setValue("country", value)
+                                form.setValue("state", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={

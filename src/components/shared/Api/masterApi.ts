@@ -183,7 +183,6 @@ export const insertBom = async (payload: any) => {
   return response;
 };
 export const fetchProductBySku = async (wise: any) => {
-
   const response = await spigenAxios.get(`/products/bySku?sku=${wise}`);
   return response;
 };
@@ -244,20 +243,12 @@ export const fetchAllVendorList = async (search: any) => {
   });
   return response;
 };
-/*************  ✨ Codeium Command ⭐  *************/
-/**
- * Fetches a list of all branches associated with a specific vendor.
- *
- * @param code - The vendor ID for which to retrieve branch information.
- * @returns A promise that resolves to the response containing the list of branches.
- */
-/******  9df202e2-e37a-4b4d-ac0a-d7d2aa08869f  *******/ export const fetchAllBranchList =
-  async (code: any) => {
-    const response = await spigenAxios.post("vendor/getAllBranchList", {
-      vendor_id: code,
-    });
-    return response;
-  };
+export const fetchAllBranchList = async (code: any) => {
+  const response = await spigenAxios.post("vendor/getAllBranchList", {
+    vendor_id: code,
+  });
+  return response;
+};
 export const fetchAllBranchDetails = async (code: any) => {
   const response = await spigenAxios.post("/vendor/getBranchDetails", {
     addresscode: code,
@@ -465,6 +456,10 @@ export const vendorUpdatedetails = async (payload: any) => {
 };
 export const vendorUpdateSave = async (payload: any) => {
   const response = await spigenAxios.post("/vendor/updateVendor", payload);
+  return response;
+};
+export const addVendorBranch = async (payload: any) => {
+  const response = await spigenAxios.post("/vendor/addVendorBranch", payload);
   return response;
 };
 export const vendoradd = async (payload: any) => {

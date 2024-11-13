@@ -32,6 +32,7 @@ import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import {
+  addVendorBranch,
   fetchAllListOfVendor,
   fetchState,
   vendoradd,
@@ -56,6 +57,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { MoreOutlined } from "@ant-design/icons";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
 const FormSchema = z.object({
   wise: z.string().optional(),
   branch: z.string().optional(),
@@ -306,6 +308,7 @@ const VendorList = () => {
         className: "bg-green-600 text-white items-center",
       });
       setSheetOpenView(false);
+      form.resetFields();
     } else {
       toast({
         title: response.data.message.msg,
@@ -330,7 +333,8 @@ const VendorList = () => {
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
       });
-      setSheetOpenView(false);
+      setSheetOpenEdit(false);
+      form.resetFields();
     } else {
       toast({
         title: response.data.message.msg,
@@ -358,14 +362,15 @@ const VendorList = () => {
       },
     };
 
-    const response = await execFun(() => vendorUpdateSave(p), "fetch");
+    const response = await execFun(() => addVendorBranch(p), "fetch");
     console.log("response", response);
     if (response.data.code == 200) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
       });
-      setSheetOpenView(false);
+      setSheetOpenBranch(false);
+      form.resetField();
     } else {
       toast({
         title: response.data.message.msg,
@@ -401,7 +406,8 @@ const VendorList = () => {
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
       });
-      setSheetOpenView(false);
+      // form.resetFields();
+      setSheetOpen(false);
     } else {
       toast({
         title: response.data.message.msg,
@@ -439,7 +445,9 @@ const VendorList = () => {
       // setViewAllBranch(a);
     }
   };
-
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "Manage Vendor");
+  };
   useEffect(() => {
     getBranchList(sheetOpenView?.data?.vendor_code);
   }, [sheetOpenView]);
@@ -468,9 +476,28 @@ const VendorList = () => {
       form.setValue("state", "");
     }
   }, [sheetOpenView]);
+  useEffect(() => {
+    if (sheetOpen == false) {
+      form.setValue("label", "");
+      form.setValue("mobile", " ");
+      form.setValue("pan", " ");
+      form.setValue("cin", " ");
+      form.setValue("state", " ");
+      form.setValue("mobile", " ");
+      form.setValue("city", "");
+      form.setValue("gstin", "");
+      form.setValue("pin", "");
+      form.setValue("email", "");
+      form.setValue("address", "");
+      form.setValue("fax", "");
+      form.setValue("vendorCode", "");
+      form.setValue("addressCode", "");
+      form.setValue("state", "");
+    }
+  }, [sheetOpen]);
 
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[250px_1fr]">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -495,7 +522,10 @@ const VendorList = () => {
               >
                 Add Vendor
               </Button>
-              <Download className="text-slate-600 w-[25px] h-[35px] cursor-pointer" />
+              <Download
+                className="text-slate-600 w-[25px] h-[35px] cursor-pointer"
+                onClick={handleDownloadExcel}
+              />
             </div>
             {/* <CustomTooltip
               message="Add Address"
@@ -623,6 +653,9 @@ const VendorList = () => {
                                 isClearable={true}
                                 isSearchable={true}
                                 options={stateList}
+                                onChange={(e: any) =>
+                                  form.setValue("state", e?.value)
+                                }
                                 // onChange={(e) => console.log(e)}
                                 // value={
                                 //   data.clientDetails
@@ -802,7 +835,7 @@ const VendorList = () => {
               </SheetTitle>
             </SheetHeader>
             <div>
-              {/* {loading1("fetch") && <FullPageLoading />} */}
+              {loading1("fetch") && <FullPageLoading />}
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(updateViewBranch)}
@@ -874,6 +907,9 @@ const VendorList = () => {
                                 isClearable={true}
                                 isSearchable={true}
                                 options={stateList}
+                                onChange={(e: any) =>
+                                  form.setValue("state", e?.value)
+                                }
                                 // onChange={(e) => console.log(e)}
                                 // value={
                                 //   data.clientDetails
@@ -1113,6 +1149,9 @@ const VendorList = () => {
                                 isClearable={true}
                                 isSearchable={true}
                                 options={stateList}
+                                onChange={(e: any) =>
+                                  form.setValue("state", e?.value)
+                                }
                                 // onChange={(e) => console.log(e)}
                                 // value={
                                 //   data.clientDetails
