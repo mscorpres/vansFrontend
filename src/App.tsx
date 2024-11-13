@@ -84,6 +84,7 @@ import PrintPickSlip from "./pages/WarehouseModule/PrintPickSlip";
 import ViewMin from "./pages/WarehouseModule/ViewMin";
 import PrintCustomerLabel from "./pages/WarehouseModule/PrintCustomerLabel";
 import PrintLayout from "./layouts/PrintLayout";
+// import BomLayout from "./layouts/Master/BomLayout";
 import ViewFgOut from "./pages/FGOut/ViewFgOut";
 import CustomerComponent from "./pages/masterModule/ComponentMap/CustomerComponent";
 import ComponentMapLayout from "./layouts/Master/ComponentMapLayout";
@@ -92,6 +93,8 @@ import CreatePhysicalStock from "./pages/PhysicalStock/CreatePhysicalStock";
 import PendingStock from "./pages/PhysicalStock/PendingStock";
 import RejectedStock from "./pages/PhysicalStock/RejectedStock";
 import ViewPhysicalStock from "./pages/PhysicalStock/ViewPhysicalStock";
+import BomLayout from "./layouts/Master/BomLayout";
+import CreatingBoxRecipe from "./pages/masterModule/Bom/CreatingBoxRecipe";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -223,9 +226,9 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          {/* <ComponentsLayout> */}
-          <CreateBom />
-          {/* </ComponentsLayout> */}
+          <BomLayout>
+            <CreateBom />
+          </BomLayout>
         </MainLayout>
       </Protected>
     ),
@@ -235,9 +238,21 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          {/* <ComponentsLayout> */}
-          <EditBom />
-          {/* </ComponentsLayout> */}
+          {/* <BomLayout> */}
+          <CreatingBoxRecipe />
+          {/* </BomLayout> */}
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/bom/create",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          {/* <BomLayout> */}
+            <EditBom />
+          {/* </BomLayout> */}
         </MainLayout>
       </Protected>
     ),

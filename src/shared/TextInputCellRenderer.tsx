@@ -115,11 +115,11 @@ const bomStatusList = [
   },
   {
     value: "Alternative",
-    label: "Alternative",
+    label: "Alternate",
   },
   {
-    value: "InActive",
-    label: "InActive",
+    value: "Inactive",
+    label: "Inactive",
   },
 ];
 const bomStatusCat = [
@@ -304,6 +304,12 @@ const TextInputCellRenderer = (props: any) => {
           //  data["boxPartName"] = r?.payload.data;
         }
       });
+    }
+    console.log("bomStatus", data);
+    if (colDef.field === "bomStatus") {
+      if (data["bomStatus"] == "Alternative") {
+        props.setAlternateModal(data);
+      }
     }
     if (colDef.field === "costCenter") {
     }

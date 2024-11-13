@@ -24,6 +24,7 @@ export const store = configureStore({
     billing: billingAdressSlice,
     shipping: shippingAdressSlice,
     client: clientSlice,
+    product: productSlice,
     store: storeSlice,
     branch: branchSlice,
     sellRequest: SalesSlice,
