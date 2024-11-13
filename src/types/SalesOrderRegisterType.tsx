@@ -10,7 +10,8 @@ export interface RowData {
     so_id: string;
     supplierName:string;
     shipment_id:string
-    
+    material_status:string,
+    approval_status:string
   }
 export type Payload = {
   wise: string;
