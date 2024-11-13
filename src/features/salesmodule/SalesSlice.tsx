@@ -279,6 +279,32 @@ export const printSellOrder = createAsyncThunk(
   }
 );
 
+export const shortClose = createAsyncThunk(
+  "client/shortClose",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/close",
+        payload
+      )) as any;
+
+      if (response?.data?.code == 200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 const sellRequestSlice = createSlice({
   name: "sellRequest",
   initialState,
@@ -368,6 +394,17 @@ const sellRequestSlice = createSlice({
         state.loading = false;
       })
       .addCase(printSellOrder.rejected, (state, action) => {
+        state.error = action.error?.message || null;
+        state.loading = false;
+      })
+
+      .addCase(shortClose.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(shortClose.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(shortClose.rejected, (state, action) => {
         state.error = action.error?.message || null;
         state.loading = false;
       })

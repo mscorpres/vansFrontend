@@ -177,18 +177,18 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     { headerName: "Remark", field: "itemRemark" },
   ];
 
-  const isDisabled = row?.approveStatus === "Approved";
+  const isDisabled = row?.approval_status === "N";
 
   const menu = (
     <Menu>
       <Menu.Item
         key="approve"
         onClick={() => handleshowMaterialListForApprove(row)}
-        disabled={isDisabled}
+        disabled={row?.approval_status !== "N"}
       >
         Approve
       </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal} disabled={isDisabled}>
+      <Menu.Item key="cancel" onClick={showCancelModal} disabled={row?.approval_status !== "N"}>
         Cancel
       </Menu.Item>
       <Menu.Item
@@ -196,19 +196,16 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClick={() => {
           handleshowMaterialList(row);
         }}
-        disabled={isDisabled}
+        disabled={row?.approval_status === "N"}
       >
        PickSlip
       </Menu.Item>
       <Menu.Item
         key="createInvoice"
         onClick={showInvoiceModal}
-        disabled={isDisabled}
+        disabled={isDisabled || row?.material_status!=="OUT"}
       >
         Create Invoice
-      </Menu.Item>
-      <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)}>
-        Print
       </Menu.Item>
     </Menu>
   );

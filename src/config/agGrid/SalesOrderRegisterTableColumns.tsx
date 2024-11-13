@@ -18,6 +18,7 @@ import {
   fetchMaterialList,
   fetchSellRequestList,
   printSellOrder,
+  shortClose,
 } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import { toast } from "@/components/ui/use-toast";
@@ -34,8 +35,10 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const [isInvoiceModalVisible, setIsInvoiceModalVisible] = useState(false);
   const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
     useState(false);
+  const [showHandleCloseModal, setShowHandleCloseModal] = useState(false);
   const [form] = Form.useForm();
   const [invoiceForm] = Form.useForm(); // Form instance for the invoice modal
+  const [shortCloseForm] = Form.useForm(); // Form instance for the invoice modal
   const { sellRequestList, loading } = useSelector(
     (state: RootState) => state.sellRequest
   );
@@ -162,13 +165,40 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     });
   };
 
+  const handleShortClose = () => {
+    setShowHandleCloseModal(true);
+  };
+
+  const handleShortCloseModalOk = () => {
+    shortCloseForm
+    .validateFields()
+    .then((values) => {
+      const payload: any = {
+        so_id: row?.so_id,
+        remark: values.remark,
+      };
+    dispatch(shortClose(payload)).then((response: any) => {
+      if (response?.payload?.code == 200) {
+        setShowHandleCloseModal(false);
+        dispatch(
+          fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
+        );
+      }
+    });
+  })
+}
+
   const isDisabled = row?.approveStatus === "Approved";
 
   const tableData = useMemo(
-    () => sellRequestList?.map((item) => ({ ...item })) || [],
+    () =>
+      Array.isArray(sellRequestList)
+        ? sellRequestList.map((item) => ({ ...item }))
+        : [],
     [sellRequestList]
   );
-  console.log(tableData)
+
+  console.log(tableData);
 
   const menu = (
     <Menu>
@@ -189,16 +219,20 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       >
         Approve
       </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal}>
+      <Menu.Item key="cancel" onClick={showCancelModal} disabled={row?.soStatus==="Closed"}>
         Cancel
       </Menu.Item>
-      <Menu.Item key="materialList" onClick={() => handleshowMaterialList(row)} disabled={row?.approveStatus==="Pending"}>
+      <Menu.Item
+        key="materialList"
+        onClick={() => handleshowMaterialList(row)}
+        disabled={row?.approveStatus === "Pending"||row?.soStatus==="Closed"}
+      >
         Create Shipment
       </Menu.Item>
       <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)}>
         Print
       </Menu.Item>
-      <Menu.Item key="shortClose" onClick={() => handlePrintOrder(row?.so_id)}>
+      <Menu.Item key="shortClose" onClick={() => handleShortClose()} disabled={row?.soStatus==="Closed"}>
         Short Close
       </Menu.Item>
     </Menu>
@@ -236,14 +270,23 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       />
       <MaterialListModal
         visible={showConfirmationModal}
-        onClose={()=>setShowConfirmationModal(false)}
+        onClose={() => setShowConfirmationModal(false)}
         sellRequestDetails={tableData}
-        row={{req_id:row?.so_id}}
+        row={{ req_id: row?.so_id }}
         loading={loading}
         columnDefs={materialListColumnDefs}
         title={`Approve Sales Order for ${row?.so_id}`}
         submitText="Approve"
         handleSubmit={confirmApprove}
+      />
+      <CreateInvoiceDialog
+        isDialogVisible={showHandleCloseModal}
+        handleOk={handleShortCloseModalOk}
+        handleCancel={() => setShowConfirmationModal(false)}
+        form={shortCloseForm}
+        loading={loading}
+        heading="Short Close"
+        description={`Are you sure you want to Short close for SO ${row.so_id}?`}
       />
     </>
   );
@@ -305,36 +348,36 @@ export const columnDefs: ColDef<any>[] = [
 ];
 
 const materialListColumnDefs: ColDef[] = [
-    { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
-    {
-      headerName: "SO ID",
-      field: "so_id",
-      width: 150,
-    },
-    {
-      headerName: "Item",
-      field: "item",
-      width: 200,
-    },
-    {
-      headerName: "Material",
-      field: "itemName",
-      width: 300,
-      cellRenderer: "truncateCellRenderer",
-    },
-    {
-      headerName: "Material Specification",
-      field: "itemSpecification",
-      cellRenderer: "truncateCellRenderer",
-    },
-    { headerName: "SKU Code", field: "itemPartNo" },
-    {
-      headerName: "Qty",
-      field: "qty",
-    },
-    { headerName: "UoM", field: "uom" },
-    { headerName: "GST Rate", field: "gstRate" },
-    { headerName: "Price", field: "rate" },
-    { headerName: "HSN/SAC", field: "hsnCode" },
-    { headerName: "Remark", field: "itemRemark" },
-  ];
+  { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
+  {
+    headerName: "SO ID",
+    field: "so_id",
+    width: 150,
+  },
+  {
+    headerName: "Item",
+    field: "item",
+    width: 200,
+  },
+  {
+    headerName: "Material",
+    field: "itemName",
+    width: 300,
+    cellRenderer: "truncateCellRenderer",
+  },
+  {
+    headerName: "Material Specification",
+    field: "itemSpecification",
+    cellRenderer: "truncateCellRenderer",
+  },
+  { headerName: "SKU Code", field: "itemPartNo" },
+  {
+    headerName: "Qty",
+    field: "qty",
+  },
+  { headerName: "UoM", field: "uom" },
+  { headerName: "GST Rate", field: "gstRate" },
+  { headerName: "Price", field: "rate" },
+  { headerName: "HSN/SAC", field: "hsnCode" },
+  { headerName: "Remark", field: "itemRemark" },
+];
