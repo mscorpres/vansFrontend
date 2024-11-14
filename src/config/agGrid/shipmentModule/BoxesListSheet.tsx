@@ -6,8 +6,8 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@/components/ui/button";
 
 const BoxesListSheet = ({ open, close, data, onSelect, loading }: any) => {
-  const [selectedRows, setSelectedRows] = useState<any[]>([]);
-  const [totalSum, setTotalSum] = useState(0);
+  const [selectedRows, setSelectedRows] = useState<any[]>([]);  // Track selected rows (boxes with qty)
+  const [totalSum, setTotalSum] = useState(0);  // Total sum of selected quantities
   const gridRef = useRef<AgGridReact<any>>(null);
 
   const rowSelection = useMemo<RowSelectionOptions | "single" | "multiple">(() => {

@@ -42,19 +42,20 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [selectedBoxes, setSelectedBoxes] = useState<{ [key: string]: any }>(
+  const [rowItem,setRowItem] = useState<string>('');
+  const [selectedBoxes, setSelectedBoxes] = useState<{ [rowId: string]: any }>(
     {}
   ); // Changed to store selected boxes per row
   const [box, setBox] = useState<string[]>([]);
   const [qty, setQty] = useState<string[]>([]);
   const dispatch = useDispatch();
-  const { availableStock } = useSelector(
-    (state: RootState) => state.sellShipment
-  );
+  const { availableStock } = useSelector((state: RootState) => state.sellShipment);
 
+  // Function to handle when a row's "Select Box" field is clicked
   const handleBoxesClick = (params: any) => {
     setSheetOpen(true);
-    console.log(params.data);
+    const rowId = params.data.item;
+    setRowItem(rowId);
     const payload = {
       c_center: sellRequestDetails?.header?.costcenter?.code,
       component: params.data?.item,
@@ -66,16 +67,20 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     });
   };
 
+  // Function to handle selected boxes and quantities
   const handleSelectedBoxes = (selectedData: any, rowId: string) => {
-    console.log(selectedData, rowId);
+    // Update selected boxes and quantities for the specific row (rowId)
     setSelectedBoxes((prevSelectedBoxes) => ({
       ...prevSelectedBoxes,
-      [rowId]: selectedData, // Store selected boxes only for the specific row
+      [rowId]: {
+        boxes: selectedData.map((item: any) => item.box_name),
+        qty: selectedData.map((item: any) => item.stock),
+      },
     }));
-    setSheetOpen(false); // Close the sheet/modal after selection
-    console.log("Selected Boxes:", selectedData);
+    setSheetOpen(false); // Close the sheet after selection
   };
 
+  // Column definitions for the grid
   const columnDefs: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
     {
@@ -92,18 +97,17 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     },
     {
       headerName: "OUT BOX(es)",
-      field: "outBoxQty", // Assuming `outBoxQty` is the field for outbox quantity in your data
+      field: "outBoxQty",
       cellRenderer: (params: any) => {
-        // Check if the current row has selected boxes
-        const rowId = params.data?.item; // Use a unique identifier for the row (e.g., item code)
-        const selectedForRow = selectedBoxes[rowId]; // Get the selected boxes for this row
+        const rowId = params.data?.item;
+        const selectedForRow = selectedBoxes[rowId];
         return (
           <div
             className="p-2 border border-gray-300 rounded-md"
             onClick={() => handleBoxesClick(params)}
           >
-            {selectedForRow && selectedForRow.length > 0
-              ? selectedForRow.map((box: any) => box?.box_name).join(", ")
+            {selectedForRow && selectedForRow?.boxes?.length > 0
+              ? selectedForRow.boxes.join(", ")
               : "Select Out Box(es)"}
           </div>
         );
@@ -112,23 +116,22 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     },
     { headerName: "Item Part Number", field: "itemPartNo" },
     { headerName: "Qty", field: "qty" },
-
     { headerName: "Remark", field: "itemRemark" },
   ];
 
-  const tableData = useMemo(
-    () => availableStock?.map((item) => ({ ...item })) || [],
-    [availableStock]
-  );
+  // Table data, mapping the available stock to rows
+  const tableData = useMemo(() => availableStock?.map((item) => ({ ...item })) || [], [availableStock]);
 
+  // Submit function to gather all the selected boxes and quantities
   const onSubmit = () => {
-    // Create the payload for submission
+    // Create payload with selected boxes and quantities for each row
     const payload = {
       shipment_id: sellRequestDetails?.header?.shipment_id,
-      customer: sellRequestDetails?.header?.customer_name?.customer_code, 
+      customer: sellRequestDetails?.header?.customer_name?.customer_code,
       component: sellRequestDetails?.items?.map((item: any) => item?.item),
-      qty: sellRequestDetails?.items?.map((item: any) => item?.qty), 
-      //   box: selectedBoxes.map((box: any) => box?.box_name), 
+      qty: sellRequestDetails?.items?.map((item: any) => item?.qty),
+      // box: Object.values(selectedBoxes).map((row: any) => row.boxes).flat(), // Flatten selected boxes
+      // boxqty: Object.values(selectedBoxes).map((row: any) => row.qty).flat(), // Flatten quantities
       remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark),
       costcenter: sellRequestDetails?.header?.costcenter?.code,
       //   boxqty: selectedBoxes.map((box: any) => box?.box_qty),
@@ -138,7 +141,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
 
     console.log("Payload to submit: ", payload);
     dispatch(stockOut(payload) as any).then((res: any) => {
-      if (res.payload.code == 200) {
+      if (res.payload.code === 200) {
         toast({
           title: res.payload.message || "Material Out Successfully",
           className: "bg-green-600 text-white items-center",
@@ -162,12 +165,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   return (
     <Sheet open={visible} onOpenChange={onClose}>
       <SheetHeader></SheetHeader>
-      <SheetContent
-        side={"bottom"}
-        onInteractOutside={(e: any) => {
-          e.preventDefault();
-        }}
-      >
+      <SheetContent side={"bottom"} onInteractOutside={(e: any) => e.preventDefault()}>
         <div className="flex justify-between items-center mb-2">
           <div>
             <SheetTitle>{`Material Out of ${sellRequestDetails?.header?.shipment_id}`}</SheetTitle>
@@ -189,29 +187,22 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
             loading={loading}
           />
         </div>
+
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-          <Button
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-            onClick={onClose}
-          >
-            Back
-          </Button>
-          <Button
-            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-            onClick={onSubmit}
-          >
-            Pick Slip & Material Out
-          </Button>
+          <Button className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]" onClick={onClose}>Back</Button>
+          <Button className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]" onClick={onSubmit}>Pick Slip & Material Out</Button>
         </div>
+
         <BoxesListSheet
           open={sheetOpen}
           close={() => setSheetOpen(false)}
           data={tableData}
           loading={loading}
-          onSelect={(selectedData:any) => {
-            console.log(selectedData);
-            // handleSelectedBoxes(selectedData, tableData[0]?.box_name) }//
+          onSelect={(selectedData: any) => {
+            console.log(selectedData, rowItem);
+            handleSelectedBoxes(selectedData, rowItem);
             updateBoxAndQty(selectedData);
+            
           }}
         />
       </SheetContent>
