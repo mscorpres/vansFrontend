@@ -95,6 +95,9 @@ import RejectedStock from "./pages/PhysicalStock/RejectedStock";
 import ViewPhysicalStock from "./pages/PhysicalStock/ViewPhysicalStock";
 import BomLayout from "./layouts/Master/BomLayout";
 import CreatingBoxRecipe from "./pages/masterModule/Bom/CreatingBoxRecipe";
+import VendorPriceLayout from "./layouts/Master/VendorPriceLayout";
+import VendorPrice from "./pages/masterModule/VendorPrice/VendorPrice";
+import ApproveList from "./pages/masterModule/VendorPrice/ApproveList";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -946,7 +949,10 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <MasterCustomerPage />
+          {" "}
+          <ClientLayout>
+            <MasterCustomerPage />
+          </ClientLayout>
         </MainLayout>
       </Protected>
     ),
@@ -964,17 +970,41 @@ const router = createBrowserRouter([
     ),
     path: "/master/client/add",
   },
+  // {
+  //   element: (
+  //     <Protected authentication>
+  //       <MainLayout>
+  //         <ClientLayout>
+  //           <MasterCustomerPage />
+  //         </ClientLayout>
+  //       </MainLayout>
+  //     </Protected>
+  //   ),
+  //   path: "/master/client/view",
+  // },
   {
     element: (
       <Protected authentication>
         <MainLayout>
-          <ClientLayout>
-            <MasterCustomerPage />
-          </ClientLayout>
+          <VendorPriceLayout>
+            <VendorPrice />
+          </VendorPriceLayout>
         </MainLayout>
       </Protected>
     ),
-    path: "/master/client/view",
+    path: "/master/vendorPrice",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <VendorPriceLayout>
+            <ApproveList />
+          </VendorPriceLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/vendorPriceList",
   },
   ////Physical Stock///////////////
   {

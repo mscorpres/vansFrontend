@@ -160,6 +160,13 @@ export const materialmenu = [
           { name: "View", path: "/master/client/view" },
         ],
       },
+      {
+        name: "Vendor Price",
+        subMenu: [
+          { name: "Vendor Price", path: "/master/vendorPrice" },
+          { name: "Approve List", path: "/master/vendorPriceList" },
+        ],
+      },
       // {
       //   name: "Customer / Client",
       //   path: "/master/customer",
