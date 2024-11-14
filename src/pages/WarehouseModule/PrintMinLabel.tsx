@@ -90,7 +90,7 @@ function PrintMinLabel() {
     }
   }, [selMin]);
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] overflow-hidden">
+    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] overflow-hidden bg-[#eaf1ec]">
       <div className="bg-[#fff]">
         {loading == true && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">

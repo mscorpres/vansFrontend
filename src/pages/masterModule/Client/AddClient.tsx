@@ -1,4 +1,4 @@
-import { FaArrowRightLong } from "react-icons/fa6";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Select from "react-select";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
@@ -44,6 +44,7 @@ import {
   fetchState,
 } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
+import { toast } from "@/components/ui/use-toast";
 
 interface OptionType {
   value: string;
@@ -64,7 +65,7 @@ const FormSchema = z.object({
   zip: z.string().optional(),
   email: z.string().optional(),
   website: z.string().optional(),
-  country: z.string().optional(),
+  country: z.union([z.string(), z.number()]).transform((val) => String(val)),
   state: z.string().optional(),
   pan: z.string().optional(),
 });
@@ -180,7 +181,7 @@ const AddClient: React.FC<Props> = ({
     // return;
     let { data } = response;
     if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.name,
           value: r.code,
@@ -209,6 +210,30 @@ const AddClient: React.FC<Props> = ({
     };
     const response = await execFun(() => addClient(payload), "fetch");
     console.log("response", response);
+    if (response?.data?.code == 200) {
+      toast({
+        title: response?.data?.message?.msg,
+        className: "bg-green-600 text-white items-center",
+      });
+      form.setValue("name", "");
+      form.setValue("gst", "");
+      form.setValue("salesPerson", "");
+      form.setValue("address", "");
+      form.setValue("country", "");
+      form.setValue("state", "");
+      form.setValue("city", "");
+      form.setValue("zip", "");
+      form.setValue("phone", "");
+      form.setValue("mobile", "");
+      form.setValue("email", "");
+      form.setValue("pan", "");
+      form.setValue("website", "");
+    } else {
+      toast({
+        title: response?.message,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
   };
   useEffect(() => {
     getCountryList();
@@ -220,6 +245,7 @@ const AddClient: React.FC<Props> = ({
       {data.loading && <FullPageLoading />}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
+          {loading1("1") && <FullPageLoading />}
           <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
             <div className="grid grid-cols-1 gap-[30px]">
               <Card className="rounded shadow bg-[#fff]">
@@ -353,27 +379,16 @@ const AddClient: React.FC<Props> = ({
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
-                                placeholder="Branch"
+                                placeholder="Country"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
                                 options={countryList}
-                                onChange={
-                                  (value: any) => console.log("Country", value)
-
-                                  // form.setValue("country", value.value)
+                                onChange={(value: any) =>
+                                  form.setValue("country", value.value)
                                 }
-                                // onChange={(e) => console.log(e)}
-                                // value={
-                                //   data.clientDetails
-                                //     ? {
-                                //         label: data.clientDetails.city.name,
-                                //         value: data.clientDetails.city.name,
-                                //       }
-                                //     : null
-                                // }
                               />
                             </FormControl>
                             <FormMessage />

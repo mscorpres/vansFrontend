@@ -375,6 +375,7 @@ export const getListOFViewCustomers = async (payload: any) => {
   return response;
 };
 
+
 export const getListOFbranchDetails = async (payload: any) => {
   const response = await spigenAxios.get(
     `/client/branchDetails?addressID=${payload}`,

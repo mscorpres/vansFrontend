@@ -78,7 +78,7 @@ const Q3 = () => {
     } else {
       toast({
         title: response.data.message.msg,
-        className: "bg-red-500 text-center text-white",
+        className: "bg-red-700 text-center text-white",
         autoDismiss: true,
       });
       //   addToast(data.message.msg, {

@@ -44,6 +44,7 @@ import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
 import { rangePresets } from "@/General";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -390,6 +391,7 @@ const ManagePoPage: React.FC = () => {
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
+          loadingOverlayComponent={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <ViewCompoents

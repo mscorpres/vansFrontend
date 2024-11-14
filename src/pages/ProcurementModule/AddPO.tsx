@@ -29,6 +29,7 @@ import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { useNavigate } from "react-router-dom";
 import { RowData } from "@/data";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 interface Props {
   setTab: string;
@@ -662,6 +663,7 @@ const AddPO: React.FC<Props> = ({
               gridOptions={commonAgGridConfig}
               suppressCellFocus={false}
               suppressRowClickSelection={false}
+              loadingOverlayComponent={OverlayNoRowsTemplate}
             />
           </div>
         </div>

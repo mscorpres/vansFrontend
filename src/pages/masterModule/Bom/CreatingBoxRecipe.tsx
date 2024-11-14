@@ -9,21 +9,19 @@ import { InputStyle } from "@/constants/themeContants";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { Filter, Plus } from "lucide-react";
 import styled from "styled-components";
-import {  Dropdown, Menu, Form } from "antd";
+import { Dropdown, Menu, Form } from "antd";
 import { Input } from "@/components/ui/input";
 
 import Select from "react-select";
 
 import useApi from "@/hooks/useApi";
 import {
-  fetchBomTypeWise,
   fetchPartCodeDetails,
   fetchProductBySku,
   insertBom,
 } from "@/components/shared/Api/masterApi";
 import ViewBom from "./ViewBom";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import { useNavigate } from "react-router-dom";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
@@ -67,7 +65,7 @@ const CreatingBoxRecipe = () => {
     ]);
   };
 
-  const fetchingsku = async (theSku) => {
+  const fetchingsku = async (theSku: any) => {
     const response = await execFun(() => fetchProductBySku(theSku), "fetch");
     console.log("response", response);
 
@@ -80,12 +78,12 @@ const CreatingBoxRecipe = () => {
     } else {
       toast({
         title: response.data.message.msg,
-        className: "bg-red-500 text-center text-white",
+        className: "bg-red-700 text-center text-white",
       });
     }
   };
 
-  const fetchingPartCodeDetails = async (thepartCode) => {
+  const fetchingPartCodeDetails = async (thepartCode: any) => {
     const response = await execFun(
       () => fetchPartCodeDetails(thepartCode),
       "fetch"
@@ -100,7 +98,7 @@ const CreatingBoxRecipe = () => {
     } else {
       toast({
         title: response.data.message.msg,
-        className: "bg-red-500 text-center text-white",
+        className: "bg-red-700 text-center text-white",
       });
     }
   };
@@ -134,7 +132,7 @@ const CreatingBoxRecipe = () => {
     } else {
       toast({
         title: response.data.message.msg,
-        className: "bg-red-500 text-center text-white",
+        className: "bg-red-700 text-center text-white",
       });
     }
   };
@@ -148,16 +146,7 @@ const CreatingBoxRecipe = () => {
       value: "no",
     },
   ];
-  const type = [
-    {
-      label: "FG",
-      value: "FG",
-    },
-    {
-      label: "SGF",
-      value: "SGF",
-    },
-  ];
+
   useEffect(() => {
     if (theSku) {
       fetchingsku(theSku);
@@ -329,7 +318,6 @@ const CreatingBoxRecipe = () => {
                     isClearable={true}
                     isSearchable={true}
                     options={sfgType}
-                    
                   />
                 </Form.Item>
                 {/* )}
@@ -406,7 +394,6 @@ const CreatingBoxRecipe = () => {
           checkboxSelection={true}
         />
       </div>
-      
       {openView && (
         <ViewBom openView={openView} setSheetOpenView={setSheetOpenView} />
       )}

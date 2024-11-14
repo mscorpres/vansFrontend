@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
+import React from "react";
+import {  useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,19 +21,16 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Badge, Edit2, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DatePicker, Divider, Dropdown, Menu, Space } from "antd";
+import { DatePicker, Divider, Dropdown, Menu } from "antd";
 import {
   transformOptionData,
 } from "@/helper/transform";
-import { toast, useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
 import {
-  modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
@@ -46,7 +43,6 @@ import {
 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
-import { BsEye } from "react-icons/bs";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   date: z
@@ -61,7 +57,6 @@ const FormSchema = z.object({
 
 const Q2 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [drwData, setDrwData] = useState([]);
   const [boxData, setBoxData] = useState([]);
   const [stockInfo, setStockInfo] = useState([]);
   const [openView, setSheetOpenView] = useState([]);
@@ -76,9 +71,6 @@ const Q2 = () => {
   });
   const { execFun, loading: loading1 } = useApi();
   //   const { addToast } = useToastContainer()
-  const { RangePicker } = DatePicker;
-
-  const dateFormat = "YYYY/MM/DD";
   const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     const menu = (
       <Menu>
@@ -140,7 +132,7 @@ const Q2 = () => {
     let { data } = response;
     if (data.code == 200) {
       let arr = data.response.data2;
-      let a = arr.map((r, index) => {
+      let a = arr.map((r: any, index: any) => {
         return {
           id: index + 1,
           ...r,
@@ -170,7 +162,7 @@ const Q2 = () => {
     } else {
       toast({
         title: response.data.message.msg,
-        className: "bg-red-500 text-center text-white",
+        className: "bg-red-700 text-center text-white",
         autoDismiss: true,
       });
     }
@@ -193,7 +185,7 @@ const Q2 = () => {
     } else {
       toast({
         title: response.data.message.msg,
-        className: "bg-red-500 text-center text-white",
+        className: "bg-red-700 text-center text-white",
         autoDismiss: true,
       });
     }
