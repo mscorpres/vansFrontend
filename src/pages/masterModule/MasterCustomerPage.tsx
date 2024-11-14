@@ -488,6 +488,7 @@ const MasterCustomerPage: React.FC = () => {
       form.setFieldValue("shipAddress2", billAddress2);
     }
   }, [samebilling]);
+  console.log("herer");
 
   return (
     <Wrapper>
