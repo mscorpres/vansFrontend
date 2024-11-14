@@ -4,12 +4,11 @@ import { MoreOutlined } from "@ant-design/icons";
 import { Button, Menu, Dropdown, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
 import {
-  fetchSellRequestList,
   printSellOrder,
 } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
@@ -19,6 +18,7 @@ import {
   cancelShipment,
   createInvoice,
   fetchMaterialList,
+  fetchSalesOrderShipmentList,
 } from "@/features/salesmodule/salesShipmentSlice";
 import { TruncateCellRenderer } from "@/General";
 import PickSlipModal from "@/config/agGrid/PickSlipModal";
@@ -32,6 +32,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isInvoiceModalVisible, setIsInvoiceModalVisible] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
     useState(false);
   const [form] = Form.useForm();
@@ -70,7 +71,13 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const confirmApprove = () => {
-    dispatch(approveShipment({ so_id: row?.shipment_id }));
+    dispatch(approveShipment({ so_id: row?.shipment_id })).then((response: any) => {
+      if (response?.payload?.code == 200) {
+        dispatch(
+          fetchSalesOrderShipmentList({ type: "date_wise", data: dateRange }) as any
+        );
+      }
+    })
     setShowConfirmationModal(false);
   };
 
@@ -87,7 +94,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           if (response?.payload?.code == 200) {
             form.resetFields(); // Clear the form fields after submission
             dispatch(
-              fetchSellRequestList({
+              fetchSalesOrderShipmentList({
                 type: "date_wise",
                 data: dateRange,
               }) as any
@@ -116,7 +123,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           if (resultAction.payload?.code == 200) {
             setIsInvoiceModalVisible(false);
             dispatch(
-              fetchSellRequestList({
+              fetchSalesOrderShipmentList({
                 type: "date_wise",
                 data: dateRange,
               }) as any
@@ -131,13 +138,20 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       });
   };
 
+  useEffect(() => {
+    if (submitSuccess) {
+      dispatch(
+        fetchSalesOrderShipmentList({
+          type: "date_wise",
+          data: dateRange,
+        }) as any
+      );
+    }
+  }, [submitSuccess]);
+
   const handleInvoiceModalCancel = () => {
     setIsInvoiceModalVisible(false);
   };
-
-  const handleMaterialOut =() =>{
-
-  }
 
   const handlePrintOrder = async (orderId: string) => {
     dispatch(printSellOrder({ so_id: orderId })).then((response: any) => {
@@ -184,11 +198,10 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item
         key="approve"
         onClick={() => handleshowMaterialListForApprove(row)}
-        disabled={row?.approval_status !== "N"}
       >
-        Approve
+        View/Approve
       </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal} disabled={row?.approval_status !== "N"}>
+      <Menu.Item key="cancel" onClick={showCancelModal}>
         Cancel
       </Menu.Item>
       <Menu.Item
@@ -196,7 +209,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClick={() => {
           handleshowMaterialList(row);
         }}
-        disabled={row?.approval_status === "N"}
+        disabled={row?.approval_status === "P"}
       >
        PickSlip
       </Menu.Item>
@@ -239,7 +252,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         sellRequestDetails={shipmentMaterialList}
         row={{ req_id: row?.so_id }}
         loading={loading2}
-        // handleSubmit={()=>handleMaterialOut()}
+        setSubmitSuccess={setSubmitSuccess}
       />
        <MaterialListModal
         visible={showConfirmationModal}
@@ -284,6 +297,16 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "PO Date",
     field: "po_date",
     filter: "agDateColumnFilter",
+  },
+  {
+    headerName: "Approval Status",
+    field: "approval_status",
+    valueGetter: (params) => (params?.data?.approval_status === "Y" ? "Yes" : "No"),
+  },
+  {
+    headerName: "Material Status",
+    field: "material_status",
+    filter: "agTextColumnFilter",
   },
   {
     headerName: "Client Code",

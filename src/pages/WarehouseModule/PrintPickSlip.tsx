@@ -29,7 +29,7 @@ import POCancel from "./POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./MINPO";
 import { useNavigate } from "react-router-dom";
-import { downloadFunction } from "@/components/shared/PrintFunctions";
+import { downloadFunction, printFunction } from "@/components/shared/PrintFunctions";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import {
@@ -184,7 +184,8 @@ const PrintPickSlip: React.FC = () => {
       (res: any) => {
         if (res.payload.code == 200) {
           let { data } = res.payload;
-          downloadFunction(data.buffer, data.filename);
+          printFunction(data.buffer.data);
+          // downloadFunction(data.buffer, data.filename);
         }
       }
     );

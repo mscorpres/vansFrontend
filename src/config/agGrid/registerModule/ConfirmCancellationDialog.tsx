@@ -14,7 +14,6 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"; // Adjust import based on your component structure
-import { useState } from "react";
 
 interface ConfirmCancellationDialogProps {
   isDialogVisible: boolean;
@@ -26,6 +25,8 @@ interface ConfirmCancellationDialogProps {
   form: FormInstance;
   module?: string;
   loading?: boolean;
+  type?: string;
+  setType?: any;
 }
 
 const types = [
@@ -50,14 +51,15 @@ export function ConfirmCancellationDialog({
   form,
   module,
   loading=false,
+  type,
+  setType,
 }: ConfirmCancellationDialogProps) {
-  const [type, setType] = useState<string>("");
 
   return (
     <Dialog open={isDialogVisible} onOpenChange={handleCancel}>
       <DialogContent
         className="min-w-[800px]"
-        onInteractOutside={(e:any) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
       >
         {loading ? (
           <div className="flex items-center justify-center h-full">
@@ -71,7 +73,7 @@ export function ConfirmCancellationDialog({
             <Form form={form} layout="vertical">
               <p>
                 Are you sure you want to cancel this{" "}
-                {module === "E-Invoice" ? "E-Invoice" : module ? module : "SO"}{" "}
+                {module === "E-Invoice" ? "E-Invoice" : module ? module : "SO"}
                 {row.req_id}?
               </p>
               {module === "E-Invoice" && (
@@ -84,7 +86,13 @@ export function ConfirmCancellationDialog({
                     ]}
                   >
                     <div className="p-[10px]">
-                      <Select value={type} onValueChange={setType}>
+                      <Select
+                        value={type}
+                        onValueChange={(value) => {
+                          setType(value);
+                          form.setFieldsValue({ reason: value }); // Update form state
+                        }}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select a reason" />
                         </SelectTrigger>
@@ -107,7 +115,7 @@ export function ConfirmCancellationDialog({
                   >
                     <Input.TextArea
                       rows={4}
-                      placeholder="Enter reason here"
+                      placeholder="Enter remark here"
                       style={{ height: 120, resize: "none" }}
                     />
                   </Form.Item>

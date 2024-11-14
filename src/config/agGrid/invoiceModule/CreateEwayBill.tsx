@@ -80,7 +80,8 @@ export default function CreateEwayBill() {
     dispatch(action({ shipment_id: shipId })).then((res: any) => {
       if (res.payload?.success) {
         var data = res.payload?.data[0];
-        setTotalSum(data?.total_amount||0)
+        console.log(data?.total_amount);
+        setTotalSum(data?.total_amount)
         form.setValue("header.documentNo", data?.documentNo);
         setOrderId(data?.documentDetail?.documentNo);
         form.setValue(
@@ -156,17 +157,17 @@ export default function CreateEwayBill() {
     }
   };
 
-  useEffect(() => {
-    let sum = 0;
-    rowData?.forEach((item: any) => {
-      const itemValue = parseFloat(item.item_value) || 0;
-      const itemSGST = parseFloat(item.item_sgst) || 0;
-      const itemGSTRate = parseFloat(item.item_igst) || 0;
-      const itemCGST = parseFloat(item.item_cgst) || 0;
-      sum += itemValue + itemSGST + itemGSTRate + itemCGST;
-    });
-    setTotalSum(sum);
-  }, [ewayBillData, rowData]);
+  // useEffect(() => {
+  //   let sum = 0;
+  //   rowData?.forEach((item: any) => {
+  //     const itemValue = parseFloat(item.item_value) || 0;
+  //     const itemSGST = parseFloat(item.item_sgst) || 0;
+  //     const itemGSTRate = parseFloat(item.item_igst) || 0;
+  //     const itemCGST = parseFloat(item.item_cgst) || 0;
+  //     sum += itemValue + itemSGST + itemGSTRate + itemCGST;
+  //   });
+  //   setTotalSum(sum);
+  // }, [ewayBillData, rowData]);
 
   const handleSubmit = async () => {
     const isValid = await form.trigger(); // Validate fields
@@ -1599,8 +1600,7 @@ export default function CreateEwayBill() {
                   Items Details: {rowData?.length} Items
                 </h3>
                 <h3 className="text-[17px] font-[600] text-slate-600">
-                  Total Amount: 
-                  {/* {totalSum?.toFixed(2)} */}
+                  Total Amount:  {totalSum}
                 </h3>
               </CardHeader>
 

@@ -62,11 +62,9 @@ export const fetchSalesOrderInvoiceList = createAsyncThunk<
 
 export const printSellInvoice = createAsyncThunk(
   "client/printSellInvoice",
-  async ({ invoiceNo }: { invoiceNo: string }, { rejectWithValue }) => {
+  async (payload: any, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>("/salesInvoice/printEInvoice", {
-        invoiceNo: invoiceNo,
-      });
+      const response = await spigenAxios.post<any>("/salesInvoice/printEInvoice",payload);
 
       if (!response.data) {
         throw new Error("No data received");
