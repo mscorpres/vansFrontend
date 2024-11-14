@@ -16,18 +16,18 @@ import { createClient } from "@/features/client/clientSlice";
 import styled from "styled-components";
 import { AgGridReact } from "ag-grid-react";
 import {
+  addbranchToClient,
   fetchCountryList,
   fetchState,
   getListOFbranchDetails,
   getListOFViewCustomers,
   getListOFViewCustomersOfSelected,
+  updateBranchOfCustomer,
 } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import { Edit2 } from "lucide-react";
 import Select from "react-select";
-import {
-  InputStyle,
-} from "@/constants/themeContants";
+import { InputStyle } from "@/constants/themeContants";
 import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
@@ -40,12 +40,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Dropdown, Form, Menu } from "antd";
+import { Dropdown, Form, Menu, Switch } from "antd";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import CreateBom from "./Bom/CreateBom";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-import { fetchCountries } from "@/features/salesmodule/createSalesOrderSlice";
-
+import CustomTooltip from "@/components/shared/CustomTooltip";
 const MasterCustomerPage: React.FC = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [addBranch, setAddBranch] = useState(false);
@@ -53,7 +52,9 @@ const MasterCustomerPage: React.FC = () => {
   const [openView, setOpenView] = useState(false);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
+  const [editVal, setEditVal] = useState("");
   const [branchList, setBranchList] = useState([]);
+  const [samebilling, setSameBilling] = useState(false);
   const { execFun, loading: loading1 } = useApi();
   const { toast } = useToast();
   const dispatch = useDispatch<AppDispatch>();
@@ -65,7 +66,7 @@ const MasterCustomerPage: React.FC = () => {
       <Menu>
         <Menu.Item
           key="AddBranch"
-          onClick={() => setAddBranch(row.name)}
+          onClick={() => setAddBranch(row)}
           // disabled={isDisabled}
         >
           Add Branch
@@ -89,47 +90,7 @@ const MasterCustomerPage: React.FC = () => {
     );
   };
 
-  const onSubmit = async (values: z.infer<typeof clientFormSchema>) => {
-    try {
-      const resultAction = await dispatch(
-        createClient({
-          endpoint: "/client/add",
-          payload: {
-            clientName: values.clientName,
-            panNo: values.panNo,
-            mobileNo: values.mobileNo,
-            email: values.email || "",
-            website: values.website || "",
-            salesPersonName: values.salesPersonName || "",
-          },
-        })
-      ).unwrap();
 
-      if (resultAction.message) {
-        toast({
-          title: "Client created successfully",
-          className: "bg-green-600 text-white items-center",
-        });
-      } else {
-        toast({
-          title: resultAction.message || "Failed to Create Product",
-          className: "bg-red-600 text-white items-center",
-        });
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
-  };
-
-  const components = useMemo(
-    () => ({
-      actionsCellRenderer: ClientActionCellRender,
-      statusCellRenderer: (params: any) => {
-        return <Badge className="bg-green-600">{params.data.status}</Badge>;
-      },
-    }),
-    []
-  );
   const getStateList = async () => {
     // return;
     const response = await execFun(() => fetchState(), "fetch");
@@ -202,6 +163,18 @@ const MasterCustomerPage: React.FC = () => {
   ];
   const branchcolumnDefs: ColDef<rowData>[] = [
     {
+      field: "action",
+      headerName: "",
+      width: 40,
+
+      cellRenderer: (params: any) => (
+        <Edit2
+          className="h-[20px] w-[20px] text-cyan-700 "
+          onClick={() => editBranchList(params?.data)}
+        />
+      ),
+    },
+    {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
@@ -258,50 +231,46 @@ const MasterCustomerPage: React.FC = () => {
       width: 390,
       cellRenderer: CopyCellRenderer,
     },
-    {
-      field: "action",
-      headerName: "",
-      width: 40,
-
-      cellRenderer: (params: any) => (
-        <Edit2
-          className="h-[20px] w-[20px] text-cyan-700 "
-          onClick={() => setViewBranch(params?.data)}
-        />
-      ),
-    },
   ];
-  console.log("addbranch", addBranch);
-  useEffect(() => {
-    if (viewBranch) {
-      editBranchList(viewBranch);
-    }
-  }, [viewBranch]);
 
-  const editBranchList = async (viewBranch) => {
-    console.log("viewBranch", viewBranch);
 
+  const editBranchList = async (params) => {
+    setEditVal(params?.addressID);
     // return;
     const response = await execFun(
-      () => getListOFbranchDetails(viewBranch?.addressID),
+      () => getListOFbranchDetails(params?.addressID),
       "fetch"
     );
-    console.log("response", response);
-    // return;
     let { data } = response;
-    if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          id: index + 1,
-          ...r,
-        };
-      });
-      setOpenView(arr);
-      //   addToast(response.message, {
-      //     appearance: "success",
-      //     autoDismiss: true,
-      //   });
+    if (response.data.code === 200) {
+      let bill = data.data.billingAddress;
+      let ship = data.data.shippingAddress;
+      console.log("bill", bill);
+      console.log("ship", ship);
+      console.log("bill.gst", bill.gst);
+
+      form.setFieldValue("billlabel", bill.label);
+      form.setFieldValue("billgst", bill.gst);
+      form.setFieldValue("billcountry", bill.country.countryID);
+      form.setFieldValue("billstate", bill.state.stateCode);
+      form.setFieldValue("billpincode", bill.pinCode);
+      form.setFieldValue("billphone", bill.phoneNo);
+      form.setFieldValue("billaddress1", bill.addressLine1);
+      form.setFieldValue("billaddress2", bill.addressLine2);
+      form.setFieldValue("shipLabel", ship.label);
+      form.setFieldValue("shipGst", ship.gst);
+      form.setFieldValue("shipCountry", ship.country.countryName);
+      form.setFieldValue("shipState", ship.state.stateCode);
+      form.setFieldValue("shipPincode", ship.pinCode);
+      form.setFieldValue("shipAddress1", ship.addressLine1);
+      form.setFieldValue("shipAddress2", ship.addressLine1);
+      form.setFieldValue("shipPan", ship.panno);
+      setOpenView(bill);
     } else {
+      toast({
+        title: response.message.msg,
+        className: "bg-red-500",
+      });
       //   addToast(response.message, {
       //     appearance: "error",
       //     autoDismiss: true,
@@ -339,7 +308,6 @@ const MasterCustomerPage: React.FC = () => {
       () => getListOFViewCustomersOfSelected(payload),
       "fetch"
     );
-    console.log("response-", response);
     // return;
     let { data } = response;
     if (response.data.code === 200) {
@@ -357,7 +325,6 @@ const MasterCustomerPage: React.FC = () => {
           // ...r,
         };
       });
-      console.log("arr", arr);
 
       setBranchList(arr);
       //   addToast(response.message, {
@@ -372,9 +339,75 @@ const MasterCustomerPage: React.FC = () => {
     }
   };
   const createNewBranch = async () => {
-    console.log("paylo");
+    const value = await form.validateFields();
+    let payload = {
+      client: value.addBranch?.code,
+      billToLabel: value.billlabel,
+      billToCountry: value.billcountry.value,
+      billToState: value.billstate.value,
+      billToPincode: value.billpincode,
+      billToPhone: value.billphone,
+      billToGst: value.billgst,
+      billToAddresLine1: value.billaddress1,
+      billToAddresLine2: value.billaddress2,
+      ////////////
+      shipToLabel: value.shipLabel,
+      shipToCompany: value.client,
+      shipToCountry: value.shipCountry.value,
+      shipToState: value.shipState.value,
+      shipToPincode: value.shipPincode,
+      shipToGst: value.shipGst,
+      shipToPan: value.shipPan,
+      shipToAddress1: value.shipAddress2,
+      shipToAddress2: value.shipAddress1,
+      same_shipping_addres: samebilling,
+    };
 
-    // const response = await execFun(() => addbranchToClient(), "fetch");
+    const response = await execFun(() => addbranchToClient(payload), "fetch");
+  };
+  const updateSelectedBranch = async () => {
+    const value = await form.validateFields();
+
+    let payload = {
+      addressID: editVal,
+      client: value.addBranch?.code,
+      billToLabel: value.billlabel,
+      billToCountry: value.billcountry.value,
+      billToState: value.billstate.value,
+      billToPincode: value.billpincode,
+      billToPhone: value.billphone,
+      billToGst: value.billgst,
+      billToAddresLine1: value.billaddress1,
+      billToAddresLine2: value.billaddress2,
+      ////////////
+      shipToLabel: value.shipLabel,
+      shipToCompany: value.client,
+      shipToCountry: value.shipCountry.value,
+      shipToState: value.shipState.value,
+      shipToPincode: value.shipPincode,
+      shipToGst: value.shipGst,
+      shipToPan: value.shipPan,
+      shipToAddress1: value.shipAddress2,
+      shipToAddress2: value.shipAddress1,
+      same_shipping_addres: samebilling,
+    };
+    // return;
+
+    const response = await execFun(
+      () => updateBranchOfCustomer(payload),
+      "fetch"
+    );
+    if (response.data.code === 200) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
   };
   const getCountryList = async () => {
     // return;
@@ -399,12 +432,31 @@ const MasterCustomerPage: React.FC = () => {
   }, []);
   useEffect(() => {
     if (viewBranch) {
-      console.log("viewBranch", viewBranch);
-      console.log("viewBranch?.code", viewBranch?.code);
 
       getTheListOfSelectedBranches(viewBranch?.code);
     }
   }, [viewBranch]);
+
+  useEffect(() => {
+    if (samebilling) {
+      let billLabel = form.getFieldValue("billlabel");
+      let billCountry = form.getFieldValue("billcountry");
+      let billState = form.getFieldValue("billstate");
+      let billPincode = form.getFieldValue("billpincode");
+      let billPhone = form.getFieldValue("billphone");
+      let billGst = form.getFieldValue("billgst");
+      let billAddress1 = form.getFieldValue("billaddress1");
+      let billAddress2 = form.getFieldValue("billaddress2");
+      form.setFieldValue("shipLabel", billLabel);
+      form.setFieldValue("shipcountry", billCountry);
+      form.setFieldValue("shipState", billState);
+      form.setFieldValue("shipPincode", billPincode);
+      // form.setFieldValue("shipPan", billPhone);
+      form.setFieldValue("shipGst", billGst);
+      form.setFieldValue("shipAddress1", billAddress1);
+      form.setFieldValue("shipAddress2", billAddress2);
+    }
+  }, [samebilling]);
 
   return (
     <Wrapper>
@@ -420,7 +472,7 @@ const MasterCustomerPage: React.FC = () => {
             }}
           >
             <SheetHeader className={modelFixHeaderStyle}>
-              <SheetTitle className="text-slate-600">{`Add New Branch to ${addBranch}`}</SheetTitle>
+              <SheetTitle className="text-slate-600">{`Add New Branch to ${addBranch?.name}`}</SheetTitle>
             </SheetHeader>{" "}
             <div className="h-[calc(100vh-150px)]">
               {" "}
@@ -439,17 +491,17 @@ const MasterCustomerPage: React.FC = () => {
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                          <Form.Item name="label" label="Label">
+                          <Form.Item name="billlabel" label="Label">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Label"
                             />
                           </Form.Item>
-                          <Form.Item name="country" label="Country">
+                          <Form.Item name="billcountry" label="Country">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Branch"
+                              placeholder="Country"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -457,7 +509,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={countryList}
                               onChange={(value: any) =>
-                                form.setValue("country", value)
+                                form.setValue("billcountry", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -470,11 +522,11 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="state" label="State">
+                          <Form.Item name="billstate" label="State">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Branch"
+                              placeholder="State"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -482,7 +534,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={stateList}
                               onChange={(value: any) =>
-                                form.setValue("state", value)
+                                form.setValue("billstate", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -495,36 +547,89 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="pincode" label="Pincode">
-                            {" "}
+                          <Form.Item
+                            name="billpincode"
+                            label="Pincode"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Pincode!",
+                              },
+                              {
+                                min: 6,
+                                message:
+                                  "Pincode must be at least 6 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
+                              type="number"
                               placeholder="Enter Pincode"
                             />
                           </Form.Item>
-                          <Form.Item name="phone" label="Phone Number">
-                            {" "}
+                          <Form.Item name="billphone" label="Phone Number">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Phone Number"
+                              type="number"
                             />
                           </Form.Item>
-                          <Form.Item name="gst" label="GST Number">
-                            {" "}
+                          <Form.Item
+                            name="billgst"
+                            label="GST Number"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your GST!",
+                              },
+                              {
+                                min: 15,
+                                message: "GST must be at least 15 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter GST Number"
+                              type="number"
                             />
                           </Form.Item>
-                          <Form.Item name="" label="Address Line 1">
-                            {" "}
+                          <Form.Item
+                            name="billaddress1"
+                            label="Address Line 1"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Address!",
+                              },
+                              {
+                                min: 10,
+                                message:
+                                  "Address must be at least 10 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Address Line 1"
                             />
                           </Form.Item>
-                          <Form.Item name="address2" label="Address Line 2">
-                            {" "}
+                          <Form.Item
+                            name="billaddress2"
+                            label="Address Line 2"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Address!",
+                              },
+                              {
+                                min: 10,
+                                message:
+                                  "Address must be at least 10 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Address Line 2"
@@ -535,8 +640,20 @@ const MasterCustomerPage: React.FC = () => {
                     </Card>
                     <Card className="rounded shadow bg-[#fff]">
                       <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                        <h3 className="text-[17px] font-[600] text-slate-600">
+                        <h3 className="flex text-[17px] font-[600] text-slate-600 justify-between">
                           Ship To Information
+                          <CustomTooltip
+                            message="Same as Billing Address"
+                            side="top"
+                            className="bg-cyan-700"
+                          >
+                            <Switch
+                              className="ml-[10px]"
+                              onChange={(e) => {
+                                setSameBilling(e);
+                              }}
+                            ></Switch>
+                          </CustomTooltip>
                         </h3>
                         <p className="text-slate-600 text-[13px]">
                           {/* Please provide Ship To address info */}
@@ -550,11 +667,11 @@ const MasterCustomerPage: React.FC = () => {
                               placeholder="Enter Label"
                             />
                           </Form.Item>
-                          <Form.Item name="labelCountry" label="Country">
+                          <Form.Item name="shipCountry" label="Country">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Branch"
+                              placeholder="Country"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -562,7 +679,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={countryList}
                               onChange={(value: any) =>
-                                form.setValue("country", value)
+                                form.setValue("shipcountry", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -579,7 +696,7 @@ const MasterCustomerPage: React.FC = () => {
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Branch"
+                              placeholder="State"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -600,36 +717,89 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="shipPincode" label="Pincode">
-                            {" "}
+                          <Form.Item
+                            name="shipPincode"
+                            label="Pincode"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your name!",
+                              },
+                              {
+                                min: 6,
+                                message:
+                                  "Pincode must be at least 6 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Pincode"
+                              type="number"
                             />
                           </Form.Item>
-                          <Form.Item name="shipPhone" label="Phone Number">
-                            {" "}
+                          <Form.Item name="shipPan" label="Pan Number">
                             <Input
                               className={InputStyle}
-                              placeholder="Enter Phone Number"
+                              type="number"
+                              placeholder="Enter Pan Number"
                             />
                           </Form.Item>
-                          <Form.Item name="shipGst" label="GST Number">
-                            {" "}
+                          <Form.Item
+                            name="shipGst"
+                            label="GST Number"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your GST!",
+                              },
+                              {
+                                min: 15,
+                                message: "GST must be at least 15 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter GST Number"
+                              type="number"
                             />
                           </Form.Item>
-                          <Form.Item name="shipAddress1" label="Address Line 1">
-                            {" "}
+                          <Form.Item
+                            name="shipAddress1"
+                            label="Address Line 1"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Address!",
+                              },
+                              {
+                                min: 10,
+                                message:
+                                  "Address must be at least 10 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Address Line 1"
                             />
                           </Form.Item>
-                          <Form.Item name="shipAddress2" label="Address Line 2">
-                            {" "}
+                          <Form.Item
+                            name="shipAddress2"
+                            label="Address Line 2"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Address!",
+                              },
+                              {
+                                min: 10,
+                                message:
+                                  "Address must be at least 10 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Address Line 2"
@@ -663,7 +833,7 @@ const MasterCustomerPage: React.FC = () => {
             </div>
           </SheetContent>
         </Sheet>
-        <Sheet open={viewBranch?.addressID} onOpenChange={setViewBranch}>
+        <Sheet open={openView?.addressID} onOpenChange={setOpenView}>
           <SheetTrigger></SheetTrigger>
           <SheetContent
             className="min-w-[100%] p-0"
@@ -672,14 +842,14 @@ const MasterCustomerPage: React.FC = () => {
             }}
           >
             <SheetHeader className={modelFixHeaderStyle}>
-              <SheetTitle className="text-slate-600">{`Edit Branch  ${viewBranch.label}`}</SheetTitle>
+              <SheetTitle className="text-slate-600">{`Edit Branch  ${openView.label}`}</SheetTitle>
             </SheetHeader>{" "}
             <div className="h-[calc(100vh-150px)]">
               {" "}
               <div className="rounded p-[20px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
                 <Form form={form} layout="vertical">
                   {" "}
-                  <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+                  <div className="grid grid-cols-2 gap-[40px] ">
                     <Card className="rounded shadow bg-[#fff]">
                       <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
                         <h3 className="text-[17px] font-[600] text-slate-600">
@@ -691,17 +861,17 @@ const MasterCustomerPage: React.FC = () => {
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                          <Form.Item name="label" label="Label">
+                          <Form.Item name="billlabel" label="Label">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Label"
                             />
                           </Form.Item>
-                          <Form.Item name="country" label="Country">
+                          <Form.Item name="billcountry" label="Country">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Branch"
+                              placeholder="Country"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -709,7 +879,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={countryList}
                               onChange={(value: any) =>
-                                form.setValue("country", value)
+                                form.setValue("billcountry", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -722,19 +892,19 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="State" label="State">
+                          <Form.Item name="billstate" label="State">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Branch"
+                              placeholder="State"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              options={countryList}
+                              options={stateList}
                               onChange={(value: any) =>
-                                form.setValue("country", value)
+                                form.setValue("billstate", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -747,36 +917,88 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="pincode" label="Pincode">
-                            {" "}
+                          <Form.Item
+                            name="billpincode"
+                            label="Pincode"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Pincode!",
+                              },
+                              {
+                                min: 6,
+                                message:
+                                  "Pincode must be at least 6 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
+                              type="number"
                               placeholder="Enter Pincode"
                             />
                           </Form.Item>
-                          <Form.Item name="phone" label="Phone Number">
-                            {" "}
+                          <Form.Item name="billphone" label="Phone Number">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Phone Number"
+                              type="number"
                             />
                           </Form.Item>
-                          <Form.Item name="gst" label="GST Number">
-                            {" "}
+                          <Form.Item
+                            name="billgst"
+                            label="GST Number"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your GST!",
+                              },
+                              {
+                                min: 15,
+                                message: "GST must be at least 15 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter GST Number"
                             />
                           </Form.Item>
-                          <Form.Item name="" label="Address Line 1">
-                            {" "}
+                          <Form.Item
+                            name="billaddress1"
+                            label="Address Line 1"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Address!",
+                              },
+                              {
+                                min: 10,
+                                message:
+                                  "Address must be at least 10 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Address Line 1"
                             />
                           </Form.Item>
-                          <Form.Item name="address2" label="Address Line 2">
-                            {" "}
+                          <Form.Item
+                            name="billaddress2"
+                            label="Address Line 2"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Address!",
+                              },
+                              {
+                                min: 10,
+                                message:
+                                  "Address must be at least 10 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Address Line 2"
@@ -787,8 +1009,20 @@ const MasterCustomerPage: React.FC = () => {
                     </Card>
                     <Card className="rounded shadow bg-[#fff]">
                       <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                        <h3 className="text-[17px] font-[600] text-slate-600">
+                        <h3 className="flex text-[17px] font-[600] text-slate-600 justify-between">
                           Ship To Information
+                          <CustomTooltip
+                            message="Same as Billing Address"
+                            side="top"
+                            className="bg-cyan-700"
+                          >
+                            <Switch
+                              className="ml-[10px]"
+                              onChange={(e) => {
+                                setSameBilling(e);
+                              }}
+                            ></Switch>
+                          </CustomTooltip>
                         </h3>
                         <p className="text-slate-600 text-[13px]">
                           {/* Please provide Ship To address info */}
@@ -802,11 +1036,11 @@ const MasterCustomerPage: React.FC = () => {
                               placeholder="Enter Label"
                             />
                           </Form.Item>
-                          <Form.Item name="labelCountry" label="Country">
+                          <Form.Item name="shipCountry" label="Country">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Branch"
+                              placeholder="Country"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -814,7 +1048,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={countryList}
                               onChange={(value: any) =>
-                                form.setValue("country", value)
+                                form.setValue("shipcountry", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -831,7 +1065,7 @@ const MasterCustomerPage: React.FC = () => {
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Branch"
+                              placeholder="State"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -852,36 +1086,87 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="shipPincode" label="Pincode">
-                            {" "}
+                          <Form.Item
+                            name="shipPincode"
+                            label="Pincode"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your name!",
+                              },
+                              {
+                                min: 6,
+                                message:
+                                  "Pincode must be at least 6 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Pincode"
+                              type="number"
                             />
                           </Form.Item>
-                          <Form.Item name="shipPhone" label="Phone Number">
-                            {" "}
+                          <Form.Item name="shipPan" label="Pan Number">
                             <Input
                               className={InputStyle}
-                              placeholder="Enter Phone Number"
+                              placeholder="Enter Pan Number"
                             />
                           </Form.Item>
-                          <Form.Item name="shipGst" label="GST Number">
-                            {" "}
+                          <Form.Item
+                            name="shipGst"
+                            label="GST Number"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your GST!",
+                              },
+                              {
+                                min: 15,
+                                message: "GST must be at least 15 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter GST Number"
                             />
                           </Form.Item>
-                          <Form.Item name="shipAddress1" label="Address Line 1">
-                            {" "}
+                          <Form.Item
+                            name="shipAddress1"
+                            label="Address Line 1"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Address!",
+                              },
+                              {
+                                min: 10,
+                                message:
+                                  "Address must be at least 10 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Address Line 1"
                             />
                           </Form.Item>
-                          <Form.Item name="shipAddress2" label="Address Line 2">
-                            {" "}
+                          <Form.Item
+                            name="shipAddress2"
+                            label="Address Line 2"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Address!",
+                              },
+                              {
+                                min: 10,
+                                message:
+                                  "Address must be at least 10 characters!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Address Line 2"
@@ -906,7 +1191,7 @@ const MasterCustomerPage: React.FC = () => {
                   <Button
                     type="submit"
                     className="bg-cyan-700 hover:bg-cyan-600"
-                    onClick={() => createNewBranch()}
+                    onClick={() => updateSelectedBranch()}
                   >
                     Update
                   </Button>
@@ -915,7 +1200,7 @@ const MasterCustomerPage: React.FC = () => {
             </div>
           </SheetContent>
         </Sheet>
-
+        <div className="flex items-center gap-[20px] justify-end bg-white mt-[-20px] "></div>
         {viewBranch ? (
           <AgGridReact
             //   loadingCellRenderer={loadingCellRenderer}

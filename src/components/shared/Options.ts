@@ -87,8 +87,8 @@ export const exportDateRangespace = (dateRange: any) => {
     return `${day}-${month}-${year}`; // Return formatted date
   };
 
-  const startDate = formatDate(dateRange[0]);
-  const endDate = formatDate(dateRange[1]);
+  const startDate = moment(dateRange[0]).format("DD-MM-YYYY");
+  const endDate = moment(dateRange[1]).format("DD-MM-YYYY");
   let dataString = `${startDate} - ${endDate}`;
   return dataString;
 };

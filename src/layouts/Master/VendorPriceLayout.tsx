@@ -2,29 +2,29 @@ import { navlinkActiveStyle, navLinkStyle } from "@/constants/themeContants";
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-const ComponentsLayout = (props: { children: React.ReactNode }) => {
+const VendorPriceLayout = (props: { children: React.ReactNode }) => {
   return (
     <div className="">
       <div className="w-full bg-white tab h-[50px] shadow z-10 border-b border-slate-300">
         <ul className="group flex items-center  h-[50px] ">
           <li className="h-[50px]">
             <NavLink
-              to={"/master/client/add"}
+              to={"/master/vendorPrice"}
               className={({ isActive }) =>
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }
             >
-              Add
+              Vendor Price
             </NavLink>
           </li>
           <li className="h-[50px]">
             <NavLink
-              to={"/master/customer"}
+              to={"/master/vendorPriceList"}
               className={({ isActive }) =>
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }
             >
-              View
+              Approve Request
             </NavLink>
           </li>
         </ul>
@@ -36,4 +36,4 @@ const ComponentsLayout = (props: { children: React.ReactNode }) => {
   );
 };
 
-export default ComponentsLayout;
+export default VendorPriceLayout;

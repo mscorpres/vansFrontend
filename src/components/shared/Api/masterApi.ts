@@ -384,6 +384,28 @@ export const getListOFbranchDetails = async (payload: any) => {
   );
   return response;
 };
+export const approveVendorPrice = async (payload: any) => {
+  const response = await spigenAxios.post("/price/approveVendorPrice", {
+    ids: payload,
+  });
+  return response;
+};
+export const updateBranchOfCustomer = async (payload: any) => {
+  const response = await spigenAxios.post(
+    `/client/updateBranch
+`,
+    payload
+  );
+  return response;
+};
+export const createVendorPrice = async (payload: any) => {
+  const response = await spigenAxios.post("/price/createVendorPrice", payload);
+  return response;
+};
+export const getVendorPrice = async (payload: any) => {
+  const response = await spigenAxios.post("/price/getVendorPrice", payload);
+  return response;
+};
 
 export const getListOFViewCustomersOfSelected = async (payload: any) => {
   const response = await spigenAxios.get(
