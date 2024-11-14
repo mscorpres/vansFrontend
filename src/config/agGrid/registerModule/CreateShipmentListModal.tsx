@@ -95,19 +95,19 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
       width: 200,
     },
     {
-      headerName: "Material",
+      headerName: "Item Name",
       field: "itemName",
       width: 300,
       cellRenderer: "truncateCellRenderer",
     },
     {
-      headerName: "Material Specification",
+      headerName: "Item Specification",
       field: "itemSpecification",
       cellRenderer: "truncateCellRenderer",
     },
     { headerName: "SKU Code", field: "itemPartNo" },
     {
-      headerName: "Qty",
+      headerName: "Quantity",
       field: "qty",
       // cellRenderer: (params: any) => {
       //   const { value, colDef, data, api, column } = params;
@@ -234,6 +234,7 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
       }
       
     },
+    { headerName: "Pending Quantity", field: "pending_qty" },
     { headerName: "Price", field: "rate" },
     { headerName: "UoM", field: "uom" },
     { headerName: "GST Rate", field: "gstRate" },

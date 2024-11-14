@@ -40,6 +40,7 @@ import moment from "moment";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { fetchSalesOrderShipmentList } from "@/features/salesmodule/salesShipmentSlice";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 
 const { RangePicker } = DatePicker;
 const dateFormat = "DD/MM/YYYY";
@@ -107,6 +108,7 @@ const SalesShipmentPage: React.FC = () => {
   const components = useMemo(
     () => ({
       shipmentsActionRenderer: ShipMentsActionCellRender,
+      CopyCellRenderer: CopyCellRenderer,
     }),
     []
   );

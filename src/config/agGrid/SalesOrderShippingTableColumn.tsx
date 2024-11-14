@@ -8,9 +8,7 @@ import { useEffect, useState } from "react";
 // import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
-import {
-  printSellOrder,
-} from "@/features/salesmodule/SalesSlice";
+import { printSellOrder } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
 import {
@@ -22,6 +20,7 @@ import {
 } from "@/features/salesmodule/salesShipmentSlice";
 import { TruncateCellRenderer } from "@/General";
 import PickSlipModal from "@/config/agGrid/PickSlipModal";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -37,9 +36,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     useState(false);
   const [form] = Form.useForm();
   const [invoiceForm] = Form.useForm(); // Form instance for the invoice modal
-  const { loading } = useSelector(
-    (state: RootState) => state.sellRequest
-  );
+  const { loading } = useSelector((state: RootState) => state.sellRequest);
 
   const { shipmentMaterialList, loading: loading2 } = useSelector(
     (state: RootState) => state.sellShipment
@@ -71,13 +68,18 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const confirmApprove = () => {
-    dispatch(approveShipment({ so_id: row?.shipment_id })).then((response: any) => {
-      if (response?.payload?.code == 200) {
-        dispatch(
-          fetchSalesOrderShipmentList({ type: "date_wise", data: dateRange }) as any
-        );
+    dispatch(approveShipment({ so_id: row?.shipment_id })).then(
+      (response: any) => {
+        if (response?.payload?.code == 200) {
+          dispatch(
+            fetchSalesOrderShipmentList({
+              type: "date_wise",
+              data: dateRange,
+            }) as any
+          );
+        }
       }
-    })
+    );
     setShowConfirmationModal(false);
   };
 
@@ -211,12 +213,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         }}
         disabled={row?.approval_status === "P"}
       >
-       PickSlip
+        PickSlip
       </Menu.Item>
       <Menu.Item
         key="createInvoice"
         onClick={showInvoiceModal}
-        disabled={isDisabled || row?.material_status!=="OUT"}
+        disabled={isDisabled || row?.material_status !== "OUT"}
       >
         Create Invoice
       </Menu.Item>
@@ -254,7 +256,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         loading={loading2}
         setSubmitSuccess={setSubmitSuccess}
       />
-       <MaterialListModal
+      <MaterialListModal
         visible={showConfirmationModal}
         onClose={() => setShowConfirmationModal(false)}
         sellRequestDetails={shipmentMaterialList?.items}
@@ -282,6 +284,12 @@ export const columnDefs: ColDef<any>[] = [
     field: "shipment_id",
     filter: "agTextColumnFilter",
   },
+  {
+    headerName: "Pickslip ID",
+    field: "pickslip_id",
+    filter: "agTextColumnFilter",
+    cellRenderer:CopyCellRenderer
+  },
   { headerName: "SO ID", field: "so_id", filter: "agTextColumnFilter" },
   {
     headerName: "Shipment Date",
@@ -301,7 +309,18 @@ export const columnDefs: ColDef<any>[] = [
   {
     headerName: "Approval Status",
     field: "approval_status",
-    valueGetter: (params) => (params?.data?.approval_status === "Y" ? "Yes" : "No"),
+    valueGetter: (params) =>
+      params?.data?.approval_status === "Y" ? "Yes" : "No",
+  },
+  {
+    headerName: "Shipment Status",
+    field: "shipment_status",
+    valueGetter: (params) =>
+      params?.data?.shipment_status === "Y"
+        ? "Yes"
+        : params?.data?.shipment_status === "C"
+        ? "Cancelled"
+        : "No",
   },
   {
     headerName: "Material Status",

@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Form, Input } from "antd";
 import { FormInstance } from "antd/lib/form";
 import {
   Dialog,
@@ -14,6 +14,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"; // Adjust import based on your component structure
+import { Button } from "@/components/ui/button";
 
 interface ConfirmCancellationDialogProps {
   isDialogVisible: boolean;
@@ -136,11 +137,11 @@ export function ConfirmCancellationDialog({
               )}
             </Form>
             <DialogFooter>
-              <Button type="default" onClick={handleCancel} className="mr-2">
+              <Button onClick={handleCancel} className="mr-2">
                 Cancel
               </Button>
               <Button
-                type="primary"
+              
                 onClick={handleOk}
                 className="bg-teal-500 hover:bg-teal-600"
               >
