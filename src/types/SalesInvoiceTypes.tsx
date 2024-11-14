@@ -8,5 +8,5 @@ export interface RowData {
   invStatus: string;
   invoiceNo: string;
   soId: string;
-  suplier: string;
+  supplier: string;
 }

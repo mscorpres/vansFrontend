@@ -5,7 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@/components/ui/button";
 
-const BoxesListSheet = ({ open, close, data, onSelect  }: any) => {
+const BoxesListSheet = ({ open, close, data, onSelect, loading }: any) => {
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [totalSum, setTotalSum] = useState(0);
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -55,8 +55,21 @@ const BoxesListSheet = ({ open, close, data, onSelect  }: any) => {
   // Handle row selection change
   const onSelectionChanged = () => {
     const selectedRow = gridRef.current?.api.getSelectedRows();
-    console.log(selectedRow)
     setSelectedRows(selectedRow || []);
+  };
+
+  // Handle cell value change (when stock quantity is changed)
+  const onCellValueChanged = (event: any) => {
+    // When a cell value changes (e.g., stock quantity), we need to update the selected rows and recalculate the sum
+    const updatedRow = event.data;
+    const updatedRows = [...selectedRows];
+    const rowIndex = updatedRows.findIndex((row) => row.box_name === updatedRow.box_name);
+    
+    if (rowIndex >= 0) {
+      updatedRows[rowIndex] = updatedRow; // Update the modified row
+    }
+    
+    setSelectedRows(updatedRows); // Update the selectedRows state with the new value
   };
 
   const handleOkClose = () => {
@@ -91,6 +104,8 @@ const BoxesListSheet = ({ open, close, data, onSelect  }: any) => {
               suppressCellFocus={true}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
               onSelectionChanged={onSelectionChanged} // Listen for row selection change
+              onCellValueChanged={onCellValueChanged} // Listen for cell value change
+              loading={loading}
             />
           </div>
 

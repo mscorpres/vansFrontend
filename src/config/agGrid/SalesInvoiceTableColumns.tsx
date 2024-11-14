@@ -155,7 +155,7 @@ export const columnDefs: ColDef<RowData>[] = [
   },
   {
     headerName: "Supplier Name",
-    field: "suplier",
+    field: "supplier",
     filter: "agTextColumnFilter",
     cellRenderer: CopyCellRenderer,
   },

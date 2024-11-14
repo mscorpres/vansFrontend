@@ -28,7 +28,8 @@ interface PickSlipModalProps {
     req_id: string;
   };
   loading: boolean;
-//   handleSubmit: () => void;
+  setSubmitSuccess: any;
+  //   handleSubmit: () => void;
 }
 
 const PickSlipModal: React.FC<PickSlipModalProps> = ({
@@ -36,6 +37,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   onClose,
   sellRequestDetails,
   loading,
+  setSubmitSuccess,
   //   handleSubmit,
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -43,8 +45,8 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   const [selectedBoxes, setSelectedBoxes] = useState<{ [key: string]: any }>(
     {}
   ); // Changed to store selected boxes per row
-  const [box, setBox] = useState([]);
-  const [qty, setQty] = useState([]);
+  const [box, setBox] = useState<string[]>([]);
+  const [qty, setQty] = useState<string[]>([]);
   const dispatch = useDispatch();
   const { availableStock } = useSelector(
     (state: RootState) => state.sellShipment
@@ -123,37 +125,34 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     // Create the payload for submission
     const payload = {
       shipment_id: sellRequestDetails?.header?.shipment_id,
-      customer: sellRequestDetails?.header?.customer_name?.customer_code, // Assuming customer_code is available
-      component: sellRequestDetails?.items?.map((item: any) => item?.item), // Assuming item_id is available for components
-      qty: sellRequestDetails?.items?.map((item: any) => item?.qty), // Qty from items
-      //   box: selectedBoxes.map((box: any) => box?.box_name), // Flatten selected boxes from all rows
-      remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark), // Item remark
-      costcenter: sellRequestDetails?.header?.costcenter?.code, // Cost center
-      //   boxqty: selectedBoxes.map((box: any) => box?.box_qty), // Flatten and extract box_qty
+      customer: sellRequestDetails?.header?.customer_name?.customer_code, 
+      component: sellRequestDetails?.items?.map((item: any) => item?.item),
+      qty: sellRequestDetails?.items?.map((item: any) => item?.qty), 
+      //   box: selectedBoxes.map((box: any) => box?.box_name), 
+      remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark),
+      costcenter: sellRequestDetails?.header?.costcenter?.code,
+      //   boxqty: selectedBoxes.map((box: any) => box?.box_qty),
       box: box,
       boxqty: qty,
     };
 
     console.log("Payload to submit: ", payload);
     dispatch(stockOut(payload) as any).then((res: any) => {
-        if(res.payload.code == 200){
-            toast({
-                title: res.payload.message||"Material Out Successfully",
-                className: "bg-green-600 text-white items-center",
-              });
-              onClose();
-        }
-      console.log(res);
+      if (res.payload.code == 200) {
+        toast({
+          title: res.payload.message || "Material Out Successfully",
+          className: "bg-green-600 text-white items-center",
+        });
+        onClose();
+        setSubmitSuccess(true);
+      }
     });
-
-    // Call the actual submit function or API request here
-    // handleSubmit(payload); // If handleSubmit is supposed to be an API call handler
   };
 
-  const updateBoxAndQty = (selectData) => {
+  const updateBoxAndQty = (selectData: any) => {
     // Extract the box_name and stock values and push them into the state arrays
-    const newBoxes = selectData.map((item) => item.box_name);
-    const newQtys = selectData.map((item) => item.stock);
+    const newBoxes = selectData.map((item: any) => item.box_name);
+    const newQtys = selectData.map((item: any) => item.stock);
     // Update the state
     setBox((prevBox) => [...prevBox, newBoxes.join(",")]);
     setQty((prevQty) => [...prevQty, newQtys.join(",")]);
@@ -206,9 +205,10 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
         </div>
         <BoxesListSheet
           open={sheetOpen}
-          close={setSheetOpen}
+          close={() => setSheetOpen(false)}
           data={tableData}
-          onSelect={(selectedData) => {
+          loading={loading}
+          onSelect={(selectedData:any) => {
             console.log(selectedData);
             // handleSelectedBoxes(selectedData, tableData[0]?.box_name) }//
             updateBoxAndQty(selectedData);

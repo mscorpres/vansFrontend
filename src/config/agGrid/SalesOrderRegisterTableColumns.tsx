@@ -205,7 +205,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item
         key="update"
         onClick={() => {
-          console.log(row);
           handleUpdate(row);
         }}
         disabled={isDisabled}
@@ -217,7 +216,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClick={() => handleshowMaterialListForApprove(row)}
         disabled={isDisabled}
       >
-        Approve
+        View/Approve
       </Menu.Item>
       <Menu.Item key="cancel" onClick={showCancelModal} disabled={row?.soStatus==="Closed"}>
         Cancel
@@ -282,7 +281,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <CreateInvoiceDialog
         isDialogVisible={showHandleCloseModal}
         handleOk={handleShortCloseModalOk}
-        handleCancel={() => setShowConfirmationModal(false)}
+        handleCancel={() => setShowHandleCloseModal(false)}
         form={shortCloseForm}
         loading={loading}
         heading="Short Close"

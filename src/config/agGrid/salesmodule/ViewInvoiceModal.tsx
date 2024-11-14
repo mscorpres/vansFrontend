@@ -70,7 +70,7 @@ interface ViewInvoiceModalProps {
       itemRemark?: string;
     }[];
   };
-  handlePrintInvoice: () => void;
+  handlePrintInvoice: any;
   loading: boolean;
 }
 
