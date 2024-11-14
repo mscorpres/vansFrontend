@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { printSellInvoice } from "@/features/salesmodule/salesInvoiceSlice";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { printFunction } from "@/components/shared/PrintFunctions";
 
 const DataDialog = ({ open, onClose, orderId, module }: any) => {
   const { invoiceData: data }: { invoiceData: any } = useSelector(
@@ -14,8 +15,12 @@ const DataDialog = ({ open, onClose, orderId, module }: any) => {
 
   const handleDownload = () => {
     dispatch(
-      printSellInvoice({ so_invoice: orderId, printInvType: "Original" })
-    );
+      printSellInvoice({ invoiceNo: orderId, printType: "Original" })
+    ).then((response: any) => {
+        if (response?.payload?.success) {
+          printFunction(response?.payload?.data.buffer.data);
+        }
+      })
   };
 
   const handleBack = () => {

@@ -41,7 +41,6 @@ const ActionMenu: React.FC<any> = ({ row }) => {
       .then((values) => {
         const payload = createPayload(values);
         const action = getCancelAction(payload);
-        console.log(payload,action)
         dispatch(action).then((response: any) => {
           if (response?.payload?.success) {
             toast({

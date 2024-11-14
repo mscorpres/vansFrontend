@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/form";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import { InputStyle, LableStyle } from "@/constants/themeContants";
+import { DatePickerStyle, InputStyle, LableStyle } from "@/constants/themeContants";
 import Select from "react-select";
 
 import { Controller, useForm } from "react-hook-form";
@@ -79,11 +79,11 @@ export default function CreateEwayBill() {
     const action = isEwayBill ? fetchDataForEwayBill : fetchDataForInvoice;
     dispatch(action({ shipment_id: shipId })).then((res: any) => {
       if (res.payload?.success) {
-        var data = res.payload?.data[0];
+        var data = res.payload?.data;
         console.log(data?.total_amount);
         setTotalSum(data?.total_amount)
         form.setValue("header.documentNo", data?.documentNo);
-        setOrderId(data?.documentDetail?.documentNo);
+        setOrderId(data?.documentNo);
         form.setValue(
           "header.documentDate",
           data?.documentDetail?.documentDate
@@ -373,7 +373,7 @@ export default function CreateEwayBill() {
                           <FormControl>
                             <Space direction="vertical" size={12}>
                               <DatePicker
-                                className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 py-[13px] w-[100%] hover:border-neutral-700"
+                               className={DatePickerStyle}
                                 format="DD-MM-YYYY"
                                 onChange={(value: Dayjs | null) => {
                                   const formattedDate = value
@@ -1571,7 +1571,7 @@ export default function CreateEwayBill() {
                               <Space direction="vertical" size={12}>
                                 <DatePicker
                                   // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                  className="border-0 border-b rounded-none shadow-none focus-visible:ring-0 border-neutral-700 w-[390px] hover:border-neutral-700"
+                                  className={DatePickerStyle}
                                   format="DD-MM-YYYY"
                                   onChange={(value: Dayjs | null) => {
                                     const formattedDate = value

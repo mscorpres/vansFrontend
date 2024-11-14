@@ -3,9 +3,9 @@ import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { Props } from "@/types/MainLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { modelFixFooterStyle, primartButtonStyle, tabNavStyle } from "@/constants/themeContants";
-import { Search } from "lucide-react";
+// import { Search } from "lucide-react";
 import { Input } from "../ui/input";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+// import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Textarea } from "../ui/textarea";
 import { GrAttachment } from "react-icons/gr";
 import { Label } from "../ui/label";
@@ -62,12 +62,12 @@ const HelpAndSupportModel: React.FC<Props> = ({ uiState }) => {
             <div className="h-[calc(100vh-52px)] bg-white overflow-y-auto mt-[2px]">
               <TabsContent value="resources" className="px-[10px] ">
                 <div className="flex items-center rounded bg-white gap-[10px] shadow-sm  text-slate-600 border px-[10px] py-[2px] border-slate-300">
-                  <Search className="h-[20px] w-[20px]" />
+                  {/* <Search className="h-[20px] w-[20px]" />
                   <span className="text-slate-400">|</span>
                   <Input placeholder="Enter a keyword for relevent articals" className="border-none rounded-none shadow-none focus-visible:ring-0" />
                 </div>
-                <h2 className="h-[20px] text-slate-700 mt-[20px] font-[600] text-[17px]">Related Topics</h2>
-                <div className="bg-white border rounded-lg mt-[20px] p-[10px] shadow">
+                <h2 className="h-[20px] text-slate-700 mt-[20px] font-[600] text-[17px]">Related Topics</h2> */}
+                {/* <div className="bg-white border rounded-lg mt-[20px] p-[10px] shadow">
                   <Accordion type="multiple">
                     <AccordionItem value="item-1" className="">
                       <AccordionTrigger className="text-slate-600 text-[17px] hover:no-underline text-start">Lorem ipsum dolor sit amet consectetur adipisicing elit.</AccordionTrigger>
@@ -122,8 +122,8 @@ const HelpAndSupportModel: React.FC<Props> = ({ uiState }) => {
                       <AccordionTrigger className="text-slate-600 text-[17px] hover:no-underline">Lorem, ipsum dolor sit amet consectetur lorem </AccordionTrigger>
                       <AccordionContent>Yes. It adheres to the WAI-ARIA design pattern.</AccordionContent>
                     </AccordionItem>
-                  </Accordion>
-                </div>
+                  </Accordion>*/}
+                </div> 
               </TabsContent>
               <TabsContent value="contact" className="bg-white ">
                 <div className="p-[10px]">

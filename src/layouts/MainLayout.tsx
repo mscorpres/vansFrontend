@@ -120,12 +120,12 @@ function MainLayout(props: { children: React.ReactNode }) {
             <div className="search">
               <QuickLinks />
             </div>
-            <div className="download">
+            {/* <div className="download">
               <DownloadIndecator />
-            </div>
+            </div> */}
             <div className="chat"></div>
 
-            <TooltipProvider>
+            {/* <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
                   <div
@@ -142,7 +142,7 @@ function MainLayout(props: { children: React.ReactNode }) {
                   <p>Notifications</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
           </div>
         </nav>
       </div>

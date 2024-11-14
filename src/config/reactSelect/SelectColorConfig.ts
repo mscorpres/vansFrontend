@@ -10,15 +10,15 @@ interface OptionType {
       ...provided,
       borderRadius: "0",
       border: "none",
-      borderBottom: "1px solid #475569",
-      borderColor: state.isFocused ? "blue" : "grey",
+      borderBottom: "2px solid #cbd5e1",
+      borderColor: state.isFocused ? "#cbd5e1" : "grey",
       boxShadow: "none",
       color:"#475569",
       "&:hover": {
-        borderColor: "darkblue",
+        borderColor: "#8d9196",
       },
       background: "transparent",
-            fontSize:"15px"
+      fontSize: "15px",
     }),
     option: (provided, state) => ({
       ...provided,

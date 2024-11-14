@@ -20,6 +20,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import {
+  DatePickerStyle,
   InputStyle,
   LableStyle,
   primartButtonStyle,
@@ -608,7 +609,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Space direction="vertical" size={12}>
                                 <DatePicker
-                                  className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
+                                  className={DatePickerStyle}
                                   format="DD-MM-YYYY"
                                   value={
                                     form.watch("po_date")
@@ -674,7 +675,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Space direction="vertical" size={12}>
                                 <DatePicker
-                                  className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
+                                  className={DatePickerStyle}
                                   format="DD-MM-YYYY"
                                   value={
                                     form.watch("ref_date")
@@ -787,7 +788,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormControl>
                               <Space direction="vertical" size={12}>
                                 <DatePicker
-                                  className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 w-full pt-5"
+                                  className={DatePickerStyle}
                                   format="DD-MM-YYYY"
                                   value={
                                     form.watch("due_date")

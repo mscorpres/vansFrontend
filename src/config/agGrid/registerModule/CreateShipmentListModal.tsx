@@ -109,19 +109,120 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
     {
       headerName: "Qty",
       field: "qty",
+      // cellRenderer: (params: any) => {
+      //   const { value, colDef, data, api, column } = params;
+
+      //   // Make sure we don't touch the `checked` property when editing qty
+      //   const onChangeQty = (e: React.ChangeEvent<HTMLInputElement>) => {
+      //     //   const newValue = e.target.value;
+      //     //   data[colDef.field] = newValue; // Update only the qty field
+      //     //   api.refreshCells({
+      //     //     rowNodes: [params.node],
+      //     //     columns: [column, "qty"],
+      //     //   });
+      //     // };
+      //     const newValue = e.target.value;
+      //     const localValue = data.qty * data.rate || 0; // Ensure localValue is a number
+      //     let cgst = 0;
+      //     let sgst = 0;
+      //     let igst = 0;
+      //     const calculation = (localValue * data.gstRate) / 100;
+
+      //     // Update the qty field in data
+      //     data[colDef.field] = newValue;
+
+      //     // GST Calculation
+      //     if (data.gst_type === "L") {
+      //       // Intra-State
+      //       cgst = calculation / 2;
+      //       sgst = calculation / 2; // Same as CGST
+      //       igst = 0;
+      //       data.cgstRate = cgst.toFixed(2);
+      //       data.sgstRate = sgst.toFixed(2);
+      //       data.igstRate = igst.toFixed(2);
+      //     } else if (data.gst_type === "I") {
+      //       // Inter-State
+      //       igst = calculation;
+      //       cgst = 0;
+      //       sgst = 0;
+      //       data.cgstRate = cgst.toFixed(2);
+      //       data.sgstRate = sgst.toFixed(2);
+      //       data.igstRate = igst.toFixed(2);
+      //     }
+
+      //     // Refresh the cell to show updated value
+      //     api.refreshCells({
+      //       rowNodes: [params.node],
+      //       columns: [column, "qty", "foreignValue", "cgstRate", "sgstRate", "igstRate"],
+      //     });
+
+      //     // Apply transaction to update the data grid
+      //     api.applyTransaction({ update: [data] });
+      //   };
+      //   console.log(data, "data");
+
+      //   return (
+      //     <input
+      //       type="number"
+      //       value={value}
+      //       onChange={onChangeQty}
+      //       className="p-2 border border-gray-300 rounded-md"
+      //     />
+      //   );
+      // },
       cellRenderer: (params: any) => {
         const { value, colDef, data, api, column } = params;
-
-        // Make sure we don't touch the `checked` property when editing qty
+      
+        // Function to handle quantity change
         const onChangeQty = (e: React.ChangeEvent<HTMLInputElement>) => {
           const newValue = e.target.value;
-          data[colDef.field] = newValue; // Update only the qty field
+      
+          // Parse newValue to a float number
+          const qty = parseFloat(newValue);  // Ensure the qty is a number
+          if (isNaN(qty) || qty <= 0) {
+            return; // If it's not a valid number or less than or equal to 0, don't proceed
+          }
+      
+          const rate = parseFloat(data.rate) || 0; // Ensure rate is also a number
+          const localValue = qty * rate; // Now, this will correctly calculate the value
+      
+          let cgst = 0;
+          let sgst = 0;
+          let igst = 0;
+          const calculation = (localValue * data.gstRate) / 100;
+      
+          // Update the qty field in data
+          data[colDef.field] = newValue; // Update the input value (qty field)
+      
+          // GST Calculation
+          if (data.gst_type === "L") {
+            // Intra-State
+            cgst = calculation / 2;
+            sgst = calculation / 2; // Same as CGST
+            igst = 0;
+            data.cgstRate = cgst.toFixed(2);
+            data.sgstRate = sgst.toFixed(2);
+            data.igstRate = igst.toFixed(2);
+          } else if (data.gst_type === "I") {
+            // Inter-State
+            igst = calculation;
+            cgst = 0;
+            sgst = 0;
+            data.cgstRate = cgst.toFixed(2);
+            data.sgstRate = sgst.toFixed(2);
+            data.igstRate = igst.toFixed(2);
+          }
+      
+          // Refresh the cell to show updated value
           api.refreshCells({
             rowNodes: [params.node],
-            columns: [column, "qty"],
+            columns: [column, "qty", "foreignValue", "cgstRate", "sgstRate", "igstRate"],
           });
+      
+          // Apply transaction to update the data grid
+          api.applyTransaction({ update: [data] });
         };
-
+      
         return (
           <input
             type="number"
@@ -130,11 +231,15 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
             className="p-2 border border-gray-300 rounded-md"
           />
         );
-      },
+      }
+      
     },
+    { headerName: "Price", field: "rate" },
     { headerName: "UoM", field: "uom" },
     { headerName: "GST Rate", field: "gstRate" },
-    { headerName: "Price", field: "rate" },
+    { headerName: "Igst Rate", field: "igstRate" },
+    { headerName: "SGST Rate", field: "sgstRate" },
+    { headerName: "CGST Rate", field: "cgstRate" },
     { headerName: "HSN/SAC", field: "hsnCode" },
     { headerName: "Remark", field: "itemRemark" },
   ];
