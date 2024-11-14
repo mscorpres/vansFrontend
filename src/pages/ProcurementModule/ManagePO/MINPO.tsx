@@ -28,6 +28,7 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { spigenAxios } from "@/axiosIntercepter";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   console.log("view", viewMinPo);
   const [rowData, setRowData] = useState([]);
@@ -531,6 +532,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                   gridOptions={commonAgGridConfig}
                   suppressCellFocus={false}
                   suppressRowClickSelection={false}
+                  loadingOverlayComponent={OverlayNoRowsTemplate}
                 />
               </div>{" "}
               <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">

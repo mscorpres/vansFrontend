@@ -222,7 +222,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const uploadDocs = async () => {
     const formData = new FormData();
     formData.append("caption", captions);
-    formData.append("component", sheetOpenEdit?.component_key);
+    formData.append("product", sheetOpenEdit?.component_key);
     files.map((comp) => {
       formData.append("files", comp);
     });

@@ -25,6 +25,7 @@ import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { rangePresets } from "@/General";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setView,
   row,
@@ -71,7 +72,6 @@ const CompletedPOPage: React.FC = () => {
   const [cancel, setCancel] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
-
 
   const [columnDefs] = useState<ColDef[]>([
     {
@@ -158,8 +158,6 @@ const CompletedPOPage: React.FC = () => {
   ];
 
   const printTheSelectedPo = async (row: any) => {
-  
-
     dispatch(
       printPO({ poid: row?.po_transaction ?? row?.po_transaction_code })
     ).then((res: any) => {
@@ -312,6 +310,7 @@ const CompletedPOPage: React.FC = () => {
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
+          loadingOverlayComponent={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <ViewCompoents

@@ -1,38 +1,30 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { Filter } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
-import { AppDispatch, RootState } from "@/store";
+import { DatePicker, Divider,  Form, Space } from "antd";
+import {  RootState } from "@/store";
 import {
   approveVendorPrice,
   getVendorPrice,
 } from "@/components/shared/Api/masterApi";
-import { printPO } from "@/features/client/clientSlice";
 import { exportDateRangespace } from "@/components/shared/Options";
-import { useNavigate } from "react-router-dom";
-import { downloadFunction } from "@/components/shared/PrintFunctions";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
-import { spigenAxios } from "@/axiosIntercepter";
 import { rangePresets } from "@/General";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { useSelector } from "react-redux";
 
 const { RangePicker } = DatePicker;
-const dateFormat = "YYYY/MM/DD";
 const ApproveList: React.FC = () => {
   const { loading } = useSelector((state: RootState) => state.client);
 
   const [form] = Form.useForm();
   const [rowData, setRowData] = useState([]);
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [files, setFiles] = useState<File[] | null>(null);
   const [selectedRows, setSelectedRows] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { execFun, loading: loading1 } = useApi();
@@ -103,7 +95,7 @@ const ApproveList: React.FC = () => {
     const response = await execFun(() => getVendorPrice(payload), "fetch");
     console.log("response", response);
     if (response.data.code == 200) {
-      let arr = response.data.data.map((r) => {
+      let arr = response.data.data.map((r: any) => {
         return {
           ...r,
         };
@@ -112,13 +104,13 @@ const ApproveList: React.FC = () => {
     } else {
       toast({
         title: response.data.message,
-        className: "bg-red-500",
+        className: "bg-red-700",
       });
     }
   };
-  const onSelectionChanged = (event) => {
+  const onSelectionChanged = (event: any) => {
     const selectedNodes = event.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
+    const selectedData = selectedNodes.map((node: any) => node.data);
     setSelectedRows(selectedData);
   };
 
@@ -134,7 +126,7 @@ const ApproveList: React.FC = () => {
     } else {
       toast({
         title: response.data.message,
-        className: "bg-red-500",
+        className: "bg-red-700",
       });
       setShowConfirmation(false);
     }

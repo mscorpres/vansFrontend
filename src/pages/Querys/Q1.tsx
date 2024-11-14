@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
+
+import {  useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,20 +10,17 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Edit2, Filter } from "lucide-react";
+import {  Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
 import { transformOptionData } from "@/helper/transform";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { toast, useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   fetchListOfQ1,
@@ -48,16 +45,13 @@ const Q1 = () => {
     label: string;
     value: string;
   } | null>(null);
-  const [asyncOptions, setAsyncOptions] = useState([]);
   const [stockInfo, setStockInfo] = useState([]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
-  //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
 
-  const dateFormat = "YYYY/MM/DD";
 
   const fetchComponentList = async (e: any) => {
     console.log("here in api", e!.value);
@@ -82,7 +76,7 @@ const Q1 = () => {
     let { data } = response;
     if (data.code == 200) {
       let arr = data.response.data2;
-      let a = arr.map((r, index) => {
+      let a = arr.map((r: any, index: any) => {
         return {
           id: index + 1,
           ...r,
@@ -94,7 +88,7 @@ const Q1 = () => {
     } else {
       toast({
         title: response.data.message.msg,
-        className: "bg-red-500 text-center text-white",
+        className: "bg-red-700 text-center text-white",
       });
     }
   };

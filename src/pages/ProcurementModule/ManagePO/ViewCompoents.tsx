@@ -15,6 +15,7 @@ import SalesShipmentUpadetTextCellrender from "@/config/agGrid/cellRenders.tsx/S
 import { fetchViewComponentsOfManage } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -233,6 +234,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
             pagination={true}
             paginationPageSize={10}
             paginationAutoPageSize={true}
+            loadingOverlayComponent={OverlayNoRowsTemplate}
           />
         </div>
       </SheetContent>

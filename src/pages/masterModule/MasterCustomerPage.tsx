@@ -90,11 +90,9 @@ const MasterCustomerPage: React.FC = () => {
     );
   };
 
-
   const getStateList = async () => {
     // return;
     const response = await execFun(() => fetchState(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
@@ -233,7 +231,6 @@ const MasterCustomerPage: React.FC = () => {
     },
   ];
 
-
   const editBranchList = async (params) => {
     setEditVal(params?.addressID);
     // return;
@@ -245,23 +242,37 @@ const MasterCustomerPage: React.FC = () => {
     if (response.data.code === 200) {
       let bill = data.data.billingAddress;
       let ship = data.data.shippingAddress;
-      console.log("bill", bill);
-      console.log("ship", ship);
-      console.log("bill.gst", bill.gst);
+      let billcomp = {
+        label: bill.country.countryName,
+        value: bill.country.countryID,
+      };
+      let billState = {
+        value: bill.state.stateCode,
+        label: bill.state.stateName,
+      };
+      let shipState = {
+        value: ship.state.stateCode,
+        label: ship.state.stateName,
+      };
+      let shipcomp = {
+        label: ship.country.countryName,
+        value: ship.country.countryID,
+      };
 
       form.setFieldValue("billlabel", bill.label);
       form.setFieldValue("billgst", bill.gst);
-      form.setFieldValue("billcountry", bill.country.countryID);
-      form.setFieldValue("billstate", bill.state.stateCode);
+      form.setFieldValue("billcountry", billcomp);
+      form.setFieldValue("billstate", billState);
       form.setFieldValue("billpincode", bill.pinCode);
       form.setFieldValue("billphone", bill.phoneNo);
       form.setFieldValue("billaddress1", bill.addressLine1);
       form.setFieldValue("billaddress2", bill.addressLine2);
       form.setFieldValue("shipLabel", ship.label);
       form.setFieldValue("shipGst", ship.gst);
-      form.setFieldValue("shipCountry", ship.country.countryName);
-      form.setFieldValue("shipState", ship.state.stateCode);
+      form.setFieldValue("shipCountry", shipcomp);
+      form.setFieldValue("shipState", shipState);
       form.setFieldValue("shipPincode", ship.pinCode);
+      form.setFieldValue("shipCompany", ship.company);
       form.setFieldValue("shipAddress1", ship.addressLine1);
       form.setFieldValue("shipAddress2", ship.addressLine1);
       form.setFieldValue("shipPan", ship.panno);
@@ -269,7 +280,7 @@ const MasterCustomerPage: React.FC = () => {
     } else {
       toast({
         title: response.message.msg,
-        className: "bg-red-500",
+        className: "bg-red-700",
       });
       //   addToast(response.message, {
       //     appearance: "error",
@@ -280,7 +291,6 @@ const MasterCustomerPage: React.FC = () => {
   const fetchList = async (formData: z.infer<typeof FormSchema>) => {
     // return;
     const response = await execFun(() => getListOFViewCustomers(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
@@ -308,10 +318,11 @@ const MasterCustomerPage: React.FC = () => {
       () => getListOFViewCustomersOfSelected(payload),
       "fetch"
     );
+
     // return;
     let { data } = response;
-    if (response.data.code === 200) {
-      let arr = data.data.map((r, index) => {
+    if (response?.data?.code === 200) {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
           state: r?.state?.stateName,
@@ -332,6 +343,11 @@ const MasterCustomerPage: React.FC = () => {
       //     autoDismiss: true,
       //   });
     } else {
+      setViewBranch(false);
+      toast({
+        title: response.message,
+        className: "bg-red-700 text-white items-center",
+      });
       //   addToast(response.message, {
       //     appearance: "error",
       //     autoDismiss: true,
@@ -340,8 +356,9 @@ const MasterCustomerPage: React.FC = () => {
   };
   const createNewBranch = async () => {
     const value = await form.validateFields();
+
     let payload = {
-      client: value.addBranch?.code,
+      client: addBranch?.code,
       billToLabel: value.billlabel,
       billToCountry: value.billcountry.value,
       billToState: value.billstate.value,
@@ -352,7 +369,7 @@ const MasterCustomerPage: React.FC = () => {
       billToAddresLine2: value.billaddress2,
       ////////////
       shipToLabel: value.shipLabel,
-      shipToCompany: value.client,
+      shipToCompany: value.shipCompany,
       shipToCountry: value.shipCountry.value,
       shipToState: value.shipState.value,
       shipToPincode: value.shipPincode,
@@ -364,6 +381,20 @@ const MasterCustomerPage: React.FC = () => {
     };
 
     const response = await execFun(() => addbranchToClient(payload), "fetch");
+    if (response?.data?.code == 200) {
+      toast({
+        title: response?.data?.message?.msg,
+        className: "bg-green-600 text-white items-center",
+      });
+      form.resetFields();
+      setAddBranch(false);
+      setSameBilling(false);
+    } else {
+      toast({
+        title: response?.message,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
   };
   const updateSelectedBranch = async () => {
     const value = await form.validateFields();
@@ -381,7 +412,7 @@ const MasterCustomerPage: React.FC = () => {
       billToAddresLine2: value.billaddress2,
       ////////////
       shipToLabel: value.shipLabel,
-      shipToCompany: value.client,
+      shipToCompany: value.shipCompany,
       shipToCountry: value.shipCountry.value,
       shipToState: value.shipState.value,
       shipToPincode: value.shipPincode,
@@ -397,14 +428,16 @@ const MasterCustomerPage: React.FC = () => {
       () => updateBranchOfCustomer(payload),
       "fetch"
     );
-    if (response.data.code === 200) {
-      toast({
-        title: response.data.message,
-        className: "bg-green-600 text-white items-center",
-      });
-    } else {
+    if (response?.data?.code === 200) {
       toast({
         title: response.data.message.msg,
+        className: "bg-green-600 text-white items-center",
+      });
+      form.resetFields();
+      setOpenView(false);
+    } else {
+      toast({
+        title: response.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -412,11 +445,10 @@ const MasterCustomerPage: React.FC = () => {
   const getCountryList = async () => {
     // return;
     const response = await execFun(() => fetchCountryList(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.name,
           value: r.code,
@@ -432,7 +464,6 @@ const MasterCustomerPage: React.FC = () => {
   }, []);
   useEffect(() => {
     if (viewBranch) {
-
       getTheListOfSelectedBranches(viewBranch?.code);
     }
   }, [viewBranch]);
@@ -457,6 +488,7 @@ const MasterCustomerPage: React.FC = () => {
       form.setFieldValue("shipAddress2", billAddress2);
     }
   }, [samebilling]);
+  console.log("herer");
 
   return (
     <Wrapper>
@@ -474,6 +506,7 @@ const MasterCustomerPage: React.FC = () => {
             <SheetHeader className={modelFixHeaderStyle}>
               <SheetTitle className="text-slate-600">{`Add New Branch to ${addBranch?.name}`}</SheetTitle>
             </SheetHeader>{" "}
+            {loading1("fetch") && <FullPageLoading />}
             <div className="h-[calc(100vh-150px)]">
               {" "}
               <div className="rounded p-[20px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
@@ -491,13 +524,31 @@ const MasterCustomerPage: React.FC = () => {
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                          <Form.Item name="billlabel" label="Label">
+                          <Form.Item
+                            name="billlabel"
+                            label="Label"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Label!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Label"
                             />
                           </Form.Item>
-                          <Form.Item name="billcountry" label="Country">
+                          <Form.Item
+                            name="billcountry"
+                            label="Country"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Country!",
+                              },
+                            ]}
+                          >
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -509,7 +560,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={countryList}
                               onChange={(value: any) =>
-                                form.setValue("billcountry", value)
+                                form.setFieldValue("billcountry", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -522,7 +573,16 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="billstate" label="State">
+                          <Form.Item
+                            name="billstate"
+                            label="State"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your State!",
+                              },
+                            ]}
+                          >
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -534,7 +594,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={stateList}
                               onChange={(value: any) =>
-                                form.setValue("billstate", value)
+                                form.setFieldValue("billstate", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -568,7 +628,16 @@ const MasterCustomerPage: React.FC = () => {
                               placeholder="Enter Pincode"
                             />
                           </Form.Item>
-                          <Form.Item name="billphone" label="Phone Number">
+                          <Form.Item
+                            name="billphone"
+                            label="Phone Number"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Phone Number!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Phone Number"
@@ -585,6 +654,7 @@ const MasterCustomerPage: React.FC = () => {
                               },
                               {
                                 min: 15,
+                                max: 15,
                                 message: "GST must be at least 15 characters!",
                               },
                             ]}
@@ -592,7 +662,6 @@ const MasterCustomerPage: React.FC = () => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter GST Number"
-                              type="number"
                             />
                           </Form.Item>
                           <Form.Item
@@ -661,13 +730,46 @@ const MasterCustomerPage: React.FC = () => {
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                          <Form.Item name="shipLabel" label="Label">
+                          <Form.Item
+                            name="shipLabel"
+                            label="Label"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Label!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Label"
                             />
                           </Form.Item>
-                          <Form.Item name="shipCountry" label="Country">
+                          <Form.Item
+                            name="shipCompany"
+                            label="Company"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Company!",
+                              },
+                            ]}
+                          >
+                            <Input
+                              className={InputStyle}
+                              placeholder="Enter Label"
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            name="shipCountry"
+                            label="Country"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Country!",
+                              },
+                            ]}
+                          >
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -679,7 +781,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={countryList}
                               onChange={(value: any) =>
-                                form.setValue("shipcountry", value)
+                                form.setFieldValue("shipcountry", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -692,7 +794,16 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="shipState" label="State">
+                          <Form.Item
+                            name="shipState"
+                            label="State"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your State!",
+                              },
+                            ]}
+                          >
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -702,9 +813,9 @@ const MasterCustomerPage: React.FC = () => {
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              options={countryList}
+                              options={stateList}
                               onChange={(value: any) =>
-                                form.setValue("shipState", value)
+                                form.setFieldValue("shipState", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -723,7 +834,7 @@ const MasterCustomerPage: React.FC = () => {
                             rules={[
                               {
                                 required: true,
-                                message: "Please input your name!",
+                                message: "Please input your Pincode!",
                               },
                               {
                                 min: 6,
@@ -738,33 +849,43 @@ const MasterCustomerPage: React.FC = () => {
                               type="number"
                             />
                           </Form.Item>
-                          <Form.Item name="shipPan" label="Pan Number">
-                            <Input
-                              className={InputStyle}
-                              type="number"
-                              placeholder="Enter Pan Number"
-                            />
-                          </Form.Item>
                           <Form.Item
-                            name="shipGst"
-                            label="GST Number"
+                            name="shipPan"
+                            label="Pan Number"
                             rules={[
                               {
                                 required: true,
-                                message: "Please input your GST!",
-                              },
-                              {
-                                min: 15,
-                                message: "GST must be at least 15 characters!",
+                                message: "Please input your Pan Number!",
                               },
                             ]}
                           >
                             <Input
                               className={InputStyle}
-                              placeholder="Enter GST Number"
-                              type="number"
+                              placeholder="Enter Phone Number"
                             />
                           </Form.Item>
+                        </div>
+                        <Form.Item
+                          name="shipGst"
+                          label="GST Number"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please input your GST!",
+                            },
+                            {
+                              min: 15,
+                              max: 15,
+                              message: "GST must be at least 15 characters!",
+                            },
+                          ]}
+                        >
+                          <Input
+                            className={InputStyle}
+                            placeholder="Enter GST Number"
+                          />
+                        </Form.Item>
+                        <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
                           <Form.Item
                             name="shipAddress1"
                             label="Address Line 1"
@@ -826,7 +947,7 @@ const MasterCustomerPage: React.FC = () => {
                     className="bg-cyan-700 hover:bg-cyan-600"
                     onClick={() => createNewBranch()}
                   >
-                    Update
+                    Create
                   </Button>
                 </div>
               </div>
@@ -842,8 +963,9 @@ const MasterCustomerPage: React.FC = () => {
             }}
           >
             <SheetHeader className={modelFixHeaderStyle}>
-              <SheetTitle className="text-slate-600">{`Edit Branch  ${openView.label}`}</SheetTitle>
+              <SheetTitle className="text-slate-600">{`Edit Branch `}</SheetTitle>
             </SheetHeader>{" "}
+            {loading1("fetch") && <FullPageLoading />}
             <div className="h-[calc(100vh-150px)]">
               {" "}
               <div className="rounded p-[20px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
@@ -861,13 +983,31 @@ const MasterCustomerPage: React.FC = () => {
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                          <Form.Item name="billlabel" label="Label">
+                          <Form.Item
+                            name="billlabel"
+                            label="Label"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Label!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Label"
                             />
                           </Form.Item>
-                          <Form.Item name="billcountry" label="Country">
+                          <Form.Item
+                            name="billcountry"
+                            label="Country"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Country!",
+                              },
+                            ]}
+                          >
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -879,7 +1019,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={countryList}
                               onChange={(value: any) =>
-                                form.setValue("billcountry", value)
+                                form.setFieldValue("billcountry", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -892,7 +1032,16 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="billstate" label="State">
+                          <Form.Item
+                            name="billstate"
+                            label="State"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your State!",
+                              },
+                            ]}
+                          >
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -904,7 +1053,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={stateList}
                               onChange={(value: any) =>
-                                form.setValue("billstate", value)
+                                form.setFieldValue("billstate", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -938,7 +1087,16 @@ const MasterCustomerPage: React.FC = () => {
                               placeholder="Enter Pincode"
                             />
                           </Form.Item>
-                          <Form.Item name="billphone" label="Phone Number">
+                          <Form.Item
+                            name="billphone"
+                            label="Phone Number"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please input your Phone Number!",
+                              },
+                            ]}
+                          >
                             <Input
                               className={InputStyle}
                               placeholder="Enter Phone Number"
@@ -955,6 +1113,7 @@ const MasterCustomerPage: React.FC = () => {
                               },
                               {
                                 min: 15,
+                                max: 15,
                                 message: "GST must be at least 15 characters!",
                               },
                             ]}
@@ -1036,6 +1195,12 @@ const MasterCustomerPage: React.FC = () => {
                               placeholder="Enter Label"
                             />
                           </Form.Item>
+                          <Form.Item name="shipCompany" label="Company">
+                            <Input
+                              className={InputStyle}
+                              placeholder="Enter Company"
+                            />
+                          </Form.Item>
                           <Form.Item name="shipCountry" label="Country">
                             <Select
                               styles={customStyles}
@@ -1048,7 +1213,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={countryList}
                               onChange={(value: any) =>
-                                form.setValue("shipcountry", value)
+                                form.setFieldValue("shipcountry", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -1073,7 +1238,7 @@ const MasterCustomerPage: React.FC = () => {
                               isSearchable={true}
                               options={countryList}
                               onChange={(value: any) =>
-                                form.setValue("shipState", value)
+                                form.setFieldValue("shipState", value)
                               }
                               // onChange={(e) => console.log(e)}
                               // value={
@@ -1112,26 +1277,29 @@ const MasterCustomerPage: React.FC = () => {
                               className={InputStyle}
                               placeholder="Enter Pan Number"
                             />
-                          </Form.Item>
-                          <Form.Item
-                            name="shipGst"
-                            label="GST Number"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please input your GST!",
-                              },
-                              {
-                                min: 15,
-                                message: "GST must be at least 15 characters!",
-                              },
-                            ]}
-                          >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter GST Number"
-                            />
-                          </Form.Item>
+                          </Form.Item>{" "}
+                        </div>
+                        <Form.Item
+                          name="shipGst"
+                          label="GST Number"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please input your GST!",
+                            },
+                            {
+                              min: 15,
+                              max: 15,
+                              message: "GST must be at least 15 characters!",
+                            },
+                          ]}
+                        >
+                          <Input
+                            className={InputStyle}
+                            placeholder="Enter GST Number"
+                          />
+                        </Form.Item>{" "}
+                        <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
                           <Form.Item
                             name="shipAddress1"
                             label="Address Line 1"
@@ -1171,7 +1339,7 @@ const MasterCustomerPage: React.FC = () => {
                               className={InputStyle}
                               placeholder="Enter Address Line 2"
                             />
-                          </Form.Item>
+                          </Form.Item>{" "}
                         </div>
                       </CardContent>
                     </Card>
