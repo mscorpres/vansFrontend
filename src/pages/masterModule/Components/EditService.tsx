@@ -332,7 +332,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                     variant={"outline"}
                     className="shadow-slate-300 mr-[10px] border-slate-400 border"
                     onClick={(e: any) => {
-                      setOpen(true);
+                      setSheetOpenEdit(false);
                       e.preventDefault();
                     }}
                   >

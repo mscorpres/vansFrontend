@@ -204,7 +204,10 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
       {(loading1("fetch") || loading == true) && <FullPageLoading />}{" "}
-      <Sheet open={sheetOpenEdit} onOpenChange={() => setSheetOpenEdit(null)}>
+      <Sheet
+        open={sheetOpenEdit}
+        onOpenChange={() => setSheetOpenEdit(setSheetOpenEdit)}
+      >
         <SheetTrigger></SheetTrigger>
         <SheetContent
           className="min-w-[80%] p-0"
@@ -740,7 +743,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                   variant={"outline"}
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
-                    setOpen(true);
+                    setSheetOpenEdit(null);
                     e.preventDefault();
                   }}
                 >
