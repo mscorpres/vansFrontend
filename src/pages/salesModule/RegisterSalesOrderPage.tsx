@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +12,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Filter } from "lucide-react";
+import { Download, Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Space } from "antd";
 import { Input } from "@/components/ui/input";
@@ -23,17 +23,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
+import {
+  fetchSellRequestList,
+  setDateRange,
+} from "@/features/salesmodule/SalesSlice";
 import { RootState } from "@/store";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
+import { rangePresets } from "@/General";
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import moment from "moment";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const { RangePicker } = DatePicker;
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 const wises = [
-  { label: "Date Wise", value: "DATE" },
-  { label: "SO(s)Wise", value: "SONO" },
+  { label: "Date Wise", value: "date_wise" },
+  { label: "SO(s)Wise", value: "soid_wise" },
 ] as const;
 
 const FormSchema = z.object({
@@ -48,10 +55,13 @@ const FormSchema = z.object({
 });
 
 const RegisterSalesOrderPage: React.FC = () => {
+  const gridRef = useRef<AgGridReact<any>>(null);
   const { toast } = useToast();
-  const [wise, setWise] = useState<string>("DATE");
+  const [type, setType] = useState<string>("date_wise");
   const dispatch = useDispatch();
-  const { data: rowData } = useSelector(
+  const [isSearchPerformed, setIsSearchPerformed] = useState<boolean>(false);
+  const [rowData, setRowData] = useState<any[]>([]);
+  const { data, loading } = useSelector(
     (state: RootState) => state.sellRequest
   );
 
@@ -63,75 +73,68 @@ const RegisterSalesOrderPage: React.FC = () => {
     const { dateRange, soWise } = formData;
 
     let dataString = "";
-    if (wise === "DATE" && dateRange) {
-      const startDate = dateRange[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = dateRange[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
+    if (type === "date_wise" && dateRange) {
+      const startDate = moment(dateRange[0]).format("DD-MM-YYYY");
+      const endDate = moment(dateRange[1]).format("DD-MM-YYYY");
       dataString = `${startDate}-${endDate}`;
-    } else if (wise === "SONO" && soWise) {
+      dispatch(setDateRange(dataString as any));
+    } else if (type === "soid_wise" && soWise) {
       dataString = soWise;
+      dispatch(setDateRange(dataString as any));
     }
 
     try {
-      console.log("Dispatching fetchSellRequestList with:", {
-        wise,
-        data: dataString,
-      });
       const resultAction = await dispatch(
-        fetchSellRequestList({ wise, data: dataString }) as any
+        fetchSellRequestList({ type, data: dataString }) as any
       ).unwrap();
-      console.log("Result Action:", resultAction);
-      if (resultAction.success) {
+      if (resultAction.code === 200) {
+        setRowData(resultAction.data);
+        setIsSearchPerformed(true);
         toast({
           title: "Register fetched successfully",
           className: "bg-green-600 text-white items-center",
         });
-      } else {
-        toast({
-          title: resultAction.message || "Failed to Create Product",
-          className: "bg-red-600 text-white items-center",
-        });
       }
     } catch (error: any) {
       console.error("Failed to fetch sell requests:", error);
-      toast({
-        title: error.message || "Failed to fetch Product",
-        className: "bg-red-600 text-white items-center",
-      });
     }
   };
 
-  useEffect(() => {
-    if (wise === "DATE") {
-      console.log("Dispatching fetchSellRequestList");
-      dispatch(fetchSellRequestList({ wise, data: "" }) as any);
-    }
-  }, [wise, dispatch]);
-
   const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
 
-  useEffect(() => {
-    if (wise === "DATE") {
-      dispatch(fetchSellRequestList({ wise, data: "" }) as any);
+  const onBtExport = useCallback(() => {
+    console.log("object", gridRef.current);
+    if (gridRef.current) {
+      gridRef.current.api.exportDataAsCsv();
     }
-  }, [wise, dispatch]);
+  }, []);
+  useEffect(() => {
+    setRowData(data as any);
+  }, [data]);
+
+  useEffect(() => {
+    setRowData([]);
+    setIsSearchPerformed(false);
+  }, [type]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+      {loading && <FullPageLoading />}
       <div className="bg-[#fff]">
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
         <div className="p-[10px]">
-          <Select onValueChange={(value) => setWise(value)} defaultValue={wise}>
+          <Select
+            onValueChange={(value: string) => {
+              setType(value);
+              if (value === "soid_wise") {
+                form.setValue("dateRange", undefined);
+              }
+            }}
+            defaultValue={type}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select a filter type" />
             </SelectTrigger>
@@ -151,7 +154,7 @@ const RegisterSalesOrderPage: React.FC = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6 overflow-hidden p-[10px]"
           >
-            {wise === "DATE" ? (
+            {type === "date_wise" ? (
               <FormField
                 control={form.control}
                 name="dateRange"
@@ -167,6 +170,7 @@ const RegisterSalesOrderPage: React.FC = () => {
                             )
                           }
                           format={dateFormat}
+                          presets={rangePresets}
                         />
                       </Space>
                     </FormControl>
@@ -181,31 +185,45 @@ const RegisterSalesOrderPage: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
-                      <Input {...field} placeholder="Invoice number" />
+                      <Input {...field} placeholder="SO number" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             )}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            >
-              Submit
-            </Button>
+            <div className="flex space-x-2 float-end pr-2">
+              {isSearchPerformed && ( // Only show the download button if search is performed
+                <Button
+                  type="button"
+                  onClick={onBtExport}
+                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                >
+                  <Download />
+                </Button>
+              )}
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              >
+                Submit
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact
+        ref={gridRef}
           loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
-          columnDefs={columnDefs}
+          columnDefs={columnDefs as any}
           defaultColDef={{ filter: true, sortable: true }}
           pagination={true}
           paginationPageSize={10}
+          suppressCellFocus={true}
           paginationAutoPageSize={true}
+          loadingOverlayComponent={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

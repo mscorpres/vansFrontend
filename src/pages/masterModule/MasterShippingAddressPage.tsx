@@ -25,10 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Download, Plus } from "lucide-react";
 
-import React, { useState } from "react";
-
-import ReusableTable from "@/components/shared/ReusableTable";
-import { transformBillingTable } from "@/helper/TableTransformation";
+import React, { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
@@ -40,6 +37,14 @@ import {
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
 import GoBackConfermationModel from "@/components/GoBackConfermationModel";
+import { transformPlaceData } from "@/helper/transform";
+import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import { AgGridReact } from "ag-grid-react";
+import useApi from "@/hooks/useApi";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import { RowData } from "@/data";
+import { fetchShippingAddress } from "@/components/shared/Api/masterApi";
 
 const schema = z.object({
   label: z.string().min(2, {
@@ -71,8 +76,11 @@ const schema = z.object({
 const MasterShippingAddressPage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [rowData, setRowData] = useState<RowData[]>([]);
   const { toast } = useToast();
   const dispatch = useDispatch<AppDispatch>();
+  const { execFun, loading: loading1 } = useApi();
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -89,27 +97,42 @@ const MasterShippingAddressPage: React.FC = () => {
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
-      const resultAction = await dispatch(
+      const resultAction: any = await dispatch(
         createShippingAddress({
           endpoint: "/shippingAddress/saveShippingAddress",
           payload: {
             label: values.label,
             company: values.company,
             pan: values.pan,
-            state: values.state,
+            state: values.state ?? values.state.value,
             gstin: values.gstin,
-            address: values.address,
-            addressLine1: values.addressLine1,
-            addressLine2: values.addressLine2,
+            address:
+              values.address +
+              " " +
+              values.addressLine1 +
+              " " +
+              values.addressLine2,
           },
         })
       ).unwrap();
 
-      if (resultAction.success) {
+      if (resultAction?.status == "success") {
         toast({
           title: "Shipping Address created successfully",
           className: "bg-green-600 text-white items-center",
         });
+        setLoading(false);
+        form.reset({
+          label: "",
+          company: "",
+          pan: "",
+          state: "",
+          gstin: "",
+          address: "",
+          addressLine1: "",
+          addressLine2: "",
+        });
+        setSheetOpen(false);
       } else {
         toast({
           title: resultAction.message || "Failed to Create Product",
@@ -120,6 +143,31 @@ const MasterShippingAddressPage: React.FC = () => {
       console.error("An error occurred:", error);
     }
   };
+  const getList = async () => {
+    const response = await execFun(() => fetchShippingAddress(), "fetch");
+
+    let { data } = response;
+    if (data.code === 200) {
+      let arr = data.data.map((r: any, index: any) => {
+        return {
+          id: index + 1,
+          ...r,
+        };
+      });
+      setRowData(arr);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-700 text-center text-white",
+      });
+    }
+  };
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "Master Shipping Address");
+  };
+  useEffect(() => {
+    getList();
+  }, []);
   return (
     <>
       <GoBackConfermationModel
@@ -132,9 +180,12 @@ const MasterShippingAddressPage: React.FC = () => {
           <CustomTooltip
             message="Download Excel Report"
             side="top"
-            className="bg-yellow-700"
+            className="bg-cyan-700"
           >
-            <Button className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500">
+            <Button
+              className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
+              onClick={handleDownloadExcel}
+            >
               <Download className="h-[20px] w-[20px]" />
             </Button>
           </CustomTooltip>
@@ -143,7 +194,7 @@ const MasterShippingAddressPage: React.FC = () => {
               <CustomTooltip
                 message="Add Address"
                 side="top"
-                className="bg-yellow-700"
+                className="bg-cyan-700"
               >
                 <Button className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500">
                   <Plus className="h-[20px] w-[20px]" />
@@ -162,6 +213,8 @@ const MasterShippingAddressPage: React.FC = () => {
                 </SheetTitle>
               </SheetHeader>
               <div>
+                {" "}
+                {loading === true && <FullPageLoading />}
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="">
                     <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
@@ -177,7 +230,7 @@ const MasterShippingAddressPage: React.FC = () => {
                               <FormControl>
                                 <Input
                                   className={InputStyle}
-                                  placeholder="Enter Address Lable"
+                                  placeholder="Enter Address label"
                                   {...field}
                                 />
                               </FormControl>
@@ -252,10 +305,14 @@ const MasterShippingAddressPage: React.FC = () => {
                                 State
                               </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Enter State"
-                                  {...field}
+                                <ReusableAsyncSelect
+                                  placeholder="State"
+                                  endpoint="/others/states"
+                                  transform={transformPlaceData}
+                                  fetchOptionWith="query"
+                                  onChange={(e: any) =>
+                                    form.setValue("state", e.value)
+                                  }
                                 />
                               </FormControl>
                               <FormMessage />
@@ -346,13 +403,18 @@ const MasterShippingAddressPage: React.FC = () => {
             </SheetContent>
           </Sheet>
         </div>
+
         <div className="ag-theme-quartz h-[calc(100vh-150px)]">
-          <ReusableTable
-            heigth="h-[calc(100vh-150px)]"
-            endpoint="/shippingAddress/getAll"
-            columns={columnDefs}
-            transform={transformBillingTable}
-            method="get"
+          {" "}
+          {loading1("fetch") && <FullPageLoading />}
+          <AgGridReact
+            //   loadingCellRenderer={loadingCellRenderer}
+            rowData={rowData}
+            columnDefs={columnDefs as any}
+            defaultColDef={{ filter: true, sortable: true }}
+            pagination={true}
+            paginationPageSize={10}
+            paginationAutoPageSize={true}
           />
         </div>
       </div>

@@ -9,7 +9,7 @@ export const useApi = () => {
       let message = "";
       setLoading(loadingLabel, true);
       const response = await fun();
-      // console.log("response in use api", response);
+      console.log("response in use api", response);
 
       if (response.success !== undefined) {
         if (response.success && response.message) {
@@ -89,6 +89,8 @@ export const useApi = () => {
         message = error;
       } else if (error instanceof Error) {
         message = error.message;
+      } else {
+        message = error?.message?.msg;
       }
       console.log("Some error occured in the api", error);
       toast.error(message);

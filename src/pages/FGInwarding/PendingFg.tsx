@@ -14,14 +14,14 @@ import {
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+// import {
+//   Form,
+//   FormControl,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from "@/components/ui/form";
 import {
   Sheet,
   SheetContent,
@@ -29,13 +29,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Edit2, Filter } from "lucide-react";
+import { Check, Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
 import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
-import { Checkbox, DatePicker, Divider, Space, Typography } from "antd";
+import { Checkbox, DatePicker, Divider, Form, Space, Typography } from "antd";
 import { Input } from "@/components/ui/input";
 import {
   SelectContent,
@@ -48,7 +48,7 @@ import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
 import { RootState } from "@/store";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ActionCellRenderer from "./ActionCellRenderer";
 import {
@@ -65,32 +65,29 @@ import {
 } from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
 import { FaCheckCircle } from "react-icons/fa";
-const FormSchema = z.object({
-  wise: z.string().optional(),
-});
-const FormFGSchema = z.object({
-  sku: z.string().optional(),
-  qty: z.string().optional(),
-});
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { saveFGs } from "@/features/client/storeSlice";
+import { IoMdDownload, IoMdPrint } from "react-icons/io";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 
 const PendingFg = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [asyncOptions, setAsyncOptions] = useState([]);
   const [sheetOpenView, setSheetOpenView] = useState("");
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
-  const fgForm = useForm<z.infer<typeof FormFGSchema>>({
-    resolver: zodResolver(FormFGSchema),
-  });
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [fgForm] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
-  const fetchFGList = async (formData: z.infer<typeof FormSchema>) => {
-    const { wise } = formData;
-    console.log("fetchBOMList", formData);
-    // return;
-    const response = await execFun(() => fetchListOfPendingFg(), "fetch");
-    console.log("response", response);
-    // return;
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { loading } = useSelector((state: RootState) => state.store);
+  const fetchFGList = async () => {
+    // const { wise } = formData;
+    const values = fgForm.validateFields();
+    const response = await execFun(
+      () => fetchListOfPendingFg({ search: values.wise }),
+      "fetch"
+    );
     let { data } = response;
     if (data.code === 200) {
       let arr = data.data.map((r, index) => {
@@ -100,27 +97,10 @@ const PendingFg = () => {
         };
       });
       setRowData(arr);
-      //   addToast(response.message, {
-      //     appearance: "success",
-      //     autoDismiss: true,
-      //   });
     } else {
-      //   addToast(response.message, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
     }
   };
-  const sfgType = [
-    {
-      label: "Yes",
-      value: "yes",
-    },
-    {
-      label: "No",
-      value: "no",
-    },
-  ];
+
   const type = [
     {
       label: "Pending",
@@ -128,9 +108,7 @@ const PendingFg = () => {
     },
     ,
   ];
-  useEffect(() => {
-    fetchFGList();
-  }, []);
+
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -143,6 +121,7 @@ const PendingFg = () => {
       headerName: "Req Id",
       field: "mfg_transaction",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 120,
     },
     {
@@ -155,19 +134,21 @@ const PendingFg = () => {
       headerName: "Req Date/Time",
       field: "mfg_full_date",
       filter: "agTextColumnFilter",
+
       width: 190,
     },
     {
       headerName: "SKU",
       field: "mfg_sku",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 110,
     },
     {
       headerName: "Product",
       field: "p_name",
       filter: "agTextColumnFilter",
-      flex: 1,
+      width: 190,
     },
     {
       headerName: "MFG /Stin Qty",
@@ -183,11 +164,12 @@ const PendingFg = () => {
       suppressMenu: true, // Optionally, hide the menu icon in this column
       cellRenderer: (e) => {
         return (
-          <FaCheckCircle
-            className="h-[15px] w-[15px] text-white bg-green-500 rounded-[50%] cursor-pointer"
+          <Check
+            className="h-[15px] w-[15px] text-green-500 hover:text-green-700"
             onClick={() => {
               setSheetOpenView(e?.data);
             }}
+            //   onClick={() => setSheetOpenEdit(e?.data?.product_key)}
           />
           // <div className="flex gap-[5px] items-center justify-center h-full">
           //   <Checkbox onClick={(e) => rowData(e.target.checked)} />
@@ -196,7 +178,7 @@ const PendingFg = () => {
       },
     },
   ];
-  console.log("sheetOpenView", sheetOpenView);
+  // console.log("sheetOpenView", sheetOpenView);
   const getinwardingDetails = async (sheetOpenView) => {
     let payload = {
       pprrequest2: sheetOpenView.mfg_transaction,
@@ -204,19 +186,58 @@ const PendingFg = () => {
       pprsku: sheetOpenView.mfg_sku,
     };
     const response = await execFun(() => getListFgIn(payload), "fetch");
-    console.log("response", response);
+    // console.log("response", response);
     let { data } = response;
     if (response.status == 200) {
-      console.log(" data.data[0]", data.data);
+      // console.log(" data.data[0]", data.data);
       let val = {
-        sku: data.data.pprName,
+        pprName: data.data.pprName,
+        pprSku: data.data.pprSku,
+        pprTransaction: data.data.pprTransaction,
+        mfgTransaction: data.data.mfgTransaction,
         qty: data.data.pendingQty + "/" + data.data.completedQty,
+        inqty: data.data.pendingQty,
       };
-      fgForm.setValue("sku", val.sku);
-      fgForm.setValue("qty", val.qty);
       console.log("val", val);
+
+      fgForm.setFieldValue("pprName", val.pprName);
+      fgForm.setFieldValue("combination", val.pprName + "/" + val.pprSku);
+      fgForm.setFieldValue("pprSku", val.pprSku);
+      fgForm.setFieldValue("pprTransaction", val.pprTransaction);
+      fgForm.setFieldValue("mfgTransaction", val.mfgTransaction);
+      fgForm.setFieldValue("qty", val.qty);
+      fgForm.setFieldValue("inqty", val.inqty);
+      // console.log("val", val);
     }
   };
+  const handleSubmit = async () => {
+    const values = await fgForm.validateFields();
+    console.log("e.preventDefault();", values);
+    let payload = {
+      pprqty: values.inqty,
+      pprrequest1: fgForm.getFieldValue("pprTransaction"),
+      pprrequest2: fgForm.getFieldValue("mfgTransaction"),
+      pprsku: fgForm.getFieldValue("pprSku"),
+    };
+    console.log("payload", payload);
+
+    dispatch(saveFGs(payload)).then((res: any) => {
+      console.log("res", res);
+      if (res.payload.code == 200) {
+        toast({
+          title: res.payload?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+        setShowConfirmation(false);
+      }
+      setShowConfirmation(false);
+    });
+  };
+
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "FG Pending");
+  };
+
   useEffect(() => {
     if (sheetOpenView) {
       getinwardingDetails(sheetOpenView);
@@ -224,7 +245,7 @@ const PendingFg = () => {
   }, [sheetOpenView]);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[300px_1fr]">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -232,50 +253,62 @@ const PendingFg = () => {
           Filter
         </div>
         <div className="p-[10px]"></div>
-        <Form {...form}>
+        <Form form={fgForm}>
           <form
-            onSubmit={form.handleSubmit(fetchFGList)}
+            // onSubmit={form.handleSubmit(fetchFGList)}
             className="space-y-6 overflow-hidden p-[10px] h-[170px]"
           >
-            <FormField
-              control={form.control}
-              name="wise"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Select
-                      styles={customStyles}
-                      components={{ DropdownIndicator }}
-                      placeholder="Select Type"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
-                      options={type}
-                      onChange={(e: any) => form.setValue("wise", e.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      
+            <Form.Item className="w-full" name="wise">
+              <Select
+                styles={customStyles}
+                components={{ DropdownIndicator }}
+                placeholder="Select Type"
+                className="border-0 basic-single"
+                classNamePrefix="select border-0"
+                isDisabled={false}
+                isClearable={true}
+                isSearchable={true}
+                options={type}
+                onChange={(e: any) => form.setValue("wise", e.value)}
+              />
+             
+            </Form.Item>
+            {/* )}
+            /> */}
             {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            <div className="flex gap-[10px] justify-end">
+             
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                // onClick={() => {}}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                // onClick={() => {}}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  fetchFGList();
+                }}
+              >
+                Search
+              </Button>
+            </div>
           </form>
         </Form>{" "}
         <Sheet open={sheetOpenView} onOpenChange={setSheetOpenView}>
           <SheetTrigger></SheetTrigger>
           <SheetContent
-            className="min-w-[50%] p-0"
+            className="min-w-[80%] p-0"
             onInteractOutside={(e: any) => {
               e.preventDefault();
             }}
@@ -284,71 +317,60 @@ const PendingFg = () => {
               <SheetTitle className="text-slate-600">FG Inwarding</SheetTitle>
             </SheetHeader>
             <div>
-              <Form {...fgForm}>
+              {loading && <FullPageLoading />}
+              <Form form={fgForm}>
                 <form
                   //   onSubmit={form.handleSubmit(onSubmit)}
                   className=""
                 >
                   <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
-                    <div className="grid grid-cols-3 gap-[20px]">
-                      <FormField
-                        control={form.control}
-                        name="sku"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              NAME / SKU
-                            </FormLabel>
-                            <FormControl>
-                              <Typography.Text
-                                className={InputStyle}
-                                placeholder="Enter NAME / SKU"
-                                {...field}
-                              ></Typography.Text>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="company"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              MFG / StIn QTY.
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter MFG / StIn QTY."
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    {" "}
+                    <div className="grid grid-cols-4">
+                      <Typography.Text
+                        className="text-slate-600 font-[600]"
+                        level={5}
+                      >
+                        #
+                      </Typography.Text>
+                      <Typography.Text
+                        className="text-slate-600 font-[600]"
+                        level={5}
+                      >
+                        Name /SKU
+                      </Typography.Text>
+                      <Typography.Text className="text-slate-600 font-[600]">
+                        Mfg/Stin Qty
+                      </Typography.Text>
+                      <Typography.Text className="text-slate-600 font-[600]">
+                        In Qty
+                      </Typography.Text>
+                    </div>
+                    <Divider />
+                    <div className="grid grid-cols-4 gap-[20px]">
+                      <Form.Item name="sku">
+                        <Typography.Text placeholder="Enter NAME / SKU">
+                          1
+                        </Typography.Text>
+                      </Form.Item>
+                      <Form.Item name="combination">
+                        <Typography.Text placeholder="Enter NAME / SKU">
+                          {fgForm.getFieldValue("combination")}
+                        </Typography.Text>
+                      </Form.Item>
 
-                      <FormField
-                        control={form.control}
-                        name="pan"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              IN QTY.
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter IN QTY."
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <Form.Item name="qty">
+                        <Input
+                          className={InputStyle}
+                          placeholder="Enter MFG / StIn QTY."
+                        />
+                      </Form.Item>
+
+                      <Form.Item name="inqty">
+                        <Input
+                          className={InputStyle}
+                          placeholder="Enter IN QTY."
+                        />
+                      </Form.Item>
                     </div>
                   </div>
                   <div className={modelFixFooterStyle}>
@@ -365,6 +387,10 @@ const PendingFg = () => {
                     <Button
                       type="submit"
                       className="bg-cyan-700 hover:bg-cyan-600"
+                      onClick={(e: any) => {
+                        e.preventDefault();
+                        setShowConfirmation(true);
+                      }}
                     >
                       Submit
                     </Button>
@@ -372,10 +398,18 @@ const PendingFg = () => {
                 </form>
               </Form>
             </div>
-          </SheetContent>
+          </SheetContent>{" "}
+          <ConfirmationModal
+            open={showConfirmation}
+            onClose={() => setShowConfirmation(false)}
+            onOkay={handleSubmit}
+            title="Confirm Submit!"
+            description="Are you sure to Inward this SKU in store?"
+          />
         </Sheet>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

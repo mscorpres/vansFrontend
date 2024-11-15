@@ -1,55 +1,24 @@
 import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
+
 import {
   InputStyle,
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Edit2, Filter, Group } from "lucide-react";
+
 import styled from "styled-components";
 import { DatePicker, Row, Space, Form } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
+
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ActionCellRenderer from "./ActionCellRenderer";
-import {
-  componentList,
-  componentMapList,
-  getComponentsByNameAndNo,
-  getGroupList,
-  getProductList,
-  listOfUom,
-  saveGroups,
-  serviceList,
-  servicesaddition,
-} from "@/components/shared/Api/masterApi";
+import { getGroupList, saveGroups } from "@/components/shared/Api/masterApi";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,8 +29,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { spigenAxios } from "@/axiosIntercepter";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { Filter } from "lucide-react";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -123,6 +93,7 @@ const Groups = () => {
         title: data.message,
         className: "bg-green-600 text-white items-center",
       });
+      setOpen(false);
     } else {
       setLoading(false);
       toast({
@@ -149,7 +120,7 @@ const Groups = () => {
       headerName: "Group Name",
       field: "group_name",
       filter: "agTextColumnFilter",
-      width: 750,
+      width: 550,
     },
     {
       headerName: "Insert Date",
@@ -160,30 +131,23 @@ const Groups = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr]">
       {" "}
       {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
-        <AlertDialog open={open} onOpenChange={setOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to submit the form?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => createEntry()}
-                className="bg-[#0E7490] hover:bg-[#0E7490]"
-              >
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+
+        <ConfirmationModal
+          open={open}
+          onClose={setOpen}
+          onOkay={createEntry}
+          title="Confirm Submit!"
+          description="Are you sure to submit the entry?"
+        />{" "}
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <Filter className="h-[20px] w-[20px]" />
+          Add
+        </div>
         <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
@@ -218,7 +182,7 @@ const Groups = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

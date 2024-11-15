@@ -1,6 +1,4 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,31 +12,26 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { Checkbox, DatePicker, Divider, Space } from "antd";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Checkbox, DatePicker, Space } from "antd";
+
 import Select from "react-select";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
+import { transformOptionData } from "@/helper/transform";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import { fetchListOfCompletedFg } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import {
+  exportDatepace,
+  exportDateRangespace,
+} from "@/components/shared/Options";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { IoMdDownload } from "react-icons/io";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -64,35 +57,19 @@ const CompeletedFg = () => {
   const dateFormat = "YYYY/MM/DD";
   const fetchFGList = async (formData: z.infer<typeof FormSchema>) => {
     let { dateRange, datainp } = formData;
-    console.log("dateRange, input", dateRange, datainp);
-    console.log("Wise", wise);
-    console.log("formData", formData);
 
-    let dataString = "";
+    let datas = "";
     if (wise === "datewise" && dateRange) {
-      const startDate = dateRange[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = dateRange[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      dataString = `${startDate}-${endDate}`;
-      console.log("dateString", dataString);
+      datas = exportDateRangespace(dateRange);
     } else if (wise === "skuwise" && datainp) {
-      dataString = datainp;
+      datas = datainp;
     }
 
-    // return;
     const response = await execFun(
-      () => fetchListOfCompletedFg(wise, dataString),
+      () => fetchListOfCompletedFg(wise, datas),
       "fetch"
     );
-    console.log("response", response);
-    // return;
+
     let { data } = response;
     if (data.code === 200) {
       let arr = data.data.map((r, index) => {
@@ -102,15 +79,11 @@ const CompeletedFg = () => {
         };
       });
       setRowData(arr);
-      //   addToast(response.message, {
-      //     appearance: "success",
-      //     autoDismiss: true,
-      //   });
     } else {
-      //   addToast(response.message, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-700 text-center text-white",
+      });
     }
   };
 
@@ -187,7 +160,9 @@ const CompeletedFg = () => {
       },
     },
   ];
-
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "Store Completed");
+  };
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
@@ -236,7 +211,8 @@ const CompeletedFg = () => {
                         <RangePicker
                           className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
                           onChange={(value) =>
-                            field.onChange(
+                            form.setValue(
+                              "dateRange",
                               value ? value.map((date) => date!.toDate()) : []
                             )
                           }
@@ -267,18 +243,35 @@ const CompeletedFg = () => {
                   </FormItem>
                 )}
               />
-            )}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={fetchFGList}
-            >
-              Search
-            </Button>
+            )}{" "}
+            <div className="flex gap-[10px] justify-end">
+              {" "}
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                // onClick={() => {}}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+                disabled={rowData.length == 0}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={fetchFGList}
+              >
+                Search
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

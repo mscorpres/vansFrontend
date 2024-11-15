@@ -1,6 +1,6 @@
 import { fetchbomComponents } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   Sheet,
@@ -10,23 +10,32 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import {
-  modelFixFooterStyle,
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { modelFixHeaderStyle } from "@/constants/themeContants";
 import { AgGridReact } from "ag-grid-react";
+import { RowData } from "@/data";
+import { ColDef } from "ag-grid-community";
 const ViewBom = ({ openView, setSheetOpenView }) => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const { execFun, loading: loading1 } = useApi();
   const getData = async () => {
     const response = await execFun(() => fetchbomComponents(openView), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       let { data } = response;
-      let arr = data?.data.map((r, id) => {
-        return { id: id + 1, ...r };
+      let arr = data?.data.map((r: any, id: any) => {
+        return {
+          id: id + 1,
+          map_cust_description: r.map_cust_description ?? "--", // Replace null or undefined with "--"
+          map_cust_part_no: r.map_cust_part_no ?? "--", // Replace null or undefined with "--"
+          ven_comp: r.ven_comp ? (r.ven_comp === "" ? "--" : r.ven_comp) : "--", // Handle both null and empty string
+          ven_com_desc: r.ven_com_desc
+            ? r.ven_com_desc === ""
+              ? "--"
+              : r.ven_com_desc
+            : "--", // Handle both null and empty string
+          ...r,
+        };
       });
-      console.log("arrq", arr);
+
       setRowData(arr);
     }
   };
@@ -39,7 +48,7 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       {" "}
       {loading1("fetch") && <FullPageLoading />}
-      <Sheet open={openView.length} onOpenChange={setSheetOpenView}>
+      <Sheet open={openView?.length} onOpenChange={setSheetOpenView}>
         <SheetTrigger></SheetTrigger>
         <SheetContent
           className="min-w-[100%] p-0"
@@ -51,6 +60,7 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
             <SheetTitle className="text-slate-600">View BOM</SheetTitle>
           </SheetHeader>{" "}
           <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+            {loading1("fetch") && <FullPageLoading />}
             <AgGridReact
               //   loadingCellRenderer={loadingCellRenderer}
               rowData={rowData}
@@ -90,21 +100,21 @@ const columnDefs: ColDef<rowData>[] = [
   },
   {
     headerName: "Customer Part No.",
-    field: "vendor",
+    field: "map_cust_part_no",
     filter: "agTextColumnFilter",
-    width: 150,
+    width: 200,
   },
   {
     headerName: "Vendor Part Name",
-    field: "vendor_name",
+    field: "ven_comp",
     filter: "agTextColumnFilter",
     width: 250,
   },
   {
     headerName: "Vendor Component Name",
-    field: "vendor_part_no",
+    field: "ven_com_desc",
     filter: "agTextColumnFilter",
-    width: 150,
+    width: 250,
   },
   {
     headerName: "UOM",
@@ -122,6 +132,6 @@ const columnDefs: ColDef<rowData>[] = [
     headerName: "Req Qty",
     field: "qty",
     filter: "agTextColumnFilter",
-    width: 100,
+    width: 150,
   },
 ];

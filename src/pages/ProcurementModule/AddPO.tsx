@@ -1,47 +1,80 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Upload } from "lucide-react";
-import { FaFileExcel } from "react-icons/fa";
-import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
+import { Plus } from "lucide-react";
+import { StatusPanelDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import TextInputCellRenderer from "@/config/agGrid/TextInputCellRenderer";
+import { useEffect, useMemo, useRef, useState } from "react";
+import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import DatePickerCellRenderer from "@/config/agGrid/DatePickerCellRenderer";
 import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import styled from "styled-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddPoUIStateType } from "@/types/AddPOTypes";
-// import columnDefs, {
-//   RowData,
-// } from "@/config/agGrid/SalseOrderCreateTableColumns";
 import AddPOPopovers from "@/components/shared/AddPOPopovers";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
 
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { createSellRequest } from "@/features/salesmodule/SalesSlice";
-import { Checkbox } from "antd";
-import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
-import useApi from "@/hooks/useApi";
-// interface Props{
-//   setTab:Dispatch<SetStateAction<string>>;
-// }
-const AddPO = ({
+import { Form } from "antd";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import RejectModal from "@/components/shared/RejectModal";
+import {
+  fetchCurrency,
+  poApprove,
+  rejectPo,
+  updatePo,
+} from "@/features/client/clientSlice";
+import { toast } from "@/components/ui/use-toast";
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import { useNavigate } from "react-router-dom";
+import { RowData } from "@/data";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+
+interface Props {
+  setTab: string;
+  payloadData: string;
+  form: any;
+  selectedVendor: string;
+  setFormVal: [];
+  formVal: any;
+  rowData: [];
+  setRowData: [];
+  isApprove: [];
+  setIsApprove: [];
+  params: string;
+}
+
+const AddPO: React.FC<Props> = ({
   setTab,
-  payloadData,
-}: {
-  setTab: React.Dispatch<React.SetStateAction<string>>;
-  payloadData: any;
+  form,
+  selectedVendor,
+  formVal,
+  rowData,
+  setRowData,
+  isApprove,
+  setIsApprove,
+  params,
+  codeType,
 }) => {
-  const [rowData, setRowData] = useState<RowData[]>([]);
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
+  const [rejectText, setRejectText] = useState("");
   const [resetModel, setResetModel] = useState<boolean>(false);
-  const [removingList, setRemovingList] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+  const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
+  const [taxDetails, setTaxDetails] = useState([]);
   const dispatch = useDispatch<AppDispatch>();
 
-  const { execFun, loading: loading1 } = useApi();
+  const { currencyList, loading } = useSelector(
+    (state: RootState) => state.client
+  );
+
+  const navigate = useNavigate();
+
+  // const { execFun, loading: loading1 } = useApi();
   const gridRef = useRef<AgGridReact<RowData>>(null);
+  const selVendor = Form.useWatch("vendorName", form);
   const uiState: AddPoUIStateType = {
     excelModel,
     setExcelModel,
@@ -51,39 +84,37 @@ const AddPO = ({
     resetModel,
     setResetModel,
   };
-  console.log("payloadData in add", payloadData);
+  let clientAdd = form.getFieldValue("address");
+  let clientGst = form.getFieldValue("vendorGst");
+  let vendorNameis = form.getFieldValue("vendorName");
 
   const addNewRow = () => {
-    const newRow: RowData = {
+    const newRow = {
       checked: false,
       type: "products",
-      material: "",
+      procurementMaterial: "",
+      remark: "",
       asinNumber: "B01N1SE4EP",
       orderQty: 100,
       rate: 50,
-      currency: "USD",
+      currency: "28567096",
       gstRate: 18,
-      gstType: "local",
-      localValue: 5000,
-      foreignValue: 5000,
+      gstType: codeType,
+      localValue: 0,
+      foreignValue: 0,
       cgst: 9,
       sgst: 9,
       igst: 0,
       dueDate: "2024-07-25",
-      hsnCode: "123456",
+      hsnCode: "",
       isNew: true,
     };
-    setRowData((prevData) => [...prevData, newRow]);
+    // setRowData((prevData) => [...prevData, newRow]);
+    setRowData((prevData) => [
+      ...(Array.isArray(prevData) ? prevData : []),
+      newRow,
+    ]);
   };
-  const removeRows = () => {
-    console.log("removing rows", rowData);
-  };
-  const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      floatingFilter: false,
-      editable: false,
-    };
-  }, []);
 
   const statusBar = useMemo<{
     statusPanels: StatusPanelDef[];
@@ -96,79 +127,193 @@ const AddPO = ({
       ],
     };
   }, []);
+  const handleSearch = (searchKey: string, type: any) => {
+    if (searchKey) {
+      let p = { search: searchKey };
+      dispatch(fetchComponentDetail(p));
+    }
+  };
 
   const components = useMemo(
     () => ({
-      textInputCellRenderer: TextInputCellRenderer,
+      textInputCellRenderer: (props: any) => (
+        <TextInputCellRenderer
+          {...props}
+          setRowData={setRowData}
+          rowData={rowData}
+          setSearch={handleSearch}
+          search={search}
+          onSearch={handleSearch}
+          vendorCode={selectedVendor}
+          currencyList={currencyList}
+          // componentDetails={hsnlist}
+        />
+      ),
       datePickerCellRenderer: DatePickerCellRenderer,
       statusCellRenderer: StatusCellRenderer,
     }),
     []
   );
 
-  const onBtExport = useCallback(() => {
-    gridRef.current!.api.exportDataAsExcel();
-  }, []);
-
-  // useEffect(() => {
-  //   addNewRow();
-  // }, []);
   useEffect(() => {
     dispatch(fetchComponentDetail({ search: "" }));
+    dispatch(fetchCurrency());
   }, []);
 
-  const handleSubmit = () => {
-    console.log("Payload Data:", payloadData); // Debugging log
-    if (!payloadData || Object.keys(payloadData).length === 0) {
-      console.error("Payload data is missing or undefined.");
-      // Handle error, e.g., show a message to the user
-      return;
-    }
+  const handleSubmit = async () => {
+    let arr = rowData;
 
+    let payload = {
+      vendorname: formVal.vendorName.value,
+      vendortype: "v01",
+      vendorbranch: formVal.branch.value,
+      //
+      vendoraddress: formVal.address,
+      billaddressid: formVal.billingId.value,
+      billaddress: formVal.billAddress,
+      //
+      shipaddressid: formVal.shipId.value,
+      shipaddress: formVal.shipAddress,
+      termscondition: formVal.terms,
+      quotationdetail: formVal.quotation,
+      paymentterms: formVal.paymentTerms,
+      pocostcenter: formVal.costCenter.value,
+      poproject_name: formVal.project,
+      pocomment: formVal.comment,
+      pocreatetype: formVal?.poType.value,
+      // original_po: null,
+      currency: arr.map((r: any) => r.currency),
+      exchange: arr.map((r: any) => r.exchange),
+      component: arr.map((r: any) => r?.procurementMaterial),
+      qty: arr.map((r: any) => r.orderQty),
+      rate: arr.map((r: any) => r.rate),
+      duedate: arr.map((r: any) => formattedDate(r.dueDate)),
+      hsncode: arr.map((r: any) => r.hsnCode),
+      gsttype: arr.map((r: any) => r.gstType),
+      gstrate: arr.map((r: any) => r.gstRate),
+      cgst: arr.map((r: any) => r.cgst),
+      sgst: arr.map((r: any) => r.sgst),
+      igst: arr.map((r: any) => r.igst),
+      remark: arr.map((r: any) => r.remark),
+      original_po: formVal.originalPO?.value,
+    };
+
+    // return;
     try {
-      dispatch(createSellRequest(payloadData));
-      setTab("create");
+      if (isApprove == "edit") {
+        let payload2 = {
+          vendor_name: formVal.vendorName.value,
+          vendor_type: "v01",
+          vendor_branch: formVal.branch.value,
+          vendor_address: formVal.address,
+          ship_address_id: formVal.shipId.value,
+          ship_address: formVal.shipAddress,
+          termsandcondition: formVal.terms,
+          quotationterms: formVal.quotation,
+          paymentterms: formVal.paymentTerms,
+          costcenter: formVal.costCenter.value,
+          projectname: formVal.project,
+          pocomment: formVal.comment,
+          pocreatetype: formVal?.poType.value ?? formVal?.poType,
+          poid: params.id.replaceAll("_", "/"),
+          currency: arr.map((r: any) => r.currency),
+          exchange_rate: arr.map((r: any) => r.exchange),
+          // original_po: null,
+
+          component: arr.map((r: any) => r?.componentKey),
+          qty: arr.map((r: any) => r.orderQty),
+          rate: arr.map((r: any) => r.rate),
+          date: arr.map((r: any) => r.dueDate),
+          hsn: arr.map((r: any) => r.hsnCode),
+          gsttype: arr.map((r: any) => r.gstType),
+          gstrate: arr.map((r: any) => r.gstRate),
+          cgst: arr.map((r: any) => r.cgst),
+          sgst: arr.map((r: any) => r.sgst),
+          igst: arr.map((r: any) => r.igst),
+          remark: arr.map((r: any) => r.remark),
+          updaterow: arr.map((r: any) => r.updateingId),
+        };
+        dispatch(updatePo(payload2)).then((response: any) => {
+
+          if (response.payload.code == 200) {
+            setShowConfirmation(false);
+            toast({
+              title: response.payload.message,
+              className: "bg-green-700 text-white",
+            });
+            form.resetFields();
+            setRowData([]);
+            setIsApprove(false);
+            // navigate("/sales/order/register");
+          } else {
+            toast({
+              title: response.payload.message,
+              className: "bg-red-700 text-white",
+            });
+          }
+        });
+      } else if (isApprove == "approve") {
+        let a = {
+          poid: params.id,
+        };
+        dispatch(poApprove(a)).then((response: any) => {
+          if (response.payload.code == 200) {
+            setShowConfirmation(false);
+            toast({
+              title: response.payload.message,
+              className: "bg-green-700 text-white",
+            });
+            setRowData([]);
+            navigate("/approve-po");
+            setIsApprove(false);
+          } else {
+            toast({
+              title: response.payload.message.msg,
+              className: "bg-red-700 text-white",
+            });
+          }
+        });
+      } else {
+        dispatch(createSellRequest(payload)).then((response: any) => {
+
+          if (response.payload.code == 200) {
+            setShowConfirmation(false);
+            toast({
+              title: response.payload.message,
+              className: "bg-green-700 text-white",
+            });
+            form.resetFields();
+            setRowData([]);
+
+            // navigate("/sales/order/register");
+          } else {
+            toast({
+              title: response.payload.message.msg,
+              className: "bg-red-700 text-white",
+            });
+          }
+        });
+      }
+      // setTab("create");
     } catch (error) {
       console.error("Error submitting data:", error);
       // Handle error, e.g., show a message to the user
     }
   };
-  const fetchComponentList = async (search) => {
-    const response = await execFun(
-      () => getComponentsByNameAndNo(search),
-      "fetch"
-    );
-    console.log("response---", response);
-    if (response.status === "sucess") {
-      let arr = response.data.map((r) => {
-        return {
-          label: r.id,
-          value: r.text,
-        };
-      });
-      setAsyncOptions(arr);
-      console.log("arr", arr);
-    }
-  };
+
   const columnDefs = [
     {
-      field: "checked",
       headerName: "",
-      flex: 1,
-      minWidth: 50,
-      cellRenderer: () => {
-        return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
-            <Checkbox onClick={(e) => rowData(e.target.checked)} />
-          </div>
-        );
-      },
+      valueGetter: "node.rowIndex + 1",
+      cellRenderer: "textInputCellRenderer",
+      maxWidth: 100,
+      field: "delete",
     },
     { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
 
     {
       headerName: "Component/Part",
-      field: "material",
+      field: "procurementMaterial",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -176,7 +321,7 @@ const AddPO = ({
     },
     {
       headerName: "Ven C. Part / Part",
-      field: "asinNumber",
+      field: "vendorName",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -280,14 +425,104 @@ const AddPO = ({
     },
     {
       headerName: "ITEM DESCRIPTION",
-      field: "hsnCode",
+      field: "remark",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
   ];
+  const handleReject = () => {
+    dispatch(
+      rejectPo({ poid: params?.id?.replaceAll("_", "/"), remark: rejectText })
+    ).then((response: any) => {
+      if (response.payload.success == "200") {
+        setShowRejectConfirm(true);
+      } else {
+        toast({
+          title: response.payload.message.msg,
+          className: "bg-red-700 text-white",
+        });
+      }
+    });
+  };
+  // const formattedDate = dueDate.map((date) => {});
+  const formattedDate = (date) => {
+    const [year, month, day] = date.split("-");
+    return `${day}-${month}-${year}`;
+  };
 
+  useEffect(() => {
+    const calculateTaxDetails = () => {
+      let singleArr: any = rowData;
+      const values = singleArr?.reduce(
+        (partialSum: any, a: any) =>
+          partialSum + +Number(a?.localValue).toFixed(2),
+        0
+      );
+      const value = +Number(values).toFixed(2);
+
+      const cgsts = singleArr?.reduce(
+        (partialSum: any, a: any) => partialSum + +Number(a?.cgst).toFixed(2),
+        0
+      );
+      const cgst = +Number(cgsts).toFixed(2);
+      const sgsts = singleArr?.reduce(
+        (partialSum: any, a: any) => partialSum + +Number(a?.sgst).toFixed(2),
+        0
+      );
+      const sgst = +Number(sgsts).toFixed(2);
+      const igsts = singleArr?.reduce(
+        (partialSum: any, a: any) => partialSum + +Number(a?.igst).toFixed(2),
+        0
+      );
+
+      const igst = +Number(igsts).toFixed(2);
+
+      const arr = [
+        {
+          title: "Value",
+          description: value,
+        },
+        // {
+        //   title: "Freight",
+        //   description: freight,
+        // },
+        {
+          title: "CGST",
+          description: cgst,
+        },
+        {
+          title: "SGST",
+          description: sgst,
+        },
+        {
+          title: "IGST",
+          description: igst,
+        },
+        // { title: "TDS", description: tds },
+        // {
+        //   title: "Round Off",
+        //   description:
+        //     roundOffSign.toString() + [Number(roundOffValue).toFixed(2)],
+        // },
+        // {
+        //   title: "Vendor Amount",
+        //   description: vendorAmount,
+        // },
+      ];
+      setTaxDetails(arr);
+    };
+
+    // Initial calculation
+    calculateTaxDetails();
+
+    // Set interval to recalculate every 5 seconds (5000 ms)
+    const intervalId = setInterval(calculateTaxDetails, 5000);
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [rowData]);
   return (
     <Wrapper>
       <AddPOPopovers uiState={uiState} />
@@ -300,12 +535,13 @@ const AddPO = ({
               </CardTitle>
             </CardHeader>
             <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
+              {/* //detais of client */}
               <h3 className="font-[500]">Name</h3>
-              <p className="text-[14px]">Flipkart</p>
+              <p className="text-[14px]">{vendorNameis?.label}</p>
               <h3 className="font-[500]">Address</h3>
-              <p className="text-[14px]">Noida sector 135</p>
+              <p className="text-[14px]">{clientAdd}</p>
               <h3 className="font-[500]">GSTIN</h3>
-              <p className="text-[14px]">29AACCF0683K1ZD</p>
+              <p className="text-[14px]">{clientGst}</p>
             </CardContent>
           </Card>
           <Card className="rounded-sm shadow-sm shadow-slate-500">
@@ -324,7 +560,9 @@ const AddPO = ({
                       </h3>
                     </div>
                     <div>
-                      <p className="text-[14px]">0.00</p>
+                      <p className="text-[14px]">
+                        {taxDetails[0]?.description}
+                      </p>
                     </div>
                   </li>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
@@ -332,7 +570,10 @@ const AddPO = ({
                       <h3 className="font-[500]">CGST :</h3>
                     </div>
                     <div>
-                      <p className="text-[14px]">(+)0.00</p>
+                      <p className="text-[14px]">
+                        {" "}
+                        {taxDetails[1]?.description}
+                      </p>
                     </div>
                   </li>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
@@ -340,7 +581,9 @@ const AddPO = ({
                       <h3 className="font-[500]">SGST :</h3>
                     </div>
                     <div>
-                      <p className="text-[14px]">(+)0.00</p>
+                      <p className="text-[14px]">
+                        {taxDetails[2]?.description}
+                      </p>
                     </div>
                   </li>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
@@ -348,7 +591,9 @@ const AddPO = ({
                       <h3 className="font-[500]">ISGST :</h3>
                     </div>
                     <div>
-                      <p className="text-[14px]">(+)0.00</p>
+                      <p className="text-[14px]">
+                        {taxDetails[3]?.description}
+                      </p>
                     </div>
                   </li>
                   <li className="grid grid-cols-[1fr_70px] mt-[20px]">
@@ -358,7 +603,9 @@ const AddPO = ({
                       </h3>
                     </div>
                     <div>
-                      <p className="text-[14px]">(+)0.00</p>
+                      <p className="text-[14px]">
+                        {taxDetails.reduce((a, b) => a + b.description, 0)}
+                      </p>
                     </div>
                   </li>
                 </ul>
@@ -376,15 +623,15 @@ const AddPO = ({
             >
               <Plus className="font-[600]" /> Add Item
             </Button>{" "}
-            <Button
+            {/* <Button
               onClick={() => {
                 removeRows();
               }}
               className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max mr-[150px]"
             >
               <Trash2 />
-            </Button>
-            <div className="flex items-center gap-[20px]">
+            </Button> */}
+            {/* <div className="flex items-center gap-[20px]">
               <Button
                 onClick={onBtExport}
                 className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
@@ -399,9 +646,10 @@ const AddPO = ({
                 <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel
                 Here
               </Button>
-            </div>
+            </div> */}
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
+            {loading && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
@@ -415,25 +663,80 @@ const AddPO = ({
               gridOptions={commonAgGridConfig}
               suppressCellFocus={false}
               suppressRowClickSelection={false}
+              loadingOverlayComponent={OverlayNoRowsTemplate}
             />
           </div>
         </div>
       </div>
+      {/* <ConfirmationModal
+        open={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onOkay={handleSubmit}
+        okayText={isApprove ? "Approve" : "Submit"}
+        title="Confirm Submit!"
+        description={`Are you sure to ${
+          isApprove ? "Approve" : "Submit"
+        } details of all components of this Purchase Order?`}
+        // description="Are you sure to submit details of all components of this Purchase Order?"
+      /> */}
+      <ConfirmationModal
+        open={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onOkay={handleSubmit}
+        submitText={
+          isApprove == "approve"
+            ? "Approve"
+            : isApprove == "edit"
+            ? "Update"
+            : "Submit"
+        }
+        title="Confirm Submit!"
+        description={`Are you sure to ${
+          isApprove == "approve"
+            ? "Approve"
+            : isApprove == "edit"
+            ? "Update"
+            : "Submit"
+        } details of all components of this Purchase Order?`}
+      />
+      <RejectModal
+        open={showRejectConfirm}
+        onClose={() => setShowRejectConfirm(false)}
+        onOkay={handleReject}
+        setRejectText={setRejectText}
+        // submitText={isApprove ? "Reject" : "Submit"}
+        title="Confirm Submit!"
+        description={`Are you sure to ${
+          isApprove ? "reject" : "submit"
+        } details of all components of this Purchase Order?`}
+        // description={`Are you sure to ${
+        //   isApprove ? "reject" : "submit"
+        // } details of all components of this Purchase Order?`}
+      />
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-        <Button className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]">
-          Reset
-        </Button>
         <Button
           className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setTab("create")}
         >
           Back
+        </Button>{" "}
+        <Button
+          className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+          onClick={() =>
+            isApprove ? setShowRejectConfirm(true) : setRowData([])
+          }
+        >
+          {isApprove ? "Reject" : "Reset"}
         </Button>
         <Button
           className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-          onClick={handleSubmit}
+          onClick={() => setShowConfirmation(true)}
         >
-          Submit
+          {isApprove == "approve"
+            ? "Approve"
+            : isApprove == "edit"
+            ? "Update"
+            : "Submit"}
         </Button>
       </div>
     </Wrapper>

@@ -6,37 +6,27 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Badge } from "@/components/ui/badge";
-import styled from "styled-components";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store";
+import React from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 import {
-  fetchBillingAddress,
-  fetchClientAddressDetail,
-  fetchClientDetails,
-  fetchCountries,
-  fetchProjectDescription,
-  fetchStates,
-} from "@/features/salesmodule/createSalesOrderSlice";
-import { fetchBillingAddressList } from "../../features/salesmodule/createSalesOrderSlice";
-import {
-  transformCustomerData,
+  transformCurrencyData,
   transformOptionData,
-  transformPlaceData,
+  transformOptions,
+  transformStateOptions,
 } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import {
+  DatePickerStyle,
   InputStyle,
   LableStyle,
   primartButtonStyle,
 } from "@/constants/themeContants";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import dayjs, { Dayjs } from "dayjs";
 import { z } from "zod";
-
 import {
   Form,
   FormControl,
@@ -46,114 +36,53 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
-
-interface OptionType {
-  value: string;
-  label: string;
-}
+import { stateOptions } from "@/General";
+import { DatePicker, Space } from "antd";
+import { toast } from "@/components/ui/use-toast";
 interface Props {
   setTab: Dispatch<SetStateAction<string>>;
   setPayloadData: Dispatch<SetStateAction<any>>;
+  handleCustomerSelection: (e: any) => void;
+  form: any;
+  branches: any[];
+  handleBranchSelection: (e: any) => void;
+  handleCostCenterChange: (e: any) => void;
+  handleBillIdChange: (e: any) => void;
+  currencyList: any;
+  searchCustomerList: (e: any) => void;
+  backCreate: boolean;
 }
 type CreateSalesOrderForm = z.infer<typeof createSalesFormSchema>;
 const CreateSalesOrder: React.FC<Props> = ({
-  setTabvalue,
   setTab,
   setPayloadData,
+  handleCustomerSelection,
+  form,
+  branches,
+  handleBranchSelection,
+  handleCostCenterChange,
+  handleBillIdChange,
+  currencyList,
+  backCreate,
 }: any) => {
-  const form = useForm<z.infer<typeof createSalesFormSchema>>({
-    resolver: zodResolver(createSalesFormSchema),
-    mode: "onBlur",
-  });
-
-  const [selectedCustomer, setSelectedCustomer] = useState<{
-    label: string;
-    value: string;
-  } | null>(null);
-  const [selectedCostCenter, setSelectedCostCenter] = useState<{
-    label: string;
-    value: string;
-  } | null>(null);
-  const [selectedProjectId, setSelectedProjectId] = useState<{
-    label: string;
-    value: string;
-  } | null>(null);
-  const [options, setOptions] = useState<OptionType[]>([]);
-  const dispatch = useDispatch<AppDispatch>();
   const data = useSelector((state: RootState) => state.createSalesOrder);
-  useEffect(() => {
-    dispatch(fetchBillingAddress({ billing_code: "R26331LI" }));
-    dispatch(fetchBillingAddressList({ search: "" }));
-    dispatch(fetchCountries());
-    dispatch(fetchStates());
-  }, []);
-
-  const handleClientCahnge = (e: any) => {
-    form.setValue("customer", e.value);
-    setSelectedCustomer(e);
-    dispatch(fetchClientDetails(e!.value)).then((response: any) => {
-      if (response.meta.requestStatus === "fulfilled") {
-        setOptions([
-          {
-            label: response.payload.city.name,
-            value: response.payload.city.name,
-          },
-        ]);
-        dispatch(
-          fetchClientAddressDetail({ addressID: response.payload.addressID })
-        ).then((response: any) => {
-          if (response.meta.requestStatus === "fulfilled") {
-            form.setValue("billing_address", response.payload.address);
-            form.setValue("client_gst", response.payload.gst);
-          }
-        });
-      }
-    });
-  };
-
-  const handleBillingAddressChange = (e: any) => {
-    const billingCode = e.value;
-    form.setValue("bill_from_address", billingCode);
-
-    dispatch(fetchBillingAddress({ billing_code: billingCode })).then(
-      (response: any) => {
-        if (response.meta.requestStatus === "fulfilled") {
-          const billingData = response.payload;
-          form.setValue("address", billingData.address);
-          form.setValue("company", billingData.company);
-          form.setValue("gstin", billingData.gstin);
-          form.setValue("pan", billingData.pan);
-          form.setValue("statecode", billingData.statecode);
-        }
-      }
-    );
-  };
-
-  const handleCostCenterChange = (e: any) => {
-    setSelectedCostCenter(e);
-    form.setValue("cost_center", e.value);
-  };
-  const handleProjectIdChange = (e: any) => {
-    setSelectedProjectId(e);
-    form.setValue("project_id", e.value);
-    dispatch(fetchProjectDescription({ project_name: e.value })).then(
-      (response: any) => {
-        if (response.meta.requestStatus === "fulfilled") {
-          form.setValue("project_description", response.payload?.description);
-        }
-      }
-    );
-  };
 
   const onSubmit = (data: CreateSalesOrderForm) => {
-    console.log("Submitted Data from CreateSalesOrder:", data); // Debugging log
     if (data) {
       setPayloadData(data);
-      setTabvalue("add"); // Switch to AddSalesOrder tab
+      setTab("add"); // Switch to AddSalesOrder tab
     } else {
       console.error("Data is null or undefined");
     }
   };
+
+  const customerOptions = [
+    {
+      label: "CUSTOMER",
+      value: "c01",
+    },
+  ];
+  const update = window.location.pathname.includes("update");
 
   return (
     <div className="h-[calc(100vh-150px)]">
@@ -165,7 +94,7 @@ const CreateSalesOrder: React.FC<Props> = ({
               <Card className="rounded shadow bg-[#fff]">
                 <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
                   <h3 className="text-[17px] font-[600] text-slate-600">
-                    Client Details
+                    Customer Details
                   </h3>
                   <p className="text-slate-600 text-[13px]">
                     Type Name or Code of the Client
@@ -176,40 +105,35 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="channels"
+                        name="customer_type"
                         render={() => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Select Channel
+                              Customer Type
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
-                                placeholder="Select Channel"
+                                placeholder="Customer Type"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
                                 onChange={(e: any) =>
-                                  form.setValue("channels", e.value)
+                                  form.setValue("customer_type", e.value, {
+                                    shouldValidate: true,
+                                    shouldDirty: true,
+                                  })
                                 }
                                 name="color"
-                                options={[
-                                  {
-                                    label: "Amazon",
-                                    value: "AMZ",
-                                  },
-                                  {
-                                    label: "Flipkart",
-                                    value: "FLK",
-                                  },
-                                  {
-                                    label: "B2B",
-                                    value: "B2B",
-                                  },
-                                ]}
+                                options={customerOptions}
+                                defaultValue={"c01"}
+                                // value={customerOptions.find((c) => c.value === field.value)}
                               />
                             </FormControl>
                             <FormMessage />
@@ -220,20 +144,27 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="customer"
+                        name="customer_code"
                         render={() => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Client Name
+                              Customer Name
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
                               <ReusableAsyncSelect
-                                placeholder="Client Name"
-                                endpoint="client/getClient"
-                                transform={transformCustomerData}
-                                onChange={handleClientCahnge}
-                                value={selectedCustomer}
-                                fetchOptionWith="query"
+                                placeholder={
+                                  update || backCreate
+                                    ? form.getValues("customer_name")
+                                    : "Customer Name"
+                                }
+                                endpoint="/others/customerList"
+                                transform={transformOptions}
+                                fetchOptionWith="payload"
+                                onChange={handleCustomerSelection}
+                                // value={form.watch("customer_code")}
                               />
                             </FormControl>
                             <FormMessage />
@@ -244,10 +175,15 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div>
                       <FormField
                         control={form.control}
-                        name="customer_branch"
+                        name="billTo.branch"
                         render={() => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Branch</FormLabel>
+                            <FormLabel className={LableStyle}>
+                              Branch
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
                             <FormControl>
                               <Select
                                 styles={customStyles}
@@ -258,13 +194,17 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
-                                options={options}
-                                onChange={(e) => console.log(e)}
+                                options={branches}
+                                onChange={handleBranchSelection}
                                 value={
-                                  data.clientDetails
+                                  branches?.length > 0
                                     ? {
-                                        label: data.clientDetails.city.name,
-                                        value: data.clientDetails.city.name,
+                                        label: branches.find(
+                                          (branch: any) =>
+                                            branch.value ===
+                                            form.getValues("billTo.branch")
+                                        )?.label,
+                                        value: form.getValues("billTo.branch"),
                                       }
                                     : null
                                 }
@@ -278,14 +218,286 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="client_gst"
+                        name="billTo.pincode"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>GSTIN</FormLabel>
+                            <FormLabel className={LableStyle}>
+                              PIN Code
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 className={InputStyle}
-                                placeholder="GSTIN"
+                                placeholder="PIN Code"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="billTo.gst"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              GST / UIN
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="GST / UIN"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="billTo.state"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              State
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Select
+                                styles={customStyles}
+                                components={{ DropdownIndicator }}
+                                placeholder="State"
+                                className="border-0 basic-single"
+                                classNamePrefix="select border-0"
+                                isDisabled={true} // Disable the select dropdown so it cannot be changed
+                                isClearable={false} // Prevent clearing the value
+                                isSearchable={false} // Disable search if not needed
+                                name="customer" // Ensure this name aligns with the form field
+                                options={
+                                  stateOptions
+                                    ? transformStateOptions(stateOptions)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateOptions)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-[40px]">
+                    <FormField
+                      control={form.control}
+                      name="billTo.address1"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Bill To Address1
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className={InputStyle}
+                              placeholder="Address Line 1"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* <p>error message</p> */}
+                  </div>
+                  <div className="mt-[40px]">
+                    <FormField
+                      control={form.control}
+                      name="billTo.address2"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Bill To Address2
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className={InputStyle}
+                              placeholder="Address Line 2"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="rounded shadow bg-[#fff]">
+                <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                  <h3 className="text-[17px] font-[600] text-slate-600">
+                    Ship To Details
+                  </h3>
+                  <p className="text-slate-600 text-[13px]">
+                    Provide the ship to address information
+                  </p>
+                </CardHeader>
+
+                <CardContent className="mt-[10px]">
+                  <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="shipTo.company"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Company
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Company"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="shipTo.panno"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Pan No.
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Pan No."
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="shipTo.gst"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              GSTIN / UIN
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="GSTIN / UIN"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="shipTo.state"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              State
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Select
+                                styles={customStyles}
+                                components={{ DropdownIndicator }}
+                                placeholder="State"
+                                className="border-0 basic-single"
+                                classNamePrefix="select border-0"
+                                isDisabled={true}
+                                isClearable={false}
+                                isSearchable={false}
+                                name="customer"
+                                options={
+                                  stateOptions
+                                    ? transformStateOptions(stateOptions)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateOptions)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="shipTo.pincode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Pincode
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Pincode"
                                 {...field}
                               />
                             </FormControl>
@@ -298,16 +510,19 @@ const CreateSalesOrder: React.FC<Props> = ({
                   <div className="mt-[40px]">
                     <FormField
                       control={form.control}
-                      name="billing_address"
+                      name="shipTo.address1"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LableStyle}>
-                            Billing Address
+                            Ship To Address1
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
                           </FormLabel>
                           <FormControl>
                             <Textarea
                               className={InputStyle}
-                              placeholder="Billing Address"
+                              placeholder="Address Line 1"
                               {...field}
                             />
                           </FormControl>
@@ -315,15 +530,37 @@ const CreateSalesOrder: React.FC<Props> = ({
                         </FormItem>
                       )}
                     />
-
-                    {/* <p>error message</p> */}
+                  </div>
+                  <div className="mt-[40px]">
+                    <FormField
+                      control={form.control}
+                      name="shipTo.address2"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Ship To Address2
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className={InputStyle}
+                              placeholder="Address Line 2"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </CardContent>
               </Card>
               <Card className="rounded shadow bg-[#fff]">
                 <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
                   <h3 className="text-[17px] font-[600] text-slate-600">
-                    SO Terms
+                    So Terms & Other
                   </h3>
                   <p className="text-slate-600 text-[13px]">
                     Provide SO terms and other information
@@ -334,7 +571,252 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="terms_condition"
+                        name="po_number"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              PO Number
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="PO Number"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <FormField
+                        control={form.control}
+                        name="po_date"
+                        render={() => (
+                          <FormItem className="pl-[10px] w-full flex flex-col">
+                            <FormLabel className={LableStyle}>
+                              PO Date
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Space direction="vertical" size={12}>
+                                <DatePicker
+                                  className={DatePickerStyle}
+                                  format="DD-MM-YYYY"
+                                  value={
+                                    form.watch("po_date")
+                                      ? dayjs(
+                                          form.watch("po_date"),
+                                          "DD-MM-YYYY"
+                                        )
+                                      : null
+                                  }
+                                  onChange={(value: Dayjs | null) => {
+                                    const formattedDate = value
+                                      ? value.format("DD-MM-YYYY")
+                                      : "";
+                                    form.setValue("po_date", formattedDate, {
+                                      shouldValidate: true,
+                                      shouldDirty: true,
+                                    });
+                                  }}
+                                />
+                              </Space>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="reference_no"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Reference Number
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Reference Number"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <FormField
+                        control={form.control}
+                        name="ref_date"
+                        render={() => (
+                          <FormItem className="pl-[10px] w-full flex flex-col">
+                            <FormLabel className={LableStyle}>
+                              Reference Date
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Space direction="vertical" size={12}>
+                                <DatePicker
+                                  className={DatePickerStyle}
+                                  format="DD-MM-YYYY"
+                                  value={
+                                    form.watch("ref_date")
+                                      ? dayjs(
+                                          form.watch("ref_date"),
+                                          "DD-MM-YYYY"
+                                        )
+                                      : null
+                                  }
+                                  onChange={(value: Dayjs | null) => {
+                                    const formattedDate = value
+                                      ? value.format("DD-MM-YYYY")
+                                      : "";
+                                    form.setValue(
+                                      "ref_date",
+                                      formattedDate,
+                                      {
+                                        shouldValidate: true,
+                                        shouldDirty: true,
+                                      }
+                                    );
+                                  }}
+                                />
+                              </Space>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="currency.currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Currency
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
+                              placeholder="Currency"
+                              className="border-0 basic-single"
+                              classNamePrefix="select border-0"
+                              isClearable={false} // Prevent clearing the value
+                              isSearchable={false} // Disable search if not needed
+                              options={
+                                currencyList
+                                  ? transformCurrencyData(currencyList)
+                                  : []
+                              }
+                              value={
+                                // Find the corresponding option based on field.value
+                                transformCurrencyData(currencyList)?.find(
+                                  (option) => option.value === field.value
+                                ) || null
+                              }
+                              onChange={(selectedOption) => {
+                                // Update the form value with the selected option's value
+                                field.onChange(selectedOption?.value); // Use field.onChange to update the form value
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="currency.exchange_rate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Exchange Rate
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Exchange Rate"
+                                min={1}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <FormField
+                        control={form.control}
+                        name="due_date"
+                        render={() => (
+                          <FormItem className="pl-[10px] w-full flex flex-col">
+                            <FormLabel className={LableStyle}>
+                              Due Date
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Space direction="vertical" size={12}>
+                                <DatePicker
+                                  className={DatePickerStyle}
+                                  format="DD-MM-YYYY"
+                                  value={
+                                    form.watch("due_date")
+                                      ? dayjs(
+                                          form.watch("due_date"),
+                                          "DD-MM-YYYY"
+                                        )
+                                      : null
+                                  }
+                                  onChange={(value: Dayjs | null) => {
+                                    const formattedDate = value
+                                      ? value.format("DD-MM-YYYY")
+                                      : "";
+                                    form.setValue("due_date", formattedDate, {
+                                      shouldValidate: true,
+                                      shouldDirty: true,
+                                    });
+                                  }}
+                                />
+                              </Space>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="termscondition"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -355,7 +837,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="quotation_detail"
+                        name="quotationdetail"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -376,7 +858,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="payment_term"
+                        name="paymentterms"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
@@ -397,16 +879,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="due_day"
+                        name="project_name"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Due Date (in days)
+                              Project
                             </FormLabel>
                             <FormControl>
                               <Input
                                 className={InputStyle}
-                                placeholder="Due Date (in days)"
+                                placeholder="Project"
                                 {...field}
                               />
                             </FormControl>
@@ -416,27 +898,109 @@ const CreateSalesOrder: React.FC<Props> = ({
                       />
                     </div>
                     <div>
-                      <div className="flex justify-end">
-                        <Badge className="p-0 text-[13px] bg-transparent border-none shadow-none font-[400] max-h-max text-cyan-600 py-[3px] px-[10px] cursor-pointer hover:bg-blue-100 hover:shadow shadow-slate-500 rounded-full">
-                          Add Vendor
-                        </Badge>
-                      </div>
                       <FormField
                         control={form.control}
-                        name="cost_center"
+                        name="so_comment"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Comments (If any)
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Comments"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="rounded shadow bg-[#fff]">
+                <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                  <h3 className="text-[17px] font-[600] text-slate-600">
+                    Bill From Details
+                  </h3>
+                  <p className="text-slate-600 text-[13px]">
+                    Provide the bill from address information
+                  </p>
+                </CardHeader>
+                <CardContent className="mt-[10px]">
+                  <div>
+                    <div className="flex justify-end">
+                      <Badge className="p-0 text-[13px] bg-transparent border-none shadow-none font-[400] max-h-max text-cyan-600 py-[3px] px-[10px] cursor-pointer hover:bg-blue-100 hover:shadow shadow-slate-500 rounded-full">
+                        Add Vendor
+                      </Badge>
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="costcenter"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Cost Center
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <ReusableAsyncSelect
+                              placeholder={
+                                update || backCreate
+                                  ? form.getValues("costcenter_name")
+                                  : "Cost Center"
+                              }
+                              endpoint="backend/costCenter"
+                              transform={transformOptions}
+                              fetchOptionWith="payload"
+                              onChange={handleCostCenterChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="billFrom.billFromId"
                         render={() => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Cost Center
+                              Billing ID
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
-                              <ReusableAsyncSelect
-                                placeholder="Cost Center"
-                                endpoint="backend/costCenter"
-                                transform={transformOptionData}
-                                fetchOptionWith="payload"
-                                onChange={handleCostCenterChange}
-                                value={selectedCostCenter}
+                              <Select
+                                styles={customStyles}
+                                placeholder={
+                                  update || backCreate
+                                    ? form.getValues("billIdName")
+                                    : "Bill From Address"
+                                }
+                                className="border-0 basic-single"
+                                classNamePrefix="select border-0"
+                                components={{ DropdownIndicator }}
+                                onChange={handleBillIdChange}
+                                isDisabled={false}
+                                isClearable={true}
+                                isSearchable={true}
+                                options={
+                                  data && data?.billingAddressList
+                                    ? transformOptionData(
+                                        data?.billingAddressList
+                                      )
+                                    : []
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -446,357 +1010,97 @@ const CreateSalesOrder: React.FC<Props> = ({
 
                       {/* <p>error message</p> */}
                     </div>
-                    <div>
-                      <div className="flex justify-end">
-                        <Badge className="p-0 text-[13px] bg-transparent border-none shadow-none font-[400] max-h-max text-cyan-600 py-[3px] px-[10px] cursor-pointer hover:bg-blue-100 hover:shadow shadow-slate-500 rounded-full">
-                          Add Vendor
-                        </Badge>
-                      </div>
+                    <div className="">
                       <FormField
                         control={form.control}
-                        name="project_id"
-                        render={() => (
+                        name="billFrom.pan"
+                        render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Project Id
+                              Pan No.
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
                             </FormLabel>
                             <FormControl>
-                              <ReusableAsyncSelect
-                                placeholder="Project Id"
-                                endpoint="backend/poProjectName"
-                                transform={transformOptionData}
-                                onChange={handleProjectIdChange}
-                                value={selectedProjectId}
-                                fetchOptionWith="payload"
+                              <Input
+                                className={InputStyle}
+                                placeholder="Pan No."
+                                {...field}
                               />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-
-                      {/* <p>error message</p> */}
+                    </div>
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="billFrom.gstin"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              GSTIN / UIN
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="GSTIN / UIN"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </div>
                   <div className="mt-[40px]">
-                    <Textarea
-                      value={
-                        data.projectDescription
-                          ? data.projectDescription.description
-                          : ""
-                      }
-                      disabled={!data.projectDescription}
-                      className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Project Description"
+                    <FormField
+                      control={form.control}
+                      name="billFrom.address1"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Address Line 1
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className={InputStyle}
+                              placeholder="Address Line 1"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
+
                     {/* <p>error message</p> */}
                   </div>
                   <div className="mt-[40px]">
                     <FormField
                       control={form.control}
-                      name="comment"
+                      name="billFrom.address2"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>Comments</FormLabel>
-                          <FormControl>
-                            <Input
-                              className={InputStyle}
-                              placeholder="Comments"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded shadow bg-[#fff]">
-                <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    Dispatch from
-                  </h3>
-                  <p className="text-slate-600 text-[13px]">
-                    Provide billing information
-                  </p>
-                </CardHeader>
-                <CardContent className="mt-[10px]">
-                  <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
-                    <div>
-                      <FormField
-                        control={form.control}
-                        name="bill_from_address"
-                        render={() => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Billing Name
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                styles={customStyles}
-                                placeholder="Bill From Address"
-                                className="border-0 basic-single"
-                                classNamePrefix="select border-0"
-                                components={{ DropdownIndicator }}
-                                onChange={handleBillingAddressChange}
-                                isDisabled={false}
-                                isClearable={true}
-                                isSearchable={true}
-                                // options={
-                                //   data && data?.billingAddressList
-                                //     ? transformOptionData(
-                                //         data?.billingAddressList
-                                //       )
-                                //     : []
-                                // }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* <p>error message</p> */}
-                    </div>
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="pan"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pan No.
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Pan No."
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="gstin"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              GSTIN / UIN
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="GSTIN / UIN"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="statecode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pincode
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Pincode"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-[40px]">
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>Address</FormLabel>
+                          <FormLabel className={LableStyle}>
+                            Address Line 2
+                            <span className="pl-1 text-red-500 font-bold">
+                              *
+                            </span>
+                          </FormLabel>
                           <FormControl>
                             <Textarea
                               className={InputStyle}
-                              placeholder="Address"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded shadow bg-[#fff]">
-                <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    Ship To
-                  </h3>
-                  <p className="text-slate-600 text-[13px]">
-                    Provide shipping information
-                  </p>
-                  <Switch className="flex items-center gap-[10px]">
-                    <label className="switch">
-                      <input type="checkbox" />
-                      <span className="slider"></span>
-                    </label>
-                    <p className="text-slate-600 text-[13px]">
-                      Same as Billing Address
-                    </p>
-                  </Switch>
-                </CardHeader>
-
-                <CardContent className="mt-[10px]">
-                  <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="shipping_name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="shipping_pan"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pan No.
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Pan No."
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="shipping_gstin_uin"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              GSTIN / UIN
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="GSTIN / UIN"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <FormField
-                        control={form.control}
-                        name="shipping_state"
-                        render={() => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pincode
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                styles={customStyles}
-                                placeholder="State"
-                                className="border-0 basic-single"
-                                classNamePrefix="select border-0"
-                                components={{ DropdownIndicator }}
-                                isDisabled={false}
-                                isLoading={true}
-                                isClearable={true}
-                                isSearchable={true}
-                                name="color"
-                                options={
-                                  data.states
-                                    ? transformPlaceData(data.states)
-                                    : []
-                                }
-                                onChange={(e: any) =>
-                                  form.setValue("shipping_state", e.value)
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* <p>error message</p> */}
-                    </div>
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="shipping_pinCode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pincode
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Pincode"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-[40px]">
-                    <FormField
-                      control={form.control}
-                      name="shipping_address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={LableStyle}>Address</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              className={InputStyle}
-                              placeholder="Address"
+                              placeholder="Address Line 2"
                               {...field}
                             />
                           </FormControl>
@@ -811,9 +1115,22 @@ const CreateSalesOrder: React.FC<Props> = ({
           </div>
           <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300">
             <Button
-              onClick={() => setTab("add")}
+              onClick={() => {
+                const errors = form.formState.errors;
+                if (Object.keys(errors).length > 0) {
+                  // Iterate over the errors and show a toast
+                  Object.values(errors).forEach((error: any) => {
+                    toast({
+                      title: error.message || "Failed",
+                      className: "bg-red-600 text-white items-center",
+                    });
+                  });
+                }
+                // setTab("add");
+              }}
               className={`${primartButtonStyle} flex gap-[10px]`}
               type="submit"
+              disabled={form.errors}
             >
               Next
               <FaArrowRightLong className="" />
@@ -824,57 +1141,4 @@ const CreateSalesOrder: React.FC<Props> = ({
     </div>
   );
 };
-const Switch = styled.div`
-  /* The switch - the box around the slider */
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 2.8em;
-    height: 18px;
-  }
-
-  /* Hide default HTML checkbox */
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  /* The slider */
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 30px;
-  }
-
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 15px;
-    width: 15px;
-    border-radius: 20px;
-    left: 2px;
-    bottom: 1.5px;
-    background-color: white;
-    transition: 0.4s;
-  }
-
-  input:checked + .slider {
-    background-color: #0891b2;
-  }
-
-  input:focus + .slider {
-    box-shadow: 0 0 1px #0891b2;
-  }
-
-  input:checked + .slider:before {
-    transform: translateX(1.7em);
-  }
-`;
 export default CreateSalesOrder;

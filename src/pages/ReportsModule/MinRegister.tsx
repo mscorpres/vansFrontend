@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,13 +7,6 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
 import {
   Form,
   FormControl,
@@ -31,28 +23,18 @@ import {
   transformOptionData,
   transformPlaceData,
 } from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
+
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   fetchListOfMINRegister,
-  fetchListOfQ1,
-  getComponentsByNameAndNo,
 } from "@/components/shared/Api/masterApi";
+import { exportDateRangespace } from "@/components/shared/Options";
+import { IoMdDownload } from "react-icons/io";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -61,7 +43,8 @@ const FormSchema = z.object({
     .refine((data) => data === undefined || data.length === 2, {
       message: "Please select a valid date range.",
     }),
-  types: z.string().optional(),
+  types: z.string(),
+  search: z.string().optional(),
 });
 
 const MinRegister = () => {
@@ -69,6 +52,7 @@ const MinRegister = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+  const theWise = form.watch("types");
   const { execFun, loading: loading1 } = useApi();
   //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
@@ -80,18 +64,9 @@ const MinRegister = () => {
     let { date } = formData;
     let dataString = "";
     if (date) {
-      const startDate = date[0]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      const endDate = date[1]
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .reverse()
-        .join("-");
-      dataString = `${startDate}-${endDate}`;
-      console.log("dateString", dataString);
+      dataString = exportDateRangespace(date);
+    } else {
+      dataString = formData.search;
     }
     let payload = {
       min_types: formData.types,
@@ -114,10 +89,7 @@ const MinRegister = () => {
 
       setRowData(arr);
     } else {
-      //   addToast(data.message.msg, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
+  
     }
   };
   useEffect(() => {
@@ -271,7 +243,14 @@ const MinRegister = () => {
       label: "Pending-Markup",
       value: "NONMARKUP",
     },
+    {
+      label: "PO MIN(s)",
+      value: "POMIN",
+    },
   ];
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "Min Register");
+  };
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -310,42 +289,79 @@ const MinRegister = () => {
                 </FormItem>
               )}
             />{" "}
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Space direction="vertical" size={12} className="w-full">
-                      <RangePicker
-                        className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                        onChange={(value) =>
-                          field.onChange(
-                            value ? value.map((date) => date!.toDate()) : []
-                          )
-                        }
-                        format={dateFormat}
+            {theWise == "POMIN" ? (
+              <FormField
+                control={form.control}
+                name="search"
+                render={() => (
+                  <FormItem>
+                    <FormLabel className="text-slate-600"></FormLabel>
+                    <FormControl>
+                      <ReusableAsyncSelect
+                        // placeholder="State"
+                        endpoint="/backend/searchPoByPoNo"
+                        transform={transformOptionData}
+                        fetchOptionWith="payload"
+                        onChange={(e: any) => form.setValue("search", e.value)}
                       />
-                    </Space>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Space direction="vertical" size={12} className="w-full">
+                        <RangePicker
+                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
+                          onChange={(value) =>
+                            field.onChange(
+                              value ? value.map((date) => date!.toDate()) : []
+                            )
+                          }
+                          format={"DD/MM/YYYY"}
+                        />
+                      </Space>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            <div className="flex gap-[10px] justify-end  px-[5px]">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>{" "}
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                // onClick={() => {}}
+                disabled={rowData.length === 0}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

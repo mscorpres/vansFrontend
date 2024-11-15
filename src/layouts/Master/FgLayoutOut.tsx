@@ -24,7 +24,7 @@ const FgLayoutOut = (props: { children: React.ReactNode }) => {
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }
             >
-              Compeleted FG Out
+              View FG Out
             </NavLink>
           </li>
         </ul>

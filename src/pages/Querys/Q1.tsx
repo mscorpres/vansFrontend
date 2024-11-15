@@ -1,57 +1,33 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+
+import {  useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Edit2, Filter } from "lucide-react";
+import {  Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
+import { transformOptionData } from "@/helper/transform";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   fetchListOfQ1,
   getComponentsByNameAndNo,
 } from "@/components/shared/Api/masterApi";
+import { exportDateRangespace } from "@/components/shared/Options";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -69,39 +45,51 @@ const Q1 = () => {
     label: string;
     value: string;
   } | null>(null);
-  const [asyncOptions, setAsyncOptions] = useState([]);
+  const [stockInfo, setStockInfo] = useState([]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
-  //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
 
-  const dateFormat = "YYYY/MM/DD";
 
   const fetchComponentList = async (e: any) => {
     console.log("here in api", e!.value);
     setSelectedCustomer(e);
 
-    const response = await execFun(() => getComponentsByNameAndNo(e), "fetch");
-    console.log("here in fetchComponentList", response);
+    const response = await execFun(() => getComponentsByNameAndNo(e), "fetch");;
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     console.log("formData", formData);
+    let { date } = formData;
+    let dataString = "";
+    if (date) {
+      dataString = exportDateRangespace(date);
+    }
     let payload = {
       data: selectedCustomer?.value,
       wise: "C",
-      range: formData.date,
+      range: dataString,
     };
     const response = await execFun(() => fetchListOfQ1(payload), "fetch");
     console.log("response", response);
     let { data } = response;
-    if (data == 200) {
+    if (data.code == 200) {
+      let arr = data.response.data2;
+      let a = arr.map((r: any, index: any) => {
+        return {
+          id: index + 1,
+          ...r,
+        };
+      });
+
+      setRowData(a);
+      setStockInfo(data.response.data1);
     } else {
-      //   addToast(data.message.msg, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-700 text-center text-white",
+      });
     }
   };
   useEffect(() => {
@@ -117,25 +105,49 @@ const Q1 = () => {
     },
     {
       headerName: "Date",
-      field: "bom_product_sku",
+      field: "date",
       filter: "agTextColumnFilter",
       width: 220,
     },
     {
-      headerName: "Tran Type",
-      field: "client_name",
+      headerName: "Transaction Type",
+      field: "transaction_type",
       filter: "agTextColumnFilter",
       width: 150,
     },
     {
       headerName: "Qty In",
-      field: "client_code",
+      field: "qty_in",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
       headerName: "Qty Out",
-      field: "client_code",
+      field: "qty_out",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Method",
+      field: "mode",
+      filter: "agTextColumnFilter",
+      width: 220,
+    },
+    {
+      headerName: "Doc Type",
+      field: "vendortype",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
+      headerName: "Vendorcode In",
+      field: "vendorcode",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "DonebBy",
+      field: "doneby",
       filter: "agTextColumnFilter",
       width: 190,
     },
@@ -154,7 +166,7 @@ const Q1 = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(fetchQueryResults)}
-            className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+            className="space-y-6 overflow-hidden p-[10px] h-[520px]"
           >
             <FormField
               control={form.control}
@@ -189,7 +201,7 @@ const Q1 = () => {
                             value ? value.map((date) => date!.toDate()) : []
                           )
                         }
-                        format={dateFormat}
+                        format={"DD/MM/YYYY"}
                       />
                     </Space>
                   </FormControl>
@@ -207,10 +219,36 @@ const Q1 = () => {
             >
               Search
             </Button>
+            <Divider />
+            {/* <div className="h-[calc(100vh-10px)] grid grid-cols-[350px_1fr] flex "> */}
+            {/* <div className="bg-[#fff] "> */}
+            {/* <div className="p-[10px]"> */}
+            {rowData.length > 0 && (
+              <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
+                <Card className="rounded-sm shadow-sm shadow-slate-500">
+                  <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
+                    <CardTitle className="font-[550] text-slate-600">
+                      Other Detail
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
+                    {/* //detais of client */}
+                    <h3 className="font-[500]">CL Qty</h3>
+                    <p className="text-[14px]">{stockInfo?.closingqty}</p>
+                    <h3 className="font-[500]">Last In (Date / Type): </h3>
+                    <p className="text-[14px]">{stockInfo?.lasttIN}</p>
+                    <h3 className="font-[500]">Last Rate: </h3>
+                    <p className="text-[14px]">{stockInfo?.lastRate}</p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </form>
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

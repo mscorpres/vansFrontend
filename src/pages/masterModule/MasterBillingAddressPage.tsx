@@ -1,7 +1,7 @@
 import CustomTooltip from "@/components/shared/CustomTooltip";
 import { Button } from "@/components/ui/button";
 import { columnDefs } from "@/config/agGrid/mastermodule/BillingAddressTable";
-import { Plus } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -23,13 +23,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createBillingAddress } from "@/features/billingAddress/billingAdressSlice";
 import { useDispatch } from "react-redux";
 import { useToast } from "@/components/ui/use-toast";
 import { AppDispatch } from "@/store";
-import ReusableTable from "@/components/shared/ReusableTable";
-import { transformBillingTable } from "@/helper/TableTransformation";
 import {
   InputStyle,
   LableStyle,
@@ -37,7 +35,14 @@ import {
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
 import GoBackConfermationModel from "@/components/GoBackConfermationModel";
-
+import { transformPlaceData } from "@/helper/transform";
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import { fetchBillingAddess } from "@/components/shared/Api/masterApi";
+import { AgGridReact } from "ag-grid-react";
+import useApi from "@/hooks/useApi";
+import { RowData } from "@/data";
 const schema = z.object({
   label: z.string().min(2, {
     message: "Label is required",
@@ -72,7 +77,11 @@ const MasterBillingAddressPage: React.FC = () => {
   const { toast } = useToast();
   const [open, setOpen] = useState<boolean>(false);
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
+  const [stateList, setStateList] = useState([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [rowData, setRowData] = useState<RowData[]>([]);
   const dispatch = useDispatch<AppDispatch>();
+  const { execFun, loading: loading1 } = useApi();
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -89,6 +98,7 @@ const MasterBillingAddressPage: React.FC = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
+    setLoading(true);
     try {
       const resultAction = await dispatch(
         createBillingAddress({
@@ -97,31 +107,75 @@ const MasterBillingAddressPage: React.FC = () => {
             label: values.label,
             company: values.company,
             pan: values.pan,
-            state: values.state,
+            state: values.state ?? values.state.value,
             gstin: values.gstin,
-            address: values.address,
-            addressLine1: values.addressLine1,
-            addressLine2: values.addressLine2,
+            address:
+              values.address +
+              " " +
+              values.addressLine1 +
+              " " +
+              values.addressLine2,
             cin: values.cin,
           },
         })
       ).unwrap();
 
-      if (resultAction.success) {
+      if (resultAction?.status == "success") {
         toast({
           title: "Billing Address created successfully",
           className: "bg-green-600 text-white items-center",
         });
+        setLoading(false);
+        form.reset({
+          label: "",
+          company: "",
+          pan: "",
+          state: "",
+          gstin: "",
+          address: "",
+          addressLine1: "",
+          addressLine2: "",
+          cin: "",
+        });
+        setSheetOpen(false);
       } else {
         toast({
           title: resultAction.message || "Failed to Create Product",
           className: "bg-red-600 text-white items-center",
         });
+        setLoading(false);
       }
     } catch (error) {
       console.error("An error occurred:", error);
     }
+    setLoading(false);
   };
+  const getList = async () => {
+    const response = await execFun(() => fetchBillingAddess(), "fetch");
+    console.log("response000", response);
+
+    let { data } = response;
+    if (data.code === 200) {
+      let arr = data.data.map((r: any, index: any) => {
+        return {
+          id: index + 1,
+          ...r,
+        };
+      });
+      setRowData(arr);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-700 text-center text-white",
+      });
+    }
+  };
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "Master Billing Address");
+  };
+  useEffect(() => {
+    getList();
+  }, []);
 
   return (
     <>
@@ -131,21 +185,48 @@ const MasterBillingAddressPage: React.FC = () => {
         goBack={setSheetOpen}
       />
       <div className="h-[calc(100vh-150px)]">
-        <div className="h-[50px] flex items-center justify-end px-[10px] bg-white">
+        <div className="h-[50px] flex items-center justify-end px-[10px] bg-white gap-[10px]">
+          {" "}
+          <CustomTooltip
+            message="Download Excel Report"
+            side="top"
+            className="bg-cyan-700"
+          >
+            <Button
+              className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
+              onClick={handleDownloadExcel}
+            >
+              <Download className="h-[20px] w-[20px]" />
+            </Button>
+          </CustomTooltip>
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger>
-              <CustomTooltip
-                message="Add Address"
-                side="top"
-                className="bg-yellow-700"
-              >
-                <Button
-                  onClick={() => setSheetOpen(true)}
-                  className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
+              <div className="flex gap-[10px]">
+                <CustomTooltip
+                  message="Add Address"
+                  side="top"
+                  className="bg-cyan-700"
                 >
-                  <Plus className="h-[20px] w-[20px]" />
-                </Button>
-              </CustomTooltip>
+                  <Button
+                    onClick={() => setSheetOpen(true)}
+                    className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
+                  >
+                    <Plus className="h-[20px] w-[20px]" />
+                  </Button>
+                </CustomTooltip>{" "}
+                {/* <Button
+                  // type="submit"
+                  className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                  // onClick={() => {}}
+                  onClick={(e: any) => {
+                    e.preventDefault();
+                    handleDownloadExcel();
+                  }}
+                  // disabled={rowData.length == 0}
+                >
+                  <IoMdDownload size={20} />
+                </Button> */}
+              </div>
             </SheetTrigger>
             <SheetContent
               className="min-w-[50%] p-0"
@@ -159,6 +240,7 @@ const MasterBillingAddressPage: React.FC = () => {
                 </SheetTitle>
               </SheetHeader>
               <div>
+                {loading === true && <FullPageLoading />}
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -271,10 +353,14 @@ const MasterBillingAddressPage: React.FC = () => {
                                 State
                               </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Enter State"
-                                  {...field}
+                                <ReusableAsyncSelect
+                                  placeholder="State"
+                                  endpoint="/others/states"
+                                  transform={transformPlaceData}
+                                  fetchOptionWith="query"
+                                  onChange={(e: any) =>
+                                    form.setValue("state", e.value)
+                                  }
                                 />
                               </FormControl>
                               <FormMessage />
@@ -363,14 +449,18 @@ const MasterBillingAddressPage: React.FC = () => {
               </div>
             </SheetContent>
           </Sheet>
-        </div>
-        <div className="ag-theme-quartz h-[calc(100vh-300px)]">
-          <ReusableTable
-            heigth="h-[calc(100vh-150px)]"
-            endpoint="/billingAddress/getAll"
-            columns={columnDefs}
-            transform={transformBillingTable}
-            method="get"
+        </div>{" "}
+        <div className="ag-theme-quartz h-[calc(100vh-150px)]">
+          {" "}
+          {loading1("fetch") && <FullPageLoading />}
+          <AgGridReact
+            //   loadingCellRenderer={loadingCellRenderer}
+            rowData={rowData}
+            columnDefs={columnDefs}
+            defaultColDef={{ filter: true, sortable: true }}
+            pagination={true}
+            paginationPageSize={10}
+            paginationAutoPageSize={true}
           />
         </div>
       </div>

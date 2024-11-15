@@ -1,8 +1,6 @@
 // src/utils/transform.ts
 
 export const transformCustomerData = (data: any[]) => {
-  console.log("data", data);
-
   return data?.map((item) => ({
     label: item.name,
     value: item.code,
@@ -10,16 +8,42 @@ export const transformCustomerData = (data: any[]) => {
 };
 
 export const transformOptionData = (data: any[]) => {
-  console.log("data", data);
-  if (data.length) {
+  // console.log("data", data);
+  if (data?.length) {
     return data?.map((item) => ({
       label: item.text,
       value: item.id,
     }));
   }
 };
+export const transformOptionDataphy = (data: any[]) => {
+  // console.log("data", data);
+  if (data?.length) {
+    return data?.map((item) => ({
+      label: item.part_no,
+      value: item.part_no,
+    }));
+  }
+};
+export const transformOptionBomData = (data: any[]) => {
+  // console.log("data", data);
+  if (data?.length) {
+    return data?.map((item) => ({
+      label: item.bomname,
+      value: item.bomid,
+    }));
+  }
+};
+export const transformCurrencyData = (data: any[]) => {
+  // console.log("data", data);
+  if (data?.length) {
+    return data?.map((item) => ({
+      label: item.currency_symbol,
+      value: item.currency_id,
+    }));
+  }
+};
 export const transformPlaceData = (data: any[]) => {
-  console.log("data", data);
   return data?.map((item) => ({
     label: item.name,
     value: item.code.toString(),
@@ -27,9 +51,30 @@ export const transformPlaceData = (data: any[]) => {
 };
 
 export const transformClientTds = (data: any[]) => {
-  console.log("data", data);
   return data?.map((item) => ({
     label: item.tds_name,
     value: item.tds_key,
   }));
+};
+
+export const transformStateOptions = (data: any[]) => {
+  return data?.map((item) => ({
+    label: item.name,  // Changed from 'stateName' to 'name'
+    value: item.code,  // Changed from 'stateCode' to 'code'
+  }));
+};
+
+export const transformOptions = (
+  data: any[]
+): { label: string; value: string }[] => {
+  // Ensure the function always returns an array
+  if (data?.length) {
+    return data.map((item) => ({
+      label: item.text,
+      value: item.id,
+    }));
+  }
+
+  // Return an empty array if data is empty or undefined
+  return [];
 };

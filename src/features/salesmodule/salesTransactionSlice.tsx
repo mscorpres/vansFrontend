@@ -48,21 +48,34 @@ interface FetchTransactionPayload {
 export const fetchInvoiceList = createAsyncThunk<
 ApiResponse<eInvoice[]>,
 FetchTransactionPayload
->("so_challan_shipment/getEinvoiceList", async (payload) => {
-  const response = await spigenAxios.post("so_challan_shipment/getEinvoiceList", payload);
+>("salesInvoice/getEinvoiceList", async (payload) => {
+  const response = await spigenAxios.post("salesInvoice/fetchEnvoiceDetail", payload);
   return response.data;
 });
 
 export const fetchEwayList = createAsyncThunk<
   ApiResponse<any>,
   FetchTransactionPayload
->("so_challan_shipment/getEwayBillList", async (payload) => {
-  const response = await spigenAxios.post("so_challan_shipment/getEwayBillList", payload);
+>("salesInvoice/getEwayBillList", async (payload) => {
+  const response = await spigenAxios.post("salesInvoice/fetchEwayBillDetail", payload);
   return response.data;
 });
 
+export const cancelEInvoice = createAsyncThunk<
+ApiResponse<eInvoice[]>,
+FetchTransactionPayload
+>("salesInvoice/cancelEinvoice", async (payload) => {
+  const response = await spigenAxios.post("salesInvoice/cancelEinvoice", payload);
+  return response.data;
+});
 
-
+export const cancelEwayBill = createAsyncThunk<
+ApiResponse<eInvoice[]>,
+FetchTransactionPayload
+>("salesInvoice/cancelEwayBill", async (payload) => {
+  const response = await spigenAxios.post("salesInvoice/cancelEwaybill", payload);
+  return response.data;
+});
 
 const eTranactionRegisterSlice = createSlice({
   name: "transaction",
@@ -89,7 +102,26 @@ const eTranactionRegisterSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch transcation list";
       })
-
+      .addCase(cancelEwayBill.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(cancelEwayBill.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(cancelEwayBill.rejected, (state, action) => {
+        state.error = action.error?.message || null;
+        state.loading = false;
+      })
+      .addCase(cancelEInvoice.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(cancelEInvoice.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(cancelEInvoice.rejected, (state, action) => {
+        state.error = action.error?.message || null;
+        state.loading = false;
+      })
 
 
   },

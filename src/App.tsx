@@ -6,7 +6,6 @@ import AuthLayout from "./layouts/AuthLayout";
 import POLayout from "./layouts/POLayout";
 import SOLayout from "./layouts/SOLayout";
 import HomePage from "./pages/HomePage";
-import CreatePoPage from "./pages/ProcurementModule/CreatePoPage";
 import CompletedPOPage from "./pages/CompletedPOPage";
 import ApprovePOPage from "./pages/ApprovePOPage";
 import ManagePoPage from "./pages/ProcurementModule/ManagePO/ManagePoPage";
@@ -22,9 +21,7 @@ import SalesShipmentPage from "./pages/salesModule/SalesShipmentPage";
 import SalesInvoicePage from "./pages/salesModule/SalesInvoicePage";
 import AllocatedInvoicesPage from "./pages/salesModule/AllocatedInvoicesPage";
 import SalesETransactionRegisterPage from "./pages/salesModule/SalesETransactionRegisterPage";
-import MasterProductLayout from "./layouts/MasterProductLayout";
-import MasterProductFgPage from "./pages/masterModule/MasterProductFgPage";
-import MasterProductSfgPage from "./pages/masterModule/MasterProductSfgPage";
+//
 import MasterAddressLayout from "./layouts/MasterAddressLayout";
 import MasterBillingAddressPage from "./pages/masterModule/MasterBillingAddressPage";
 import MasterShippingAddressPage from "./pages/masterModule/MasterShippingAddressPage";
@@ -66,6 +63,41 @@ import R3 from "./pages/ReportsModule/R3";
 import R6 from "./pages/ReportsModule/R6";
 import ClientLayout from "./layouts/Master/ClientLayout";
 import Hsn from "./pages/masterModule/HSN/Hsn";
+import EditBom from "./pages/masterModule/Bom/EditBom";
+import CreateEwayBill from "@/config/agGrid/invoiceModule/CreateEwayBill";
+import MrApproval from "./layouts/MrApProval";
+import PendingMr from "./pages/WarehouseModule/PendingMr/PendingMr";
+import TransferBox from "./pages/WarehouseModule/PendingMr/TransferBox";
+import PickSlipLayout from "./layouts/PickSlipLayout";
+import PickSlip from "./pages/WarehouseModule/PickSlip/PickSlip";
+import InwardLayout from "./layouts/InwardLayout";
+// import Inwards from "./pages/WarehouseModule/Inwards";
+import ItemQr from "./pages/WarehouseModule/ItemQr";
+import PrintMinLabel from "./pages/WarehouseModule/PrintMinLabel";
+import BoxMarkup from "./pages/WarehouseModule/BoxMarkup";
+// import BatchAlloaction from "./pages/WarehouseModule/BatchAlloaction";
+import InternetStatusBar from "@/InternetStatusBar";
+import { useEffect, useState } from "react";
+import InwardTemplate from "./pages/WarehouseModule/Inward/InwardTemplate";
+// import ChildMarkup from "./pages/WarehouseModule/ChildMarkup";
+import PrintPickSlip from "./pages/WarehouseModule/PrintPickSlip";
+import ViewMin from "./pages/WarehouseModule/ViewMin";
+import PrintCustomerLabel from "./pages/WarehouseModule/PrintCustomerLabel";
+import PrintLayout from "./layouts/PrintLayout";
+// import BomLayout from "./layouts/Master/BomLayout";
+import ViewFgOut from "./pages/FGOut/ViewFgOut";
+import CustomerComponent from "./pages/masterModule/ComponentMap/CustomerComponent";
+import ComponentMapLayout from "./layouts/Master/ComponentMapLayout";
+import CreatePhyStock from "./layouts/CreatePhyStock";
+import CreatePhysicalStock from "./pages/PhysicalStock/CreatePhysicalStock";
+import PendingStock from "./pages/PhysicalStock/PendingStock";
+import RejectedStock from "./pages/PhysicalStock/RejectedStock";
+import ViewPhysicalStock from "./pages/PhysicalStock/ViewPhysicalStock";
+import BomLayout from "./layouts/Master/BomLayout";
+import CreatingBoxRecipe from "./pages/masterModule/Bom/CreatingBoxRecipe";
+import VendorPriceLayout from "./layouts/Master/VendorPriceLayout";
+import VendorPrice from "./pages/masterModule/VendorPrice/VendorPrice";
+import ApproveList from "./pages/masterModule/VendorPrice/ApproveList";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -127,13 +159,25 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          {/* <ComponentsLayout> */}
-          <ComponentMap />
-          {/* </ComponentsLayout> */}
+          <ComponentMapLayout>
+            <CustomerComponent />
+          </ComponentMapLayout>
         </MainLayout>
       </Protected>
     ),
-    path: "/master/componentMap/map",
+    path: "/master/componentMap/customer",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <ComponentMapLayout>
+            <ComponentMap />
+          </ComponentMapLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/componentMap/vendor",
   },
   {
     element: (
@@ -185,13 +229,37 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          {/* <ComponentsLayout> */}
-          <CreateBom />
-          {/* </ComponentsLayout> */}
+          <BomLayout>
+            <CreateBom />
+          </BomLayout>
         </MainLayout>
       </Protected>
     ),
     path: "/master/bom",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <BomLayout>
+            <CreatingBoxRecipe />
+          </BomLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/bomcreate",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          {/* <BomLayout> */}
+          <EditBom />
+          {/* </BomLayout> */}
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/bom/edit/:id",
   },
   {
     element: (
@@ -219,6 +287,30 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/create-po",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <POLayout>
+            <PoCreateTemplate />
+          </POLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/create-po/edit/:id",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <POLayout>
+            <PoCreateTemplate />
+          </POLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/create-po/approve/:id",
   },
 
   {
@@ -286,9 +378,9 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <FgOutCreate>
-            <PendingFg />
-          </FgOutCreate>
+          <FgLayoutOut>
+            <FgOutCreate />
+          </FgLayoutOut>
         </MainLayout>
       </Protected>
     ),
@@ -299,7 +391,7 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <FgLayoutOut>
-            <CompeletedFg />
+            <ViewFgOut />
           </FgLayoutOut>
         </MainLayout>
       </Protected>
@@ -481,7 +573,18 @@ const router = createBrowserRouter([
     ),
     path: "/sales/order/create",
   },
-
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <SOLayout>
+            <CreateSalesOrderPage />
+          </SOLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/sales/order/update/:id",
+  },
   {
     element: (
       <Protected authentication>
@@ -504,7 +607,7 @@ const router = createBrowserRouter([
         </MainLayout>
       </Protected>
     ),
-    path: "/sales/order/shipments",
+    path: "/sales/order/shipment",
   },
   {
     element: (
@@ -517,6 +620,22 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/sales/order/invoice",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <CreateEwayBill />
+      </Protected>
+    ),
+    path: "/salesOrder/e-way/:id",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <CreateEwayBill />
+      </Protected>
+    ),
+    path: "/salesOrder/e-inv/:id",
   },
   {
     element: (
@@ -568,6 +687,240 @@ const router = createBrowserRouter([
   //   ),
   //   path: "/master/product/sfg",
   // },
+  //wareHouse
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <MrApproval>
+            <PendingMr />
+            {/* <SalesETransactionRegisterPage /> */}
+          </MrApproval>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/mrApproval",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <MrApproval>
+            <NotPermissionPage />
+            {/* <SalesETransactionRegisterPage /> */}
+          </MrApproval>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/mrApprovalstatus",
+  },
+
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <MrApproval>
+            <PendingMr />
+            {/* <SalesETransactionRegisterPage /> */}
+          </MrApproval>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/status",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <TransferBox />
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/transfer",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <PickSlipLayout>
+            <PickSlip />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </PickSlipLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/pickSlip",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <InwardTemplate />
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/inward",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <BoxMarkup />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/boxMarkup",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <NotPermissionPage />
+            {/* <ChildMarkup /> */}
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/childMarkup",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <NotPermissionPage />
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/batchAllocation",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <ItemQr />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/PickSlip",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <PrintLayout>
+            <PrintPickSlip />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </PrintLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/PickSlip/print",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <PrintLayout>
+            <PrintMinLabel />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </PrintLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/min/print",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <NotPermissionPage />
+            {/* <ItemQr /> */}
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/itemQr",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <PrintLayout>
+            <PrintCustomerLabel />
+            {/* <ItemQr /> */}
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </PrintLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/printCustomerLabel",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <ViewMin />
+            {/* <ItemQr /> */}
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/viewMin",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <NotPermissionPage />
+            {/* <ItemQr /> */}
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/pickSlip/qr",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <InwardLayout>
+            <PrintMinLabel />
+            {/* <PendingMr /> */}
+            {/* <SalesETransactionRegisterPage /> */}
+          </InwardLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/warehouse/inward",
+  },
   {
     element: (
       <Protected authentication>
@@ -596,7 +949,10 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <MasterCustomerPage />
+          {" "}
+          <ClientLayout>
+            <MasterCustomerPage />
+          </ClientLayout>
         </MainLayout>
       </Protected>
     ),
@@ -607,30 +963,104 @@ const router = createBrowserRouter([
       <Protected authentication>
         <MainLayout>
           <ClientLayout>
-            <AddClient />{" "}
+            <AddClient />
           </ClientLayout>
         </MainLayout>
       </Protected>
     ),
     path: "/master/client/add",
   },
+  // {
+  //   element: (
+  //     <Protected authentication>
+  //       <MainLayout>
+  //         <ClientLayout>
+  //           <MasterCustomerPage />
+  //         </ClientLayout>
+  //       </MainLayout>
+  //     </Protected>
+  //   ),
+  //   path: "/master/client/view",
+  // },
   {
     element: (
       <Protected authentication>
         <MainLayout>
-          <ClientLayout>
-            <MasterCustomerPage />
-          </ClientLayout>
+          <VendorPriceLayout>
+            <VendorPrice />
+          </VendorPriceLayout>
         </MainLayout>
       </Protected>
     ),
-    path: "/master/client/view",
+    path: "/master/vendorPrice",
   },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <VendorPriceLayout>
+            <ApproveList />
+          </VendorPriceLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/vendorPriceList",
+  },
+  ////Physical Stock///////////////
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <CreatePhysicalStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/physicalStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <PendingStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/pendingStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <RejectedStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/rejectedStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CreatePhyStock>
+            <ViewPhysicalStock />
+          </CreatePhyStock>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/viewphysicalStock",
+  },
+
   {
     element: (
       <Protected authentication={false}>
         <MainLayout>
-          <NotPermissionPage />
+          <BlockedPageRenderPage />
         </MainLayout>
       </Protected>
     ),
@@ -658,10 +1088,42 @@ const router = createBrowserRouter([
 // Define the unauthenticated routes
 
 function App() {
+  const [isOffline, setIsOffline] = useState<boolean>(false);
+  useEffect(() => {
+    const handleOffline = () => {
+      setIsOffline(true); // User is offline, apply blur effect
+    };
+
+    const handleOnline = () => {
+      setIsOffline(false); // User is online, remove blur effect
+    };
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    // Check initial connection status
+    if (!navigator.onLine) {
+      setIsOffline(true); // If the user is offline when the app loads
+    }
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
   return (
     <>
+      <InternetStatusBar />
       <Toaster />
-      <RouterProvider router={router} />
+      <div
+        className={` ${
+          isOffline ? "filter blur-sm grayscale pointer-events-none" : ""
+        }`}
+      >
+        {/* Router for different pages */}
+        <RouterProvider router={router} />
+      </div>
     </>
   );
 }

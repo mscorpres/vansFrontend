@@ -103,7 +103,7 @@ const authSlice = createSlice({
           showLegal: data?.department === "legal",
           session: "24-25",
         };
-        console.log("userObj", userObj);
+        console.log("userObj", userObj,JSON.stringify(userObj));
 
         localStorage.setItem("loggedInUser", JSON.stringify(userObj));
 

@@ -1,11 +1,9 @@
-import { FaArrowRightLong } from "react-icons/fa6";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Select from "react-select";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { Badge } from "@/components/ui/badge";
 import styled from "styled-components";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,13 +16,7 @@ import {
   fetchProjectDescription,
   fetchStates,
 } from "@/features/salesmodule/createSalesOrderSlice";
-// import { fetchBillingAddressList } from "../../features/salesmodule/createSalesOrderSlice";
-import {
-  transformCustomerData,
-  transformOptionData,
-  transformPlaceData,
-} from "@/helper/transform";
-import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
@@ -45,13 +37,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema";
 import {
   addClient,
   fetchCountryList,
   fetchState,
 } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
+import { toast } from "@/components/ui/use-toast";
 
 interface OptionType {
   value: string;
@@ -62,19 +54,56 @@ interface Props {
   setPayloadData: Dispatch<SetStateAction<any>>;
 }
 const FormSchema = z.object({
-  name: z.string().optional(),
-  salesPerson: z.string().optional(),
-  address: z.string().optional(),
-  mobile: z.string().optional(),
-  phone: z.string().optional(),
-  gst: z.string().optional(),
-  city: z.string().optional(),
-  zip: z.string().optional(),
-  email: z.string().optional(),
-  website: z.string().optional(),
-  country: z.string().optional(),
-  state: z.string().optional(),
-  pan: z.string().optional(),
+  name: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Name is required.",
+  }),
+  salesPerson: z
+    .string()
+    .refine((data) => data !== undefined && data.length > 0, {
+      message: "Salesperson is required.",
+    }),
+  address: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Address is required.",
+  }),
+  mobile: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Mobile number is required.",
+  }),
+  phone: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Phone number is required.",
+  }),
+  gst: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "GST number is required.",
+  }),
+  city: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "City is required.",
+  }),
+  zip: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Zip code is required.",
+  }),
+  email: z
+    .string()
+    .email({ message: "Please enter a valid email" })
+    .refine((data) => data !== undefined && data.length > 0, {
+      message: "Email is required.",
+    }),
+  website: z
+    .string()
+    .url({ message: "Please enter a valid website URL" })
+    .refine((data) => data !== undefined && data.length > 0, {
+      message: "Website is required.",
+    }),
+  country: z
+    .union([z.string(), z.number()])
+    .refine((data) => data !== undefined && data !== "", {
+      message: "Country is required.",
+    })
+    .transform((val) => String(val)),
+  state: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "State is required.",
+  }),
+  pan: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "PAN number is required.",
+  }),
 });
 const AddClient: React.FC<Props> = ({
   setTabvalue,
@@ -188,7 +217,7 @@ const AddClient: React.FC<Props> = ({
     // return;
     let { data } = response;
     if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.name,
           value: r.code,
@@ -217,6 +246,30 @@ const AddClient: React.FC<Props> = ({
     };
     const response = await execFun(() => addClient(payload), "fetch");
     console.log("response", response);
+    if (response?.data?.code == 200) {
+      toast({
+        title: response?.data?.message?.msg,
+        className: "bg-green-600 text-white items-center",
+      });
+      form.setValue("name", "");
+      form.setValue("gst", "");
+      form.setValue("salesPerson", "");
+      form.setValue("address", "");
+      form.setValue("country", "");
+      form.setValue("state", "");
+      form.setValue("city", "");
+      form.setValue("zip", "");
+      form.setValue("phone", "");
+      form.setValue("mobile", "");
+      form.setValue("email", "");
+      form.setValue("pan", "");
+      form.setValue("website", "");
+    } else {
+      toast({
+        title: response?.message,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
   };
   useEffect(() => {
     getCountryList();
@@ -228,6 +281,7 @@ const AddClient: React.FC<Props> = ({
       {data.loading && <FullPageLoading />}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
+          {loading1("1") && <FullPageLoading />}
           <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
             <div className="grid grid-cols-1 gap-[30px]">
               <Card className="rounded shadow bg-[#fff]">
@@ -236,7 +290,7 @@ const AddClient: React.FC<Props> = ({
                     Client Details
                   </h3>
                   <p className="text-slate-600 text-[13px]">
-                    Type Name or Code of the Client
+                    {/* Type Name or Code of the Client */}
                   </p>
                 </CardHeader>
                 <CardContent className="mt-[30px]">
@@ -361,7 +415,7 @@ const AddClient: React.FC<Props> = ({
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
-                                placeholder="Branch"
+                                placeholder="Country"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}
@@ -369,17 +423,8 @@ const AddClient: React.FC<Props> = ({
                                 isSearchable={true}
                                 options={countryList}
                                 onChange={(value: any) =>
-                                  form.setValue("country", value)
+                                  form.setValue("country", value.value)
                                 }
-                                // onChange={(e) => console.log(e)}
-                                // value={
-                                //   data.clientDetails
-                                //     ? {
-                                //         label: data.clientDetails.city.name,
-                                //         value: data.clientDetails.city.name,
-                                //       }
-                                //     : null
-                                // }
                               />
                             </FormControl>
                             <FormMessage />

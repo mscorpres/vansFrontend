@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect, useState } from "react";
 
 import { AgGridReact } from "ag-grid-react";
@@ -19,25 +18,23 @@ import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 
 import { toast } from "@/components/ui/use-toast";
 import { Filter } from "lucide-react";
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import { RowData } from "@/data";
 const ComponentMap = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [asyncOptions, setAsyncOptions] = useState([]);
-  const [selectedCustomer, setSelectedCustomer] = useState([]);
 
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const fetchComponentMap = async () => {
     const response = await execFun(() => componentMapList(), "fetch");
-    console.log("response", response);
     if (response.status === 200) {
-      let arr = response.data.data.map((r, index) => {
+      let arr = response.data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
           ...r,
         };
       });
       setRowData(arr);
-      console.log("arr", arr);
     }
   };
   const createEntry = async () => {
@@ -51,17 +48,25 @@ const ComponentMap = () => {
     };
     // return;
     const response = await execFun(() => saveComponentMap(payload), "fetch");
-    if (response.status == "success") {
+
+    let { data } = response;
+    if (response.data.code == 200) {
       toast({
-        title: response.message,
+        title: data.message,
         className: "bg-green-600 text-white items-center",
       });
       fetchComponentMap();
+      form.resetFields({
+        partName: "",
+        vendorName: "",
+        vendorPartName: "",
+      });
+    } else {
+      toast({
+        title: data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
     }
-    toast({
-      title: response.message.msg || "Failed to Create Product",
-      className: "bg-red-600 text-white items-center",
-    });
   };
   useEffect(() => {
     fetchComponentMap();
@@ -100,7 +105,7 @@ const ComponentMap = () => {
 
             <Form.Item name="vendorName" label="Vendor Name">
               <ReusableAsyncSelect
-                placeholder="Part Name"
+                placeholder="Vendor Name"
                 endpoint="/backend/vendorList"
                 transform={transformOptionData}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
@@ -129,7 +134,9 @@ const ComponentMap = () => {
           {/* </form> */}
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz">
+        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
@@ -179,7 +186,7 @@ const columnDefs: ColDef<rowData>[] = [
   },
   {
     headerName: "Vendor Part Name",
-    field: "vendor_part_no",
+    field: "vendor_comp",
     filter: "agTextColumnFilter",
     width: 250,
   },

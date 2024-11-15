@@ -19,7 +19,7 @@ const ComponentsLayout = (props: { children: React.ReactNode }) => {
           </li>
           <li className="h-[50px]">
             <NavLink
-              to={"/master/client/view"}
+              to={"/master/customer"}
               className={({ isActive }) =>
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }

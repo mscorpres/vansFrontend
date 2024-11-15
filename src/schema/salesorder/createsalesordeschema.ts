@@ -1,48 +1,68 @@
 import { z } from "zod";
 
 // Define schema for "headers" with custom error messages
+
+const billFrom = z.object({
+  address1: z.string({ required_error: "Address Line 1 is required" }),
+  address2: z.string().optional(),
+  billFromId: z.string({ required_error: "BillFromId is required" }),
+  gstin: z.string({ required_error: "GST is required" }),
+  pan: z.string({ required_error: "PAN is required" }),
+  state: z.string().optional(),
+});
+
+const billTo = z.object({
+  address1: z.string({ required_error: "Address Line 1 is required" }),
+  address2: z.string({ required_error: "Address Line 2 is required" }),
+  branch: z.string({ required_error: "Branch is required" }),
+  gst: z.string({ required_error: "GST is required" }),
+  pincode: z.string({ required_error: "PIN Code is required" }),
+  state: z.string({ required_error: "State is required" }),
+});
+
+const shipTo = z.object({
+  address1: z.string({ required_error: "Address Line 1 is required" }),
+  address2: z.string({ required_error: "Address Line 2 is required" }),
+  company: z.string({ required_error: "Company is required" }),
+  gst: z.string({ required_error: "GST is required" }),
+  panno: z.string({ required_error: "PAN Number is required" }),
+  pincode: z.string({ required_error: "PIN Code is required" }),
+  state: z.string({ required_error: "State is required" }),
+});
+
+const currencySchema = z.object({
+  currency: z.string({ required_error: "Currency is required" }),
+  exchange_rate: z.string({ required_error: "Exchange Rate is required" }),
+});
+
 const createSalesFormSchema = z.object({
-  channels: z.string().optional(),
-  customer: z.string().optional(),
-  project: z.string().optional(),
-  cost_center: z.string().optional(),
-  delivery_term: z.string().optional(),
-  payment_term: z.string().optional(),
-  comment: z.string().optional(),
-  customer_branch: z.string().optional(),
-  customer_address: z.string().optional(),
-  bill_id: z.string().optional(),
-  billing_address: z.string().optional(),
-  shipping_id: z.string().optional(),
-  shipping_address: z.string().optional(),
-  shipping_state: z.string().optional(),
-  due_day: z.string().optional(),
-  terms_condition: z.string().optional(),
-  quotation_detail: z.string().optional(),
-  shipping_pinCode: z.string().optional(),
-  shipping_name: z.string().optional(),
-  shipping_pan: z.string().optional(),
-  shipping_gstin_uin: z.string().optional(),
-  dispatch_pincode: z.string().optional(),
-  pan: z.string().optional(),
-  dispatch_gstin_uin: z.string().optional(),
-  dispatch_address: z.string().optional(),
-  bill_from_address: z.string().optional(),
-  project_id: z.string().optional(),
-  project_description: z.string().optional(),
-  client_gst: z.string().optional(),
-  company:z.string().optional(),
-  gstin:z.string().optional(),
-  address:z.string().optional(),
-  statecode:z.string().optional(),
-
-
-
+  billFrom: billFrom,
+  billTo: billTo,
+  shipTo: shipTo,
+  customer_type: z.string({ required_error: "Customer Type is required" }),
+  customer_code: z.string({ required_error: "Customer Code is required" }),
+  customer_name: z.string().optional(),
+  costcenter_name: z.string().optional(),
+  billIdName: z.string().optional(),
+  po_number: z.string({ required_error: "PO Number is required" }),
+  po_date: z.string({ required_error: "PO Date is required" }),
+  due_date: z.string({ required_error: "PO Date is required" }),
+  reference_no: z.string({ required_error: "Reference Number is required" }),
+  ref_date:z.string({required_error:"Reference Date is mandatory"}),
+  currency: currencySchema,
+  costcenter: z.string({ required_error: "Cost Center is required" }),
+  project_name: z.string().optional(),
+  paymentterms: z.string().optional(),
+  quotationdetail: z.string().optional(),
+  so_comment: z.string().optional(),
+  termscondition: z.string().optional(),
 });
 
 // Define schema for "materials" with custom error messages
 const materialsSchema = z.object({
-  so_type: z.array(z.string()).min(1, { message: "At least one SO Type is required" }),
+  so_type: z
+    .array(z.string())
+    .min(1, { message: "At least one SO Type is required" }),
   items: z.array(z.string()).optional().nullable(),
   qty: z.array(z.number()).optional().nullable(),
   hsn: z.array(z.string()).optional().nullable(),

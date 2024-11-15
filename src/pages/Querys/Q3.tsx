@@ -1,62 +1,31 @@
 import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
-import { FaCircle } from "react-icons/fa";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Badge, Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
 import {
-  transformCustomerData,
   transformOptionData,
-  transformPlaceData,
 } from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
-  fetchListOfQ1,
-  fetchListOfQ2,
   fetchListOfQ3,
-  getComponentsByNameAndNo,
-  getProductByNameAndNo,
   getProductsByNameAndNo,
 } from "@/components/shared/Api/masterApi";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -107,9 +76,13 @@ const Q3 = () => {
 
       setRowData(arr);
     } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-700 text-center text-white",
+        autoDismiss: true,
+      });
       //   addToast(data.message.msg, {
       //     appearance: "error",
-      //     autoDismiss: true,
       //   });
     }
   };
@@ -120,7 +93,7 @@ const Q3 = () => {
   const columnDefs: ColDef<rowData>[] = [
     {
       headerName: "ID",
-      field: "id",
+      field: "serial_no",
       filter: "agNumberColumnFilter",
       width: 90,
     },
@@ -131,10 +104,10 @@ const Q3 = () => {
       width: 220,
     },
     {
-      headerName: "Tran Type",
+      headerName: "Transaction Type",
       field: "transaction_type",
       filter: "agTextColumnFilter",
-      width: 120,
+      width: 190,
     },
     {
       headerName: "Qty",
@@ -203,6 +176,7 @@ const Q3 = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

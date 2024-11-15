@@ -1,12 +1,14 @@
 export interface RowData {
   type?: string;
   material?: string;
+  lcValue?: number;
   asinNumber?: string;
   orderQty?: number;
   rate?: number;
   currency?: string;
   gstRate?: number;
   gstType?: string;
+  fcValue?: number;
   localValue?: number;
   foreignValue?: number;
   cgst?: number;
@@ -15,30 +17,26 @@ export interface RowData {
   dueDate?: string;
   hsnCode?: string;
   isNew?: boolean;
+  remark?: string;
+  exchangeRate?: number;
+  updateid?: string;
 }
 
+
 export const columnDefs = [
-  { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
+  { headerName: "", valueGetter: "node.rowIndex + 1",cellRenderer: "textInputCellRenderer",maxWidth: 100,field:"delete" },
+ 
   {
-    headerName: "Type",
-    field: "type",
-    cellEditor: "selectEditor",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
-  {
-    headerName: "Material",
+    headerName: "Component / Part",
     field: "material",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
+    minWidth: 500,
   },
   {
-    headerName: "ASIN Number",
-    field: "asinNumber",
+    headerName: "Customer PART Name",
+    field: "partno",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",
@@ -53,6 +51,14 @@ export const columnDefs = [
     minWidth: 200,
   },
   {
+    headerName: "Current Stock",
+    field: "stock",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
     headerName: "Rate",
     field: "rate",
     editable: false,
@@ -61,12 +67,20 @@ export const columnDefs = [
     minWidth: 200,
   },
   {
-    headerName: "Currency",
-    field: "currency",
+    headerName: "LC Value",
+    field: "localValue",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",
-    minWidth: 250,
+    minWidth: 200,
+  },
+  {
+    headerName: "FC Value",
+    field: "foreignValue",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
   },
   {
     headerName: "GST Rate",
@@ -79,22 +93,6 @@ export const columnDefs = [
   {
     headerName: "GST Type",
     field: "gstType",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
-  {
-    headerName: "Local Value",
-    field: "localValue",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
-  {
-    headerName: "Foreign Value",
-    field: "foreignValue",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",
@@ -124,14 +122,7 @@ export const columnDefs = [
     cellRenderer: "textInputCellRenderer",
     minWidth: 200,
   },
-  {
-    headerName: "Due Date",
-    field: "dueDate",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
+ 
   {
     headerName: "HSN Code",
     field: "hsnCode",
@@ -141,11 +132,11 @@ export const columnDefs = [
     minWidth: 200,
   },
   {
-    headerName: "HSN Code",
-    field: "hsnCodeselect",
+    headerName: "Item Desc",
+    field: "remark",
     editable: false,
     flex: 1,
-    cellRenderer: "selectEditor",
+    cellRenderer: "textInputCellRenderer",
     minWidth: 200,
   },
 ];

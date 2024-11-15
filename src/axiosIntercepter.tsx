@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { toast } from "react-toastify";
-
+import { toast as toasts } from "@/components/ui/use-toast";
 const socketLink: string = import.meta.env.VITE_REACT_APP_SOCKET_BASE_URL;
 const imsLink: string = import.meta.env.VITE_REACT_APP_API_BASE_URL;
 
@@ -14,6 +14,7 @@ interface ErrorResponse {
   data?: {
     logout?: boolean;
   };
+  status?: string;
 }
 
 interface OtherData {
@@ -36,6 +37,16 @@ const spigenAxios = axios.create({
   },
 });
 
+spigenAxios.interceptors.request.use(async (config) => {
+  const loggedInUser: LoggedInUser | null = JSON.parse(
+    localStorage.getItem("loggedInUser") as string
+  );
+  if (loggedInUser) {
+    config.headers["x-csrf-token"] = loggedInUser.token;
+  }
+  return config;
+});
+
 spigenAxios.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.data?.success !== undefined) {
@@ -46,7 +57,8 @@ spigenAxios.interceptors.response.use(
   (error: AxiosError<ErrorResponse>) => {
     if (error.response && typeof error.response.data === "object") {
       const errorData = error.response.data;
-
+      toast.error(errorData?.message.msg || errorData.errors);
+      console.log(errorData);
       if (errorData?.data?.logout) {
         toast.error(errorData.message || "Logout error.");
         localStorage.clear();
@@ -54,8 +66,12 @@ spigenAxios.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      if (errorData.success !== undefined) {
-        toast.error(errorData.message || "Error occurred.");
+      if (errorData.success === false || errorData?.status == "error") {
+        toasts({
+          title: errorData?.message,
+          className: "bg-red-600 text-white items-center",
+        });
+        toast.error(errorData?.message || "Error occurred.");
         return Promise.reject(errorData);
       }
 

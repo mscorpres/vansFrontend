@@ -1,18 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Props } from "@/types/MainLayout";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { FaUserEdit } from "react-icons/fa";
+// import { FaUserEdit } from "react-icons/fa";
 import { PiPasswordFill } from "react-icons/pi";
-// import SetPassword from "@/components/ui/SetPassword";
+import SetPassword from "@/components/shared/SetPassword";
 
 const ProfileSidebar: React.FC<Props> = ({ uiState }) => {
   const { sidebaref, setSheet2Open, sheet2Open, setLogotAlert } = uiState;
   const userData = localStorage.getItem("loggedInUser");
-  // const[changePassword,setChangePassword]=useState(false)
+  const[changePassword,setChangePassword]=useState(false)
   const user = userData ? JSON.parse(userData) : null;
   
   return (
@@ -42,17 +42,17 @@ const ProfileSidebar: React.FC<Props> = ({ uiState }) => {
           <p>Secret Identity: {user?.id}</p>
         </div>
         <div className="p-[10px] mt-[10px] flex flex-col gap-[10px] absolute bottom-[60px]  w-full px-[10px]">
-          <Link
+          {/* <Link
             to={"#"}
             className="dispaly flex items-center gap-[10px] py-[8px] px-[10px] hover:bg-white/10 rounded text-slate-300"
           >
             <FaUserEdit className="h-[15px] w-[15px]" />
             <span className="text-[13px]"> Update User Details</span>
-          </Link>
+          </Link> */}
           <Link
             to={"#"}
             className="dispaly flex items-center gap-[10px] py-[8px] px-[10px] hover:bg-white/10 rounded text-slate-300"
-            // onClick={() => setChangePassword(true)}
+            onClick={() => setChangePassword(true)}
           >
             <PiPasswordFill className="h-[15px] w-[15px]" />
             <span className="text-[13px]"> Change Password</span>
@@ -69,7 +69,7 @@ const ProfileSidebar: React.FC<Props> = ({ uiState }) => {
           </Button>
         </div>
       </div>
-      {/* <SetPassword open={changePassword} onClose={()=>setChangePassword(false)} /> */}
+      <SetPassword open={changePassword} onClose={()=>setChangePassword(false)} />
     </div>
   );
 };

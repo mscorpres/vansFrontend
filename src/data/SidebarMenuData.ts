@@ -128,7 +128,14 @@ export const materialmenu = [
           { name: "Service", path: "/master/service" },
         ],
       },
-      { name: "Component Map", path: "/master/componentMap/map" },
+      {
+        name: "Component Map",
+
+        subMenu: [
+          { name: "Vendor", path: "/master/componentMap/vendor" },
+          { name: "Customer", path: "/master/componentMap/customer" },
+        ],
+      },
       { name: "Products", path: "/master/product" },
       { name: "HSN map", path: "/master/hsn" },
       { name: "Groups", path: "/master/groups" },
@@ -153,6 +160,13 @@ export const materialmenu = [
           { name: "View", path: "/master/client/view" },
         ],
       },
+      {
+        name: "Vendor Price",
+        subMenu: [
+          { name: "Vendor Price", path: "/master/vendorPrice" },
+          { name: "Approve List", path: "/master/vendorPriceList" },
+        ],
+      },
       // {
       //   name: "Customer / Client",
       //   path: "/master/customer",
@@ -170,13 +184,13 @@ export const materialmenu = [
   {
     name: "Sales Order",
     subMenu: [
-      { name: "Create", path: "/sales/order/create" },
-      { name: "Register", path: "/sales/order/register" },
-      { name: "Shipment", path: "/sales/order/shipments" },
-      { name: "Invoice", path: "/sales/order/invoice" },
-      { name: "Allocated Invoices", path: "/sales/order/allocated" },
+      { name: "Create Sales Order", path: "/sales/order/create" },
+      { name: "Sales Order Register", path: "/sales/order/register" },
+      { name: "Sales Order Shipment", path: "/sales/order/shipment" },
+      { name: "Invoice Register", path: "/sales/order/invoice" },
+      // { name: "Allocated Invoices", path: "/sales/order/allocated" },
       {
-        name: "E Transaction Invoices",
+        name: "e-Transaction Invoices",
         path: "/sales/order/e-transaction-register",
       },
     ],
@@ -184,11 +198,11 @@ export const materialmenu = [
   {
     name: "Warehouse",
     subMenu: [
-      { name: "MR Approval", path: "/not-permission" },
-      { name: "Inward", path: "/not-permission" },
-      { name: "Transfer", path: "/not-permission" },
-      { name: "Pic Slip", path: "/not-permission" },
-      { name: "Batch Allocation", path: "/not-permission" },
+      { name: "MR Approval", path: "/warehouse/mrApproval" },
+      { name: "Inward", path: "/warehouse/inward" },
+      { name: "Transfer", path: "/warehouse/transfer" },
+      { name: "Pick Slip", path: "/warehouse/pickSlip" },
+      { name: "Batch Allocation", path: "/warehouse/batchAllocation" },
     ],
   },
   {
@@ -205,33 +219,33 @@ export const materialmenu = [
       { name: "View FG(s) OUT", path: "/fgOut/view" },
     ],
   },
-  {
-    name: "Production",
-    subMenu: [
-      {
-        name: "PPR",
-        subMenu: [
-          { name: "Material", path: "/master/material" },
-          { name: "Service", path: "/master/service" },
-        ],
-      },
-      {
-        name: "Material Requisition",
-        subMenu: [
-          { name: "Material", path: "/master/material" },
-          { name: "Service", path: "/master/service" },
-        ],
-      },
-      {
-        name: "Production & Plan",
-        subMenu: [
-          { name: "Create PPR", path: "/production/ppr/create" },
-          { name: "Pending PPR", path: "/production/ppr/pending" },
-          { name: "Completed PPR", path: "/production/ppr/completed" },
-        ],
-      },
-    ],
-  },
+  // {
+  //   name: "Production",
+  //   subMenu: [
+  //     {
+  //       name: "PPR",
+  //       subMenu: [
+  //         { name: "Material", path: "/master/material" },
+  //         { name: "Service", path: "/master/service" },
+  //       ],
+  //     },
+  //     {
+  //       name: "Material Requisition",
+  //       subMenu: [
+  //         { name: "Material", path: "/master/material" },
+  //         { name: "Service", path: "/master/service" },
+  //       ],
+  //     },
+  //     {
+  //       name: "Production & Plan",
+  //       subMenu: [
+  //         { name: "Create PPR", path: "/production/ppr/create" },
+  //         { name: "Pending PPR", path: "/production/ppr/pending" },
+  //         { name: "Completed PPR", path: "/production/ppr/completed" },
+  //       ],
+  //     },
+  //   ],
+  // },
   {
     name: "Report (s)",
     subMenu: [
@@ -243,7 +257,7 @@ export const materialmenu = [
           { name: "Reports R1-R5", path: "/inventory/report/r1" },
         ],
       },
-      { name: "Printing", path: "/not-permission" },
+      { name: "Printing", path: "/warehouse/min/print" },
     ],
   },
   {
@@ -253,8 +267,13 @@ export const materialmenu = [
   {
     name: " Physical Stock",
     subMenu: [
-      { name: "Create Physical Stock", path: "/not-permission" },
-      { name: "View Physical Stock", path: "/not-permission" },
+      { name: "Create Physical Stock", path: "/physicalStock" },
+      { name: "View Physical Stock", path: "/viewphysicalStock" },
     ],
   },
+];
+export const printMenu = [
+  { name: " MIN Label", path: "/warehouse/min/print" },
+  { name: "Pick Slip", path: "/warehouse/PickSlip/print" },
+  { name: " Customer Label", path: "/warehouse/printCustomerLabel" },
 ];

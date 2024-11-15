@@ -11,26 +11,28 @@ import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
-import { Card, Form, Typography } from "antd";
+import { Form } from "antd";
 import { Input } from "@/components/ui/input";
+import { InputStyle } from "@/constants/themeContants";
 import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+  FileInput,
+  FileUploader,
+  FileUploaderContent,
+  FileUploaderItem,
+} from "@/components/shared/FileUpload";
 import Select from "react-select";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Button } from "@/components/ui/button";
 import {
-  getComponentDetailsForServices,
   getProductDetailsForEdit,
   saveProductDetails,
+  updateProductMaterial,
 } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
-import { CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,18 +43,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useDispatch, useSelector } from "react-redux";
+import { listOfUoms } from "@/features/client/clientSlice";
+import { gstRateList } from "@/components/shared/Options";
+import { IoCloudUpload } from "react-icons/io5";
+import { AppDispatch, RootState } from "@/store";
 const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [open, setOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [form] = Form.useForm();
+  const [files, setFiles] = useState<File[] | null>(null);
+  const [asyncOptions, setAsyncOptions] = useState([]);
   const { execFun, loading: loading1 } = useApi();
+  const dispatch = useDispatch<AppDispatch>();
+  const { uomlist } = useSelector((state: RootState) => state.client);
   const typeOption = [
     {
       label: "FG",
-      value: "fg",
+      value: "default",
     },
     {
       label: "Semi FG",
-      value: "fg",
+      value: "semi",
     },
   ];
   const isEnabled = [
@@ -68,40 +80,24 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const taxDetails = [
     {
       label: "Regualar",
-      value: "Y",
+      value: "REG",
     },
     {
       label: "Exempted",
-      value: "N",
+      value: "EXE",
     },
   ];
-  const gstoptions = [
-    {
-      label: "05",
-      value: "05",
-    },
-    {
-      label: "12",
-      value: "12",
-    },
-    {
-      label: "18",
-      value: "18",
-    },
-    {
-      label: "28",
-      value: "28",
-    },
-  ];
-  const fetchComponentDetails = async (sheetOpenEdit) => {
+  const handleFileChange = (newFiles: File[] | null) => {
+    setFiles(newFiles);
+  };
+  const fetchComponentDetails = async (sheetOpenEdit: any) => {
     const response = await execFun(
       () => getProductDetailsForEdit(sheetOpenEdit),
       "fetch"
     );
-    console.log("response0", response);
     if (response.status == 200) {
       let { data } = response;
-      let arr = data.data[0];
+      let arr: any = data.data[0];
       let obj = {
         // serviceCode: arr.partcode,
         // serviceName: arr.name,
@@ -109,16 +105,28 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         // description: arr.description,
         // sacCode: arr.sac,
         sku: arr.sku,
+        pKey: arr.pKey,
         productName: arr.productname,
         type: arr.producttype_name,
         category: arr.productcategory,
         mrp: arr.mrp,
-        uom: arr.uomname,
+        uom: { label: arr.uomname, value: arr.uomid },
         costPrice: arr.costprice,
         enabled: arr.enablestatus_name,
         description: arr.description,
-        tax: arr.tax_type_name,
-        gst: arr.gstrate_name,
+        // tax: arr.tax_type_name,
+        tax: {
+          value: arr.tax_type_name.id,
+          label: arr.tax_type_name?.text,
+        },
+        type: {
+          value: arr.producttype_name.id,
+          label: arr.producttype_name?.text,
+        },
+        gst: {
+          value: arr.gstrate_name.id,
+          label: arr.gstrate_name?.text,
+        },
         hsn: arr.hsncode,
         brand: arr.brand,
         ean: arr.ean,
@@ -126,17 +134,19 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         vweight: arr.vweight,
         height: arr.height,
         width: arr.width,
-        brand: arr.brand,
+        // brand: arr.brand,
         minStock: arr.minrmstock,
         batch: arr.batchstock,
         stockLoc: arr.minstock,
         labourCost: arr.laboutcost,
         jwCost: arr.jobworkcost,
+
         packingCost: arr.packingcost,
         otherCost: arr.othercost,
-        sku: arr.sku,
+        // sku: arr.sku,
         // uom: { label: arr.uomname, value: arr.uomid },
       };
+
       form.setFieldsValue(obj);
     } else {
       toast({
@@ -147,14 +157,13 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   };
   const createEntry = async () => {
     const values = await form.validateFields();
-    console.log("values", values);
 
     let payload = {
       producttKey: values.sku,
       p_name: values.productName,
       category: values.category,
       mrp: values.mrp,
-      producttype: values.type,
+      producttype: values.type.value ?? values.type,
       // isenabled: values,
       gsttype: values.tax,
       gstrate: values.gst,
@@ -176,7 +185,6 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       jobworkcost: values.jwCost,
       description: values.description,
     };
-    console.log("payload", payload);
     // return;
     const response = await execFun(() => saveProductDetails(payload), "fetch");
     if (response.status == "success") {
@@ -191,23 +199,104 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       className: "bg-red-600 text-white items-center",
     });
   };
-  console.log("sheeet", sheetOpenEdit);
-  const saveEdit = async () => {
-    const values = await form.validateFields();
-    console.log("values", values);
-    return;
-    const response = await execFun(() => servicesaddition(values), "update");
-    if (response.status == 200) {
-      setSheetOpenEdit(false);
-    }
-  };
+
   useEffect(() => {
     if (sheetOpenEdit) {
       fetchComponentDetails(sheetOpenEdit);
     }
   }, [sheetOpenEdit]);
+  const callUom = async () => {
+    let a;
+    if (asyncOptions.length == 0) {
+      a = await dispatch(listOfUoms());
+    }
+
+    let arr = a.payload.map((r: any, index: any) => {
+      return {
+        label: r.units_name,
+        value: r.units_id,
+      };
+    });
+    setAsyncOptions(arr);
+  };
+  const uploadDocs = async () => {
+    const formData = new FormData();
+    formData.append("caption", captions);
+    formData.append("product", sheetOpenEdit?.component_key);
+    files.map((comp) => {
+      formData.append("files", comp);
+    });
+    const response = await spigenAxios.post(
+      "/component/upload_comp_img",
+      formData
+    );
+    if (response.data.code == 200) {
+      // toast
+      toast({
+        title: "Doc Uploaded successfully",
+        className: "bg-green-600 text-white items-center",
+      });
+      // setLoading(false);
+      setSheetOpen(false);
+      setAttachmentFile(response.data.data);
+    }
+    // setLoading(false);
+  };
+  const submitTheForm = async () => {
+    const values = form.getFieldsValue();
+
+    let hehe = {
+      p_name: values.productName,
+      productKey: sheetOpenEdit,
+      category: values.category,
+      producttype: values.type.value ?? values.type,
+      mrp: values.mrp,
+      // producttype: values.type.value,
+      isenabled: values.enabled.value,
+      gsttype: values.tax.value,
+      gstrate: values.gst.value,
+      uom: values.uom.value ?? values.uom,
+      location: "--",
+      hsn: values.hsn,
+      brand: values.brand,
+      ean: values.ean,
+      weight: values.weight,
+      vweight: values.vweight,
+      height: values.height,
+      width: values.width,
+      minstock: values.stockLoc,
+      minstockrm: values.minStock,
+      batchstock: values.batch,
+      labourcost: values.labourCost,
+      packingcost: values.packingCost,
+      othercost: values.otherCost,
+      jobworkcost: values.jwCost,
+      description: values.description,
+    };
+
+    // return;
+    const response = await execFun(() => updateProductMaterial(hehe), "fetch");
+
+    if (response.data.code == 200) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      setSheetOpenEdit(false);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  useEffect(() => {
+    if (uomlist) {
+      callUom();
+    }
+  }, [uomlist]);
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]">
+    <div className="h-[calc(100vh-100px)] ">
       {loading1("fetch") && <FullPageLoading />}
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
@@ -240,13 +329,13 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
             <SheetTitle className="text-slate-600">Update Product</SheetTitle>
           </SheetHeader>
           <div className="h-[calc(100vh-150px)]">
-            {/* {data.loading && <FullPageLoading />} */}
+            {loading1("fetch") && <FullPageLoading />}
             <Form form={form} layout="vertical">
               <form
                 //   onSubmit={form.handleSubmit(onSubmit)}
                 className=""
               >
-                <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
+                <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
                   <div className="grid grid-cols-2 gap-[30px]">
                     <Card className="rounded shadow bg-[#fff]">
                       <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -254,7 +343,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           Basic Details :
                         </h3>
                         <p className="text-slate-600 text-[13px]">
-                          Type Name or Code of the Client
+                          {/* Type Name or Code of the Client */}
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
@@ -281,7 +370,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="UOM"
+                              placeholder="Product Type"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -311,10 +400,25 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           {/* </div>
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px] "> */}
                           <Form.Item name="uom" label="UOM">
-                            <Input
-                              className={InputStyle}
+                            <Select
+                              styles={customStyles}
+                              components={{ DropdownIndicator }}
                               placeholder="Enter UOM"
-                              // {...field}
+                              className="border-0 basic-single"
+                              classNamePrefix="select border-0"
+                              isDisabled={false}
+                              isClearable={true}
+                              isSearchable={true}
+                              options={asyncOptions}
+                              //   onChange={(e) => console.log(e)}
+                              //   value={
+                              //     data.clientDetails
+                              //       ? {
+                              //           label: data.clientDetails.city.name,
+                              //           value: data.clientDetails.city.name,
+                              //         }
+                              //       : null
+                              //   }
                             />
                           </Form.Item>
                           {/* </div>
@@ -328,11 +432,20 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           </Form.Item>
                         </div>{" "}
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
-                          <Form.Item name="enabled" label="Enabled">
+                          <Form.Item
+                            name="enabled"
+                            label="Enabled"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please enter enabled status!",
+                              },
+                            ]}
+                          >
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
-                              placeholder="Enter enabled"
+                              placeholder="Enter Enabled"
                               className="border-0 basic-single"
                               classNamePrefix="select border-0"
                               isDisabled={false}
@@ -362,7 +475,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           Tax Details :
                         </h3>
                         <p className="text-slate-600 text-[13px]">
-                          Type Name or Code of the Client
+                          {/* Type Name or Code of the Client */}
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
@@ -398,7 +511,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              options={gstoptions}
+                              options={gstRateList}
                             />
                           </Form.Item>
                           <Form.Item
@@ -422,7 +535,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           Advance Details :
                         </h3>
                         <p className="text-slate-600 text-[13px]">
-                          Type Name or Code of the Client
+                          {/* Type Name or Code of the Client */}
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
@@ -431,21 +544,18 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Brand"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="ean" label="EAN">
                             <Input
                               className={InputStyle}
                               placeholder="Enter EAN"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="weight" label="Weight (gms)">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Weight (gms)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item
@@ -455,23 +565,46 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Volumetric Weight (gms)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="height" label="Height (mm)">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Height (mm)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="width" label="Width (mm)">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Width (mm)"
-                              // {...field}
                             />
-                          </Form.Item>
+                          </Form.Item>{" "}
+                          <div className="grid w-full max-w-sm items-center gap-1.5">
+                            {/* <Label htmlFor="picture">Picture</Label>
+                        <Input
+                          id="picture"
+                          type="file"
+                          accept="image/*" // Only allow image files
+                          onChange={handleFileChange}
+                        /> */}
+                            {/* {preview && (
+                            <img
+                              src={preview}
+                              alt="Preview"
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                marginTop: "10px",
+                              }}
+                            />
+                          )} */}
+                            <Button
+                              onClick={() => setSheetOpen(true)}
+                              // disabled={!selectedFile}
+                            >
+                              Attach Image
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -480,9 +613,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         <h3 className="text-[17px] font-[600] text-slate-600">
                           Production Plan and Costing :
                         </h3>
-                        <p className="text-slate-600 text-[13px]">
-                          Type Name or Code of the Client
-                        </p>
+                        <p className="text-slate-600 text-[13px]"></p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
@@ -490,21 +621,18 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Min Stock (FG)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="minStock" label="Min Stock (RM)">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Min Stock (RM)"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="batch" label="Mfg Batch Size">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Mfg Batch Size"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item
@@ -514,14 +642,12 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Default Stock Location"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="labourCost" label="Labour Cost">
                             <Input
                               className={InputStyle}
                               placeholder="Enter Labour Cost"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item
@@ -531,14 +657,12 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Sec Packing Cost"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item name="jwCost" label="JW Cost">
                             <Input
                               className={InputStyle}
                               placeholder="Enter JW Cost"
-                              // {...field}
                             />
                           </Form.Item>
                           <Form.Item
@@ -548,7 +672,6 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter Other Cost"
-                              // {...field}
                             />
                           </Form.Item>
                         </div>
@@ -556,108 +679,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                     </Card>
                   </div>
                 </div>
-                {/* <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
-                  <div className="grid grid-cols-4 gap-[20px]">
-                    <Form.Item name="serviceCode" label="Service Code">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Service Code"
-                      />
-                    </Form.Item>
-                    <Form.Item name="serviceName" label="Service Name">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Service Name"
-                      />
-                    </Form.Item>
 
-                    <Form.Item name="uom" label="UOM">
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select UOM"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item name="serviceCategory" label="Service Category">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Service Category"
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      className="w-full"
-                      name="enabled"
-                      label="Enabled"
-                    >
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select Enabled"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item name="description" label="Description">
-                      <Input
-                        className={InputStyle}
-                        placeholder="Enter Component Description"
-                      />
-                    </Form.Item>
-                  </div>{" "}
-                  <div className="grid grid-cols-1 gap-[20px]">
-                    <Typography.Title level={3}>Tax Details :</Typography.Title>
-                  </div>
-                  <div className="grid grid-cols-4 gap-[20px]">
-                    <Form.Item label="Tax Type" name="taxType">
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select Tax Type"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="GST Tax Rate" name="gstTaxRate">
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Select GST Tax Rate"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        // options={type}
-                        onChange={(e: any) => form.setValue("wise", e.value)}
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="SAC Code" name="sacCode">
-                      <Input className={InputStyle} placeholder="Enter SAC" />
-                    </Form.Item>
-                  </div>
-                </div> */}
                 <div className={modelFixFooterStyle}>
                   <Button
                     variant={"outline"}
@@ -673,7 +695,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                     // type="submit"
                     className="bg-cyan-700 hover:bg-cyan-600"
                     onClick={(e: any) => {
-                      setOpen(true);
+                      submitTheForm();
                       e.preventDefault();
                     }}
                   >
@@ -684,8 +706,91 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
             </Form>
           </div>
         </SheetContent>
-      </Sheet>
-    </Wrapper>
+      </Sheet>{" "}
+      <Sheet open={sheetOpen == true} onOpenChange={setSheetOpen}>
+        <SheetContent
+          className="min-w-[35%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          {/* {loading == true && <FullPageLoading />} */}
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
+          </SheetHeader>{" "}
+          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+            {/* {loading && <FullPageLoading />} */}
+            <FileUploader
+              value={files}
+              onValueChange={handleFileChange}
+              dropzoneOptions={{
+                accept: {
+                  "image/*": [".jpg", ".jpeg", ".png", ".gif", ".pdf"],
+                },
+                maxFiles: 1,
+                maxSize: 4 * 1024 * 1024, // 4 MB
+                multiple: true,
+              }}
+            >
+              <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
+                <h2 className="text-xl font-semibold text-center mb-4">
+                  <div className=" text-center w-full justify-center flex">
+                    {" "}
+                    <div>Upload Your Files</div>
+                    <div>
+                      {" "}
+                      <IoCloudUpload
+                        className="text-cyan-700 ml-5 h-[20]"
+                        size={"1.5rem"}
+                      />
+                    </div>
+                  </div>
+                </h2>
+                <FileInput>
+                  <span className="text-slate-500 text-sm text-center w-full justify-center flex">
+                    Drag and drop files here, or click to select files
+                  </span>
+                </FileInput>{" "}
+              </div>{" "}
+              <div className=" m-[20px]">
+                <FileUploaderContent>
+                  {files?.map((file, index) => (
+                    <FileUploaderItem key={index} index={index}>
+                      <span>{file.name}</span>
+                    </FileUploaderItem>
+                  ))}
+                </FileUploaderContent>
+              </div>
+            </FileUploader>{" "}
+            <div className="w-full flex justify-center">
+              <div className="w-[80%] flex justify-center">
+                <Input
+                  placeholder="Enter Image Captions"
+                  className={InputStyle}
+                  onChange={(e) => setCaptions(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>{" "}
+          <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+            <Button
+              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+              // onClick={() => setTab("create")}
+            >
+              Back
+            </Button>{" "}
+            <Button
+              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              onClick={uploadDocs}
+              // loading={laoding}
+            >
+              {/* {isApprove ? "Approve" : "Submit"} */}
+              Upload
+            </Button>
+          </div>{" "}
+        </SheetContent>
+      </Sheet>{" "}
+    </div>
   );
 };
 

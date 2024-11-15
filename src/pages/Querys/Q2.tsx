@@ -1,59 +1,49 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import {  useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
-import { FaCircle } from "react-icons/fa";
+
+import { MoreOutlined } from "@ant-design/icons";
 import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Badge, Edit2, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DatePicker, Divider, Dropdown, Menu } from "antd";
 import {
-  transformCustomerData,
   transformOptionData,
-  transformPlaceData,
 } from "@/helper/transform";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
-import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
-import { spigenAxios } from "@/axiosIntercepter";
+import {
+  modelFixHeaderStyle,
+} from "@/constants/themeContants";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
+  fetchCustomerComponentsByPart,
   fetchListOfQ1,
   fetchListOfQ2,
   getComponentsByNameAndNo,
+  itemQueryL,
 } from "@/components/shared/Api/masterApi";
+import { IoMdDownload } from "react-icons/io";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -67,6 +57,10 @@ const FormSchema = z.object({
 
 const Q2 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const [boxData, setBoxData] = useState([]);
+  const [stockInfo, setStockInfo] = useState([]);
+  const [openView, setSheetOpenView] = useState([]);
+  const [openViewBox, setSheetOpenViewBox] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState<{
     label: string;
     value: string;
@@ -77,10 +71,48 @@ const Q2 = () => {
   });
   const { execFun, loading: loading1 } = useApi();
   //   const { addToast } = useToastContainer()
-  const { RangePicker } = DatePicker;
-
-  const dateFormat = "YYYY/MM/DD";
-
+  const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
+    const menu = (
+      <Menu>
+        <Menu.Item
+          key="downlaod"
+          disabled={rowData.length === 0}
+          onClick={(e: any) => {
+            // e.preventDefault();
+            handleDownloadExcel();
+          }}
+        >
+          Download
+        </Menu.Item>
+        <Menu.Item
+          disabled={rowData.length === 0}
+          key="View Component"
+          onClick={() => {
+            setSheetOpenView(true);
+          }}
+        >
+          View Component
+        </Menu.Item>
+        <Menu.Item
+          disabled={rowData.length === 0}
+          key=" Box Data"
+          onClick={() => {
+            setSheetOpenViewBox(true);
+          }}
+        >
+          Box Data
+        </Menu.Item>
+      </Menu>
+    );
+    return (
+      <>
+        <Dropdown overlay={menu} trigger={["click"]}>
+          {/* <Button icon={<Badge />} /> */}
+          <MoreOutlined />
+        </Dropdown>
+      </>
+    );
+  };
   const fetchComponentList = async (e: any) => {
     console.log("here in api", e!.value);
     setSelectedCustomer(e);
@@ -100,7 +132,7 @@ const Q2 = () => {
     let { data } = response;
     if (data.code == 200) {
       let arr = data.response.data2;
-      let a = arr.map((r, index) => {
+      let a = arr.map((r: any, index: any) => {
         return {
           id: index + 1,
           ...r,
@@ -109,6 +141,7 @@ const Q2 = () => {
       console.log("arrarr", arr);
 
       setRowData(a);
+      setStockInfo(data.response.data1);
     } else {
       //   addToast(data.message.msg, {
       //     appearance: "error",
@@ -116,9 +149,57 @@ const Q2 = () => {
       //   });
     }
   };
+  const openDrawer = async () => {
+    let payload = {
+      component: selectedCustomer?.value,
+    };
+    const response = await execFun(
+      () => fetchCustomerComponentsByPart(payload),
+      "fetch"
+    );
+    console.log("response", response);
+    if (response.data.code == 200) {
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-700 text-center text-white",
+        autoDismiss: true,
+      });
+    }
+  };
+  const openDrawerBox = async () => {
+    let payload = {
+      component: selectedCustomer?.value,
+    };
+    const response = await execFun(() => itemQueryL(payload), "fetch");
+    console.log("response", response);
+    if (response.data.code == 200) {
+      let { data } = response;
+      let arr = data.data.map((r, index) => {
+        return {
+          id: index + 1,
+          ...r,
+        };
+      });
+      setBoxData(arr);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-700 text-center text-white",
+        autoDismiss: true,
+      });
+    }
+  };
   useEffect(() => {
-    // fetchComponentList();
-  }, []);
+    if (openView == true) {
+      openDrawer();
+    }
+  }, [openView]);
+  useEffect(() => {
+    if (openViewBox == true) {
+      openDrawerBox();
+    }
+  }, [openViewBox]);
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -134,10 +215,10 @@ const Q2 = () => {
       width: 220,
     },
     {
-      headerName: "Tran Type",
+      headerName: "Transaction Type",
       field: "transaction_type",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 190,
     },
     {
       headerName: "Qty In",
@@ -156,24 +237,6 @@ const Q2 = () => {
       field: "transaction_type",
       filter: "agTextColumnFilter",
       width: 190,
-      cellRenderer: (params: any) => {
-        const status = params.value;
-        console.log("vstatus", status);
-
-        return (
-          <Badge
-            className={`${
-              status === "MIN"
-                ? "bg-green-600"
-                : status === "TRANSFER"
-                ? "bg-yellow-600"
-                : "bg-red-600"
-            }`}
-          >
-            {status}
-          </Badge>
-        );
-      },
     },
     {
       headerName: "Cost Center",
@@ -200,7 +263,119 @@ const Q2 = () => {
       width: 190,
     },
   ];
+  const componentCol: ColDef<rowData>[] = [
+    {
+      headerName: "ID",
+      field: "id",
+      filter: "agNumberColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: "Customer",
+      field: "date",
+      filter: "agTextColumnFilter",
+      width: 220,
+    },
+    {
+      headerName: "Component Name",
+      field: "transaction_type",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Part Number",
+      field: "qty_in",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+  ];
+  const boxCol: ColDef<rowData>[] = [
+    {
+      headerName: "ID",
+      field: "id",
+      filter: "agNumberColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: "Cost Center",
+      field: "cost_center_name",
+      filter: "agTextColumnFilter",
+      width: 220,
+    },
+    {
+      headerName: "Box Number",
+      field: "LOCATION",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Part Number",
+      field: "PART",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: " Part Name",
+      field: "NAME",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Description",
+      field: "SPECIFICATION",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Unit",
+      field: "UNIT",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Rate",
+      field: "in_rate",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Amount (FXC)",
+      field: "AMOUNT_FC",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Amount (LC)",
+      field: "AMOUNT_LC",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Min No.",
+      field: "MIN_NO",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Physical Stock",
+      field: "PHYSICAL_STOCK",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
 
+    {
+      headerName: "Remark",
+      field: "REMARK",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+  ];
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "Q2 Register");
+  };
+  const handleDownloadExcelBox = () => {
+    downloadCSV(boxData, boxCol, "Box Data");
+  };
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
@@ -213,7 +388,7 @@ const Q2 = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(fetchQueryResults)}
-            className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+            className="space-y-6 overflow-hidden p-[10px] h-[500px]"
           >
             <FormField
               control={form.control}
@@ -234,21 +409,49 @@ const Q2 = () => {
                 </FormItem>
               )}
             />
+            {/* )} */}{" "}
+            <div className="flex gap-[10px] justify-end  px-[5px]">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>
 
-            {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+              <ActionMenu />
+            </div>
+            <Divider />
+            {/* <div className="h-[calc(100vh-10px)] grid grid-cols-[350px_1fr] flex "> */}
+            {/* <div className="bg-[#fff] "> */}
+            {/* <div className="p-[10px]"> */}
+            {rowData.length > 0 && (
+              <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
+                <Card className="rounded-sm shadow-sm shadow-slate-500">
+                  <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
+                    <CardTitle className="font-[550] text-slate-600">
+                      Other Detail
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
+                    {/* //detais of client */}
+                    <h3 className="font-[500]">CL Qty</h3>
+                    <p className="text-[14px]">{stockInfo?.closingqty}</p>
+                    <h3 className="font-[500]">Last In (Date / Type): </h3>
+                    <p className="text-[14px]">{stockInfo?.lasttIN}</p>
+                    <h3 className="font-[500]">Last Rate: </h3>
+                    <p className="text-[14px]">{stockInfo?.lastRate}</p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </form>
-        </Form>
+        </Form>{" "}
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
@@ -259,6 +462,73 @@ const Q2 = () => {
           paginationAutoPageSize={true}
         />
       </div>
+      <Sheet open={openView == true} onOpenChange={setSheetOpenView}>
+        <SheetTrigger></SheetTrigger>
+        <SheetContent
+          className="min-w-[40%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">View Component</SheetTitle>
+          </SheetHeader>{" "}
+          <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+            {" "}
+            {loading1("fetch") && <FullPageLoading />}
+            <AgGridReact
+              //   loadingCellRenderer={loadingCellRenderer}
+              rowData={drwData}
+              columnDefs={componentCol}
+              defaultColDef={{ filter: true, sortable: true }}
+              pagination={true}
+              paginationPageSize={10}
+              paginationAutoPageSize={true}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+      <Sheet open={openViewBox == true} onOpenChange={setSheetOpenViewBox}>
+        <SheetTrigger></SheetTrigger>
+        <SheetContent
+          className="min-w-[100%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">Box Data</SheetTitle>
+          </SheetHeader>{" "}
+          <div className="flex gap-[10px] justify-end  px-[5px] h-[50px]">
+            {" "}
+            <Button
+              // type="submit"
+              className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey mt-[8px]"
+              // onClick={() => {}}
+              disabled={rowData.length === 0}
+              onClick={(e: any) => {
+                e.preventDefault();
+                handleDownloadExcelBox();
+              }}
+            >
+              <IoMdDownload size={20} />
+            </Button>
+          </div>
+          <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+            {" "}
+            {loading1("fetch") && <FullPageLoading />}
+            <AgGridReact
+              //   loadingCellRenderer={loadingCellRenderer}
+              rowData={boxData}
+              columnDefs={boxCol}
+              defaultColDef={{ filter: true, sortable: true }}
+              pagination={true}
+              paginationPageSize={10}
+              paginationAutoPageSize={true}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
     </Wrapper>
   );
 };
