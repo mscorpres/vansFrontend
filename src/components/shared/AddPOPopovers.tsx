@@ -13,6 +13,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { uploadSOExcel } from "@/features/salesmodule/createSalesOrderSlice";
 
 const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
   const {
@@ -25,6 +27,7 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
     setBackModel,
   } = uiState;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // const handleImport = (data: any) => {
   //   //map data from excel
@@ -134,9 +137,9 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
           <div>
             <ExcelImportButton
               onImport={handleImport}
-              // uploadFunction={(file) =>
-              // dispatch(uploadExcel({ file: file, channel: channelValue }))
-              // }
+              uploadFunction={(file) =>
+              dispatch(uploadSOExcel({ file: file}))
+              }
             />
           </div>
           <div>
