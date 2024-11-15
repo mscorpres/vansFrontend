@@ -356,7 +356,6 @@ const AddSalesOrder = ({
                 className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
               >
                 <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel
-                Here
               </Button>
             </div>
           </div>

@@ -178,9 +178,6 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
       
           // Parse newValue to a float number
           const qty = parseFloat(newValue);  // Ensure the qty is a number
-          if (isNaN(qty) || qty <= 0) {
-            return; // If it's not a valid number or less than or equal to 0, don't proceed
-          }
       
           const rate = parseFloat(data.rate) || 0; // Ensure rate is also a number
           const localValue = qty * rate; // Now, this will correctly calculate the value
