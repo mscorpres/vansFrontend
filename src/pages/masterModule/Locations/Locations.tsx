@@ -251,15 +251,6 @@ const Locations = () => {
                     isClearable={true}
                     isSearchable={true}
                     options={locType}
-                    //   onChange={(e) => console.log(e)}
-                    //   value={
-                    //     data.clientDetails
-                    //       ? {
-                    //           label: data.clientDetails.city.name,
-                    //           value: data.clientDetails.city.name,
-                    //         }
-                    //       : null
-                    //   }
                   />
                 </Form.Item>
                 {/* )}
