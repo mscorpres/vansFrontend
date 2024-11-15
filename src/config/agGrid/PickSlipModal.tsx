@@ -130,7 +130,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       customer: sellRequestDetails?.header?.customer_name?.customer_code,
       component: sellRequestDetails?.items?.map((item: any) => item?.item),
       qty: sellRequestDetails?.items?.map((item: any) => item?.qty),
-      // box: Object.values(selectedBoxes).map((row: any) => row.boxes).flat(), // Flatten selected boxes
+      // box: Object.values(selectedBoxes).map((row: any) => row.boxes).flat(), / Flatten selected boxes
       // boxqty: Object.values(selectedBoxes).map((row: any) => row.qty).flat(), // Flatten quantities
       remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark),
       costcenter: sellRequestDetails?.header?.costcenter?.code,
@@ -201,7 +201,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
           onSelect={(selectedData: any) => {
             console.log(selectedData, rowItem);
             handleSelectedBoxes(selectedData, rowItem);
-            updateBoxAndQty(selectedData);
+            updateBoxAndQty(selectedData, rowItem);
             
           }}
         />

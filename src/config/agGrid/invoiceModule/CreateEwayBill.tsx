@@ -80,7 +80,6 @@ export default function CreateEwayBill() {
     dispatch(action({ shipment_id: shipId })).then((res: any) => {
       if (res.payload?.success) {
         var data = res.payload?.data;
-        console.log(data?.total_amount);
         setTotalSum(data?.total_amount)
         form.setValue("header.documentNo", data?.documentNo);
         setOrderId(data?.documentNo);
@@ -122,14 +121,12 @@ export default function CreateEwayBill() {
       }
     });
   }, [params]);
-  console.log(form.getValues(), form.formState.errors);
 
   useEffect(() => {
     setRowData(ewayBillData);
   }, [ewayBillData]);
 
   const onSubmit = (payload: any) => {
-    console.log("Form data:", payload);
 
     if (isEwayBill) {
       dispatch(createEwayBill(payload)).then((response) => {
@@ -144,7 +141,6 @@ export default function CreateEwayBill() {
       });
     } else {
       dispatch(generateEInvoice(payload)).then((response) => {
-        console.log(response);
         if (response.meta.requestStatus === "fulfilled") {
           toast({
             title: "Created Successfully",

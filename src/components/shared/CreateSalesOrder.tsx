@@ -68,7 +68,6 @@ const CreateSalesOrder: React.FC<Props> = ({
   const data = useSelector((state: RootState) => state.createSalesOrder);
 
   const onSubmit = (data: CreateSalesOrderForm) => {
-    console.log("Submitted Data from CreateSalesOrder:", data); // Debugging log
     if (data) {
       setPayloadData(data);
       setTab("add"); // Switch to AddSalesOrder tab
@@ -76,7 +75,6 @@ const CreateSalesOrder: React.FC<Props> = ({
       console.error("Data is null or undefined");
     }
   };
-  console.log(form.getValues(), currencyList);
 
   const customerOptions = [
     {

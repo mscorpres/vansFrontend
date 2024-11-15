@@ -410,7 +410,7 @@ const MasterShippingAddressPage: React.FC = () => {
           <AgGridReact
             //   loadingCellRenderer={loadingCellRenderer}
             rowData={rowData}
-            columnDefs={columnDefs}
+            columnDefs={columnDefs as any}
             defaultColDef={{ filter: true, sortable: true }}
             pagination={true}
             paginationPageSize={10}

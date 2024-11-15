@@ -18,7 +18,7 @@ interface CreateInvoiceDialogProps {
   form: FormInstance;
   loading?: boolean;
 }
-
+ 
 export function CreateInvoiceDialog({
   isDialogVisible,
   handleOk,
@@ -49,11 +49,11 @@ export function CreateInvoiceDialog({
               </p>
 
               <Form.Item name="remark" label="Remark">
-                <Input.TextArea
-                  rows={4}
-                  style={{ height: 120, resize: "none" }}
-                  className={InputStyle}
-                />
+              <Input.TextArea
+                    rows={4}
+                    placeholder="Enter remarks here"
+                    style={{ height: 50, resize: "none" }}
+                  />
               </Form.Item>
             </Form>
             <DialogFooter>

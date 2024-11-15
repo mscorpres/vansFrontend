@@ -284,12 +284,6 @@ export const columnDefs: ColDef<any>[] = [
     field: "shipment_id",
     filter: "agTextColumnFilter",
   },
-  {
-    headerName: "Pickslip ID",
-    field: "pickslip_id",
-    filter: "agTextColumnFilter",
-    cellRenderer:CopyCellRenderer
-  },
   { headerName: "SO ID", field: "so_id", filter: "agTextColumnFilter" },
   {
     headerName: "Shipment Date",
@@ -300,6 +294,12 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "PO Number",
     field: "po_number",
     filter: "agTextColumnFilter",
+  },
+  {
+    headerName: "Pickslip ID",
+    field: "pickslip_id",
+    filter: "agTextColumnFilter",
+    cellRenderer:CopyCellRenderer
   },
   {
     headerName: "PO Date",
@@ -328,39 +328,21 @@ export const columnDefs: ColDef<any>[] = [
     filter: "agTextColumnFilter",
   },
   {
-    headerName: "Client Code",
-    field: "client_code",
+    headerName: "SuplierName",
+    field: "SuplierName",
     filter: "agTextColumnFilter",
   },
-  { headerName: "Client", field: "client", filter: "agTextColumnFilter" },
+  {
+    headerName: "Supplier Address",
+    field: "supplierAddress",
+    cellRenderer: "truncateCellRenderer",
+  },
+  { headerName: "Client", field: "clientName", filter: "agTextColumnFilter" },
   {
     headerName: "Client Address",
-    field: "clientaddress",
+    field: "clientAddress",
     filter: "agTextColumnFilter",
+    cellRenderer:"truncateCellRenderer"
   },
-  {
-    headerName: "Billing Name",
-    field: "billing_name",
-    filter: "agTextColumnFilter",
-  },
-  {
-    headerName: "Billing Address",
-    field: "billingaddress1",
-    filter: "agTextColumnFilter",
-  },
-  {
-    headerName: "Shipping Name",
-    field: "shipping_id",
-    filter: "agTextColumnFilter",
-  },
-  {
-    headerName: "Shipping Address",
-    field: "shippingaddress1",
-    filter: "agTextColumnFilter",
-  },
-  {
-    headerName: "Status",
-    field: "shipment_status",
-    filter: "agTextColumnFilter",
-  },
+ 
 ];

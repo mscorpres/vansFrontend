@@ -124,26 +124,27 @@ export function ConfirmCancellationDialog({
               )}
               {module !== "E-Invoice" && (
                 <Form.Item
-                  name="remark"
+                  name="remark" 
                   label="Remarks"
                   rules={[{ required: true, message: "Please enter remarks!" }]}
                 >
                   <Input.TextArea
                     rows={4}
                     placeholder="Enter remarks here"
-                    style={{ height: 120, resize: "none" }}
+                    style={{ height: 50, resize: "none" }}
                   />
                 </Form.Item>
               )}
             </Form>
             <DialogFooter>
-              <Button onClick={handleCancel} className="mr-2">
+              <Button onClick={handleCancel} className="mr-2" variant="outline" >
+                      
                 Cancel
               </Button>
               <Button
-              
                 onClick={handleOk}
-                className="bg-teal-500 hover:bg-teal-600"
+                variant={"default"}
+                // className="bg-teal-500 hover:bg-teal-600"
               >
                 Confirm
               </Button>

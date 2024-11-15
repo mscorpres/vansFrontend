@@ -34,7 +34,7 @@ import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer
 import { RootState } from "@/store";
 import { setDateRange } from "@/features/salesmodule/SalesSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { rangePresets } from "@/General";
+import { rangePresets, TruncateCellRenderer } from "@/General";
 import { Input } from "@/components/ui/input";
 import moment from "moment";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
@@ -109,6 +109,7 @@ const SalesShipmentPage: React.FC = () => {
     () => ({
       shipmentsActionRenderer: ShipMentsActionCellRender,
       CopyCellRenderer: CopyCellRenderer,
+      truncateCellRenderer:TruncateCellRenderer
     }),
     []
   );

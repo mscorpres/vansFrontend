@@ -26,7 +26,7 @@ const DataDialog = ({ open, onClose, orderId, module }: any) => {
   const handleBack = () => {
     onClose();
   };
-console.log(data,data.AckDt,"data.AckDt")
+  
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-3xl h-fit max-h-[90vh] p-8 bg-white rounded-lg shadow-xl transition-transform transform overflow-y-auto">
