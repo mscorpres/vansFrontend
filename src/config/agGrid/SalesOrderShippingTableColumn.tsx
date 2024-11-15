@@ -284,27 +284,27 @@ export const columnDefs: ColDef<any>[] = [
     field: "shipment_id",
     filter: "agTextColumnFilter",
   },
-  { headerName: "SO ID", field: "so_id", filter: "agTextColumnFilter" },
   {
     headerName: "Shipment Date",
     field: "shipment_date",
     filter: "agNumberColumnFilter",
   },
+  { headerName: "SO ID", field: "so_id", filter: "agTextColumnFilter" },
   {
     headerName: "PO Number",
     field: "po_number",
     filter: "agTextColumnFilter",
   },
   {
+    headerName: "PO Date",
+    field: "po_date",
+    filter: "agDateColumnFilter",
+  },
+  {
     headerName: "Pickslip ID",
     field: "pickslip_id",
     filter: "agTextColumnFilter",
     cellRenderer:CopyCellRenderer
-  },
-  {
-    headerName: "PO Date",
-    field: "po_date",
-    filter: "agDateColumnFilter",
   },
   {
     headerName: "Approval Status",
@@ -326,6 +326,8 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Material Status",
     field: "material_status",
     filter: "agTextColumnFilter",
+    valueGetter: (params) =>
+      params?.data?.material_status === "Y" ? "Out" : "Pending",
   },
   {
     headerName: "SuplierName",

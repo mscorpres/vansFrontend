@@ -84,7 +84,15 @@ function MainLayout(props: { children: React.ReactNode }) {
       <ProfileSidebar uiState={uiState} />
       {/* sidebars=========================== */}
       <div>
-        <nav className={`flex items-center justify-between h-[50px] px-[20px] fixed top-0 left-[50px] w-[calc(100vw-50px)] ${import.meta.env.VITE_REACT_APP_API_BASE_URL === "https://vansapiv2.mscorpres.net/" ? "bg-amber-300" : "bg-neutral-300"}`}>
+        <nav
+          className={`flex items-center justify-between h-[50px] px-[20px] fixed top-0 left-[50px] w-[calc(100vw-50px)] ${
+            window.location.hostname.includes("localhost")
+              ? "bg-amber-300" // Dev environment
+              : window.location.hostname.includes("dev-vans")
+              ? "bg-yellow-300" // Staging environment
+              : "bg-neutral-300" // Production environment
+          }`}
+        >
           <div className="flex gap-[20px] items-center">
             <div className="text-slate-700 font-[600] logo">VANS</div>
             <div className="date">

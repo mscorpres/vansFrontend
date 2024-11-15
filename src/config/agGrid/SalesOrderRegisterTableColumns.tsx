@@ -214,7 +214,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item
         key="approve"
         onClick={() => handleshowMaterialListForApprove(row)}
-        disabled={isDisabled}
+        // disabled={isDisabled}
       >
         View/Approve
       </Menu.Item>
@@ -304,19 +304,30 @@ export const columnDefs: ColDef<any>[] = [
     maxWidth: 50,
     filter: false,
   },
-
+  
   {
     headerName: "SO ID",
     field: "so_id",
     filter: "agTextColumnFilter",
     cellRenderer: CopyCellRenderer,
   },
-  { headerName: "Status", field: "soStatus", filter: "agTextColumnFilter" },
   {
-    headerName: "SO Invoice Status",
-    field: "soInvoiceStatus",
+    headerName: "Created Date",
+    field: "createDate",
     filter: "agTextColumnFilter",
   },
+  {
+    headerName: "PO ID",
+    field: "po_number",
+    filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
+  },
+  {
+    headerName: "PO Date",
+    field: "po_date",
+    filter: "agTextColumnFilter",
+  },
+  { headerName: "Status", field: "soStatus", filter: "agTextColumnFilter" },
   {
     headerName: "Approve Status",
     field: "approveStatus",
@@ -335,13 +346,13 @@ export const columnDefs: ColDef<any>[] = [
     cellRenderer: CopyCellRenderer,
   },
   {
-    headerName: "Created Date",
-    field: "createDate",
+    headerName: "Created By",
+    field: "createBy",
     filter: "agTextColumnFilter",
   },
   {
-    headerName: "Created By",
-    field: "createBy",
+    headerName: "Approved By",
+    field: "approve_by",
     filter: "agTextColumnFilter",
   },
 ];
@@ -373,6 +384,10 @@ const materialListColumnDefs: ColDef[] = [
   {
     headerName: "Qty",
     field: "qty",
+  },
+  {
+    headerName: "Pending Qty",
+    field: "pending_qty",
   },
   { headerName: "UoM", field: "uom" },
   { headerName: "GST Rate", field: "gstRate" },
