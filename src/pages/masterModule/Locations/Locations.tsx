@@ -179,7 +179,7 @@ const Locations = () => {
         <Form form={form}>
           <form
             // onSubmit={form.handleSubmit(onsubmit)}
-            className="space-y-6 overflow-hidden p-[10px] h-full"
+            className="space-y-6 overflow-hidden p-[10px] h-[450px]"
           >
             {" "}
             <div className="">
@@ -251,15 +251,6 @@ const Locations = () => {
                     isClearable={true}
                     isSearchable={true}
                     options={locType}
-                    //   onChange={(e) => console.log(e)}
-                    //   value={
-                    //     data.clientDetails
-                    //       ? {
-                    //           label: data.clientDetails.city.name,
-                    //           value: data.clientDetails.city.name,
-                    //         }
-                    //       : null
-                    //   }
                   />
                 </Form.Item>
                 {/* )}

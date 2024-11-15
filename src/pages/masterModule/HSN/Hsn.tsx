@@ -333,6 +333,7 @@ const Hsn = () => {
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}
+              disabled={rowData.length === 0}
             >
               Submit
             </Button>

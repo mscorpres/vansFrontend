@@ -309,7 +309,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => createEntry()}
+              onClick={() => submitTheForm()}
               className="bg-[#0E7490] hover:bg-[#0E7490]"
             >
               Continue
@@ -599,7 +599,10 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             />
                           )} */}
                             <Button
-                              onClick={() => setSheetOpen(true)}
+                              onClick={(e) => {
+                                e.preventDefault(e);
+                                setSheetOpen(true);
+                              }}
                               // disabled={!selectedFile}
                             >
                               Attach Image
@@ -684,9 +687,9 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                   <Button
                     variant={"outline"}
                     className="shadow-slate-300 mr-[10px] border-slate-400 border"
-                    onClick={(e: any) => {
-                      setOpen(true);
+                    onClick={(e) => {
                       e.preventDefault();
+                      setSheetOpenEdit(false);
                     }}
                   >
                     Back
@@ -695,7 +698,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                     // type="submit"
                     className="bg-cyan-700 hover:bg-cyan-600"
                     onClick={(e: any) => {
-                      submitTheForm();
+                      setOpen(true);
                       e.preventDefault();
                     }}
                   >
@@ -776,6 +779,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
             <Button
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
               // onClick={() => setTab("create")}
+              onClick={() => setSheetOpen(false)}
             >
               Back
             </Button>{" "}

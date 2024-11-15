@@ -303,7 +303,7 @@ const CompletedPOPage: React.FC = () => {
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
-          columnDefs={columnDefs}
+          columnDefs={columnDefs as (ColDef | ColGroupDef)[]}
           defaultColDef={{ filter: true, sortable: true }}
           // rowSelection="multiple"
           // suppressRowClickSelection={false}
