@@ -21,9 +21,11 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { Form } from "antd";
 import { toast } from "@/components/ui/use-toast";
 import { RowData } from "@/data";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 const Locations = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [form] = Form.useForm();
 
   const { execFun, loading: loading1 } = useApi();
@@ -117,6 +119,7 @@ const Locations = () => {
       fetchGroupOptionslist();
       fetchGrouplist();
       form.resetFields();
+      setShowConfirmation(false);
     } else {
       toast({
         title: data.message.msg,
@@ -148,12 +151,6 @@ const Locations = () => {
       field: "parentLocation",
       filter: "agTextColumnFilter",
       width: 320,
-    },
-    {
-      headerName: "Is Blocked",
-      field: "status",
-      filter: "agTextColumnFilter",
-      width: 250,
     },
   ];
   const locType = [
@@ -290,7 +287,7 @@ const Locations = () => {
               type="submit"
               onClick={(e) => {
                 e.preventDefault();
-                handleSubmit();
+                setShowConfirmation(true);
               }}
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
             >
@@ -310,7 +307,14 @@ const Locations = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
         />
-      </div>
+      </div>{" "}
+      <ConfirmationModal
+        open={showConfirmation}
+        onClose={setShowConfirmation}
+        onOkay={handleSubmit}
+        title="Confirm Submit!"
+        description="Are you sure to submit the entry?"
+      />
     </Wrapper>
   );
 };

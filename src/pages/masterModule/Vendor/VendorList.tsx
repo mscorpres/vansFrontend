@@ -199,27 +199,28 @@ const VendorList = () => {
     {
       field: "action",
       headerName: "",
-      width: 150,
+      width: 50,
       cellRenderer: (params: any) => <ActionMenu row={params} />,
     },
     {
       headerName: "Name",
       field: "vendor_name",
       filter: "agTextColumnFilter",
-      width: 350,
+      width: 450,
     },
     {
       headerName: "Code",
       field: "vendor_code",
       filter: "agTextColumnFilter",
-      width: 250,
+      width: 200,
       cellRenderer: CopyCellRenderer,
     },
     {
       headerName: "PAN No.",
       field: "vendor_pan",
       filter: "agTextColumnFilter",
-      width: 250,
+      flex: 2,
+      // cellRenderer: CopyCellRenderer,
     },
   ];
 

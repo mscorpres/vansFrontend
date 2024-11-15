@@ -30,6 +30,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { Filter } from "lucide-react";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -91,6 +93,7 @@ const Groups = () => {
         title: data.message,
         className: "bg-green-600 text-white items-center",
       });
+      setOpen(false);
     } else {
       setLoading(false);
       toast({
@@ -117,7 +120,7 @@ const Groups = () => {
       headerName: "Group Name",
       field: "group_name",
       filter: "agTextColumnFilter",
-      width: 750,
+      width: 550,
     },
     {
       headerName: "Insert Date",
@@ -133,25 +136,18 @@ const Groups = () => {
       {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
-        <AlertDialog open={open} onOpenChange={setOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to submit the form?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => createEntry()}
-                className="bg-[#0E7490] hover:bg-[#0E7490]"
-              >
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+
+        <ConfirmationModal
+          open={open}
+          onClose={setOpen}
+          onOkay={createEntry}
+          title="Confirm Submit!"
+          description="Are you sure to submit the entry?"
+        />{" "}
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <Filter className="h-[20px] w-[20px]" />
+          Add
+        </div>
         <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
