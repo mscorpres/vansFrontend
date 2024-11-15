@@ -310,17 +310,17 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Approval Status",
     field: "approval_status",
     valueGetter: (params) =>
-      params?.data?.approval_status === "Y" ? "Yes" : "No",
+      params?.data?.approval_status === "A" ? "Approved" : "Pending",
   },
   {
     headerName: "Shipment Status",
     field: "shipment_status",
     valueGetter: (params) =>
       params?.data?.shipment_status === "Y"
-        ? "Yes"
+        ? "Active"
         : params?.data?.shipment_status === "C"
         ? "Cancelled"
-        : "No",
+        : "Pending",
   },
   {
     headerName: "Material Status",
