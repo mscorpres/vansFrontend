@@ -9,7 +9,7 @@ interface Props {
 const GoBackConfermationModel: React.FC<Props> = ({ open, setOpen,goBack }) => {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent>
+      <AlertDialogContent>//addComment
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>Are you sure you want to go back? Your all changes will be lost.</AlertDialogDescription>
