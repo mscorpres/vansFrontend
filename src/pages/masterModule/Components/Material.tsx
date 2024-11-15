@@ -208,6 +208,23 @@ const Material = () => {
   }, [uomlist]);
   const columnDefs: ColDef<rowData>[] = [
     {
+      field: "action",
+      headerName: "ACTION",
+      flex: 1,
+      cellRenderer: (param) => {
+        return (
+          <div className="flex gap-[5px] items-center justify-center h-full">
+            {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+            <Edit2
+              className="h-[20px] w-[20px] text-cyan-700 "
+              onClick={() => setSheetOpenEdit(param?.data)}
+            />
+            {/* </Button> */}
+          </div>
+        );
+      },
+    },
+    {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
@@ -228,29 +245,13 @@ const Material = () => {
     {
       headerName: "Description",
       field: "c_specification",
+      flex: 4,
       filter: "agTextColumnFilter",
     },
     {
       headerName: "UoM",
       field: "units_name",
       filter: "agTextColumnFilter",
-    },
-    {
-      field: "action",
-      headerName: "ACTION",
-      flex: 1,
-      cellRenderer: (param) => {
-        return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
-            {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
-            <Edit2
-              className="h-[20px] w-[20px] text-cyan-700 "
-              onClick={() => setSheetOpenEdit(param?.data)}
-            />
-            {/* </Button> */}
-          </div>
-        );
-      },
     },
   ];
   const onSubmit = async () => {

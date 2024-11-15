@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 
@@ -189,7 +189,8 @@ const MasterCustomerPage: React.FC = () => {
       headerName: "GST",
       field: "gst",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 190,
+      cellRenderer: CopyCellRenderer,
     },
     {
       headerName: "Country",
@@ -213,7 +214,8 @@ const MasterCustomerPage: React.FC = () => {
       headerName: "Address ID",
       field: "addressID",
       filter: "agTextColumnFilter",
-      width: 150,
+      cellRenderer: CopyCellRenderer,
+      width: 200,
     },
     {
       headerName: "Address Line 1",

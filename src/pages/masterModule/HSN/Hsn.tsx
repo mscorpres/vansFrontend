@@ -20,6 +20,7 @@ import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import { useDispatch, useSelector } from "react-redux";
 import { RowData } from "@/data";
 import { AppDispatch, RootState } from "@/store";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -37,6 +38,7 @@ const Hsn = () => {
   const [callreset, setCallReset] = useState(false);
   const [search, setSearch] = useState("");
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [formValues, setFormValues] = useState({ compCode: "" });
   const dispatch = useDispatch<AppDispatch>();
   //   const { upda, currency } = useSelector(
@@ -171,7 +173,7 @@ const Hsn = () => {
       });
       form.resetFields();
       setRowData([]);
-      // getTheListHSN();
+      setShowConfirmation(false);
     } else {
       toast({
         title: data.message.msg,
@@ -287,7 +289,7 @@ const Hsn = () => {
           description={"Are you sure you want to remove this entry?"}
         />
       )}
-      <div className="h-[calc(100vh-80px)]  ">
+      <div className="h-[calc(100vh-80px)] bg-white ">
         <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
           <Button
             onClick={() => {
@@ -330,13 +332,20 @@ const Hsn = () => {
             </Button>
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={() => handleSubmit()}
+              onClick={() => setShowConfirmation(true)}
             >
               Submit
             </Button>
           </div>
         </div>{" "}
-      </div>
+      </div>{" "}
+      <ConfirmationModal
+        open={showConfirmation}
+        onClose={setShowConfirmation}
+        onOkay={handleSubmit}
+        title="Confirm Submit!"
+        description="Are you sure to submit the entry?"
+      />
     </Wrapper>
   );
 };

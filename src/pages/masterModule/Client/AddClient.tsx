@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Select from "react-select";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
@@ -55,19 +54,56 @@ interface Props {
   setPayloadData: Dispatch<SetStateAction<any>>;
 }
 const FormSchema = z.object({
-  name: z.string().optional(),
-  salesPerson: z.string().optional(),
-  address: z.string().optional(),
-  mobile: z.string().optional(),
-  phone: z.string().optional(),
-  gst: z.string().optional(),
-  city: z.string().optional(),
-  zip: z.string().optional(),
-  email: z.string().optional(),
-  website: z.string().optional(),
-  country: z.union([z.string(), z.number()]).transform((val) => String(val)),
-  state: z.string().optional(),
-  pan: z.string().optional(),
+  name: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Name is required.",
+  }),
+  salesPerson: z
+    .string()
+    .refine((data) => data !== undefined && data.length > 0, {
+      message: "Salesperson is required.",
+    }),
+  address: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Address is required.",
+  }),
+  mobile: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Mobile number is required.",
+  }),
+  phone: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Phone number is required.",
+  }),
+  gst: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "GST number is required.",
+  }),
+  city: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "City is required.",
+  }),
+  zip: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Zip code is required.",
+  }),
+  email: z
+    .string()
+    .email({ message: "Please enter a valid email" })
+    .refine((data) => data !== undefined && data.length > 0, {
+      message: "Email is required.",
+    }),
+  website: z
+    .string()
+    .url({ message: "Please enter a valid website URL" })
+    .refine((data) => data !== undefined && data.length > 0, {
+      message: "Website is required.",
+    }),
+  country: z
+    .union([z.string(), z.number()])
+    .refine((data) => data !== undefined && data !== "", {
+      message: "Country is required.",
+    })
+    .transform((val) => String(val)),
+  state: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "State is required.",
+  }),
+  pan: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "PAN number is required.",
+  }),
 });
 const AddClient: React.FC<Props> = ({
   setTabvalue,
