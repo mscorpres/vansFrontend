@@ -12,9 +12,7 @@ import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
 import { fetchneededApprovalPO, printPO } from "@/features/client/clientSlice";
-import {
-  exportDateRangespace,
-} from "@/components/shared/Options";
+import { exportDateRangespace } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
 import ViewCompoents from "./ProcurementModule/ManagePO/ViewCompoents";
 import POCancel from "./ProcurementModule/ManagePO/POCancel";
@@ -26,6 +24,7 @@ import { transformOptionData } from "@/helper/transform";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { rangePresets } from "@/General";
+import { ColGroupDef } from "ag-grid-community";
 const ActionMenu: React.FC<ActionMenuProp> = ({ row }) => {
   const navigate = useNavigate();
 
@@ -158,8 +157,7 @@ const ApprovePOPage: React.FC = () => {
     let payload: any = {
       poId: row?.po_transaction,
     };
-    dispatch(printPO(payload)).then((res: any) => {
-    });
+    dispatch(printPO(payload)).then((res: any) => {});
   };
   const dispatch = useDispatch<AppDispatch>();
 
@@ -196,7 +194,7 @@ const ApprovePOPage: React.FC = () => {
     //   setRowData(managePoList);
     // }
   };
- 
+
   useEffect(() => {
     form.setFieldValue("data", "");
   }, [selectedwise]);
@@ -295,7 +293,7 @@ const ApprovePOPage: React.FC = () => {
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
-          columnDefs={columnDefs}
+          columnDefs={columnDefs as (ColDef | ColGroupDef)[]}
           defaultColDef={{ filter: true, sortable: true }}
           // rowSelection="multiple"
           // suppressRowClickSelection={false}

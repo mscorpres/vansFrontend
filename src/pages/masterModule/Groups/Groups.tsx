@@ -136,7 +136,6 @@ const Groups = () => {
       {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
-
         <ConfirmationModal
           open={open}
           onClose={setOpen}
@@ -154,7 +153,11 @@ const Groups = () => {
             className="space-y-6 overflow-hidden p-[10px]"
           >
             {" "}
-            <Form.Item name="groupName" label="Group Name">
+            <Form.Item
+              name="groupName"
+              label="Group Name"
+              rules={[{ required: true, message: "Group Name is required" }]}
+            >
               <Input
                 className={InputStyle}
                 placeholder="Enter Group Name"
@@ -166,6 +169,7 @@ const Groups = () => {
               <Button
                 type="reset"
                 className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                onClick={() => form.resetFields()}
               >
                 Reset
               </Button>

@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Upload } from "lucide-react";
 import { FaFileExcel } from "react-icons/fa";
-import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
@@ -29,6 +28,7 @@ import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import RejectModal from "@/components/shared/RejectModal";
+import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
 import {
   Sheet,
   SheetContent,
@@ -156,12 +156,6 @@ const AddPO: React.FC<Props> = ({
     ]);
   };
   const removeRows = () => {};
-  const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      floatingFilter: false,
-      editable: false,
-    };
-  }, []);
 
   const statusBar = useMemo<{
     statusPanels: StatusPanelDef[];
@@ -201,6 +195,12 @@ const AddPO: React.FC<Props> = ({
     }),
     []
   );
+  const defaultColDef = useMemo<ColDef>(() => {
+    return {
+      floatingFilter: false,
+      editable: false,
+    };
+  }, []);
 
   const onBtExport = useCallback(() => {
     gridRef.current!.api.exportDataAsExcel();
@@ -601,7 +601,7 @@ const AddPO: React.FC<Props> = ({
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
-              columnDefs={columnDefs}
+              columnDefs={columnDefs as (ColDef | ColGroupDef)[]}
               defaultColDef={defaultColDef}
               statusBar={statusBar}
               components={components}
@@ -733,7 +733,7 @@ const AddPO: React.FC<Props> = ({
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-              // onClick={() => setTab("create")}
+              onClick={() => setSheetOpen(false)}
             >
               Back
             </Button>{" "}

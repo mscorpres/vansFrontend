@@ -179,7 +179,7 @@ const Locations = () => {
         <Form form={form}>
           <form
             // onSubmit={form.handleSubmit(onsubmit)}
-            className="space-y-6 overflow-hidden p-[10px] h-full"
+            className="space-y-6 overflow-hidden p-[10px] h-[450px]"
           >
             {" "}
             <div className="">
