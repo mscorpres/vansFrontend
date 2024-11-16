@@ -124,7 +124,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       cellRenderer: (params: any) => {
         return (
           <Input
-            value={remarks[params.data?.item] || ""} // Control the value of the input
+            value={remarks[params.data?.item] || ""} 
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setRemarks((prevRemarks) => ({
                 ...prevRemarks,

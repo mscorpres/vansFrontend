@@ -18,6 +18,7 @@ import {
   fetchMaterialList,
   fetchSellRequestList,
   printSellOrder,
+  rejectSo,
   shortClose,
 } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
@@ -36,9 +37,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
     useState(false);
   const [showHandleCloseModal, setShowHandleCloseModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
   const [form] = Form.useForm();
   const [invoiceForm] = Form.useForm(); // Form instance for the invoice modal
   const [shortCloseForm] = Form.useForm(); // Form instance for the invoice modal
+  const [rejectform] = Form.useForm(); // Form instance for the invoice modal
   const { sellRequestList, loading } = useSelector(
     (state: RootState) => state.sellRequest
   );
@@ -87,6 +90,33 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       }
     });
     setShowConfirmationModal(false);
+  };
+
+  const handleOkReject = () => {
+    rejectform
+      .validateFields()
+      .then((values) => {
+        const payload = {
+          remark: values.remark || "",
+          so_id: row?.so_id,
+        };
+        dispatch(rejectSo(payload) as any).then((response: any) => {
+          console.log(response);
+          if (response?.payload?.code == 200) {
+            form.resetFields();
+            dispatch(
+              fetchSellRequestList({
+                type: "date_wise",
+                data: dateRange,
+              }) as any
+            );
+          }
+        });
+        setIsModalVisible(false);
+      })
+      .catch((errorInfo) => {
+        console.error("Validation Failed:", errorInfo);
+      });
   };
 
   const handleOk = () => {
@@ -170,23 +200,21 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const handleShortCloseModalOk = () => {
-    shortCloseForm
-    .validateFields()
-    .then((values) => {
+    shortCloseForm.validateFields().then((values) => {
       const payload: any = {
         so_id: row?.so_id,
         remark: values.remark,
       };
-    dispatch(shortClose(payload)).then((response: any) => {
-      if (response?.payload?.code == 200) {
-        setShowHandleCloseModal(false);
-        dispatch(
-          fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
-        );
-      }
+      dispatch(shortClose(payload)).then((response: any) => {
+        if (response?.payload?.code == 200) {
+          setShowHandleCloseModal(false);
+          dispatch(
+            fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
+          );
+        }
+      });
     });
-  })
-}
+  };
 
   const isDisabled = row?.approveStatus === "Approved";
 
@@ -197,8 +225,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         : [],
     [sellRequestList]
   );
-
-  console.log(tableData);
 
   const menu = (
     <Menu>
@@ -218,20 +244,30 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       >
         View/Approve
       </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal} disabled={row?.soStatus==="Closed"}>
+      <Menu.Item
+        key="cancel"
+        onClick={showCancelModal}
+        disabled={row?.soStatus === "Closed"}
+      >
         Cancel
       </Menu.Item>
       <Menu.Item
         key="materialList"
         onClick={() => handleshowMaterialList(row)}
-        disabled={row?.approveStatus === "Pending"||row?.soStatus==="Closed"}
+        disabled={
+          row?.approveStatus === "Pending" || row?.soStatus === "Closed"
+        }
       >
         Create Shipment
       </Menu.Item>
       <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)}>
         Print
       </Menu.Item>
-      <Menu.Item key="shortClose" onClick={() => handleShortClose()} disabled={row?.soStatus==="Closed"}>
+      <Menu.Item
+        key="shortClose"
+        onClick={() => handleShortClose()}
+        disabled={row?.soStatus === "Closed"}
+      >
         Short Close
       </Menu.Item>
     </Menu>
@@ -277,6 +313,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         title={`Approve Sales Order for ${row?.so_id}`}
         submitText="Approve"
         handleSubmit={confirmApprove}
+        handleReject={() => setShowRejectModal(true)}
       />
       <CreateInvoiceDialog
         isDialogVisible={showHandleCloseModal}
@@ -286,6 +323,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         loading={loading}
         heading="Short Close"
         description={`Are you sure you want to Short close for SO ${row.so_id}?`}
+      />
+      <CreateInvoiceDialog
+        isDialogVisible={showRejectModal}
+        handleOk={handleOkReject}
+        handleCancel={() => setShowRejectModal(false)}
+        form={rejectform}
+        loading={loading}
+        heading="Reject"
+        description={`Are you sure you want to Reject this SO ${row.so_id}?`}
       />
     </>
   );
@@ -304,7 +350,7 @@ export const columnDefs: ColDef<any>[] = [
     maxWidth: 50,
     filter: false,
   },
-  
+
   {
     headerName: "SO ID",
     field: "so_id",
@@ -370,13 +416,13 @@ const materialListColumnDefs: ColDef[] = [
     width: 200,
   },
   {
-    headerName: "Material",
+    headerName: "Item Name",
     field: "itemName",
     width: 300,
     cellRenderer: "truncateCellRenderer",
   },
   {
-    headerName: "Material Specification",
+    headerName: "Item Specification",
     field: "itemSpecification",
     cellRenderer: "truncateCellRenderer",
   },

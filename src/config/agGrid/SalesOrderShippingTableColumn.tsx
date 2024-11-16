@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 // import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
-import { printSellOrder } from "@/features/salesmodule/SalesSlice";
+import { printShipment } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
 import {
@@ -156,7 +156,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const handlePrintOrder = async (orderId: string) => {
-    dispatch(printSellOrder({ so_id: orderId })).then((response: any) => {
+    dispatch(printShipment({ shipment_id: orderId })).then((response: any) => {
       if (response?.payload?.success) {
         printFunction(response?.payload?.data.buffer.data);
       }
@@ -221,6 +221,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         disabled={isDisabled || row?.material_status !== "Y"}
       >
         Create Invoice
+      </Menu.Item>
+      <Menu.Item
+        key="print"
+        onClick={() => handlePrintOrder(row?.shipment_id)}
+      >
+        Print
       </Menu.Item>
     </Menu>
   );
