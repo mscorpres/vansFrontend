@@ -218,7 +218,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item
         key="createInvoice"
         onClick={showInvoiceModal}
-        disabled={isDisabled || row?.material_status !== "OUT"}
+        disabled={isDisabled || row?.material_status !== "Y"}
       >
         Create Invoice
       </Menu.Item>
