@@ -211,7 +211,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClick={() => {
           handleshowMaterialList(row);
         }}
-        disabled={row?.approval_status === "P"}
+        disabled={row?.approval_status === "P"|| row?.material_status === "Y"}
       >
         PickSlip
       </Menu.Item>
