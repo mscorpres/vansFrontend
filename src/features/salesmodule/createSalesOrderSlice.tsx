@@ -53,7 +53,7 @@ interface SellRequestPayload {
     shipping_address1: string;
     shipping_address2: string;
     shipping_pinCode: string;
-    [key: string]: any; 
+    [key: string]: any;
   };
   materials: {
     items: string[];
@@ -144,6 +144,26 @@ export const fetchBillingAddress = createAsyncThunk<
   }
 });
 
+export const uploadSOExcel = createAsyncThunk<
+  any, // Define the type of the data you expect to return
+  { file: File } // Define the type of the argument you expect
+>("/client/uploadExcel", async ({ file }) => {
+  const formData = new FormData();
+  formData.append("file", file); // Append the file to FormData
+
+  const response = await spigenAxios.post(
+    "/sellRequest/uploadSOItems",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data", // Set appropriate headers
+      },
+    }
+  );
+
+  return response.data;
+});
+
 export const fetchBillAddressList = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { id: string } // Define the type of the argument you expect
@@ -159,7 +179,9 @@ export const fetchBillAddress = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { id: string } // Define the type of the argument you expect
 >("/client/fetchBillAddress", async (id: any) => {
-  const response = await spigenAxios.post(`backend/billingAddress`, {"billing_code": id});
+  const response = await spigenAxios.post(`backend/billingAddress`, {
+    billing_code: id,
+  });
 
   return response.data;
 });
@@ -186,9 +208,7 @@ export const fetchCurrency = createAsyncThunk<any[], void>(
   "client/fetchCurrency",
   async () => {
     try {
-      const response = await spigenAxios.get<any>(
-        "/backend/fetchAllCurrecy"
-      );
+      const response = await spigenAxios.get<any>("/backend/fetchAllCurrecy");
       return response.data.data;
     } catch (error) {
       if (error instanceof Error) {
@@ -365,7 +385,10 @@ export const createSalesOrderRequest = createAsyncThunk<
   ApiResponse<any>,
   SellRequestPayload
 >("/sellRequest/createSalesOrderRequest", async (payload) => {
-  const response = await spigenAxios.post("/soCreate/createSalesOrder", payload);
+  const response = await spigenAxios.post(
+    "/soCreate/createSalesOrder",
+    payload
+  );
   return response.data;
 });
 
@@ -373,7 +396,10 @@ export const updateSalesOrderRequest = createAsyncThunk<
   ApiResponse<any>,
   SellRequestPayload
 >("/sellRequest/updateSalesOrderRequest", async (payload) => {
-  const response = await spigenAxios.post("/salesOrder/updateSalesOrder", payload);
+  const response = await spigenAxios.post(
+    "/salesOrder/updateSalesOrder",
+    payload
+  );
   return response.data;
 });
 

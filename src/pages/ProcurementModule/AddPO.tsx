@@ -30,6 +30,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { useNavigate } from "react-router-dom";
 import { RowData } from "@/data";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { ColGroupDef } from "ag-grid-community";
 
 interface Props {
   setTab: string;
@@ -63,6 +64,7 @@ const AddPO: React.FC<Props> = ({
   const [resetModel, setResetModel] = useState<boolean>(false);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
+  const [search, setSearch] = useState("");
   const [taxDetails, setTaxDetails] = useState([]);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -234,7 +236,6 @@ const AddPO: React.FC<Props> = ({
           updaterow: arr.map((r: any) => r.updateingId),
         };
         dispatch(updatePo(payload2)).then((response: any) => {
-
           if (response.payload.code == 200) {
             setShowConfirmation(false);
             toast({
@@ -275,7 +276,6 @@ const AddPO: React.FC<Props> = ({
         });
       } else {
         dispatch(createSellRequest(payload)).then((response: any) => {
-
           if (response.payload.code == 200) {
             setShowConfirmation(false);
             toast({
@@ -653,8 +653,7 @@ const AddPO: React.FC<Props> = ({
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
-              columnDefs={columnDefs}
-              defaultColDef={defaultColDef}
+              columnDefs={columnDefs as (ColDef | ColGroupDef)[]}
               statusBar={statusBar}
               components={components}
               pagination={true}

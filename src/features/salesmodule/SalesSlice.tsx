@@ -152,6 +152,32 @@ export const approveSo = createAsyncThunk(
   }
 );
 
+export const rejectSo = createAsyncThunk(
+  "client/rejectSo",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/salesOrder/rejectSo",
+        payload
+      )) as any;
+
+      if (response?.data?.code == 200) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 export const cancelSalesOrder = createAsyncThunk(
   "client/cancelSalesOrder",
   async (payload: CancelPayload, { rejectWithValue }) => {
@@ -279,6 +305,30 @@ export const printSellOrder = createAsyncThunk(
   }
 );
 
+export const printShipment = createAsyncThunk(
+  "client/printShipment",
+  async ({ shipment_id }: { shipment_id: string }, { rejectWithValue }) => {
+    try {
+      const response = await spigenAxios.post<any>(
+        "/salesOrder/printShipment",
+        { shipment_id: shipment_id }
+      );
+
+      if (!response.data) {
+        throw new Error("No data received");
+      }
+      // Return the entire response as expected by the fulfilled case
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle error using rejectWithValue
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 export const shortClose = createAsyncThunk(
   "client/shortClose",
   async (payload: any, { rejectWithValue }) => {
@@ -341,6 +391,17 @@ const sellRequestSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to create sell request";
       })
+      .addCase(rejectSo.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(rejectSo.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(rejectSo.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to create sell request";
+      })
       .addCase(cancelSalesOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -394,6 +455,17 @@ const sellRequestSlice = createSlice({
         state.loading = false;
       })
       .addCase(printSellOrder.rejected, (state, action) => {
+        state.error = action.error?.message || null;
+        state.loading = false;
+      })
+
+      .addCase(printShipment.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(printShipment.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(printShipment.rejected, (state, action) => {
         state.error = action.error?.message || null;
         state.loading = false;
       })

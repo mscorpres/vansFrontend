@@ -1,4 +1,4 @@
-import { Button,Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
 import { FormInstance } from "antd/lib/form";
 import {
   Dialog,
@@ -7,7 +7,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"; // Ensure this path is correct
-import { InputStyle } from "@/constants/themeContants";
 
 interface CreateInvoiceDialogProps {
   isDialogVisible: boolean;
@@ -18,7 +17,7 @@ interface CreateInvoiceDialogProps {
   form: FormInstance;
   loading?: boolean;
 }
- 
+
 export function CreateInvoiceDialog({
   isDialogVisible,
   handleOk,
@@ -32,7 +31,7 @@ export function CreateInvoiceDialog({
     <Dialog open={isDialogVisible} onOpenChange={handleCancel}>
       <DialogContent
         className="min-w-[600px]"
-        onInteractOutside={(e:any) => e.preventDefault()}
+        onInteractOutside={(e: any) => e.preventDefault()}
       >
         {loading ? (
           <div className="flex items-center justify-center h-full">
@@ -44,16 +43,14 @@ export function CreateInvoiceDialog({
               <DialogTitle>{heading}</DialogTitle>
             </DialogHeader>
             <Form form={form} layout="vertical">
-              <p className="pb-5 text-[18px]">
-                {description}
-              </p>
+              <p className="pb-5 text-[18px]">{description}</p>
 
               <Form.Item name="remark" label="Remark">
-              <Input.TextArea
-                    rows={4}
-                    placeholder="Enter remarks here"
-                    style={{ height: 50, resize: "none" }}
-                  />
+                <Input.TextArea
+                  rows={4}
+                  placeholder="Enter remarks here"
+                  style={{ height: 50, resize: "none" }}
+                />
               </Form.Item>
             </Form>
             <DialogFooter>

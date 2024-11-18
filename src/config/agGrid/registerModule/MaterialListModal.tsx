@@ -24,8 +24,9 @@ interface MaterialListModalProps {
   columnDefs: any;
   title: string;
   title2?: string;
-  submitText:string,
-  handleSubmit:()=> void
+  submitText: string;
+  handleSubmit: () => void;
+  handleReject?: () => void;
 }
 
 const MaterialListModal: React.FC<MaterialListModalProps> = ({
@@ -37,7 +38,8 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
   title,
   title2,
   submitText,
-  handleSubmit
+  handleSubmit,
+  handleReject,
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
 
@@ -61,16 +63,18 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
             <SheetTitle>{title}</SheetTitle>
             <SheetTitle>{title2}</SheetTitle>
           </div>
-          {title2&&<div className="flex-grow flex justify-center">
-            {/* Centering container */}
-            <Button
-              type="button"
-              onClick={onBtExport}
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            >
-              <Download />
-            </Button>
-          </div>}
+          {
+            <div className="flex-grow flex justify-center">
+              {/* Centering container */}
+              <Button
+                type="button"
+                onClick={onBtExport}
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              >
+                <Download />
+              </Button>
+            </div>
+          }
         </div>
 
         <div className="ag-theme-quartz h-[calc(100vh-170px)]">
@@ -94,6 +98,14 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
           >
             Back
           </Button>
+          {title.includes("Sales Order") && (
+            <Button
+              className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+              onClick={handleReject}
+            >
+              Reject
+            </Button>
+          )}
           <Button
             className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={handleSubmit}

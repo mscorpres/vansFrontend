@@ -19,6 +19,7 @@ import {
   stockOut,
 } from "@/features/salesmodule/salesShipmentSlice";
 import { toast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
 
 interface PickSlipModalProps {
   visible: boolean;
@@ -46,6 +47,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   const [selectedBoxes, setSelectedBoxes] = useState<{ [rowId: string]: any }>(
     {}
   ); // Changed to store selected boxes per row
+  const [remarks, setRemarks] = useState<{ [key: string]: string }>({});
   const [box, setBox] = useState<string[]>([]);
   const [qty, setQty] = useState<string[]>([]);
   const dispatch = useDispatch();
@@ -116,7 +118,23 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     },
     { headerName: "Item Part Number", field: "itemPartNo" },
     { headerName: "Qty", field: "qty" },
-    { headerName: "Remark", field: "itemRemark" },
+    {
+      headerName: "Remark",
+      field: "remark",
+      cellRenderer: (params: any) => {
+        return (
+          <Input
+            value={remarks[params.data?.item] || ""} 
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setRemarks((prevRemarks) => ({
+                ...prevRemarks,
+                [params.data?.item]: e.target.value,
+              }));
+            }}
+          />
+        );
+      },
+    }
   ];
 
   // Table data, mapping the available stock to rows
@@ -132,7 +150,11 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       qty: sellRequestDetails?.items?.map((item: any) => item?.qty),
       // box: Object.values(selectedBoxes).map((row: any) => row.boxes).flat(), / Flatten selected boxes
       // boxqty: Object.values(selectedBoxes).map((row: any) => row.qty).flat(), // Flatten quantities
-      remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark),
+      // remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark),
+      remark: sellRequestDetails?.items?.map((item: any) => {
+        // Use the user input from the remarks state, otherwise use an empty string ""
+        return remarks[item.item] || ""; // Empty string if no remark provided
+      }),
       costcenter: sellRequestDetails?.header?.costcenter?.code,
       //   boxqty: selectedBoxes.map((box: any) => box?.box_qty),
       box: box,
@@ -201,7 +223,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
           onSelect={(selectedData: any) => {
             console.log(selectedData, rowItem);
             handleSelectedBoxes(selectedData, rowItem);
-            updateBoxAndQty(selectedData, rowItem);
+            updateBoxAndQty(selectedData);
             
           }}
         />

@@ -174,7 +174,13 @@ const Service = () => {
           >
             <div className="grid grid-cols-2 gap-[40px]  ">
               <div className="">
-                <Form.Item name="partCode" label="Part Code">
+                <Form.Item
+                  name="partCode"
+                  label="Part Code"
+                  rules={[
+                    { required: true, message: "Please enter Part Code!" },
+                  ]}
+                >
                   <Input
                     className={InputStyle}
                     placeholder="Part Code"
@@ -183,7 +189,11 @@ const Service = () => {
                 </Form.Item>
               </div>
               <div className="">
-                <Form.Item name="uom" label="UOM">
+                <Form.Item
+                  name="uom"
+                  label="UOM"
+                  rules={[{ required: true, message: "Please enter UOM!" }]}
+                >
                   <Select
                     styles={customStyles}
                     components={{ DropdownIndicator }}
@@ -208,7 +218,13 @@ const Service = () => {
               </div>
             </div>
             <div className="">
-              <Form.Item name="compName" label="Component Name">
+              <Form.Item
+                name="compName"
+                label="Component Name"
+                rules={[
+                  { required: true, message: "Please enter Component Name!" },
+                ]}
+              >
                 <Input
                   className={InputStyle}
                   placeholder="Component Name"
@@ -218,7 +234,13 @@ const Service = () => {
             </div>
 
             <div className="">
-              <Form.Item name="specifiction" label="Specifiction">
+              <Form.Item
+                name="specifiction"
+                label="Specifiction"
+                rules={[
+                  { required: true, message: "Please enter Specifiction!" },
+                ]}
+              >
                 <Input
                   className={InputStyle}
                   placeholder="Specifiction"

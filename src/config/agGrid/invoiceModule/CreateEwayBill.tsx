@@ -9,7 +9,11 @@ import {
 } from "@/components/ui/form";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import { DatePickerStyle, InputStyle, LableStyle } from "@/constants/themeContants";
+import {
+  DatePickerStyle,
+  InputStyle,
+  LableStyle,
+} from "@/constants/themeContants";
 import Select from "react-select";
 
 import { Controller, useForm } from "react-hook-form";
@@ -80,7 +84,7 @@ export default function CreateEwayBill() {
     dispatch(action({ shipment_id: shipId })).then((res: any) => {
       if (res.payload?.success) {
         var data = res.payload?.data;
-        setTotalSum(data?.total_amount)
+        setTotalSum(data?.total_amount);
         form.setValue("header.documentNo", data?.documentNo);
         setOrderId(data?.documentNo);
         form.setValue(
@@ -127,7 +131,6 @@ export default function CreateEwayBill() {
   }, [ewayBillData]);
 
   const onSubmit = (payload: any) => {
-
     if (isEwayBill) {
       dispatch(createEwayBill(payload)).then((response) => {
         if (response.meta.requestStatus === "fulfilled") {
@@ -369,7 +372,7 @@ export default function CreateEwayBill() {
                           <FormControl>
                             <Space direction="vertical" size={12}>
                               <DatePicker
-                               className={DatePickerStyle}
+                                className={DatePickerStyle}
                                 format="DD-MM-YYYY"
                                 onChange={(value: Dayjs | null) => {
                                   const formattedDate = value
@@ -1041,7 +1044,6 @@ export default function CreateEwayBill() {
                                         : null
                                     );
                                   }}
-                                
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1205,7 +1207,6 @@ export default function CreateEwayBill() {
                                         : null
                                     );
                                   }}
-                                  
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1321,11 +1322,59 @@ export default function CreateEwayBill() {
               <Card className="rounded shadow bg-[#fff]">
                 <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
                   <h3 className="text-[17px] font-[600] text-slate-600">
-                    Transportation Details
+                    Dispatch Details
                   </h3>
                 </CardHeader>
                 <CardContent className="mt-[10px]">
                   <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+                    {!isEwayBill && (
+                      <div className="">
+                        <FormField
+                          control={form.control}
+                          name="header.dispatch_doc_no"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                Dispatch Doc No.
+                               
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Transporter Name"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
+                    {!isEwayBill && (
+                      <div className="">
+                        <FormField
+                          control={form.control}
+                          name="header.dispatch_through"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                Dispatch Through
+                              
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Dispatch Through"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
                     <div className="">
                       <FormField
                         control={form.control}
@@ -1378,7 +1427,7 @@ export default function CreateEwayBill() {
                         )}
                       />
                     </div>
-                 
+
                     <div className="">
                       <FormField
                         control={form.control}
@@ -1403,6 +1452,64 @@ export default function CreateEwayBill() {
                         )}
                       />
                     </div>
+                    {!isEwayBill && (
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="header.delivery_note"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Delivery Note
+                              
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Dilever Note"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    )}
+                     {!isEwayBill && (
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="header.delivery_date"
+                        render={() => (
+                          <FormItem className="pl-[10px] w-full flex flex-col">
+                            <FormLabel className={LableStyle}>
+                              Delivery Date
+                            </FormLabel>
+                            <FormControl>
+                              <Space direction="vertical" size={12}>
+                                <DatePicker
+                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
+                                  className={DatePickerStyle}
+                                  format="DD-MM-YYYY"
+                                  onChange={(value: Dayjs | null) => {
+                                    const formattedDate = value
+                                      ? value.format("DD-MM-YYYY")
+                                      : "";
+                                    form.setValue(
+                                      "headers.delivery_date",
+                                      formattedDate
+                                    );
+                                  }}
+                                />
+                              </Space>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                     )}
                   </div>
                 </CardContent>
               </Card>
@@ -1596,7 +1703,7 @@ export default function CreateEwayBill() {
                   Items Details: {rowData?.length} Items
                 </h3>
                 <h3 className="text-[17px] font-[600] text-slate-600">
-                  Total Amount:  {totalSum}
+                  Total Amount: {totalSum}
                 </h3>
               </CardHeader>
 
@@ -1634,7 +1741,7 @@ export default function CreateEwayBill() {
               />
               <ConfirmationModal
                 open={showConfirmation}
-                onClose={()=>setShowConfirmation(false)}
+                onClose={() => setShowConfirmation(false)}
                 onOkay={() => handleConfirmationClose(true)}
                 title="Confirm Submit!"
                 description="Are you sure want to submit?"

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 // import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
-import { printSellOrder } from "@/features/salesmodule/SalesSlice";
+import { printShipment } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
 import {
@@ -156,7 +156,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const handlePrintOrder = async (orderId: string) => {
-    dispatch(printSellOrder({ so_id: orderId })).then((response: any) => {
+    dispatch(printShipment({ shipment_id: orderId })).then((response: any) => {
       if (response?.payload?.success) {
         printFunction(response?.payload?.data.buffer.data);
       }
@@ -211,16 +211,22 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClick={() => {
           handleshowMaterialList(row);
         }}
-        disabled={row?.approval_status === "P"}
+        disabled={row?.approval_status === "P"|| row?.material_status === "Y"}
       >
         PickSlip
       </Menu.Item>
       <Menu.Item
         key="createInvoice"
         onClick={showInvoiceModal}
-        disabled={isDisabled || row?.material_status !== "OUT"}
+        disabled={isDisabled || row?.material_status !== "Y"}
       >
         Create Invoice
+      </Menu.Item>
+      <Menu.Item
+        key="print"
+        onClick={() => handlePrintOrder(row?.shipment_id)}
+      >
+        Print
       </Menu.Item>
     </Menu>
   );
@@ -284,16 +290,21 @@ export const columnDefs: ColDef<any>[] = [
     field: "shipment_id",
     filter: "agTextColumnFilter",
   },
-  { headerName: "SO ID", field: "so_id", filter: "agTextColumnFilter" },
   {
     headerName: "Shipment Date",
     field: "shipment_date",
     filter: "agNumberColumnFilter",
   },
+  { headerName: "SO ID", field: "so_id", filter: "agTextColumnFilter" },
   {
     headerName: "PO Number",
     field: "po_number",
     filter: "agTextColumnFilter",
+  },
+  {
+    headerName: "PO Date",
+    field: "po_date",
+    filter: "agDateColumnFilter",
   },
   {
     headerName: "Pickslip ID",
@@ -302,30 +313,27 @@ export const columnDefs: ColDef<any>[] = [
     cellRenderer:CopyCellRenderer
   },
   {
-    headerName: "PO Date",
-    field: "po_date",
-    filter: "agDateColumnFilter",
-  },
-  {
     headerName: "Approval Status",
     field: "approval_status",
     valueGetter: (params) =>
-      params?.data?.approval_status === "Y" ? "Yes" : "No",
+      params?.data?.approval_status === "A" ? "Approved" : "Pending",
   },
   {
     headerName: "Shipment Status",
     field: "shipment_status",
     valueGetter: (params) =>
       params?.data?.shipment_status === "Y"
-        ? "Yes"
+        ? "Active"
         : params?.data?.shipment_status === "C"
         ? "Cancelled"
-        : "No",
+        : "Pending",
   },
   {
     headerName: "Material Status",
     field: "material_status",
     filter: "agTextColumnFilter",
+    valueGetter: (params) =>
+      params?.data?.material_status === "Y" ? "Out" : "Pending",
   },
   {
     headerName: "SuplierName",
