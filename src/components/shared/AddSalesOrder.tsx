@@ -253,7 +253,7 @@ const AddSalesOrder = ({
 
   return (
     <Wrapper>
-      <AddPOPopovers uiState={uiState} />
+      <AddPOPopovers uiState={uiState} derivedState={derivedType}/>
       <div className="h-[calc(100vh-150px)] grid grid-cols-[400px_1fr]">
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
           <Card className="rounded-sm shadow-sm shadow-slate-500">
