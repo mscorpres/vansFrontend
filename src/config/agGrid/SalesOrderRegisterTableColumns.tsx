@@ -22,6 +22,7 @@ import {
 import { printFunction } from "@/components/shared/PrintFunctions";
 import { toast } from "@/components/ui/use-toast";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
+import { TruncateCellRenderer } from "@/General";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -357,6 +358,12 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Approved By",
     field: "approve_by",
     filter: "agTextColumnFilter",
+  },
+  {
+    headerName: "Reject Reason",
+    field: "reject_reason",
+    filter: "agTextColumnFilter",
+    cellRenderer:TruncateCellRenderer,
   },
 ];
 

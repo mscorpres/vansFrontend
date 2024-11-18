@@ -1341,7 +1341,7 @@ export default function CreateEwayBill() {
                               <FormControl>
                                 <Input
                                   className={InputStyle}
-                                  placeholder="Transporter Name"
+                                  placeholder=" Dispatch Doc No"
                                   {...field}
                                 />
                               </FormControl>

@@ -34,7 +34,7 @@ const ExcelImportButton: React.FC<ExcelImportButtonProps> = ({
                 title: resultAction.payload.message,
                 className: "bg-green-600 text-white items-center",
               });
-              onImport(resultAction.payload); // Pass backend response here
+              onImport(resultAction.payload?.data); // Pass backend response here
             } else {
               setError("Failed to upload the file. Please try again.");
             }
