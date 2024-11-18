@@ -6,14 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { useMemo, useState } from "react";
 import CreateShipmentListModal from "@/config/agGrid/registerModule/CreateShipmentListModal";
-// import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import {
   approveSo,
   cancelSalesOrder,
-  createInvoice,
   createShipment,
   fetchMaterialList,
   fetchSellRequestList,
@@ -33,13 +31,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [isInvoiceModalVisible, setIsInvoiceModalVisible] = useState(false);
   const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
     useState(false);
   const [showHandleCloseModal, setShowHandleCloseModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [form] = Form.useForm();
-  const [invoiceForm] = Form.useForm(); // Form instance for the invoice modal
   const [shortCloseForm] = Form.useForm(); // Form instance for the invoice modal
   const [rejectform] = Form.useForm(); // Form instance for the invoice modal
   const { sellRequestList, loading } = useSelector(
@@ -144,37 +140,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       .catch((errorInfo) => {
         console.error("Validation Failed:", errorInfo);
       });
-  };
-
-  const handleInvoiceModalOk = () => {
-    invoiceForm
-      .validateFields()
-      .then((values) => {
-        const payload: any = {
-          so_id: row?.so_id,
-          remark: values.remark,
-        };
-        dispatch(createInvoice(payload)).then((resultAction: any) => {
-          if (resultAction.payload?.success) {
-            setIsInvoiceModalVisible(false);
-            dispatch(
-              fetchSellRequestList({
-                type: "date_wise",
-                data: dateRange,
-              }) as any
-            );
-          }
-        });
-
-        invoiceForm.resetFields();
-      })
-      .catch((errorInfo) => {
-        console.error("Validation Failed:", errorInfo);
-      });
-  };
-
-  const handleInvoiceModalCancel = () => {
-    setIsInvoiceModalVisible(false);
   };
 
   const handlePrintOrder = async (orderId: string) => {
@@ -286,15 +251,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         form={form}
         loading={loading}
       />
-      <CreateInvoiceDialog
-        isDialogVisible={isInvoiceModalVisible}
-        handleOk={handleInvoiceModalOk}
-        handleCancel={handleInvoiceModalCancel}
-        form={invoiceForm}
-        loading={loading}
-        heading="Create Invoice"
-        description={`Are you sure you want to create an invoice for SO ${row.so_id}?`}
-      />
+
       <CreateShipmentListModal
         visible={isMaterialListModalVisible}
         onClose={handleMaterialListModalClose}

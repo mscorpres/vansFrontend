@@ -96,6 +96,9 @@ const CreateSalesOrderPage = () => {
       form.setValue("po_number", header?.po_number);
       form.setValue("po_date", header?.po_date);
       form.setValue("reference_no", header?.reference_no);
+      form.setValue("other_ref", header?.other_ref);
+      form.setValue("terms_of_delivery", header?.terms_of_delivery);
+      form.setValue("supply_city", header?.supply_city);
       form.setValue("ref_date", header?.reference_date);
       form.setValue("currency.currency", header?.currency);
       form.setValue("currency.exchange_rate", header?.exchange_rate);

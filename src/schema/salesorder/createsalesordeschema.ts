@@ -56,6 +56,9 @@ const createSalesFormSchema = z.object({
   quotationdetail: z.string().optional(),
   so_comment: z.string().optional(),
   termscondition: z.string().optional(),
+  terms_of_delivery:z.string().optional(),
+  other_ref:z.string().optional(),
+  supply_city:z.string().optional(),
 });
 
 // Define schema for "materials" with custom error messages
