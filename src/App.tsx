@@ -98,6 +98,9 @@ import CreatingBoxRecipe from "./pages/masterModule/Bom/CreatingBoxRecipe";
 import VendorPriceLayout from "./layouts/Master/VendorPriceLayout";
 import VendorPrice from "./pages/masterModule/VendorPrice/VendorPrice";
 import ApproveList from "./pages/masterModule/VendorPrice/ApproveList";
+import UomLayout from "./layouts/Master/UomLayout";
+import UoM from "./pages/masterModule/UOM/UoM";
+import Suom from "./pages/masterModule/UOM/Suom";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -131,6 +134,30 @@ const router = createBrowserRouter([
     path: "/forgot-password",
   },
   ////
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <UomLayout>
+            <UoM />
+          </UomLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/uom",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <UomLayout>
+            <Suom />
+          </UomLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/suom",
+  },
   {
     element: (
       <Protected authentication>

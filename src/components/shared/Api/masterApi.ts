@@ -7,8 +7,24 @@ export const createUomEntry = async (wise: any, data: any) => {
 
   return response;
 };
+export const createNewUomEntry = async (payload: any) => {
+  const response = await spigenAxios.post("/uom/insert", payload);
+
+  return response;
+};
+export const createNewSUomEntry = async (payload: any) => {
+  const response = await spigenAxios.post("/suom/insert", payload);
+
+  return response;
+};
 export const listOfUom = async () => {
   const response = await spigenAxios.get("/uom");
+  //console.log("here in api");
+
+  return response;
+};
+export const listOfsUom = async () => {
+  const response = await spigenAxios.get("/suom");
   //console.log("here in api");
 
   return response;
@@ -374,7 +390,6 @@ export const getListOFViewCustomers = async (payload: any) => {
   });
   return response;
 };
-
 
 export const getListOFbranchDetails = async (payload: any) => {
   const response = await spigenAxios.get(
