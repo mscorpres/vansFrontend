@@ -130,7 +130,7 @@ const CreateSalesOrderPage = () => {
         sgst: parseFloat(material.sgstRate) || 0,
         igst: parseFloat(material.igstRate) || 0,
         currency: material.currency || "364907247",
-        gstType: material.gsttype?.[0]?.id || "I",
+        gstType: material.gst_type || "I",
         dueDate: material.due_date || "",
         hsnCode: material.hsnCode || "",
         remark: material.itemRemark || "",
