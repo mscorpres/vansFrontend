@@ -64,7 +64,7 @@ const UoM = () => {
     const response = await execFun(() => listOfUom(), "fetch");
     // console.log("response", response);
     let { data } = response;
-    if (response.status === 200) {
+    if (response.data.code === 200) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -77,6 +77,10 @@ const UoM = () => {
       //     autoDismiss: true,
       //   });
     } else {
+      toast({
+        title: data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
       //   addToast(response.message, {
       //     appearance: "error",
       //     autoDismiss: true,
@@ -86,13 +90,13 @@ const UoM = () => {
   const createEntry = async () => {
     const values = await form.validateFields();
     setLoading(true);
-    console.log("values", values);
+    // console.log("values", values);
     let payload = {
       description: values.description,
       uom: values.groupName,
     };
     const response = await execFun(() => createNewUomEntry(payload), "fetch");
-    console.log("response", response);
+    // console.log("response", response);
     const { data } = response;
     if (data.code === 200) {
       setLoading(false);
@@ -139,7 +143,7 @@ const UoM = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       {" "}
       {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
@@ -205,7 +209,7 @@ const UoM = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

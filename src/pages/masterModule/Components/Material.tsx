@@ -510,7 +510,7 @@ const Material = () => {
 
                   <div className="">
                     {" "}
-                    <Form.Item name="moq" label="MOQ" rules={rules.moq}>
+                    <Form.Item name="moq" label="MOQ Qty" rules={rules.moq}>
                       <Input
                         className={InputStyle}
                         placeholder="MOQ Qty"

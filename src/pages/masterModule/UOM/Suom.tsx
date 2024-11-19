@@ -66,7 +66,7 @@ const Suom = () => {
     const response = await execFun(() => listOfsUom(), "fetch");
     // console.log("response", response);
     let { data } = response;
-    if (response.status === 200) {
+    if (response.data.code === 200) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
