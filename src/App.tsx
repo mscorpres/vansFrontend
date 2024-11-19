@@ -9,7 +9,6 @@ import HomePage from "./pages/HomePage";
 import CompletedPOPage from "./pages/CompletedPOPage";
 import ApprovePOPage from "./pages/ApprovePOPage";
 import ManagePoPage from "./pages/ProcurementModule/ManagePO/ManagePoPage";
-import LoginPage from "./pages/LoginPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import RegisterSalesOrderPage from "./pages/salesModule/RegisterSalesOrderPage";
 import "@ag-grid-community/styles/ag-grid.css";
@@ -102,6 +101,7 @@ import UomLayout from "./layouts/Master/UomLayout";
 import UoM from "./pages/masterModule/UOM/UoM";
 import Suom from "./pages/masterModule/UOM/Suom";
 import SopPage from "@/pages/fileupload/SopPage";
+import LogningV2 from "@/pages/WarehouseModule/LogningV2";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -117,9 +117,9 @@ const router = createBrowserRouter([
   {
     element: (
       <Protected authentication={false}>
-        <AuthLayout>
-          <LoginPage />
-        </AuthLayout>
+        {/* <AuthLayout> */}
+        <LogningV2 />
+        {/* </AuthLayout> */}
       </Protected>
     ),
     path: "/login",
@@ -197,9 +197,11 @@ const router = createBrowserRouter([
   },
   {
     element: (
-      <MainLayout>
-        <SopPage />
-      </MainLayout>
+      <Protected authentication>
+        <MainLayout>
+          <SopPage />
+        </MainLayout>
+      </Protected>
     ),
     path: "/sop",
   },

@@ -423,9 +423,7 @@ export default function SopPage() {
 
         <DialogContent dividers>
           <Typography gutterBottom>
-            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo
-            cursus magna, vel scelerisque nisl consectetur et. Donec sed odio
-            dui. Donec ullamcorper nulla non metus auctor fringilla.
+           Create new Folder
           </Typography>
           <FormControl sx={{ width: "600px", py: "10px" }} variant="outlined">
             <OutlinedInput

@@ -61,3 +61,21 @@
   align-items: center; /* Center vertically */
   height: 100%; /* Ensure full height for vertical centering */
 }
+
+.ant-picker-cell-in-view.ant-picker-cell-in-range .ant-picker-cell-inner {
+  background-color: #0891b2 !important; /* Change this to your desired selected range background color */
+  color: #fff;
+}
+
+
+.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #0891b2 !important; /* Change this to your desired selected date background color */
+  color: #fff;
+}
+.ant-picker-cell .ant-picker-cell-range-start .ant-picker-cell-in-view{
+  background-color: #e0f2f1 !important;
+}
+
+.MuiLoadingButton-root{
+  background-color: #0891b2 !important;
+}
