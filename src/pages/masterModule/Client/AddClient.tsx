@@ -266,7 +266,7 @@ const AddClient: React.FC<Props> = ({
       form.setValue("website", "");
     } else {
       toast({
-        title: response?.message,
+        title: response?.data.message.msg,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -278,7 +278,7 @@ const AddClient: React.FC<Props> = ({
 
   return (
     <div className="h-[calc(100vh-250px)]">
-      {data.loading && <FullPageLoading />}
+      {loading1("fetch") && <FullPageLoading />}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {loading1("1") && <FullPageLoading />}
@@ -497,6 +497,7 @@ const AddClient: React.FC<Props> = ({
                             <FormLabel className={LableStyle}>ZIP</FormLabel>
                             <FormControl>
                               <Input
+                                type="number"
                                 className={InputStyle}
                                 placeholder="Enter ZIP Number"
                                 {...field}
@@ -519,7 +520,8 @@ const AddClient: React.FC<Props> = ({
                               Phone Number
                             </FormLabel>
                             <FormControl>
-                              <Textarea
+                              <Input
+                                type="number"
                                 className={InputStyle}
                                 placeholder="Enter Phone Number"
                                 {...field}
@@ -540,7 +542,8 @@ const AddClient: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>Mobile</FormLabel>
                             <FormControl>
-                              <Textarea
+                              <Input
+                                type="number"
                                 className={InputStyle}
                                 placeholder="Enter Mobile Number"
                                 {...field}
@@ -560,7 +563,7 @@ const AddClient: React.FC<Props> = ({
                           <FormItem>
                             <FormLabel className={LableStyle}>Email</FormLabel>
                             <FormControl>
-                              <Textarea
+                              <Input
                                 className={InputStyle}
                                 placeholder="Enter Email ID"
                                 {...field}
@@ -582,7 +585,7 @@ const AddClient: React.FC<Props> = ({
                               Website
                             </FormLabel>
                             <FormControl>
-                              <Textarea
+                              <Input
                                 className={InputStyle}
                                 placeholder="Enter Website"
                                 {...field}
