@@ -221,7 +221,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         key="materialList"
         onClick={() => handleshowMaterialList(row)}
         disabled={
-          row?.approveStatus === "Pending" || row?.soStatus === "Closed"
+          row?.approveStatus === "Pending" || row?.soStatus === "Closed" ||row?.approveStatus === "Rejected"
         }
       >
         Create Shipment
@@ -378,6 +378,7 @@ const materialListColumnDefs: ColDef[] = [
     headerName: "Item",
     field: "item",
     width: 200,
+    cellRenderer: "truncateCellRenderer",
   },
   {
     headerName: "Item Name",

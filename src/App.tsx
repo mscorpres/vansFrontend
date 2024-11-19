@@ -101,6 +101,7 @@ import ApproveList from "./pages/masterModule/VendorPrice/ApproveList";
 import UomLayout from "./layouts/Master/UomLayout";
 import UoM from "./pages/masterModule/UOM/UoM";
 import Suom from "./pages/masterModule/UOM/Suom";
+import SopPage from "@/pages/fileupload/SopPage";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -193,6 +194,14 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/master/componentMap/customer",
+  },
+  {
+    element: (
+      <MainLayout>
+        <SopPage />
+      </MainLayout>
+    ),
+    path: "/sop",
   },
   {
     element: (

@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast";
 import { TimeRangePickerProps } from "antd";
 import dayjs from "dayjs";
 
@@ -70,3 +71,17 @@ export const rangePresets: TimeRangePickerProps["presets"] = [
     { code: "37", name: "Andhra Pradesh (New)" },
     { code: "38", name: "Ladakh" }
   ];
+
+  export const showToast = (message: any, type: string) => {
+    if (type == "error") {
+      toast({
+        title: message,
+        className: "bg-red-600 text-white items-center",
+      });
+    } else {
+      toast({
+        className: "bg-green-600 text-white items-center",
+        description: message,
+      });
+    }
+  };

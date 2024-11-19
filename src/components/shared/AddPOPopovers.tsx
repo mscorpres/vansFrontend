@@ -102,7 +102,7 @@ const AddPOPopovers: React.FC<Props> = ({ uiState ,derivedState}) => {
         rate: parseFloat(item.rate) || 0, // Ensure rate is numeric
         localValue: localValue, // Taxable value in the local currency
         // foreignValue: foreignValue, // Exchange taxable value (if applicable)
-        gstRate: gstRate, // GST rate applied
+        gstRate: item.gst, // GST rate applied
         cgst: cgst.toFixed(2), // GST calculation for CGST
         sgst: sgst.toFixed(2), // GST calculation for SGST
         igst: igst.toFixed(2), // GST calculation for IGST
@@ -172,7 +172,7 @@ const AddPOPopovers: React.FC<Props> = ({ uiState ,derivedState}) => {
               <li className="p-1">
                 Download<span> </span>
                 <a
-                  href="https://spigen.mscapi.live/files/excel/Sales%20Order%20Sample.xlsx"
+                  href="https://vansapiv2.mscorpres.net/files/salesItem.xlsx"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-teal-500 hover:underline"
