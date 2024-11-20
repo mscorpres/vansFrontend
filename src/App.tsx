@@ -934,12 +934,12 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <InwardLayout>
-            <NotPermissionPage />
-            {/* <ItemQr /> */}
-            {/* <PendingMr /> */}
-            {/* <SalesETransactionRegisterPage /> */}
-          </InwardLayout>
+          {/* <InwardLayout> */}
+          <NotPermissionPage />
+          <ItemQr />
+          {/* <PendingMr /> */}
+          {/* <SalesETransactionRegisterPage /> */}
+          {/* </InwardLayout> */}
         </MainLayout>
       </Protected>
     ),
