@@ -125,9 +125,9 @@ const CreateBom = () => {
     },
     {
       headerName: "BOM Name & SKU",
-      field: "bom_product_sku",
+      field: "subject_name",
       filter: "agTextColumnFilter",
-      width: 350,
+      width: 200,
     },
     {
       headerName: "Customer",

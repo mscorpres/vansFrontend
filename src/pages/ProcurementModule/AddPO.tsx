@@ -31,6 +31,8 @@ import { useNavigate } from "react-router-dom";
 import { RowData } from "@/data";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { ColGroupDef } from "ag-grid-community";
+import dayjs from "dayjs";
+import { exportDatepace } from "@/components/shared/Options";
 
 interface Props {
   setTab: string;
@@ -99,7 +101,7 @@ const AddPO: React.FC<Props> = ({
       asinNumber: "B01N1SE4EP",
       orderQty: 100,
       rate: 50,
-      currency: "28567096",
+      // currency: "28567096",
       gstRate: 18,
       gstType: codeType,
       localValue: 0,
@@ -183,13 +185,17 @@ const AddPO: React.FC<Props> = ({
       poproject_name: formVal.project,
       pocomment: formVal.comment,
       pocreatetype: formVal?.poType.value,
+      currency: formVal?.currency.value,
+      exchange:
+        formVal?.currency.value == "364907247" ? "1" : formVal?.exchange_rate,
+      duedate: exportDatepace(formVal?.duedate),
       // original_po: null,
-      currency: arr.map((r: any) => r.currency),
-      exchange: arr.map((r: any) => r.exchange),
+      // currency: arr.map((r: any) => r.currency),
+      // exchange: arr.map((r: any) => r.exchange),
       component: arr.map((r: any) => r?.procurementMaterial),
       qty: arr.map((r: any) => r.orderQty),
       rate: arr.map((r: any) => r.rate),
-      duedate: arr.map((r: any) => formattedDate(r.dueDate)),
+      // duedate: arr.map((r: any) => formattedDate(r.dueDate)),
       hsncode: arr.map((r: any) => r.hsnCode),
       gsttype: arr.map((r: any) => r.gstType),
       gstrate: arr.map((r: any) => r.gstRate),
@@ -218,14 +224,17 @@ const AddPO: React.FC<Props> = ({
           pocomment: formVal.comment,
           pocreatetype: formVal?.poType.value ?? formVal?.poType,
           poid: params.id.replaceAll("_", "/"),
-          currency: arr.map((r: any) => r.currency),
-          exchange_rate: arr.map((r: any) => r.exchange),
+          date: exportDatepace(formVal?.duedate),
+          // currency: arr.map((r: any) => r.currency),
+          // exchange_rate: arr.map((r: any) => r.exchange),
+          currency: formVal?.currency.value,
+          exchange: formVal?.exchange_rate,
           // original_po: null,
 
           component: arr.map((r: any) => r?.componentKey),
           qty: arr.map((r: any) => r.orderQty),
           rate: arr.map((r: any) => r.rate),
-          date: arr.map((r: any) => r.dueDate),
+          // date: arr.map((r: any) => r.dueDate),
           hsn: arr.map((r: any) => r.hsnCode),
           gsttype: arr.map((r: any) => r.gstType),
           gstrate: arr.map((r: any) => r.gstRate),
@@ -236,29 +245,30 @@ const AddPO: React.FC<Props> = ({
           updaterow: arr.map((r: any) => r.updateingId),
         };
         dispatch(updatePo(payload2)).then((response: any) => {
-          if (response.payload.code == 200) {
+          if (response?.payload.data.code == 200) {
             setShowConfirmation(false);
             toast({
-              title: response.payload.message,
+              title: response.payload.data.message,
               className: "bg-green-700 text-white",
             });
             form.resetFields();
             setRowData([]);
             setIsApprove(false);
-            // navigate("/sales/order/register");
+            navigate("/manage-po");
           } else {
             toast({
-              title: response.payload.message,
+              title: response.payload.data.message.msg,
               className: "bg-red-700 text-white",
             });
           }
         });
       } else if (isApprove == "approve") {
+
         let a = {
-          poid: params.id,
+          poid: params.id?.replaceAll("_", "/"),
         };
         dispatch(poApprove(a)).then((response: any) => {
-          if (response.payload.code == 200) {
+          if (response?.payload.code == 200) {
             setShowConfirmation(false);
             toast({
               title: response.payload.message,
@@ -276,7 +286,8 @@ const AddPO: React.FC<Props> = ({
         });
       } else {
         dispatch(createSellRequest(payload)).then((response: any) => {
-          if (response.payload.code == 200) {
+
+          if (response?.payload.code == 200) {
             setShowConfirmation(false);
             toast({
               title: response.payload.message,
@@ -436,20 +447,47 @@ const AddPO: React.FC<Props> = ({
     dispatch(
       rejectPo({ poid: params?.id?.replaceAll("_", "/"), remark: rejectText })
     ).then((response: any) => {
-      if (response.payload.success == "200") {
-        setShowRejectConfirm(true);
+
+      if (response?.payload.code == "200") {
+        setShowRejectConfirm(false);
+        toast({
+          title: response.payload.message,
+          className: "bg-green-700 text-white",
+        });
+        setRowData([]);
+        navigate("/approve-po");
+        setIsApprove(false);
       } else {
         toast({
-          title: response.payload.message.msg,
+          title: response.payload.message,
           className: "bg-red-700 text-white",
         });
       }
     });
   };
   // const formattedDate = dueDate.map((date) => {});
+
   const formattedDate = (date) => {
-    const [year, month, day] = date.split("-");
-    return `${day}-${month}-${year}`;
+    if (!date) {
+      // Handle the case where the date is undefined or null
+      console.error("Date is undefined or null");
+      return ""; // You can return an empty string or any fallback value
+    }
+
+    // If it's a dayjs object
+    if (dayjs.isDayjs(date)) {
+      return date.format("DD-MM-YYYY"); // Format the date as "DD-MM-YYYY"
+    }
+
+    // If it's a string, make sure it's in a valid format before splitting
+    if (typeof date === "string" && date.includes("-")) {
+      const [year, month, day] = date.split("-");
+      return `${day}-${month}-${year}`;
+    }
+
+    // If the date doesn't match expected formats, return a fallback value
+    console.error("Invalid date format:", date);
+    return ""; // You can return an empty string or any fallback value
   };
 
   useEffect(() => {
@@ -511,6 +549,8 @@ const AddPO: React.FC<Props> = ({
         //   description: vendorAmount,
         // },
       ];
+      // console.log("arr", arr);
+
       setTaxDetails(arr);
     };
 
@@ -525,6 +565,7 @@ const AddPO: React.FC<Props> = ({
   }, [rowData]);
   return (
     <Wrapper>
+      {loading && <FullPageLoading />}
       <AddPOPopovers uiState={uiState} />
       <div className="h-[calc(100vh-150px)] grid grid-cols-[400px_1fr]">
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
@@ -544,17 +585,17 @@ const AddPO: React.FC<Props> = ({
               <p className="text-[14px]">{clientGst}</p>
             </CardContent>
           </Card>
-          <Card className="rounded-sm shadow-sm shadow-slate-500">
+          <Card className="rounded-sm shadow-sm shadow-slate-500 ">
             <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
-              <CardTitle className="font-[550] text-slate-600">
+              <CardTitle className="font-[550] text-slate-600 ">
                 Tax Detail
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-slate-600">
-                <ul>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
+              <div className="text-slate-600 w-full block break-words text-base ">
+                <ul className="break-words text-base ">
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
+                    <div className=" w-[180px]">
                       <h3 className="font-[500]">
                         Sub-Total value before Taxes :
                       </h3>
@@ -565,7 +606,7 @@ const AddPO: React.FC<Props> = ({
                       </p>
                     </div>
                   </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
                     <div>
                       <h3 className="font-[500]">CGST :</h3>
                     </div>
@@ -576,7 +617,7 @@ const AddPO: React.FC<Props> = ({
                       </p>
                     </div>
                   </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
                     <div>
                       <h3 className="font-[500]">SGST :</h3>
                     </div>
@@ -586,7 +627,7 @@ const AddPO: React.FC<Props> = ({
                       </p>
                     </div>
                   </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
                     <div>
                       <h3 className="font-[500]">ISGST :</h3>
                     </div>
@@ -596,8 +637,8 @@ const AddPO: React.FC<Props> = ({
                       </p>
                     </div>
                   </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
+                    <div className=" w-[180px]">
                       <h3 className="font-[600] text-cyan-600">
                         Sub-Total values after Taxes :
                       </h3>

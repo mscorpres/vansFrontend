@@ -48,7 +48,6 @@ const VendorPrice = () => {
   ];
 
   const handleFileChange = (newFiles: File[] | null) => {
-
     setFiles(newFiles);
   };
   const sendFileForParse = async () => {
@@ -96,6 +95,8 @@ const VendorPrice = () => {
         className: "bg-green-600 text-white items-center",
       });
       form.resetFields();
+      setRowData([]);
+      setFiles([]);
     } else {
       toast({
         title: data.message.msg || "Failed to Product",

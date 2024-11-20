@@ -118,7 +118,7 @@ const CustomerComponent = () => {
             <Form.Item name="vendorPartCode" label="Customer Part Code">
               <Input
                 className={InputStyle}
-                placeholder="Enter Customer Part Name"
+                placeholder="Enter Customer Part Code"
                 // {...field}
               />
             </Form.Item>

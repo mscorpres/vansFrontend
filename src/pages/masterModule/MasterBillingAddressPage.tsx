@@ -57,7 +57,7 @@ const schema = z.object({
     message: "State is required",
   }),
   gstin: z.string().min(2, {
-    message: "Pan is required",
+    message: "GST is required",
   }),
   address: z.string().min(2, {
     message: "Address is required",
@@ -450,7 +450,7 @@ const MasterBillingAddressPage: React.FC = () => {
             </SheetContent>
           </Sheet>
         </div>{" "}
-        <div className="ag-theme-quartz h-[calc(100vh-150px)]">
+        <div className="ag-theme-quartz h-[calc(100vh-150px)] bg-white p-4">
           {" "}
           {loading1("fetch") && <FullPageLoading />}
           <AgGridReact

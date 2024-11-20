@@ -93,14 +93,18 @@ export const exportDateRangespace = (dateRange: any) => {
   return dataString;
 };
 export const exportDatepace = (dateRange: any) => {
-  // Log the dateRange value
+  // Ensure dateRange is a Date object
+  const date = new Date(dateRange);
 
-  // Function to format the date into dd-mm-yyyy
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date object");
+  }
 
   // Format the date to dd-mm-yyyy
-  const day = String(dateRange.getDate()).padStart(2, "0"); // Get day and pad with zero if needed
-  const month = String(dateRange.getMonth() + 1).padStart(2, "0"); // Month is zero-based, so add 1
-  const year = dateRange.getFullYear(); // Get full year
+  const day = String(date.getDate()).padStart(2, "0"); // Get day and pad with zero if needed
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is zero-based, so add 1
+  const year = date.getFullYear(); // Get full year
 
   return `${day}-${month}-${year}`; // Return formatted date
 };

@@ -30,7 +30,7 @@ import { Typography } from "antd";
 import MuiTooltip from "@/components/MuiTooltip";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import { IconButton } from "@mui/material";
-
+import { SiSocketdotio } from "react-icons/si";
 function MainLayout(props: { children: React.ReactNode }) {
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
   const [sheet2Open, setSheet2Open] = useState<boolean>(false);
@@ -220,6 +220,17 @@ function MainLayout(props: { children: React.ReactNode }) {
             </Button>
           </div>
           <div className="flex flex-col gap-[20px] items-center">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  {/* -----add yellow when socket is offline */}
+                  <SiSocketdotio className="h-[25px] w-[25px] text-[#7FFFD4]" />
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-cyan-700">
+                  {/* <p>Help & Support</p> */}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
