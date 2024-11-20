@@ -4,10 +4,7 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  DatePickerStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import { DatePickerStyle, primartButtonStyle } from "@/constants/themeContants";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
@@ -334,7 +331,6 @@ const CreatePoPage: React.FC<Props> = ({
                     name="paymentTerms"
                     label="Payment Terms"
                     className=""
-                    // rules={rules.paymentTerms}
                   >
                     <Input
                       className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
