@@ -794,6 +794,7 @@ const EditBom = () => {
                 columnDefs={columnDefsAlter}
                 defaultColDef={{ filter: true, sortable: true }}
                 pagination={true}
+                suppressCellFocus={true}
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
               />
@@ -888,6 +889,7 @@ const EditBom = () => {
                 pagination={true}
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
+                suppressCellFocus={true}
               />
             </div>
           </div>{" "}

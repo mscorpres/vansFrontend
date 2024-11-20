@@ -335,7 +335,7 @@ const TransferBox = () => {
             paginationPageSize={10}
             animateRows={true}
             gridOptions={commonAgGridConfig}
-            suppressCellFocus={false}
+            suppressCellFocus={true}
             suppressRowClickSelection={false}
             rowSelection="multiple"
             checkboxSelection={true}

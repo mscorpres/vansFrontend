@@ -530,9 +530,9 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                   paginationPageSize={10}
                   animateRows={true}
                   gridOptions={commonAgGridConfig}
-                  suppressCellFocus={false}
                   suppressRowClickSelection={false}
                   loadingOverlayComponent={OverlayNoRowsTemplate}
+                  suppressCellFocus={true}
                 />
               </div>{" "}
               <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">

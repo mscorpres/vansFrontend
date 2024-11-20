@@ -165,7 +165,7 @@ export const materialmenu = [
         name: "Customer / Client",
         subMenu: [
           { name: "Add", path: "/master/client/add" },
-          { name: "View", path: "/master/client/view" },
+          { name: "View", path: "/master/customer" },
         ],
       },
       {

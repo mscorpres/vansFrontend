@@ -11,6 +11,7 @@ import { fetchR4 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { toast } from "@/components/ui/use-toast";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -50,6 +51,10 @@ const R4 = () => {
 
       setRowData(arr);
     } else {
+      toast({
+        title: response?.data.message?.msg,
+        className: "bg-red-700 text-white",
+      });
     }
   };
 
@@ -160,6 +165,7 @@ const R4 = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

@@ -664,7 +664,7 @@ const Material = () => {
                       // paginationPageSize={10}
                       animateRows={true}
                       gridOptions={commonAgGridConfig}
-                      suppressCellFocus={false}
+                      suppressCellFocus={true}
                       suppressRowClickSelection={false}
                       rowSelection="multiple"
                       checkboxSelection={true}
@@ -717,6 +717,7 @@ const Material = () => {
             pagination={true}
             paginationPageSize={10}
             paginationAutoPageSize={true}
+            suppressCellFocus={true}
           />
         </div>{" "}
       </Wrapper>{" "}

@@ -69,6 +69,7 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
               pagination={true}
               paginationPageSize={10}
               paginationAutoPageSize={true}
+              suppressCellFocus={true}
             />
           </div>
         </SheetContent>

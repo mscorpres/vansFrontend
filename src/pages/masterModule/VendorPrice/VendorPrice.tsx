@@ -222,6 +222,7 @@ const VendorPrice = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
           <Button

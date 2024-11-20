@@ -311,6 +311,7 @@ const CompletedPOPage: React.FC = () => {
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
           loadingOverlayComponent={OverlayNoRowsTemplate}
+          suppressCellFocus={true}
         />
       </div>{" "}
       <ViewCompoents

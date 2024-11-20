@@ -329,8 +329,8 @@ const FgOutCreate = () => {
             paginationPageSize={10}
             animateRows={true}
             gridOptions={commonAgGridConfig}
-            suppressCellFocus={false}
             suppressRowClickSelection={false}
+            suppressCellFocus={true}
           />
         </div>{" "}
         <ConfirmationModal

@@ -9,27 +9,16 @@ import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
-import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
 import useApi from "@/hooks/useApi";
 import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
-import {
-  cancelPO,
-  fetchManagePOList,
-  printPO,
-} from "@/features/client/clientSlice";
-import {
-  exportDateRange,
-  exportDateRangespace,
-} from "@/components/shared/Options";
+
+import { exportDateRangespace } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
-import ViewCompoents from "./ViewCompoents";
-import POCancel from "./POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-import MINPO from "./MINPO";
 import { useNavigate } from "react-router-dom";
-import { downloadFunction, printFunction } from "@/components/shared/PrintFunctions";
+import { printFunction } from "@/components/shared/PrintFunctions";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import {
@@ -77,6 +66,7 @@ const { RangePicker } = DatePicker;
 const dateFormat = "YYYY/MM/DD";
 const PrintPickSlip: React.FC = () => {
   const { managePoList } = useSelector((state: RootState) => state.client);
+  const { loading } = useSelector((state: RootState) => state.store);
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
   // });
@@ -90,7 +80,6 @@ const PrintPickSlip: React.FC = () => {
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
   const [remarkDescription, setRemarkDescription] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [cancel, setCancel] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
@@ -209,7 +198,6 @@ const PrintPickSlip: React.FC = () => {
     }
   };
   const fetchManageList = async () => {
-    setLoading(true);
     const values = await form.validateFields();
 
     let date;
@@ -231,8 +219,6 @@ const PrintPickSlip: React.FC = () => {
         setRowData(arr);
       }
     });
-
-    setLoading(false);
   };
   const defaultColDef = useMemo(() => {
     return {
@@ -243,8 +229,7 @@ const PrintPickSlip: React.FC = () => {
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      {" "}
-      {loading == true && <FullPageLoading />}
+      {loading && <FullPageLoading />}
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
@@ -331,7 +316,7 @@ const PrintPickSlip: React.FC = () => {
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-120px)]">
         {" "}
-        {loading == true && <FullPageLoading />}
+        {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
@@ -341,6 +326,7 @@ const PrintPickSlip: React.FC = () => {
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
+          suppressCellFocus={true}
         />
       </div>{" "}
       <ConfirmationModal

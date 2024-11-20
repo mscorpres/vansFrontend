@@ -263,7 +263,6 @@ const AddPO: React.FC<Props> = ({
           }
         });
       } else if (isApprove == "approve") {
-
         let a = {
           poid: params.id?.replaceAll("_", "/"),
         };
@@ -286,7 +285,6 @@ const AddPO: React.FC<Props> = ({
         });
       } else {
         dispatch(createSellRequest(payload)).then((response: any) => {
-
           if (response?.payload.code == 200) {
             setShowConfirmation(false);
             toast({
@@ -447,7 +445,6 @@ const AddPO: React.FC<Props> = ({
     dispatch(
       rejectPo({ poid: params?.id?.replaceAll("_", "/"), remark: rejectText })
     ).then((response: any) => {
-
       if (response?.payload.code == "200") {
         setShowRejectConfirm(false);
         toast({
@@ -701,9 +698,9 @@ const AddPO: React.FC<Props> = ({
               paginationPageSize={10}
               animateRows={true}
               gridOptions={commonAgGridConfig}
-              suppressCellFocus={false}
               suppressRowClickSelection={false}
               loadingOverlayComponent={OverlayNoRowsTemplate}
+              suppressCellFocus={true}
             />
           </div>
         </div>

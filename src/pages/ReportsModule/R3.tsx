@@ -14,9 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  LableStyle,
-} from "@/constants/themeContants";
+import { LableStyle } from "@/constants/themeContants";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
@@ -24,10 +22,7 @@ import { DatePicker, Divider, Space } from "antd";
 import Select from "react-select";
 import useApi from "@/hooks/useApi";
 
-import {
-  fetchBomForProduct,
-  fetchR3,
-} from "@/components/shared/Api/masterApi";
+import { fetchBomForProduct, fetchR3 } from "@/components/shared/Api/masterApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
@@ -35,6 +30,7 @@ import {
   transformOptionData,
 } from "@/helper/transform";
 import { exportDateRangespace } from "@/components/shared/Options";
+import { toast } from "@/components/ui/use-toast";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -83,7 +79,10 @@ const R3 = () => {
 
       setRowData(arr);
     } else {
-      
+      toast({
+        title: response.data.message,
+        className: "bg-red-700 text-white",
+      });
     }
   };
   const fetchBom = async (payload) => {
@@ -227,7 +226,7 @@ const R3 = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(fetchQueryResults)}
-            className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+            className="space-y-6 overflow-hidden p-[10px] h-[470px]"
           >
             <FormField
               control={form.control}
@@ -327,6 +326,7 @@ const R3 = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>
