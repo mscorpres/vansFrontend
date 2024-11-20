@@ -434,10 +434,14 @@ const CreatePoPage: React.FC<Props> = ({
                         const formattedDate = value
                           ? value.format("DD-MM-YYYY")
                           : "";
-                        form.setFieldValue("duedate", formattedDate, {
-                          // shouldValidate: true,
-                          // shouldDirty: true,
-                        });
+                        Form.setFieldValue(
+                          "duedate",
+                          formattedDate
+                          //   {
+                          //   shouldValidate: true,
+                          //   shouldDirty: true,
+                          // }
+                        );
                       }}
                     />
                   </Form.Item>
