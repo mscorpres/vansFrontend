@@ -53,7 +53,7 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
   // Create shipment payload from selected items
   const handleCreateShipment = () => {
     const itemDetails = {
-      item: selectedItems.map((item) => item.item),
+      item: selectedItems.map((item) => item.item), 
       qty: selectedItems.map((item) => item.qty),
       rate: selectedItems.map((item) => item.rate),
       currency: selectedItems.map((item) => item.currency || "USD"),

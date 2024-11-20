@@ -19,7 +19,6 @@ import {
   stockOut,
 } from "@/features/salesmodule/salesShipmentSlice";
 import { toast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
 
 interface PickSlipModalProps {
   visible: boolean;
@@ -47,7 +46,6 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   const [selectedBoxes, setSelectedBoxes] = useState<{ [rowId: string]: any }>(
     {}
   ); // Changed to store selected boxes per row
-  const [remarks, setRemarks] = useState<{ [key: string]: string }>({});
   const [box, setBox] = useState<string[]>([]);
   const [qty, setQty] = useState<string[]>([]);
   const dispatch = useDispatch();
@@ -122,15 +120,22 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       headerName: "Remark",
       field: "remark",
       cellRenderer: (params: any) => {
+        const { value, colDef, data, api, column } = params;    
+        const onRemarkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          const newValue = e.target.value;
+          data[colDef.field] = newValue;
+          api.refreshCells({
+            rowNodes: [params.node],
+            columns: [column],
+          });
+          api.applyTransaction({ update: [data] });
+        };
         return (
-          <Input
-            value={remarks[params.data?.item] || ""} 
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setRemarks((prevRemarks) => ({
-                ...prevRemarks,
-                [params.data?.item]: e.target.value,
-              }));
-            }}
+          <input
+            type="text"
+            value={value || ''}
+            onChange={onRemarkChange}
+            className="p-2 border border-gray-300 rounded-md"
           />
         );
       },
@@ -139,6 +144,13 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
 
   // Table data, mapping the available stock to rows
   const tableData = useMemo(() => availableStock?.map((item) => ({ ...item })) || [], [availableStock]);
+  const tableData2 = useMemo(
+    () =>
+      Array.isArray(sellRequestDetails?.items)
+        ? sellRequestDetails?.items?.map((item:any) => ({ ...item }))
+        : [],
+    [sellRequestDetails?.items]
+  );
 
   // Submit function to gather all the selected boxes and quantities
   const onSubmit = () => {
@@ -148,13 +160,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       customer: sellRequestDetails?.header?.customer_name?.customer_code,
       component: sellRequestDetails?.items?.map((item: any) => item?.item),
       qty: sellRequestDetails?.items?.map((item: any) => item?.qty),
-      // box: Object.values(selectedBoxes).map((row: any) => row.boxes).flat(), / Flatten selected boxes
-      // boxqty: Object.values(selectedBoxes).map((row: any) => row.qty).flat(), // Flatten quantities
-      // remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark),
-      remark: sellRequestDetails?.items?.map((item: any) => {
-        // Use the user input from the remarks state, otherwise use an empty string ""
-        return remarks[item.item] || ""; // Empty string if no remark provided
-      }),
+      remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark),
       costcenter: sellRequestDetails?.header?.costcenter?.code,
       //   boxqty: selectedBoxes.map((box: any) => box?.box_qty),
       box: box,
@@ -199,7 +205,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
           <AgGridReact
             ref={gridRef}
             modules={[CsvExportModule]}
-            rowData={sellRequestDetails?.items}
+            rowData={tableData2}
             columnDefs={columnDefs}
             suppressCellFocus={true}
             components={{
@@ -221,7 +227,6 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
           data={tableData}
           loading={loading}
           onSelect={(selectedData: any) => {
-            console.log(selectedData, rowItem);
             handleSelectedBoxes(selectedData, rowItem);
             updateBoxAndQty(selectedData);
             
