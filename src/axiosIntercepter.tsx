@@ -33,7 +33,7 @@ console.log("loggedInUser", loggedInUser);
 const spigenAxios = axios.create({
   baseURL: imsLink,
   headers: {
-    "X-Csrf-Token": loggedInUser?.token,
+    "authorization": loggedInUser?.token,
   },
 });
 
@@ -42,7 +42,7 @@ spigenAxios.interceptors.request.use(async (config) => {
     localStorage.getItem("loggedInUser") as string
   );
   if (loggedInUser) {
-    config.headers["x-csrf-token"] = loggedInUser.token;
+    config.headers["authorization"] = loggedInUser.token;
   }
   return config;
 });

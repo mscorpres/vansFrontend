@@ -4,16 +4,12 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import { DatePickerStyle, primartButtonStyle } from "@/constants/themeContants";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
-import { transformOptionData } from "@/helper/transform";
-import { Button, Form } from "antd";
+import { transformCurrencyData, transformOptionData } from "@/helper/transform";
+import { Button, DatePicker, Form } from "antd";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,6 +23,9 @@ import {
   listOfVendorBranchList,
 } from "@/features/client/clientSlice";
 import { useEffect, useState } from "react";
+import moment from "moment";
+import dayjs, { Dayjs } from "dayjs";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 interface Props {
   setTab: string;
   setPayloadData: string;
@@ -42,6 +41,7 @@ const CreatePoPage: React.FC<Props> = ({
   setFormVal,
   setBillStateCode,
   setShipStateCode,
+  currencyList,
 }) => {
   const [searchData, setSearchData] = useState("");
   const dispatch = useDispatch();
@@ -52,6 +52,7 @@ const CreatePoPage: React.FC<Props> = ({
     vendorPODetails,
     vendorBillingList,
     vendorBillingDetails,
+    loading,
   } = useSelector((state: RootState) => state.client);
   const poTypeOptions = [
     {
@@ -71,6 +72,7 @@ const CreatePoPage: React.FC<Props> = ({
   ];
 
   const selBranch = Form.useWatch("branch", form);
+  const dueDate = Form.useWatch("duedate", form);
   const selCostCenter = Form.useWatch("costCenter", form);
   const selShipping = Form.useWatch("shipId", form);
   const selBilling = Form.useWatch("billingId", form);
@@ -85,6 +87,11 @@ const CreatePoPage: React.FC<Props> = ({
     setTab("add");
     setFormVal(valuesOfFrom);
     // return valuesOfFrom;
+  };
+
+  const handleDateChange = (value: any) => {
+    const formattedDate = value ? moment(value).format("DD-MM-YYYY") : "";
+    setFieldValue("duedate", formattedDate); // Set value of 'duedate' in form state
   };
   useEffect(() => {
     dispatch(fetchShippingAddressForPO());
@@ -160,10 +167,7 @@ const CreatePoPage: React.FC<Props> = ({
 
   return (
     <div className="h-[calc(100vh-150px)]">
-      {
-        // data.loading  &&
-        // <FullPageLoading />
-      }
+      {loading && <FullPageLoading />}
       <Form form={form} layout="vertical">
         <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
           <div className="grid grid-cols-2 gap-[30px]">
@@ -305,7 +309,7 @@ const CreatePoPage: React.FC<Props> = ({
                     name="terms"
                     label="Terms & Condition"
                     className=""
-                    rules={rules.terms}
+                    // rules={rules.terms}
                   >
                     <Input
                       className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
@@ -316,7 +320,7 @@ const CreatePoPage: React.FC<Props> = ({
                     name="quotation"
                     label="Quotation"
                     className=""
-                    rules={rules.quotation}
+                    // rules={rules.quotation}
                   >
                     <Input
                       className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
@@ -327,14 +331,12 @@ const CreatePoPage: React.FC<Props> = ({
                     name="paymentTerms"
                     label="Payment Terms"
                     className=""
-                    rules={rules.paymentTerms}
                   >
                     <Input
                       className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
                       placeholder="Payment Terms"
                     />
                   </Form.Item>
-
                   <Form.Item
                     name="costCenter"
                     label="Cost Center"
@@ -352,7 +354,7 @@ const CreatePoPage: React.FC<Props> = ({
                     name="project"
                     label="Project"
                     className=""
-                    rules={rules.project}
+                    // rules={rules.project}
                   >
                     <Input
                       className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
@@ -363,11 +365,84 @@ const CreatePoPage: React.FC<Props> = ({
                     name="comment"
                     label="Comment"
                     className=""
-                    rules={rules.comment}
+                    // rules={rules.comment}
                   >
                     <Input
                       className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
                       placeholder="Comment (If any)"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="currency"
+                    label="Currency"
+                    className=""
+                    rules={rules.currency}
+                  >
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="Currency"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isClearable={false} // Prevent clearing the value
+                      isSearchable={false} // Disable search if not needed
+                      // options={
+                      //   currencyList ? transformCurrencyData(currencyList) : []
+                      // }
+                      options={transformCurrencyData(currencyList || [])}
+                      // onChange={(e) => handleCurrencyChange(e.value)}
+                      // value={
+                      //   // Find the corresponding option based on field.value
+                      //   transformCurrencyData(currencyList)?.find(
+                      //     (option) => option.value === field?.value
+                      //   ) || null
+                      // }
+                      // onChange={(selectedOption) => {
+                      //   // Update the form value with the selected option's value
+                      //   field?.onChange(selectedOption?.value); // Use field.onChange to update the form value
+                      // }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="exchange_rate"
+                    label="Exchange Rate"
+                    className=""
+                    rules={rules.exchange_rate}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      placeholder="Exchange Rate"
+                      min={1}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="duedate"
+                    label="Due Date"
+                    className=""
+                    rules={rules.duedate}
+                  >
+                    <DatePicker
+                      className={DatePickerStyle}
+                      format="DD-MM-YYYY"
+                      value={
+                        Form.useWatch("duedate")
+                          ? dayjs(Form.useWatch("duedate"), "DD-MM-YYYY")
+                          : null
+                      } // Ensure value is a Dayjs object
+                      onChange={(value: Dayjs | null) => {
+                        const formattedDate = value
+                          ? value.format("DD-MM-YYYY")
+                          : "";
+                        Form.setFieldValue(
+                          "duedate",
+                          formattedDate
+                          //   {
+                          //   shouldValidate: true,
+                          //   shouldDirty: true,
+                          // }
+                        );
+                      }}
                     />
                   </Form.Item>
                 </div>
@@ -632,6 +707,24 @@ const rules = {
     {
       required: true,
       message: "Please select a payment Terms",
+    },
+  ],
+  exchange_rate: [
+    {
+      required: true,
+      message: "Please select Exchange rate",
+    },
+  ],
+  currency: [
+    {
+      required: true,
+      message: "Please select Currency",
+    },
+  ],
+  duedate: [
+    {
+      required: true,
+      message: "Please select Date",
     },
   ],
   costCenter: [

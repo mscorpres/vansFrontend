@@ -22,6 +22,7 @@ import {
 import { printFunction } from "@/components/shared/PrintFunctions";
 import { toast } from "@/components/ui/use-toast";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
+import { TruncateCellRenderer } from "@/General";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -220,7 +221,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         key="materialList"
         onClick={() => handleshowMaterialList(row)}
         disabled={
-          row?.approveStatus === "Pending" || row?.soStatus === "Closed"
+          row?.approveStatus === "Pending" || row?.soStatus === "Closed" ||row?.approveStatus === "Rejected"
         }
       >
         Create Shipment
@@ -358,6 +359,12 @@ export const columnDefs: ColDef<any>[] = [
     field: "approve_by",
     filter: "agTextColumnFilter",
   },
+  {
+    headerName: "Reject Reason",
+    field: "reject_reason",
+    filter: "agTextColumnFilter",
+    cellRenderer:TruncateCellRenderer,
+  },
 ];
 
 const materialListColumnDefs: ColDef[] = [
@@ -371,6 +378,7 @@ const materialListColumnDefs: ColDef[] = [
     headerName: "Item",
     field: "item",
     width: 200,
+    cellRenderer: "truncateCellRenderer",
   },
   {
     headerName: "Item Name",

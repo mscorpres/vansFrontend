@@ -168,6 +168,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     {
       headerName: "Item",
       field: "item",
+      cellRenderer: TruncateCellRenderer,
     },
     {
       headerName: "Item Name",

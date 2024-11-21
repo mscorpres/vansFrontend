@@ -88,7 +88,6 @@ const Product = () => {
 
     const { data } = response;
     if (response.data.code == 200) {
-     
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -294,6 +293,7 @@ const Product = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

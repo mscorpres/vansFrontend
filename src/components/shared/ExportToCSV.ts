@@ -171,7 +171,7 @@ export const downloadCSVCustomColumns = (csvData, name) => {
       return arr2;
     });
 
-    exportCSVFile([headers, ...data], name ? name : "File");
+    exportCSVsFile([headers, ...data], name ? name : "File");
   } catch (error) {
     console.error(error);
   }
@@ -184,4 +184,12 @@ export function exportCSVFile(items, fileTitle) {
   const ws = xlsx.utils.aoa_to_sheet(arr);
   xlsx.utils.book_append_sheet(wb, ws, "Sheet 1");
   xlsx.writeFile(wb, `${fileTitle}.xlsx`);
+}
+export function exportCSVsFile(items, fileTitle) {
+  let arr = items;
+  // console.log("items here it is", items);
+  const wb = xlsx.utils.book_new();
+  const ws = xlsx.utils.aoa_to_sheet(arr);
+  xlsx.utils.book_append_sheet(wb, ws, "Sheet 1");
+  xlsx.writeFile(wb, `${fileTitle}.csv`);
 }

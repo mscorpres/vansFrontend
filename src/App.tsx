@@ -9,7 +9,6 @@ import HomePage from "./pages/HomePage";
 import CompletedPOPage from "./pages/CompletedPOPage";
 import ApprovePOPage from "./pages/ApprovePOPage";
 import ManagePoPage from "./pages/ProcurementModule/ManagePO/ManagePoPage";
-import LoginPage from "./pages/LoginPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import RegisterSalesOrderPage from "./pages/salesModule/RegisterSalesOrderPage";
 import "@ag-grid-community/styles/ag-grid.css";
@@ -98,6 +97,11 @@ import CreatingBoxRecipe from "./pages/masterModule/Bom/CreatingBoxRecipe";
 import VendorPriceLayout from "./layouts/Master/VendorPriceLayout";
 import VendorPrice from "./pages/masterModule/VendorPrice/VendorPrice";
 import ApproveList from "./pages/masterModule/VendorPrice/ApproveList";
+import UomLayout from "./layouts/Master/UomLayout";
+import UoM from "./pages/masterModule/UOM/UoM";
+import Suom from "./pages/masterModule/UOM/Suom";
+import SopPage from "@/pages/fileupload/SopPage";
+import LogningV2 from "@/pages/WarehouseModule/LogningV2";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -113,9 +117,9 @@ const router = createBrowserRouter([
   {
     element: (
       <Protected authentication={false}>
-        <AuthLayout>
-          <LoginPage />
-        </AuthLayout>
+        {/* <AuthLayout> */}
+        <LogningV2 />
+        {/* </AuthLayout> */}
       </Protected>
     ),
     path: "/login",
@@ -131,6 +135,30 @@ const router = createBrowserRouter([
     path: "/forgot-password",
   },
   ////
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <UomLayout>
+            <UoM />
+          </UomLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/uom",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <UomLayout>
+            <Suom />
+          </UomLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/master/suom",
+  },
   {
     element: (
       <Protected authentication>
@@ -166,6 +194,16 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/master/componentMap/customer",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <SopPage />
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/sop",
   },
   {
     element: (
@@ -896,12 +934,12 @@ const router = createBrowserRouter([
     element: (
       <Protected authentication>
         <MainLayout>
-          <InwardLayout>
-            <NotPermissionPage />
-            {/* <ItemQr /> */}
-            {/* <PendingMr /> */}
-            {/* <SalesETransactionRegisterPage /> */}
-          </InwardLayout>
+          {/* <InwardLayout> */}
+          <NotPermissionPage />
+          <ItemQr />
+          {/* <PendingMr /> */}
+          {/* <SalesETransactionRegisterPage /> */}
+          {/* </InwardLayout> */}
         </MainLayout>
       </Protected>
     ),

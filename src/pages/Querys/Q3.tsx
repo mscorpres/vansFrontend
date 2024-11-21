@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
+
+import {  useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,11 +13,9 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Badge, Edit2, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
-import {
-  transformOptionData,
-} from "@/helper/transform";
+import { transformOptionData } from "@/helper/transform";
 import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
@@ -50,19 +48,15 @@ const Q3 = () => {
   const { execFun, loading: loading1 } = useApi();
 
   const fetchComponentList = async (e: any) => {
-    console.log("here in api", e!.value);
     setSelectedCustomer(e);
 
     const response = await execFun(() => getProductsByNameAndNo(e), "fetch");
-    console.log("here in fetchComponentList", response);
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let payload = {
       sku_code: selectedCustomer?.value,
     };
     const response = await execFun(() => fetchListOfQ3(payload), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.response.data2;
@@ -72,7 +66,6 @@ const Q3 = () => {
           ...r,
         };
       });
-      console.log("arrarr", a);
 
       setRowData(arr);
     } else {
@@ -101,7 +94,7 @@ const Q3 = () => {
       headerName: "Date",
       field: "date",
       filter: "agTextColumnFilter",
-      width: 220,
+      width: 250,
     },
     {
       headerName: "Transaction Type",
@@ -113,19 +106,19 @@ const Q3 = () => {
       headerName: "Qty",
       field: "qty",
       filter: "agTextColumnFilter",
-      width: 110,
+      width: 150,
     },
     {
       headerName: "UoM",
       field: "uom",
       filter: "agTextColumnFilter",
-      width: 90,
+      width: 130,
     },
     {
       headerName: "Created/Approved By",
       field: "date",
       filter: "agTextColumnFilter",
-      width: 210,
+      width: 250,
     },
   ];
 
@@ -185,6 +178,7 @@ const Q3 = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

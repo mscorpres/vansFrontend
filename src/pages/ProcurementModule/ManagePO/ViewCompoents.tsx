@@ -6,9 +6,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { modelFixHeaderStyle } from "@/constants/themeContants";
 
 import { AgGridReact } from "ag-grid-react";
 import SalesShipmentUpadetTextCellrender from "@/config/agGrid/cellRenders.tsx/SalesShipmentUpadetTextCellrender";
@@ -235,6 +233,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             loadingOverlayComponent={OverlayNoRowsTemplate}
+            suppressCellFocus={true}
           />
         </div>
       </SheetContent>

@@ -58,7 +58,6 @@ const R2 = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let { date } = formData;
     let dataString = "";
     if (date) {
@@ -68,10 +67,8 @@ const R2 = () => {
       wise: formData.types,
       data: dataString,
     };
-    console.log("payload", payload);
 
     const response = await execFun(() => fetchR2(payload), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.response.data.map((r, index) => {
@@ -80,7 +77,6 @@ const R2 = () => {
           ...r,
         };
       });
-      console.log("arr", arr);
 
       setRowData(arr);
     } else {
@@ -325,6 +321,7 @@ const R2 = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

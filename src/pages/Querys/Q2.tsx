@@ -1,5 +1,5 @@
 import React from "react";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,14 +25,10 @@ import { Filter } from "lucide-react";
 import styled from "styled-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DatePicker, Divider, Dropdown, Menu } from "antd";
-import {
-  transformOptionData,
-} from "@/helper/transform";
+import { transformOptionData } from "@/helper/transform";
 import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import {
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { modelFixHeaderStyle } from "@/constants/themeContants";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   fetchCustomerComponentsByPart,
@@ -58,6 +54,7 @@ const FormSchema = z.object({
 const Q2 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [boxData, setBoxData] = useState([]);
+  const [viewData, setViewData] = useState([]);
   const [stockInfo, setStockInfo] = useState([]);
   const [openView, setSheetOpenView] = useState([]);
   const [openViewBox, setSheetOpenViewBox] = useState([]);
@@ -114,21 +111,17 @@ const Q2 = () => {
     );
   };
   const fetchComponentList = async (e: any) => {
-    console.log("here in api", e!.value);
     setSelectedCustomer(e);
 
     const response = await execFun(() => getComponentsByNameAndNo(e), "fetch");
-    console.log("here in fetchComponentList", response);
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let payload = {
       data: selectedCustomer?.value,
       wise: "C",
       range: formData.date,
     };
     const response = await execFun(() => fetchListOfQ2(payload), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.response.data2;
@@ -138,7 +131,6 @@ const Q2 = () => {
           ...r,
         };
       });
-      console.log("arrarr", arr);
 
       setRowData(a);
       setStockInfo(data.response.data1);
@@ -157,8 +149,16 @@ const Q2 = () => {
       () => fetchCustomerComponentsByPart(payload),
       "fetch"
     );
-    console.log("response", response);
     if (response.data.code == 200) {
+      let { data } = response;
+      let arr = data.data.map((r, index) => {
+        return {
+          id: index + 1,
+          ...r,
+        };
+      });
+
+      setViewData(arr);
     } else {
       toast({
         title: response.data.message.msg,
@@ -172,7 +172,6 @@ const Q2 = () => {
       component: selectedCustomer?.value,
     };
     const response = await execFun(() => itemQueryL(payload), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       let { data } = response;
       let arr = data.data.map((r, index) => {
@@ -272,19 +271,19 @@ const Q2 = () => {
     },
     {
       headerName: "Customer",
-      field: "date",
+      field: "name",
       filter: "agTextColumnFilter",
       width: 220,
     },
     {
       headerName: "Component Name",
-      field: "transaction_type",
+      field: "cust_name",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
       headerName: "Part Number",
-      field: "qty_in",
+      field: "part_no",
       filter: "agTextColumnFilter",
       width: 190,
     },
@@ -460,12 +459,13 @@ const Q2 = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
       <Sheet open={openView == true} onOpenChange={setSheetOpenView}>
         <SheetTrigger></SheetTrigger>
         <SheetContent
-          className="min-w-[40%] p-0"
+          className="min-w-[50%] p-0"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}
@@ -478,12 +478,13 @@ const Q2 = () => {
             {loading1("fetch") && <FullPageLoading />}
             <AgGridReact
               //   loadingCellRenderer={loadingCellRenderer}
-              rowData={drwData}
+              rowData={viewData}
               columnDefs={componentCol}
               defaultColDef={{ filter: true, sortable: true }}
               pagination={true}
               paginationPageSize={10}
               paginationAutoPageSize={true}
+              suppressCellFocus={true}
             />
           </div>
         </SheetContent>
@@ -525,6 +526,7 @@ const Q2 = () => {
               pagination={true}
               paginationPageSize={10}
               paginationAutoPageSize={true}
+              suppressCellFocus={true}
             />
           </div>
         </SheetContent>

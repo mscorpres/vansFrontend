@@ -32,6 +32,7 @@ import {
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { rangePresets } from "@/General";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -209,6 +210,7 @@ const CompeletedFg = () => {
                     <FormControl>
                       <Space direction="vertical" size={12} className="w-full">
                         <RangePicker
+                          presets={rangePresets}
                           className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
                           onChange={(value) =>
                             form.setValue(
@@ -216,7 +218,7 @@ const CompeletedFg = () => {
                               value ? value.map((date) => date!.toDate()) : []
                             )
                           }
-                          format={dateFormat}
+                          format={"DD-MM-YYYY"}
                         />
                       </Space>
                     </FormControl>
@@ -280,6 +282,7 @@ const CompeletedFg = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

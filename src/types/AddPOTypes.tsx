@@ -12,4 +12,5 @@ export interface AddPoUIStateType {
 
 export interface Props {
   uiState: AddPoUIStateType;
+  derivedState:string;
 }

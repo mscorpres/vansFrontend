@@ -439,10 +439,10 @@ const BoxMarkup = () => {
           paginationPageSize={10}
           animateRows={true}
           gridOptions={commonAgGridConfig}
-          suppressCellFocus={false}
           suppressRowClickSelection={false}
           rowSelection="multiple"
           checkboxSelection={true}
+          suppressCellFocus={true}
         />
       </div>{" "}
       <Sheet
@@ -473,6 +473,7 @@ const BoxMarkup = () => {
               pagination={true}
               paginationPageSize={10}
               animateRows={true}
+              suppressCellFocus={true}
               gridOptions={commonAgGridConfig}
 
               // onSelectionChanged={onSelectionChanged}

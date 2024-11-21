@@ -152,7 +152,7 @@ export const uploadSOExcel = createAsyncThunk<
   formData.append("file", file); // Append the file to FormData
 
   const response = await spigenAxios.post(
-    "/sellRequest/uploadSOItems",
+    "/salesOrder/uploadSOItems",
     formData,
     {
       headers: {

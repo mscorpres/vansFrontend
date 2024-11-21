@@ -329,6 +329,7 @@ const PendingMr: React.FC = () => {
           // suppressRowClickSelection={false}
           pagination={true}
           paginationPageSize={10}
+          suppressCellFocus={true}
           paginationPageSizeSelector={[10, 25, 50]}
         />
       </div>{" "}

@@ -176,7 +176,7 @@ const Locations = () => {
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
-        <Form form={form}>
+        <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onsubmit)}
             className="space-y-6 overflow-hidden p-[10px] h-[450px]"
@@ -185,6 +185,7 @@ const Locations = () => {
             <div className="">
               <Form.Item
                 name="location"
+                label="Location Name"
                 rules={[
                   {
                     required: true,
@@ -202,6 +203,7 @@ const Locations = () => {
               <div className="">
                 <Form.Item
                   name="locationUnder"
+                  label="Parent Location"
                   rules={[
                     {
                       required: true,
@@ -233,6 +235,7 @@ const Locations = () => {
               </div>
               <div className="">
                 <Form.Item
+                  label="Location Type"
                   name="locationType"
                   rules={[
                     {
@@ -260,6 +263,7 @@ const Locations = () => {
             <div className="">
               <Form.Item
                 name="address"
+                label="Address"
                 rules={[
                   {
                     required: true,
@@ -297,6 +301,7 @@ const Locations = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>{" "}
       <ConfirmationModal

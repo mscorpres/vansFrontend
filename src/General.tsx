@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast";
 import { TimeRangePickerProps } from "antd";
 import dayjs from "dayjs";
 
@@ -70,3 +71,26 @@ export const rangePresets: TimeRangePickerProps["presets"] = [
     { code: "37", name: "Andhra Pradesh (New)" },
     { code: "38", name: "Ladakh" }
   ];
+
+  export const showToast = (message: any, type: string) => {
+    if (type == "error") {
+      toast({
+        title: message,
+        className: "bg-red-600 text-white items-center",
+      });
+    } else {
+      toast({
+        className: "bg-green-600 text-white items-center",
+        description: message,
+      });
+    }
+  };
+
+  export const downloadFile = ({ fileUrl, fileName }: { fileUrl: string; fileName: string }) => {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileName; // Specify the file name for the download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };

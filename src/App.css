@@ -61,3 +61,7 @@
   align-items: center; /* Center vertically */
   height: 100%; /* Ensure full height for vertical centering */
 }
+
+.MuiLoadingButton-root{
+  background-color: #0891b2 !important;
+}

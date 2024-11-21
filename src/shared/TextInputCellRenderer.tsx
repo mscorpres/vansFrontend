@@ -753,7 +753,7 @@ const TextInputCellRenderer = (props: any) => {
             style={{ pointerEvents: "auto" }} // Ensure pointer events are enabled
           />
         );
-      case "rate":
+      case "rateCurrency":
         return (
           <>
             <Input
@@ -780,6 +780,18 @@ const TextInputCellRenderer = (props: any) => {
               price={parseFloat(data.rate) || 0}
               inputHandler={submitCurrencyRate}
               rowId={data.rowId}
+            />
+          </>
+        );
+      case "rate":
+        return (
+          <>
+            <Input
+              onChange={handleInputChange}
+              value={value}
+              type="text"
+              placeholder={colDef.headerName}
+              className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
             />
           </>
         );

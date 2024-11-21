@@ -348,6 +348,7 @@ const ViewMin: React.FC = () => {
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
+          suppressCellFocus={true}
         />
       </div>{" "}
       {/* <ViewCompoents

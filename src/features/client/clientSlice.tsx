@@ -532,7 +532,7 @@ export const updatePo = createAsyncThunk<uomPayload, payload>(
       );
       // console.log("response", response.data);
 
-      return response.data;
+      return response;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);

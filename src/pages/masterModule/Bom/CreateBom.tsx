@@ -125,9 +125,9 @@ const CreateBom = () => {
     },
     {
       headerName: "BOM Name & SKU",
-      field: "bom_product_sku",
+      field: "subject_name",
       filter: "agTextColumnFilter",
-      width: 350,
+      width: 200,
     },
     {
       headerName: "Customer",
@@ -194,6 +194,7 @@ const CreateBom = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
       {/* {sheetOpenEdit && (

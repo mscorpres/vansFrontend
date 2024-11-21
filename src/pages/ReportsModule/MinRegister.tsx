@@ -60,7 +60,6 @@ const MinRegister = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let { date } = formData;
     let dataString = "";
     if (date) {
@@ -76,7 +75,6 @@ const MinRegister = () => {
       () => fetchListOfMINRegister(payload),
       "fetch"
     );
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.data.map((r, index) => {
@@ -85,7 +83,6 @@ const MinRegister = () => {
           ...r,
         };
       });
-      console.log("arr", arr);
 
       setRowData(arr);
     } else {
@@ -370,6 +367,7 @@ const MinRegister = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

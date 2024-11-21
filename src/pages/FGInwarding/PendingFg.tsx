@@ -258,7 +258,6 @@ const PendingFg = () => {
             // onSubmit={form.handleSubmit(fetchFGList)}
             className="space-y-6 overflow-hidden p-[10px] h-[170px]"
           >
-      
             <Form.Item className="w-full" name="wise">
               <Select
                 styles={customStyles}
@@ -272,13 +271,11 @@ const PendingFg = () => {
                 options={type}
                 onChange={(e: any) => form.setValue("wise", e.value)}
               />
-             
             </Form.Item>
             {/* )}
             /> */}
             {/* )} */}
             <div className="flex gap-[10px] justify-end">
-             
               <Button
                 // type="submit"
                 className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
@@ -418,6 +415,7 @@ const PendingFg = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

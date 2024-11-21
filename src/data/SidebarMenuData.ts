@@ -10,6 +10,7 @@ import { SidebarMenuLinkType } from "@/types/MainLayout";
 //         subMenu: [
 //           {
 //             name: "Components",
+
 //             subMenu: [
 //               { name: "Material", path: "/master/material" },
 //               { name: "Service", path: "/not-permission" },
@@ -122,6 +123,13 @@ export const materialmenu = [
     name: "Master",
     subMenu: [
       {
+        name: "UOM",
+        subMenu: [
+          { name: "UOM", path: "/master/uom" },
+          { name: "SOQ", path: "/master/suom" },
+        ],
+      },
+      {
         name: "Components",
         subMenu: [
           { name: "Material", path: "/master/material" },
@@ -157,7 +165,7 @@ export const materialmenu = [
         name: "Customer / Client",
         subMenu: [
           { name: "Add", path: "/master/client/add" },
-          { name: "View", path: "/master/client/view" },
+          { name: "View", path: "/master/customer" },
         ],
       },
       {

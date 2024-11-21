@@ -48,7 +48,6 @@ const VendorPrice = () => {
   ];
 
   const handleFileChange = (newFiles: File[] | null) => {
-
     setFiles(newFiles);
   };
   const sendFileForParse = async () => {
@@ -96,6 +95,8 @@ const VendorPrice = () => {
         className: "bg-green-600 text-white items-center",
       });
       form.resetFields();
+      setRowData([]);
+      setFiles([]);
     } else {
       toast({
         title: data.message.msg || "Failed to Product",
@@ -221,6 +222,7 @@ const VendorPrice = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
           <Button

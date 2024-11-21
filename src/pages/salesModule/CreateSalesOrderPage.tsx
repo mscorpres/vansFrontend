@@ -112,8 +112,7 @@ const CreateSalesOrderPage = () => {
       form.setValue("costcenter_name", header.costcenter?.name);
       form.setValue("billIdName", header.bill_from?.billing?.name);
       form.setValue("billFrom.billFromId", header?.bill_from?.billing?.code);
-
-      if (header?.ship_to?.state?.code == header?.bill_from?.state?.code) {
+      if (header?.customer?.state?.code == header?.bill_from?.state?.code) {
         setDerivedType("L");
       } else {
         setDerivedType("I");
@@ -131,11 +130,12 @@ const CreateSalesOrderPage = () => {
         sgst: parseFloat(material.sgstRate) || 0,
         igst: parseFloat(material.igstRate) || 0,
         currency: material.currency || "364907247",
-        gstType: material.gsttype?.[0]?.id || "I",
+        gstType: material.gst_type || "I",
         dueDate: material.due_date || "",
         hsnCode: material.hsnCode || "",
         remark: material.itemRemark || "",
         updateid: material?.updateid || 0,
+        stock:material?.closingQty,
         isNew: true,
       }));
       setRowData(data);

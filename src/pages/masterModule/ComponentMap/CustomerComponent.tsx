@@ -118,7 +118,7 @@ const CustomerComponent = () => {
             <Form.Item name="vendorPartCode" label="Customer Part Code">
               <Input
                 className={InputStyle}
-                placeholder="Enter Customer Part Name"
+                placeholder="Enter Customer Part Code"
                 // {...field}
               />
             </Form.Item>
@@ -160,6 +160,7 @@ const CustomerComponent = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

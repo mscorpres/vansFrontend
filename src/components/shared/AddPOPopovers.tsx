@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { uploadSOExcel } from "@/features/salesmodule/createSalesOrderSlice";
 
-const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
+const AddPOPopovers: React.FC<Props> = ({ uiState ,derivedState}) => {
   const {
     excelModel,
     setExcelModel,
@@ -63,69 +63,73 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
   const handleImport = (data: any) => {
     // Map data from excel
     const mappedData = data.data.map((item: any) => {
-      // Calculate localValue
-      const localValue = Number(item.rate?.price) * Number(item.qty);
-
-      // Calculate GST values based on derivedState
+      // Calculate localValue (parse rate and qty as floats to ensure they are numbers)
+      const localValue = parseFloat(item.rate) * parseFloat(item.qty) || 0;
+      const gstRate = parseFloat(item.gst) || 0; // Ensure gstRate is parsed as a float
+      const gstType = derivedState || "I"; // Default to "I" (Inter-state) if gsttype is missing
+  
+      // Initialize GST values
       let cgst = 0;
       let sgst = 0;
       let igst = 0;
-      const gstRate = Number(item.gst_rate);
+  
+      // Calculate GST based on gstRate and gstType
       const calculation = (localValue * gstRate) / 100;
-
-      // Determine GST type
-      const gstType = derivedState; // Assuming derivedState is available in your scope
-
+  
       if (gstType === "L") {
-        // Intra-State
+        // Intra-State GST calculation (CGST = SGST)
         cgst = calculation / 2;
-        sgst = calculation / 2; // Same as CGST
+        sgst = calculation / 2;
         igst = 0;
       } else if (gstType === "I") {
-        // Inter-State
+        // Inter-State GST calculation (only IGST)
         igst = calculation;
         cgst = 0;
         sgst = 0;
       }
-
+  
+      // Foreign value calculation (if currency is not the default)
+      // let foreignValue = localValue; // Default to local value if no exchange rate
+      // if (props.exRate?.currency !== "364907247") {
+      //   foreignValue = localValue * parseFloat(props.exRate?.exchange_rate || "1");
+      // }
+  
+      // Prepare the mapped data for the row
       return {
-        type: item.item_type,
-        material: item.item,
-        materialDescription: item.item_desc,
-        asinNumber: item.asin === "." ? undefined : item.asin,
-        orderQty: Number(item.qty),
-        rate: item.rate?.price,
-        currency: item.currency,
-        discount: item.discount,
-        gstRate: String(Number(item.gst_rate) || 0),
-        // localValue:
-        //   (
-        //     item.rate?.price * item.qty -
-        //     item.rate?.price * item.qty * (item.discount / 100)
-        //   ).toString() || "0",
-        gstType: derivedState, // Use derivedState here
-        dueDate: item.due_date,
-        hsnCode: item.hsn,
-        remark: item.item_remark,
-        localValue: localValue,
-        cgst: cgst.toFixed(2), // Include calculated values
-        sgst: sgst.toFixed(2),
-        igst: igst.toFixed(2),
-        isNew: true,
+        partno: item?.partcode || "", // Ensure partNo is available
+        orderQty: parseFloat(item.qty) || 1, // Default to 1 if qty is missing or invalid
+        material: item?.item || "", // Ensure the material data is included
+        rate: parseFloat(item.rate) || 0, // Ensure rate is numeric
+        localValue: localValue, // Taxable value in the local currency
+        // foreignValue: foreignValue, // Exchange taxable value (if applicable)
+        gstRate: item.gst, // GST rate applied
+        cgst: cgst.toFixed(2), // GST calculation for CGST
+        sgst: sgst.toFixed(2), // GST calculation for SGST
+        igst: igst.toFixed(2), // GST calculation for IGST
+        currency: item.currency || "364907247", // Default to a specific currency code if missing
+        gstType: gstType, // "L" for Intra-State, "I" for Inter-State
+        hsnCode: item.hsn || "", // Ensure HSN code is included
+        remark: item.remark || "", // Ensure remarks are included
+        // updateid: item?.updateid || 0, // Include updateid if applicable
+        stock: item?.closingQty || 0, // Include stock quantity if available
+        isNew: true, // Mark this as a new entry
       };
     });
 
     // Set the response data in the table
     setRowData((prevRowData) => {
+      // If the previous row data is just a placeholder, replace it with mapped data
       if (prevRowData.length === 1 && prevRowData[0].material === "") {
         return mappedData;
       } else {
         return [...prevRowData, ...mappedData];
       }
     });
-
+  
+    // Close the Excel dialog
     setExcelModel(false);
   };
+  
 
   // const channelValue: string = channel || "";
 
@@ -168,7 +172,7 @@ const AddPOPopovers: React.FC<Props> = ({ uiState }) => {
               <li className="p-1">
                 Download<span> </span>
                 <a
-                  href="https://spigen.mscapi.live/files/excel/Sales%20Order%20Sample.xlsx"
+                  href="https://vansapiv2.mscorpres.net/files/salesItem.xlsx"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-teal-500 hover:underline"

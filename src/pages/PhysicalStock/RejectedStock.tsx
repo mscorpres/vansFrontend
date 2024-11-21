@@ -58,7 +58,6 @@ const RejectedStock = () => {
   const [fgForm] = Form.useForm();
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-
     dispatch(rejectedPhysical()).then((r) => {
       if (r.payload.code == 200) {
         toast({
@@ -79,7 +78,6 @@ const RejectedStock = () => {
         });
       }
     });
-
   };
   const handleSubmit = async () => {
     let values = Form.validateFields();
@@ -91,8 +89,7 @@ const RejectedStock = () => {
       componentname: sheetOpenView.data.part_name,
       auditKey: sheetOpenView.data.ID,
     };
-    dispatch(updateRejectphysical(payload)).then((r) => {
-    });
+    dispatch(updateRejectphysical(payload)).then((r) => {});
   };
 
   const columnDefs: ColDef<rowData>[] = [
@@ -228,6 +225,7 @@ const RejectedStock = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
       <Sheet open={sheetOpenView} onOpenChange={setSheetOpenView}>

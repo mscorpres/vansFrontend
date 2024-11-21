@@ -356,7 +356,7 @@ const CreatePPr = () => {
           paginationPageSize={10}
           animateRows={true}
           gridOptions={commonAgGridConfig}
-          suppressCellFocus={false}
+          suppressCellFocus={true}
           suppressRowClickSelection={false}
         />
       </div>

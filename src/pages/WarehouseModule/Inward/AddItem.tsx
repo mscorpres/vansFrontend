@@ -85,6 +85,7 @@ const AddPO: React.FC<Props> = ({
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
   const [rejectText, setRejectText] = useState("");
+  const [callLoading, setCallLoading] = useState(false);
   const [resetModel, setResetModel] = useState<boolean>(false);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
@@ -233,6 +234,7 @@ const AddPO: React.FC<Props> = ({
       gsttype: arr.map((r) => r.gstType),
       gstrate: arr.map((r) => r.gstRate),
       cgst: arr.map((r) => r.cgst),
+      invoice: arr.map((r) => r.invoice),
       sgst: arr.map((r) => r.sgst),
       igst: arr.map((r) => r.igst),
       remark: arr.map((r) => r.remark),
@@ -241,6 +243,15 @@ const AddPO: React.FC<Props> = ({
     dispatch(minTransaction(payload)).then((res) => {
       console.log("res", res);
       if (res?.payload?.code == 200) {
+        toast({
+          title: res.payload?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+        form.setFieldValue("address", "");
+        setShowConfirmation(false);
+        setRowData([]);
+        setTab("create");
+        form.resetFields();
       } else {
         toast({
           title: res.payload.message.msg,
@@ -390,7 +401,7 @@ const AddPO: React.FC<Props> = ({
     return `${day}-${month}-${year}`;
   };
   const uploadDocs = async () => {
-    // setLoading(true);
+    setCallLoading(true);
     const formData = new FormData();
     formData.append("action", "uploadTempFile");
     files.map((comp) => {
@@ -406,11 +417,11 @@ const AddPO: React.FC<Props> = ({
         title: "Doc Uploaded successfully",
         className: "bg-green-600 text-white items-center",
       });
-      // setLoading(false);
+      setCallLoading(false);
       setSheetOpen(false);
       setAttachmentFile(response.data.data);
     }
-    // setLoading(false);
+    setCallLoading(false);
   };
 
   useEffect(() => {
@@ -515,10 +526,10 @@ const AddPO: React.FC<Props> = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-slate-600 flex">
-                <ul>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
+              <div className="text-slate-600 w-full block break-words text-base ">
+                <ul className="break-words text-base ">
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
+                    <div className=" w-[180px]">
                       <h3 className="font-[500]">
                         Sub-Total value before Taxes :
                       </h3>
@@ -529,7 +540,7 @@ const AddPO: React.FC<Props> = ({
                       </p>
                     </div>
                   </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
                     <div>
                       <h3 className="font-[500]">CGST :</h3>
                     </div>
@@ -540,7 +551,7 @@ const AddPO: React.FC<Props> = ({
                       </p>
                     </div>
                   </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
                     <div>
                       <h3 className="font-[500]">SGST :</h3>
                     </div>
@@ -550,7 +561,7 @@ const AddPO: React.FC<Props> = ({
                       </p>
                     </div>
                   </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
                     <div>
                       <h3 className="font-[500]">ISGST :</h3>
                     </div>
@@ -560,8 +571,8 @@ const AddPO: React.FC<Props> = ({
                       </p>
                     </div>
                   </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
+                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
+                    <div className=" w-[180px]">
                       <h3 className="font-[600] text-cyan-600">
                         Sub-Total values after Taxes :
                       </h3>
@@ -609,8 +620,8 @@ const AddPO: React.FC<Props> = ({
               paginationPageSize={10}
               animateRows={true}
               gridOptions={commonAgGridConfig}
-              suppressCellFocus={false}
               suppressRowClickSelection={false}
+              suppressCellFocus={true}
             />
           </div>
         </div>
@@ -685,8 +696,9 @@ const AddPO: React.FC<Props> = ({
           <SheetHeader className={modelFixHeaderStyle}>
             <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
           </SheetHeader>{" "}
+          {callLoading && <FullPageLoading />}
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-            {/* {loading && <FullPageLoading />} */}
+            {loading && <FullPageLoading />}
             <FileUploader
               value={files}
               onValueChange={handleFileChange}

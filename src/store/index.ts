@@ -13,6 +13,7 @@ import salesTransactionSlice from "@/features/salesmodule/salesTransactionSlice"
 import salesShipmentSlice from "@/features/salesmodule/salesShipmentSlice";
 import salesInvoiceSlice from "@/features/salesmodule/salesInvoiceSlice";
 import storeSlice from "@/features/client/storeSlice";
+import sopRedeucer from "@/features/Sop/sopSlice";
 
 export const store = configureStore({
   reducer: {
@@ -31,6 +32,7 @@ export const store = configureStore({
     sellShipment: salesShipmentSlice,
     sellInvoice: salesInvoiceSlice,
     invoice: salesTransactionSlice,
+    sop: sopRedeucer,
   },
 });
 export type RootState = ReturnType<typeof store.getState>;

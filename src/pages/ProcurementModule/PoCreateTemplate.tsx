@@ -6,7 +6,11 @@ import { Form } from "antd";
 import { useParams } from "react-router-dom";
 import { AppDispatch } from "@/store";
 import { fetchDataPOEdit } from "@/features/client/clientSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
+import { formatDate } from "date-fns";
+import { exportDatepace } from "@/components/shared/Options";
+import dayjs from "dayjs";
 const PoCreateTemplate = () => {
   const [tabvalue, setTabvalue] = useState<string>("create");
   const [payloadData, setPayloadData] = useState<any>(null);
@@ -19,6 +23,9 @@ const PoCreateTemplate = () => {
   const [shipStateCode, setShipStateCode] = useState("");
   const [codeType, setCodeType] = useState("");
   const selectedVendor = Form.useWatch("vendorName", form);
+  const { loading, currency } = useSelector(
+    (state: RootState) => state.createSalesOrder
+  );
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
   useEffect(() => {
@@ -54,6 +61,14 @@ const PoCreateTemplate = () => {
             // form.setFieldValue("poType", "New");
 
             form.setFieldValue("project", arr.vendor[0]?.projectname);
+            form.setFieldValue("currency", arr.vendor[0]?.currency);
+            form.setFieldValue(
+              "duedate",
+              dayjs(arr.vendor[0]?.duedate, "DD-MM-YYYY")
+            );
+            
+
+            form.setFieldValue("exchange_rate", arr.vendor[0]?.exchangerate);
 
             form.setFieldValue("vendorType", ventype);
             form.setFieldValue("vendorName", arr.vendor[0]?.vendorcode);
@@ -85,7 +100,7 @@ const PoCreateTemplate = () => {
               procurementMaterial: r?.selectedComponent[0]?.text,
 
               vendorName: r.make,
-              currency: r.currency,
+              // currency: r.currency,
               // currency: r.exchangerate,
               orderQty: r.orderqty,
               componentKey: r?.componentKey,
@@ -119,7 +134,9 @@ const PoCreateTemplate = () => {
       }
     }
   }, [shipStateCode, bilStateCode]);
-
+  useEffect(() => {
+    dispatch(fetchCurrency());
+  }, []);
   return (
     <div>
       <Tabs value={tabvalue} onValueChange={setTabvalue}>
@@ -135,6 +152,7 @@ const PoCreateTemplate = () => {
             setBillStateCode={setBillStateCode}
             shipStateCode={shipStateCode}
             setShipStateCode={setShipStateCode}
+            currencyList={currency}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">

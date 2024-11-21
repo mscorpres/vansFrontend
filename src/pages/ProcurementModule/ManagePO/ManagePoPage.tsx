@@ -387,11 +387,12 @@ const ManagePoPage: React.FC = () => {
           columnDefs={columnDefs}
           defaultColDef={{ filter: true, sortable: true }}
           // rowSelection="multiple"
-          // suppressRowClickSelection={false}
+          // suppressRowClickSelection={true}
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
           loadingOverlayComponent={OverlayNoRowsTemplate}
+          suppressCellFocus={true}
         />
       </div>{" "}
       <ViewCompoents

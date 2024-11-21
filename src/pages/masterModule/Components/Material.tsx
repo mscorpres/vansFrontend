@@ -510,7 +510,7 @@ const Material = () => {
 
                   <div className="">
                     {" "}
-                    <Form.Item name="moq" label="MOQ" rules={rules.moq}>
+                    <Form.Item name="moq" label="MOQ Qty" rules={rules.moq}>
                       <Input
                         className={InputStyle}
                         placeholder="MOQ Qty"
@@ -664,7 +664,7 @@ const Material = () => {
                       // paginationPageSize={10}
                       animateRows={true}
                       gridOptions={commonAgGridConfig}
-                      suppressCellFocus={false}
+                      suppressCellFocus={true}
                       suppressRowClickSelection={false}
                       rowSelection="multiple"
                       checkboxSelection={true}
@@ -717,6 +717,7 @@ const Material = () => {
             pagination={true}
             paginationPageSize={10}
             paginationAutoPageSize={true}
+            suppressCellFocus={true}
           />
         </div>{" "}
       </Wrapper>{" "}

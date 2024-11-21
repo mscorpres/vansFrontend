@@ -1419,6 +1419,7 @@ const VendorList = () => {
         <Divider />
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-50px)]">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
@@ -1427,6 +1428,7 @@ const VendorList = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          suppressCellFocus={true}
         />
       </div>
     </Wrapper>

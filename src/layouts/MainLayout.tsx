@@ -1,4 +1,3 @@
-import { BellRing } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -6,8 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
 import { FaLightbulb } from "react-icons/fa";
@@ -26,10 +24,13 @@ import FavoriteSidebar from "@/components/shared/FavoriteSidebar";
 import ProfileSidebar from "@/components/shared/ProfileSidebar";
 import MainLayoutPopovers from "../components/shared/MainLayoutPopovers";
 import QuickLinks from "@/components/shared/QuickLinks";
-import DownloadIndecator from "@/components/shared/DownloadIndecator";
 import { BiSupport } from "react-icons/bi";
 import HelpAndSupportModel from "@/components/shared/HelpAndSupportModel";
 import { Typography } from "antd";
+import MuiTooltip from "@/components/MuiTooltip";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import { IconButton } from "@mui/material";
+import { SiSocketdotio } from "react-icons/si";
 function MainLayout(props: { children: React.ReactNode }) {
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
   const [sheet2Open, setSheet2Open] = useState<boolean>(false);
@@ -40,6 +41,7 @@ function MainLayout(props: { children: React.ReactNode }) {
   const [favoriteLinkList, setFavoriteLinkList] = useState<
     FavoriteMenuLinkListType[]
   >([]);
+  const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
   const sidebaref = useRef<HTMLDivElement>(null);
   const favoriteref = useRef<HTMLDivElement>(null);
@@ -186,6 +188,22 @@ function MainLayout(props: { children: React.ReactNode }) {
                 </Tooltip>
               </TooltipProvider>
             </div>
+            <MuiTooltip title="SOP" placement="right">
+              <IconButton
+                onClick={() => navigate("/sop")}
+                size="small"
+                sx={{
+                  background: "white",
+                  color: "#ca8a04",
+                  "&:hover": {
+                    background: "#ca8a04",
+                    color: "white",
+                  },
+                }}
+              >
+                <CreateNewFolderIcon fontSize="medium" />
+              </IconButton>
+            </MuiTooltip>
           </div>
           <div className="flex flex-col gap-[30px]">
             <div className="line"></div>
@@ -202,6 +220,17 @@ function MainLayout(props: { children: React.ReactNode }) {
             </Button>
           </div>
           <div className="flex flex-col gap-[20px] items-center">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  {/* -----add yellow when socket is offline */}
+                  <SiSocketdotio className="h-[25px] w-[25px] text-[#7FFFD4]" />
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-cyan-700">
+                  {/* <p>Help & Support</p> */}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>

@@ -17,8 +17,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { getminBox, qrPrint } from "@/features/client/storeSlice";
 import { spigenAxios } from "@/axiosIntercepter";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
-import { images } from "@/assets/images.jpeg";
+import { images } from "@/assets/images.jpg";
+import Print from "@/assets/Print.jpg";
+// import p1 from "@/assets/p1.jpeg";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { FaWarehouse } from "react-icons/fa";
+import { MdLocalPrintshop } from "react-icons/md";
 function PrintMinLabel() {
   const [form] = Form.useForm();
   const selMin = Form.useWatch("min", form);
@@ -90,7 +94,7 @@ function PrintMinLabel() {
     }
   }, [selMin]);
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] overflow-hidden bg-[#eaf1ec]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white ">
       <div className="bg-[#fff]">
         {loading == true && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -154,10 +158,24 @@ function PrintMinLabel() {
           </form>
         </Form>{" "}
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
-        {" "}
-        <div className="h-[calc(100vh-50px)] flex flex-col gap-[20px] justify-center items-center">
-          <img src="/p2.png" className="w-[300px] opacity-50" alt="" />
+      <div
+        className="h-[500px] bg-cover bg-repeat rounded"
+        style={{ backgroundImage: "url('./../assets/images/s1.png')" }}
+      >
+        <div className="flex  items-center mt-[30px] gap-[20px] w-full justify-center h-full">
+          <div className="h-[350px] w-[350px] flex flex-col items-center justify-center gap-[3px] opacity-80 pointer-events-none ">
+            {" "}
+            <img
+              src={Print}
+              alt="no access"
+              className="border-rounded  rounded-full"
+            />
+            {/* <MdLocalPrintshop className="h-[150px] w-[150px] text-cyan-800" /> */}
+            {/* <Link to={"/"} className="flex items-center gap-[5px]">
+              <p className="text-cyan-800 font-[600]">Production</p>
+              <BiLinkExternal className="text-cyan-800" />
+            </Link> */}
+          </div>
         </div>
       </div>
     </Wrapper>

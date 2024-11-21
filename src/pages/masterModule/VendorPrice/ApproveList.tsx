@@ -4,8 +4,8 @@ import { Filter } from "lucide-react";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Button } from "@/components/ui/button";
-import { DatePicker, Divider,  Form, Space } from "antd";
-import {  RootState } from "@/store";
+import { DatePicker, Divider, Form, Space } from "antd";
+import { RootState } from "@/store";
 import {
   approveVendorPrice,
   getVendorPrice,
@@ -169,7 +169,6 @@ const ApproveList: React.FC = () => {
               Search
             </Button>{" "}
           </div>{" "}
-         
         </Form>
         <Divider />
       </div>
@@ -196,6 +195,7 @@ const ApproveList: React.FC = () => {
           rowSelection="multiple"
           checkboxSelection={true}
           onSelectionChanged={onSelectionChanged}
+          suppressCellFocus={true}
         />
       </div>{" "}
       <ConfirmationModal
