@@ -442,10 +442,10 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-slate-600">
-                    <ul>
-                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                        <div>
+                  <div className="text-slate-600 w-full block break-words text-base ">
+                    <ul className="break-words text-base ">
+                      <li className="grid grid-cols-[1fr_140px] mt-[20px]">
+                        <div className=" w-[180px]">
                           <h3 className="font-[500]">
                             Sub-Total value before Taxes :
                           </h3>
@@ -456,7 +456,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                           </p>
                         </div>
                       </li>
-                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                      <li className="grid grid-cols-[1fr_140px] mt-[20px]">
                         <div>
                           <h3 className="font-[500]">CGST :</h3>
                         </div>
@@ -467,7 +467,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                           </p>
                         </div>
                       </li>
-                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                      <li className="grid grid-cols-[1fr_140px] mt-[20px]">
                         <div>
                           <h3 className="font-[500]">SGST :</h3>
                         </div>
@@ -477,7 +477,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                           </p>
                         </div>
                       </li>
-                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                      <li className="grid grid-cols-[1fr_140px] mt-[20px]">
                         <div>
                           <h3 className="font-[500]">ISGST :</h3>
                         </div>
@@ -487,8 +487,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                           </p>
                         </div>
                       </li>
-                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                        <div>
+                      <li className="grid grid-cols-[1fr_140px] mt-[20px]">
+                        <div className=" w-[180px]">
                           <h3 className="font-[600] text-cyan-600">
                             Sub-Total values after Taxes :
                           </h3>
