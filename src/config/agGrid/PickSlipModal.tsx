@@ -128,7 +128,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
             rowNodes: [params.node],
             columns: [column],
           });
-          api.applyTransaction({ update: [data] });
+          api.applyTransaction({ update: [data] }); // refresh cell
         };
         return (
           <input
