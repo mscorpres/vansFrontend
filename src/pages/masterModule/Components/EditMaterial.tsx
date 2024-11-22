@@ -9,6 +9,7 @@ import {
 import { Form, Switch } from "antd";
 
 import {
+  fetchMaterialDocsFiles,
   getdetailsOfUpdateComponent,
   updateComponentofMaterial,
 } from "@/components/shared/Api/masterApi";
@@ -36,6 +37,8 @@ import { gstRateList, taxType } from "@/components/shared/Options";
 import { spigenAxios } from "@/axiosIntercepter";
 import { toast } from "@/components/ui/use-toast";
 import { IoCloudUpload } from "react-icons/io5";
+import { AgGridReact } from "ag-grid-react";
+import { Download } from "lucide-react";
 const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const { execFun, loading: loading1 } = useApi();
   const [editForm] = Form.useForm();
@@ -43,6 +46,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [captions, setCaptions] = useState("");
   const [files, setFiles] = useState<File[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [docList, setDocList] = useState([]);
 
   const isEnabledOptions = [
     {
@@ -164,7 +168,39 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     }
     setLoading(false);
   };
+  const getUploadedDoc = async (sheetOpen) => {
+    let payload = {
+      component: sheetOpenEdit.component_key,
+    };
+    const response = await execFun(
+      () => fetchMaterialDocsFiles(payload),
+      "fetch"
+    );
 
+    if (response.data.code == 200) {
+      // toast
+      let arr = response.data.data.map((r: any) => {
+        return {
+          ...r,
+        };
+      });
+      setDocList(arr);
+      toast({
+        title: "Docs fetched successfully",
+        className: "bg-green-600 text-white items-center",
+      });
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  useEffect(() => {
+    if (sheetOpen) {
+      getUploadedDoc(sheetOpen);
+    }
+  }, [sheetOpen]);
   const handleFileChange = (newFiles: File[] | null) => {
     setFiles(newFiles);
   };
@@ -195,6 +231,51 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     }
     // setLoading(false);
   };
+  const columnDefsDoc: ColDef<rowData>[] = [
+    {
+      headerName: "Id",
+      valueGetter: "node.rowIndex + 1",
+      cellRenderer: "textInputCellRenderer",
+      maxWidth: 100,
+      field: "delete",
+    },
+    {
+      headerName: "Uploaded By",
+      field: "uploaded_by",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      headerName: "Uploaded Date",
+      field: "uploaded_date",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      field: "action",
+      headerName: "",
+      width: 50,
+      cellRenderer: (params) => {
+        return (
+          <div className="flex gap-[5px] items-center justify-center h-full">
+            {/* <Button className=" rounded-full bg-white  hover:bg-white-600 h-[25px] w-[25px] flex justify-center items-center p-0"> */}
+            {/* <Trash2
+              className="h-[15px] w-[15px] text-red-500 hover:text-red-700"
+              onClick={() => deleteSelected(params)}
+            /> */}
+            <a href={params?.data?.image_url} target="_blank">
+              <Download className="h-[15px] w-[15px] text-blue-500 hover:text-blue-700" />
+            </a>
+            {/* </Button> */}
+          </div>
+        );
+      },
+    },
+  ];
   useEffect(() => {
     if (sheetOpenEdit) {
       getDetails(sheetOpenEdit);
@@ -440,7 +521,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         </Form.Item>{" "}
                         <Form.Item
                           name="customercode"
-                          label="Customer PART"
+                          label="Customer Part"
                           rules={rules.customercode}
                         >
                           <Input
@@ -764,23 +845,25 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       </Sheet>
       <Sheet open={sheetOpen == true} onOpenChange={setSheetOpen}>
         <SheetContent
-          className="min-w-[35%] p-0"
+          className="min-w-[55%] p-0"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}
         >
           {/* {loading == true && <FullPageLoading />} */}
           <SheetHeader className={modelFixHeaderStyle}>
-            <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
+            <SheetTitle className="text-slate-600">
+              Upload Image here
+            </SheetTitle>
           </SheetHeader>{" "}
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-            {/* {loading && <FullPageLoading />} */}
+            {loading1("fetch") && <FullPageLoading />}
             <FileUploader
               value={files}
               onValueChange={handleFileChange}
               dropzoneOptions={{
                 accept: {
-                  "image/*": [".jpg", ".jpeg", ".png", ".gif", ".pdf"],
+                  "image/*": [".jpg", ".jpeg", ".png", ".gif"],
                 },
                 maxFiles: 1,
                 maxSize: 4 * 1024 * 1024, // 4 MB
@@ -825,6 +908,18 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                   onChange={(e) => setCaptions(e.target.value)}
                 />
               </div>
+            </div>
+            <div className="ag-theme-quartz h-[calc(100vh-400px)] mt-5">
+              <AgGridReact
+                //   loadingCellRenderer={loadingCellRenderer}
+                rowData={docList}
+                columnDefs={columnDefsDoc}
+                defaultColDef={{ filter: true, sortable: true }}
+                pagination={true}
+                paginationPageSize={10}
+                paginationAutoPageSize={true}
+                suppressCellFocus={true}
+              />
             </div>
           </div>{" "}
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">

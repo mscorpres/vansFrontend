@@ -25,6 +25,7 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Button } from "@/components/ui/button";
 import {
+  fetchImageProduct,
   getProductDetailsForEdit,
   saveProductDetails,
   updateProductMaterial,
@@ -48,14 +49,19 @@ import { listOfUoms } from "@/features/client/clientSlice";
 import { gstRateList } from "@/components/shared/Options";
 import { IoCloudUpload } from "react-icons/io5";
 import { AppDispatch, RootState } from "@/store";
+import { spigenAxios } from "@/axiosIntercepter";
+import { AgGridReact } from "ag-grid-react";
+import { Download } from "lucide-react";
 const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [open, setOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [form] = Form.useForm();
   const [files, setFiles] = useState<File[] | null>(null);
+  const [docList, setDocList] = useState([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
   const { execFun, loading: loading1 } = useApi();
   const dispatch = useDispatch<AppDispatch>();
+  const [captions, setCaptions] = useState("");
   const { uomlist } = useSelector((state: RootState) => state.client);
   const typeOption = [
     {
@@ -221,13 +227,14 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   };
   const uploadDocs = async () => {
     const formData = new FormData();
+
     formData.append("caption", captions);
-    formData.append("product", sheetOpenEdit?.component_key);
+    formData.append("product", sheetOpenEdit);
     files.map((comp) => {
       formData.append("files", comp);
     });
     const response = await spigenAxios.post(
-      "/component/upload_comp_img",
+      "/products/upload_product_img",
       formData
     );
     if (response.data.code == 200) {
@@ -295,6 +302,83 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       callUom();
     }
   }, [uomlist]);
+  const getUploadedDoc = async (sheetOpen) => {
+
+    let payload = {
+      product: sheetOpenEdit,
+    };
+    const response = await execFun(() => fetchImageProduct(payload), "fetch");
+    console.log("response", response);
+
+    if (response.data.code == 200) {
+      // toast
+      let arr = response.data.data.map((r: any) => {
+        return {
+          ...r,
+        };
+      });
+      setDocList(arr);
+      toast({
+        title: "Docs fetched successfully",
+        className: "bg-green-600 text-white items-center",
+      });
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  useEffect(() => {
+    if (sheetOpen == true) {
+      getUploadedDoc(sheetOpen);
+    }
+  }, [sheetOpen]);
+  const columnDefsDoc: ColDef<rowData>[] = [
+    {
+      headerName: "Id",
+      valueGetter: "node.rowIndex + 1",
+      cellRenderer: "textInputCellRenderer",
+      maxWidth: 100,
+      field: "delete",
+    },
+    {
+      headerName: "Uploaded By",
+      field: "uploaded_by",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      headerName: "Uploaded Date",
+      field: "uploaded_date",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      field: "action",
+      headerName: "",
+      width: 50,
+      cellRenderer: (params) => {
+        return (
+          <div className="flex gap-[5px] items-center justify-center h-full">
+            {/* <Button className=" rounded-full bg-white  hover:bg-white-600 h-[25px] w-[25px] flex justify-center items-center p-0"> */}
+            {/* <Trash2
+              className="h-[15px] w-[15px] text-red-500 hover:text-red-700"
+              onClick={() => deleteSelected(params)}
+            /> */}
+            <a href={params?.data?.image_url} target="_blank">
+              <Download className="h-[15px] w-[15px] text-blue-500 hover:text-blue-700" />
+            </a>
+            {/* </Button> */}
+          </div>
+        );
+      },
+    },
+  ];
   return (
     <div className="h-[calc(100vh-100px)] ">
       {loading1("fetch") && <FullPageLoading />}
@@ -320,7 +404,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       <Sheet open={sheetOpenEdit} onOpenChange={setSheetOpenEdit}>
         <SheetTrigger></SheetTrigger>
         <SheetContent
-          className="min-w-[100%] p-0"
+          className="min-w-[85%] p-0"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}
@@ -712,7 +796,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       </Sheet>{" "}
       <Sheet open={sheetOpen == true} onOpenChange={setSheetOpen}>
         <SheetContent
-          className="min-w-[35%] p-0"
+          className="min-w-[55%] p-0"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}
@@ -722,7 +806,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
             <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
           </SheetHeader>{" "}
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-            {/* {loading && <FullPageLoading />} */}
+            {loading1("fetch") && <FullPageLoading />}
             <FileUploader
               value={files}
               onValueChange={handleFileChange}
@@ -773,6 +857,18 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                   onChange={(e) => setCaptions(e.target.value)}
                 />
               </div>
+            </div>{" "}
+            <div className="ag-theme-quartz h-[calc(100vh-400px)] mt-5">
+              <AgGridReact
+                //   loadingCellRenderer={loadingCellRenderer}
+                rowData={docList}
+                columnDefs={columnDefsDoc}
+                defaultColDef={{ filter: true, sortable: true }}
+                pagination={true}
+                paginationPageSize={10}
+                paginationAutoPageSize={true}
+                suppressCellFocus={true}
+              />
             </div>
           </div>{" "}
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">

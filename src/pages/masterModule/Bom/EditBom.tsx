@@ -343,14 +343,14 @@ const EditBom = () => {
   ];
   const columnDefsDoc: ColDef<rowData>[] = [
     {
-      headerName: "",
+      headerName: "Id",
       valueGetter: "node.rowIndex + 1",
       cellRenderer: "textInputCellRenderer",
       maxWidth: 100,
       field: "delete",
     },
     {
-      headerName: "Uploaded Name",
+      headerName: "Uploaded By",
       field: "uploaded_by",
       editable: false,
       flex: 1,
@@ -358,7 +358,7 @@ const EditBom = () => {
       minWidth: 200,
     },
     {
-      headerName: "Uploaded By",
+      headerName: "Uploaded Date",
       field: "uploaded_date",
       editable: false,
       flex: 1,
@@ -616,7 +616,7 @@ const EditBom = () => {
       });
       setDocList(arr);
       toast({
-        title: "Doc Uploaded successfully",
+        title: "Docs fetched successfully",
         className: "bg-green-600 text-white items-center",
       });
     }
