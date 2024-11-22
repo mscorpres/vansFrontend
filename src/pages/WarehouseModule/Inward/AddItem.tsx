@@ -80,6 +80,8 @@ const AddPO: React.FC<Props> = ({
   isApprove,
   setIsApprove,
   params,
+  roeIs,
+  setResetSure,
 }) => {
   // const [rowData, setRowData] = useState<RowData[]>([]);
   const [excelModel, setExcelModel] = useState<boolean>(false);
@@ -188,6 +190,7 @@ const AddPO: React.FC<Props> = ({
           onSearch={handleSearch}
           vendorCode={selectedVendor}
           currencyList={currencyList}
+          roeIs={roeIs}
           // componentDetails={hsnlist}
         />
       ),
@@ -241,7 +244,6 @@ const AddPO: React.FC<Props> = ({
       attachment: attachmentFile,
     };
     dispatch(minTransaction(payload)).then((res) => {
-      console.log("res", res);
       if (res?.payload?.code == 200) {
         toast({
           title: res.payload?.message,
@@ -252,6 +254,7 @@ const AddPO: React.FC<Props> = ({
         setRowData([]);
         setTab("create");
         form.resetFields();
+        setResetSure(true);
       } else {
         toast({
           title: res.payload.message.msg,

@@ -10,7 +10,7 @@ import styled from "styled-components";
 import { Link, useParams } from "react-router-dom";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import Select from "react-select";
-import { transformOptionData } from "@/helper/transform";
+import { transformCurrencyData, transformOptionData } from "@/helper/transform";
 import { Button, Form } from "antd";
 import { primartButtonStyle, InputStyle } from "@/constants/themeContants";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
@@ -58,6 +58,9 @@ const CreateInward: React.FC<Props> = ({
   selectedVendor,
   setFormVal,
   formVal,
+  currencyList,
+  resetSure,
+  setResetSure,
 }) => {
   const [searchData, setSearchData] = useState("");
   const dispatch = useDispatch();
@@ -70,12 +73,10 @@ const CreateInward: React.FC<Props> = ({
   const [forms] = Form.useForm();
   const selBranch = Form.useWatch("branch", form);
   const params = useParams();
-  console.log("params", params);
   const { execFun, loading: loading1 } = useApi();
   const getStateList = async () => {
     // return;
     const response = await execFun(() => fetchState(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
@@ -90,9 +91,7 @@ const CreateInward: React.FC<Props> = ({
   };
 
   const addVendor = async (data) => {
-    console.log("Submitted Data from s:", data);
     const values = forms.getFieldsValue();
-    console.log("values", values);
 
     let p = {
       vendor: {
@@ -112,11 +111,9 @@ const CreateInward: React.FC<Props> = ({
         gstin: values.gstin,
       },
     };
-    console.log("p", p);
     // return;
 
     const response = await execFun(() => vendoradd(p), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       toast({
         title: response.data.message,
@@ -131,10 +128,7 @@ const CreateInward: React.FC<Props> = ({
     }
   };
   const createNewBranch = async (data) => {
-    console.log("Submitted Data from s:", data);
-    console.log("Submitted Data from s:", data);
     const values = forms.getFieldsValue();
-    console.log("values", values);
     let p = {
       vendor: {
         vendorname: sheetOpenBranch,
@@ -153,7 +147,6 @@ const CreateInward: React.FC<Props> = ({
     };
 
     const response = await execFun(() => vendorUpdateSave(p), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       toast({
         title: response.data.message,
@@ -189,6 +182,7 @@ const CreateInward: React.FC<Props> = ({
           branchcode: selBranch?.value,
         })
       );
+      setResetSure(false);
     }
   }, [selectedVendor, selBranch]);
   useEffect(() => {
@@ -198,7 +192,7 @@ const CreateInward: React.FC<Props> = ({
   }, [searchData]);
 
   useEffect(() => {
-    if (vendorPODetails) {
+    if (vendorPODetails && resetSure == false) {
       let arr = vendorPODetails;
 
       form.setFieldValue("vendorGst", arr?.gstid);
@@ -213,7 +207,7 @@ const CreateInward: React.FC<Props> = ({
         // data.loading  &&
         // <FullPageLoading />
       }
-      <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical" initialValues={initialValues}>
         <div className="rounded p-[30px] shadow bg-[#fff] h-[calc(100vh-145px)] overflow-y-auto">
           <div className="grid grid-cols-1 gap-[30px]">
             <Card className="rounded shadow bg-[#fff]">
@@ -226,7 +220,7 @@ const CreateInward: React.FC<Props> = ({
                 </p>
               </CardHeader>
               <CardContent className="mt-[10px]">
-                <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
+                <div className="mt-[30px] grid grid-cols-3 gap-[40px]">
                   <Form.Item
                     name="vendorType"
                     label="Vendor Type"
@@ -248,7 +242,6 @@ const CreateInward: React.FC<Props> = ({
                     {/* <p>error message</p> */}
                   </Form.Item>
                   {/* <div> */}
-
                   {/* <p>error message</p> */}
                   <Form.Item
                     name="vendorName"
@@ -283,9 +276,7 @@ const CreateInward: React.FC<Props> = ({
                       // value={selectedCustomer}
                       fetchOptionWith="payload"
                     />
-                  </Form.Item>
-                </div>
-                <div className="mt-[30px] grid grid-cols-3 gap-[40px]">
+                  </Form.Item>{" "}
                   <Form.Item
                     name="branch"
                     label={
@@ -326,6 +317,8 @@ const CreateInward: React.FC<Props> = ({
                       options={transformOptionData(vendorBranchlist)}
                     />
                   </Form.Item>{" "}
+                </div>
+                <div className="mt-[30px] grid grid-cols-4 gap-[40px]">
                   <Form.Item
                     name="vendorGst"
                     label="GSTIN"
@@ -349,19 +342,64 @@ const CreateInward: React.FC<Props> = ({
                       fetchOptionWith="payload"
                     />
                     {/* <p>error message</p> */}
+                  </Form.Item>{" "}
+                  <Form.Item
+                    name="currency"
+                    label="Currency"
+                    className=""
+                    rules={rules.currency}
+                  >
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="Currency"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isClearable={false} // Prevent clearing the value
+                      isSearchable={false} // Disable search if not needed
+                      // options={
+                      //   currencyList ? transformCurrencyData(currencyList) : []
+                      // }
+                      options={transformCurrencyData(currencyList || [])}
+                      // onChange={(e) => handleCurrencyChange(e.value)}
+                      // value={
+                      //   // Find the corresponding option based on field.value
+                      //   transformCurrencyData(currencyList)?.find(
+                      //     (option) => option.value === field?.value
+                      //   ) || null
+                      // }
+                      // onChange={(selectedOption) => {
+                      //   // Update the form value with the selected option's value
+                      //   field?.onChange(selectedOption?.value); // Use field.onChange to update the form value
+                      // }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="exchange_rate"
+                    label="Exchange Rate"
+                    className=""
+                    rules={rules.exchange_rate}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      placeholder="Exchange Rate"
+                      min={1}
+                    />
                   </Form.Item>
                 </div>{" "}
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  className=""
-                  rules={rules.address}
-                >
-                  <Textarea
-                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                    placeholder="Address"
-                  />
-                </Form.Item>{" "}
+                <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
+                  <Form.Item
+                    name="address"
+                    label="Address"
+                    className=""
+                    rules={rules.address}
+                  >
+                    <Textarea
+                      className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
+                      placeholder="Address"
+                    />
+                  </Form.Item>{" "}
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -795,94 +833,17 @@ const rules = {
       message: "Please select a  Vendor address",
     },
   ],
-  terms: [
-    {
-      required: true,
-      message: "Please select a  Vendor terms",
-    },
-  ],
-  quotation: [
-    {
-      required: true,
-      message: "Please select a  Vendor quotation",
-    },
-  ],
-  paymentTerms: [
-    {
-      required: true,
-      message: "Please select a payment Terms",
-    },
-  ],
   costCenter: [
     {
       required: true,
       message: "Please select a cost Center",
     },
   ],
-  project: [
-    {
-      required: true,
-      message: "Please select a project",
-    },
-  ],
-  comment: [
-    {
-      required: true,
-      message: "Please select a project",
-    },
-  ],
-  billingId: [
-    {
-      required: true,
-      message: "Please select a  billing Id",
-    },
-  ],
-  pan: [
-    {
-      required: true,
-      message: "Please select a billing pan",
-    },
-  ],
-  billgst: [
-    {
-      required: true,
-      message: "Please select a bill gst",
-    },
-  ],
-  billAddress: [
-    {
-      required: true,
-      message: "Please select a bill Address",
-    },
-  ],
-  shipId: [
-    {
-      required: true,
-      message: "Please select a ship Id",
-    },
-  ],
-  shippan: [
-    {
-      required: true,
-      message: "Please select a ship pan",
-    },
-  ],
-  shipgst: [
-    {
-      required: true,
-      message: "Please select a ship gst",
-    },
-  ],
-  shipAddress: [
-    {
-      required: true,
-      message: "Please select a ship address",
-    },
-  ],
-  date: [
-    {
-      required: true,
-      message: "Please select a time period",
-    },
-  ],
+};
+const initialValues = {
+  vendorType: "",
+  vendorName: "",
+  branch: "",
+  vendorGst: "",
+  address: "",
 };

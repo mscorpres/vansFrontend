@@ -8,8 +8,9 @@ import { Form } from "antd";
 import { useParams } from "react-router-dom";
 import { AppDispatch, RootState } from "@/store";
 import { fetchDataPOEdit } from "@/features/client/clientSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CreateInward from "./CreateInward";
+import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
 const InwardTemplate = () => {
   const [tabvalue, setTabvalue] = useState<string>("create");
   // const [data, setData] = useState<any>();
@@ -18,6 +19,8 @@ const InwardTemplate = () => {
   const [isApprove, setIsApprove] = useState(false);
   const [form] = Form.useForm();
   const [paramVal, setParamVal] = useState("");
+  const [roeIs, setRoeIs] = useState("");
+  const [resetSure, setResetSure] = useState(false);
   const [rowData, setRowData] = useState<RowData[]>([
     {
       checked: false,
@@ -29,7 +32,7 @@ const InwardTemplate = () => {
       rate: 50,
       currency: "USD",
       gstRate: 18,
-      gstType: "local",
+      gstType: "L",
       localValue: 0,
       foreignValue: 0,
       cgst: 9,
@@ -41,13 +44,22 @@ const InwardTemplate = () => {
     },
   ]);
   const selectedVendor = Form.useWatch("vendorName", form);
+  const exchangingRate = Form.useWatch("exchange_rate", form);
   const dispatch = useDispatch<AppDispatch>();
-  console.log("tabvalue", tabvalue);
   const params = useParams();
-  console.log("params", params);
+  const { loading, currency } = useSelector(
+    (state: RootState) => state.createSalesOrder
+  );
+  useEffect(() => {
+    dispatch(fetchCurrency());
+  }, []);
+  useEffect(() => {
+    if (exchangingRate) {
+      setRoeIs(exchangingRate);
+    }
+  }, [exchangingRate]);
   useEffect(() => {
     const currentUrl = window.location.href;
-    // console.log("currentUrl---", currentUrl.split("/"));
     let urlParts = currentUrl.split("/");
     const secondLastItem = [urlParts.length - 2];
     if (urlParts[secondLastItem] == "approve") {
@@ -59,24 +71,18 @@ const InwardTemplate = () => {
     }
     if (params) {
       setParamVal(params.id?.replaceAll("_", "/"));
-      // console.log("secondLastItems", urlParts[secondLastItem]);
-      //  && urlParts[secondLastItem]==app
       dispatch(fetchDataPOEdit({ pono: params.id?.replaceAll("_", "/") })).then(
         (res) => {
-          // console.log("res", res);
           if (res.payload.status == "success") {
             let arr = res.payload.data;
             let billinid = {
               label: arr.bill[0]?.addrbillname,
               value: arr.bill[0]?.addrbillid,
             };
-            // console.log("billingid", billingid);
-
             let shippingid = {
               label: arr.ship?.addrshipname,
               value: arr.ship?.addrshipid,
             };
-            console.log("shippingid", shippingid);
             //vendor
             // form.setFieldValue("poType", "New");
             form.setFieldValue("vendorType", {
@@ -125,7 +131,6 @@ const InwardTemplate = () => {
               cgst: r.cgst,
             };
           });
-          console.log("matLst", matLst);
 
           setRowData(matLst);
           // setPayloadData(res.payload);
@@ -145,6 +150,9 @@ const InwardTemplate = () => {
             selectedVendor={selectedVendor}
             formVal={formVal}
             setFormVal={setFormVal}
+            currencyList={currency}
+            resetSure={resetSure}
+            setResetSure={setResetSure}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">
@@ -160,6 +168,8 @@ const InwardTemplate = () => {
             isApprove={isApprove}
             setIsApprove={setIsApprove}
             params={params}
+            roeIs={roeIs}
+            setResetSure={setResetSure}
           />
         </TabsContent>
       </Tabs>
