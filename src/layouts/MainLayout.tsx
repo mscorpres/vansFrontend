@@ -232,15 +232,15 @@ function MainLayout(props: { children: React.ReactNode }) {
           <div className="flex flex-col gap-[20px] items-center">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
-                  {/* -----add yellow when socket is offline */}
-                  <SiSocketdotio
-                    style={{
-                      color: socketConnect == true ? "rgb(0 185 123)" : "red",
-                    }}
-                    className="h-[25px] w-[25px] text-[#7FFFD4]"
-                  />
-                </TooltipTrigger>
+                {/* <TooltipTrigger> */}
+                {/* -----add yellow when socket is offline */}
+                <SiSocketdotio
+                  style={{
+                    color: socketConnect == true ? "rgb(0 185 123)" : "red",
+                  }}
+                  className="h-[25px] w-[25px] text-[#7FFFD4]"
+                />
+                {/* </TooltipTrigger> */}
                 <TooltipContent side="right" className="bg-cyan-700">
                   {/* <p>Help & Support</p> */}
                 </TooltipContent>
