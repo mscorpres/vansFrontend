@@ -42,7 +42,7 @@ const VendorPrice = () => {
     {
       VENDOR_CODE: "VEN0002",
       PART_CODE: "TG0002",
-      PART_NAME: "BATTERY",
+      // PART_NAME: "BATTERY",
       RATE: "5",
     },
   ];
@@ -110,31 +110,35 @@ const VendorPrice = () => {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
+      flex: 1,
       width: 90,
     },
     {
       headerName: "Vendor Code",
       field: "vendorCode",
+      flex: 1,
       filter: "agTextColumnFilter",
-      width: 280,
+      width: 380,
     },
     {
       headerName: "Part Code",
       field: "partCode",
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
-    {
-      headerName: "Part Name",
-      field: "partname",
+      flex: 1,
       filter: "agTextColumnFilter",
       width: 250,
     },
+    // {
+    //   headerName: "Part Name",
+    //   field: "partname",
+    //   filter: "agTextColumnFilter",
+    //   width: 250,
+    // },
     {
       headerName: "Rate",
       field: "rate",
       filter: "agTextColumnFilter",
-      width: 190,
+      flex: 1,
+      width: 250,
     },
   ];
 

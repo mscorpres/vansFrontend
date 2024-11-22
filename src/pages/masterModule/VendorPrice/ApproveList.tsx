@@ -72,6 +72,18 @@ const ApproveList: React.FC = () => {
       },
     },
     {
+      field: "rate",
+      headerName: "Rate",
+      // cellRenderer: CopyCellRenderer,
+      flex: 2,
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter Vendor & Narration...",
+        },
+      },
+    },
+    {
       field: "create_dt",
       headerName: "Create Date",
       width: "190",

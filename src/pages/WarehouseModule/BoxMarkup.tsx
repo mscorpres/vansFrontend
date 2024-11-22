@@ -241,7 +241,7 @@ const BoxMarkup = () => {
       width: 190,
     },
     {
-      headerName: "Qty",
+      headerName: "Box Qty",
       cellRenderer: "textInputCellRenderer",
       field: "orderQty",
       filter: "agTextColumnFilter",

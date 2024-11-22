@@ -151,6 +151,7 @@ const CreatePhysicalStock = () => {
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
         });
+        setRowData([]);
       } else {
         toast({
           title: res.payload.message.msg,
@@ -210,16 +211,9 @@ const CreatePhysicalStock = () => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
+
     {
       headerName: "Location",
-      field: "location",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "Remark",
       field: "remark",
       editable: false,
       flex: 1,

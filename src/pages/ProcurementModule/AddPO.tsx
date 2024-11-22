@@ -104,6 +104,7 @@ const AddPO: React.FC<Props> = ({
       asinNumber: "B01N1SE4EP",
       orderQty: 100,
       rate: 50,
+      prevrate: "",
       // currency: "28567096",
       gstRate: 18,
       gstTypeForPO: codeType,
@@ -367,6 +368,14 @@ const AddPO: React.FC<Props> = ({
     {
       headerName: "Rate",
       field: "rate",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      headerName: "Previous Rate",
+      field: "prevrate",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",

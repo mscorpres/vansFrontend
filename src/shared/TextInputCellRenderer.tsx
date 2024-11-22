@@ -17,7 +17,7 @@ import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import { FaSortDown, FaTrash } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { DatePicker, Select } from "antd";
+import { DatePicker, Select, Typography } from "antd";
 import "ag-grid-enterprise";
 import { useParams } from "react-router-dom";
 import moment from "moment";
@@ -194,8 +194,7 @@ const TextInputCellRenderer = (props: any) => {
     setShowConfirmDialog(true);
   };
 
-  const handleConfirmDelete = (e) => {
-    e.preventDefault();
+  const handleConfirmDelete = () => {
     if (selectedRowIndex !== null) {
       setRowData((prevData: any) =>
         prevData.filter((_: any, index: any) => index !== selectedRowIndex)
@@ -203,8 +202,9 @@ const TextInputCellRenderer = (props: any) => {
       api.applyTransaction({
         remove: [api.getDisplayedRowAtIndex(selectedRowIndex).data],
       });
+
       // Example payload for deleteProduct
-      const payload: DeletePayload = {
+      const payload: any = {
         item: data?.material?.id,
         so_id: (params?.id as string)?.replace(/_/g, "/"),
         updaterow: data?.updateid,
@@ -249,8 +249,9 @@ const TextInputCellRenderer = (props: any) => {
           //   "vendorName"
           // ] = `${getComponentData?.ven_com?.comp_name}/ Maker:${getComponentData.make}`;
           data["orderQty"] = data2.closingQty;
-          data["rate"] = data2.gstrate;
+          // data["rate"] = data2.gstrate;
           data["hsnCode"] = data2.hsn;
+          data["prevrate"] = data2.rate;
           if (colDef.field === "exchange_rate") {
             data["foreignValue"] = data["exchange_rate"];
           }
@@ -875,6 +876,18 @@ const TextInputCellRenderer = (props: any) => {
             />
           </>
         );
+      case "prevrate":
+        return (
+          <>
+            <Input
+              onChange={handleInputChange}
+              value={value}
+              type="number"
+              placeholder={colDef.headerName}
+              className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+            />
+          </>
+        );
       case "type":
         return (
           <Popover open={open} onOpenChange={setOpen}>
@@ -1202,7 +1215,7 @@ const TextInputCellRenderer = (props: any) => {
             onChange={handleInputChange}
             value={value}
             placeholder={colDef.headerName}
-            type="number"
+            // type="number"
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );

@@ -676,6 +676,7 @@ const AddPO: React.FC<Props> = ({
           // onClick={() =>
           //   isApprove ? setShowRejectConfirm(true) : setRowData([])
           // }
+          onClick={() => setRowData([])}
         >
           {/* {isApprove ? "Reject" : "Reset"} */}
           Reset

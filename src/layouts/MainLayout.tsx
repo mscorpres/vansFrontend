@@ -31,11 +31,13 @@ import MuiTooltip from "@/components/MuiTooltip";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import { IconButton } from "@mui/material";
 import { SiSocketdotio } from "react-icons/si";
+import socket from "@/components/shared/socket";
 function MainLayout(props: { children: React.ReactNode }) {
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
   const [sheet2Open, setSheet2Open] = useState<boolean>(false);
   const [favoriteSheet, setFavoriteSheet] = useState<boolean>(false);
   const [logotAlert, setLogotAlert] = useState<boolean>(false);
+  const [socketConnect, setSocketConnect] = useState<boolean>(false);
   const [helpModel, setHelpModel] = useState<boolean>(false);
   const [notificationSheet, setNotificationSheet] = useState<boolean>(false);
   const [favoriteLinkList, setFavoriteLinkList] = useState<
@@ -66,6 +68,14 @@ function MainLayout(props: { children: React.ReactNode }) {
     helpModel,
     setHelpModel,
   };
+  socket.on("connect", () => {
+    console.log("Connected to the server");
+    setSocketConnect(true);
+  });
+  socket.on("disconnect", () => {
+    console.log("Disconnected from the server");
+    setSocketConnect(false);
+  });
 
   return (
     <Wrapper className="">
@@ -224,7 +234,12 @@ function MainLayout(props: { children: React.ReactNode }) {
               <Tooltip>
                 <TooltipTrigger>
                   {/* -----add yellow when socket is offline */}
-                  <SiSocketdotio className="h-[25px] w-[25px] text-[#7FFFD4]" />
+                  <SiSocketdotio
+                    style={{
+                      color: socketConnect == true ? "rgb(0 185 123)" : "red",
+                    }}
+                    className="h-[25px] w-[25px] text-[#7FFFD4]"
+                  />
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-cyan-700">
                   {/* <p>Help & Support</p> */}
