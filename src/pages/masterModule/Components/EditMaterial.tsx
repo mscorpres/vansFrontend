@@ -12,6 +12,7 @@ import {
   fetchMaterialDocsFiles,
   getdetailsOfUpdateComponent,
   updateComponentofMaterial,
+  uploadCompImg,
 } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import styled from "styled-components";
@@ -215,16 +216,16 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     files.map((comp) => {
       formData.append("files", comp);
     });
-    const response = await spigenAxios.post(
-      "/component/upload_comp_img",
-      formData
-    );
+
+    const response = await execFun(() => uploadCompImg(formData), "fetch");
     if (response.data.code == 200) {
       // toast
       toast({
         title: "Doc Uploaded successfully",
         className: "bg-green-600 text-white items-center",
       });
+      setFiles([]);
+      setCaptions("");
       // setLoading(false);
       setSheetOpen(false);
       // setAttachmentFile(response.data.data);

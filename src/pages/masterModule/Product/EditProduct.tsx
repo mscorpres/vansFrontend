@@ -29,6 +29,7 @@ import {
   getProductDetailsForEdit,
   saveProductDetails,
   updateProductMaterial,
+  uploadProductImg,
 } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -233,16 +234,16 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     files.map((comp) => {
       formData.append("files", comp);
     });
-    const response = await spigenAxios.post(
-      "/products/upload_product_img",
-      formData
-    );
+
+    const response = await execFun(() => uploadProductImg(formData), "fetch");
     if (response.data.code == 200) {
       // toast
       toast({
         title: "Doc Uploaded successfully",
         className: "bg-green-600 text-white items-center",
       });
+      setFiles([]);
+      setCaptions("");
       // setLoading(false);
       setSheetOpen(false);
       setAttachmentFile(response.data.data);
@@ -303,7 +304,6 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     }
   }, [uomlist]);
   const getUploadedDoc = async (sheetOpen) => {
-
     let payload = {
       product: sheetOpenEdit,
     };
