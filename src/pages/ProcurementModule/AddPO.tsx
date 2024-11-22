@@ -263,7 +263,7 @@ const AddPO: React.FC<Props> = ({
             // form.resetFields();
             // setRowData([]);
             // setIsApprove(false);
-            navigate("/manage-po");
+            // navigate("/manage-po");
           } else {
             toast({
               title:
@@ -286,7 +286,7 @@ const AddPO: React.FC<Props> = ({
             });
             resetTheValues();
             // setRowData([]);
-            navigate("/approve-po");
+            // navigate("/approve-po");
             // setIsApprove(false);
           } else {
             toast({

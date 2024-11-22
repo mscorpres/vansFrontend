@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import CreatePoPage from "./CreatePoPage";
 import AddPO from "./AddPO";
 import { Form } from "antd";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppDispatch } from "@/store";
 import { fetchDataPOEdit } from "@/features/client/clientSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,13 +31,23 @@ const PoCreateTemplate = () => {
     (state: RootState) => state.createSalesOrder
   );
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const params = useParams();
   const resetTheValues = () => {
+    setResetSure(true);
     form.resetFields();
     setRowData([]);
     setTabvalue("create");
+
+    console.log("approve", isApprove);
+    if (isApprove == "edit") {
+      navigate("/manage-po");
+      setIsApprove(false);
+    } else if (isApprove == "approve") {
+      navigate("/approve-po");
+      setIsApprove(false);
+    }
     setIsApprove(false);
-    setResetSure(true);
   };
 
   useEffect(() => {
