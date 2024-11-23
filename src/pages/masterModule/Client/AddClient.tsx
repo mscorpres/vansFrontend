@@ -44,6 +44,7 @@ import {
 } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import { toast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface OptionType {
   value: string;
@@ -88,7 +89,7 @@ const FormSchema = z.object({
     }),
   website: z
     .string()
-    .url({ message: "Please enter a valid website URL" })
+    // .url({ message: "Please enter a valid website URL" })
     .refine((data) => data !== undefined && data.length > 0, {
       message: "Website is required.",
     }),
@@ -131,6 +132,7 @@ const AddClient: React.FC<Props> = ({
   const [options, setOptions] = useState<OptionType[]>([]);
   const dispatch = useDispatch<AppDispatch>();
   const data = useSelector((state: RootState) => state.createSalesOrder);
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(fetchBillingAddress({ billing_code: "R26331LI" }));
     // dispatch(fetchBillingAddressList({ search: "" }));
@@ -264,6 +266,7 @@ const AddClient: React.FC<Props> = ({
       form.setValue("email", "");
       form.setValue("pan", "");
       form.setValue("website", "");
+      navigate("/master/customer");
     } else {
       toast({
         title: response?.data.message.msg,

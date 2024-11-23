@@ -46,6 +46,7 @@ interface Props {
   isApprove: [];
   setIsApprove: [];
   params: string;
+  roeIs: string;
 }
 
 const AddPO: React.FC<Props> = ({
@@ -59,6 +60,8 @@ const AddPO: React.FC<Props> = ({
   setIsApprove,
   params,
   codeType,
+  roeIs,
+  resetTheValues,
 }) => {
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
@@ -73,12 +76,12 @@ const AddPO: React.FC<Props> = ({
   const { currencyList, loading } = useSelector(
     (state: RootState) => state.client
   );
-
   const navigate = useNavigate();
 
   // const { execFun, loading: loading1 } = useApi();
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const selVendor = Form.useWatch("vendorName", form);
+
   const uiState: AddPoUIStateType = {
     excelModel,
     setExcelModel,
@@ -101,9 +104,10 @@ const AddPO: React.FC<Props> = ({
       asinNumber: "B01N1SE4EP",
       orderQty: 100,
       rate: 50,
+      prevrate: "",
       // currency: "28567096",
       gstRate: 18,
-      gstType: codeType,
+      gstTypeForPO: codeType,
       localValue: 0,
       foreignValue: 0,
       cgst: 9,
@@ -150,6 +154,7 @@ const AddPO: React.FC<Props> = ({
           onSearch={handleSearch}
           vendorCode={selectedVendor}
           currencyList={currencyList}
+          roeIs={roeIs}
           // componentDetails={hsnlist}
         />
       ),
@@ -166,6 +171,8 @@ const AddPO: React.FC<Props> = ({
 
   const handleSubmit = async () => {
     let arr = rowData;
+    console.log("arr", arr);
+    console.log("formVal", formVal);
 
     let payload = {
       vendorname: formVal.vendorName.value,
@@ -197,7 +204,7 @@ const AddPO: React.FC<Props> = ({
       rate: arr.map((r: any) => r.rate),
       // duedate: arr.map((r: any) => formattedDate(r.dueDate)),
       hsncode: arr.map((r: any) => r.hsnCode),
-      gsttype: arr.map((r: any) => r.gstType),
+      gsttype: arr.map((r: any) => r.gstTypeForPO),
       gstrate: arr.map((r: any) => r.gstRate),
       cgst: arr.map((r: any) => r.cgst),
       sgst: arr.map((r: any) => r.sgst),
@@ -205,6 +212,7 @@ const AddPO: React.FC<Props> = ({
       remark: arr.map((r: any) => r.remark),
       original_po: formVal.originalPO?.value,
     };
+    console.log("payload", payload);
 
     // return;
     try {
@@ -236,7 +244,7 @@ const AddPO: React.FC<Props> = ({
           rate: arr.map((r: any) => r.rate),
           // date: arr.map((r: any) => r.dueDate),
           hsn: arr.map((r: any) => r.hsnCode),
-          gsttype: arr.map((r: any) => r.gstType),
+          gsttype: arr.map((r: any) => r.gstTypeForPO),
           gstrate: arr.map((r: any) => r.gstRate),
           cgst: arr.map((r: any) => r.cgst),
           sgst: arr.map((r: any) => r.sgst),
@@ -251,13 +259,16 @@ const AddPO: React.FC<Props> = ({
               title: response.payload.data.message,
               className: "bg-green-700 text-white",
             });
-            form.resetFields();
-            setRowData([]);
-            setIsApprove(false);
-            navigate("/manage-po");
+            resetTheValues();
+            // form.resetFields();
+            // setRowData([]);
+            // setIsApprove(false);
+            // navigate("/manage-po");
           } else {
             toast({
-              title: response.payload.data.message.msg,
+              title:
+                response.payload.data.message.msg ||
+                response.payload.data.message,
               className: "bg-red-700 text-white",
             });
           }
@@ -273,9 +284,10 @@ const AddPO: React.FC<Props> = ({
               title: response.payload.message,
               className: "bg-green-700 text-white",
             });
-            setRowData([]);
-            navigate("/approve-po");
-            setIsApprove(false);
+            resetTheValues();
+            // setRowData([]);
+            // navigate("/approve-po");
+            // setIsApprove(false);
           } else {
             toast({
               title: response.payload.message.msg,
@@ -291,10 +303,19 @@ const AddPO: React.FC<Props> = ({
               title: response.payload.message,
               className: "bg-green-700 text-white",
             });
-            form.resetFields();
-            setRowData([]);
+            resetTheValues();
+            // form.resetFields();
+            // setRowData([]);
+            // setTab("create");
+            // form.setFieldValue("address", "");
+            // form.setFieldValue("pan", "");
+            // form.setFieldValue("billgst", "");
+            // form.setFieldValue("billAddress", "");
+            // form.setFieldValue("shippan", "");
+            // form.setFieldValue("shipAddress", "");
+            // form.setFieldValue("GSTIN", "");
 
-            // navigate("/sales/order/register");
+            // navigate("/manage-po");
           } else {
             toast({
               title: response.payload.message.msg,
@@ -326,7 +347,7 @@ const AddPO: React.FC<Props> = ({
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
+      minWidth: 300,
     },
     {
       headerName: "Ven C. Part / Part",
@@ -334,7 +355,7 @@ const AddPO: React.FC<Props> = ({
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
+      minWidth: 250,
     },
     {
       headerName: "Order Qty",
@@ -347,6 +368,14 @@ const AddPO: React.FC<Props> = ({
     {
       headerName: "Rate",
       field: "rate",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      headerName: "Previous Rate",
+      field: "prevrate",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -366,11 +395,11 @@ const AddPO: React.FC<Props> = ({
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
+      minWidth: 150,
     },
     {
       headerName: "GST Type",
-      field: "gstType",
+      field: "gstTypeForPO",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -384,14 +413,14 @@ const AddPO: React.FC<Props> = ({
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-    // {
-    //   headerName: "Foreign Value",
-    //   field: "foreignValue",
-    //   editable: false,
-    //   flex: 1,
-    //   cellRenderer: "textInputCellRenderer",
-    //   minWidth: 200,
-    // },
+    {
+      headerName: "Foreign Value",
+      field: "foreignValue",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
     {
       headerName: "CGST",
       field: "cgst",
@@ -416,14 +445,14 @@ const AddPO: React.FC<Props> = ({
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-    {
-      headerName: "Due Date",
-      field: "dueDate",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
+    // {
+    //   headerName: "Due Date",
+    //   field: "dueDate",
+    //   editable: false,
+    //   flex: 1,
+    //   cellRenderer: "textInputCellRenderer",
+    //   minWidth: 200,
+    // },
     {
       headerName: "HSN Code",
       field: "hsnCode",
@@ -546,7 +575,6 @@ const AddPO: React.FC<Props> = ({
         //   description: vendorAmount,
         // },
       ];
-      // console.log("arr", arr);
 
       setTaxDetails(arr);
     };
@@ -560,6 +588,8 @@ const AddPO: React.FC<Props> = ({
     // Clear interval on component unmount
     return () => clearInterval(intervalId);
   }, [rowData]);
+  console.log("isApprove", isApprove);
+
   return (
     <Wrapper>
       {loading && <FullPageLoading />}
@@ -760,10 +790,10 @@ const AddPO: React.FC<Props> = ({
         <Button
           className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
           onClick={() =>
-            isApprove ? setShowRejectConfirm(true) : setRowData([])
+            isApprove == "approve" ? setShowRejectConfirm(true) : setRowData([])
           }
         >
-          {isApprove ? "Reject" : "Reset"}
+          {isApprove == "approve" ? "Reject" : "Reset"}
         </Button>
         <Button
           className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"

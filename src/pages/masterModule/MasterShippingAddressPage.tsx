@@ -133,6 +133,7 @@ const MasterShippingAddressPage: React.FC = () => {
           addressLine2: "",
         });
         setSheetOpen(false);
+        getList();
       } else {
         toast({
           title: resultAction.message || "Failed to Create Product",

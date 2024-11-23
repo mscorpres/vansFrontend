@@ -205,12 +205,12 @@ const EditBom = () => {
       sku: form.getFieldValue("sku"),
     };
     dispatch(updateBomComponent(payload)).then((response: any) => {
-      if (response.payload.code == 200) {
+      if (response?.payload.data.code == 200) {
         toast({
-          title: response.payload.message,
+          title: response.payload.data.message.msg,
           className: "bg-green-700 text-white",
         });
-        // setRowData([]);
+        setRowData([]);
       } else {
         toast({
           title: response.payload.message,
@@ -343,14 +343,14 @@ const EditBom = () => {
   ];
   const columnDefsDoc: ColDef<rowData>[] = [
     {
-      headerName: "",
+      headerName: "Id",
       valueGetter: "node.rowIndex + 1",
       cellRenderer: "textInputCellRenderer",
       maxWidth: 100,
       field: "delete",
     },
     {
-      headerName: "Uploaded Name",
+      headerName: "Uploaded By",
       field: "uploaded_by",
       editable: false,
       flex: 1,
@@ -358,7 +358,7 @@ const EditBom = () => {
       minWidth: 200,
     },
     {
-      headerName: "Uploaded By",
+      headerName: "Uploaded Date",
       field: "uploaded_date",
       editable: false,
       flex: 1,
@@ -427,7 +427,8 @@ const EditBom = () => {
   };
   const handleToBackEdit = () => {
     setAlternateModal(false);
-    handleNext();
+    setStage1("2");
+    // handleNext();
   };
   const deleteSelected = async (params) => {
     let payload = {
@@ -478,9 +479,10 @@ const EditBom = () => {
       () => updateselectedBomComponent(payload),
       "fetch"
     );
-    if (response.data.code == 200) {
+
+    if (response?.data.code == 200) {
       toast({
-        title: response.data.message,
+        title: response.data.message?.msg || response.data.message,
         className: "bg-green-700 text-white",
       });
     } else {
@@ -616,7 +618,7 @@ const EditBom = () => {
       });
       setDocList(arr);
       toast({
-        title: "Doc Uploaded successfully",
+        title: "Docs fetched successfully",
         className: "bg-green-600 text-white items-center",
       });
     }

@@ -17,7 +17,7 @@ import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import { FaSortDown, FaTrash } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { DatePicker, Select } from "antd";
+import { DatePicker, Select, Typography } from "antd";
 import "ag-grid-enterprise";
 import { useParams } from "react-router-dom";
 import moment from "moment";
@@ -84,6 +84,20 @@ const gstType = [
   {
     value: "L",
     label: "LOCAL",
+  },
+];
+const gstTypeForPO = [
+  {
+    value: "I",
+    label: "INTER STATE",
+  },
+  {
+    value: "L",
+    label: "LOCAL",
+  },
+  {
+    value: "0",
+    label: "Import",
   },
 ];
 const frameworks = [
@@ -180,8 +194,7 @@ const TextInputCellRenderer = (props: any) => {
     setShowConfirmDialog(true);
   };
 
-  const handleConfirmDelete = (e) => {
-    e.preventDefault();
+  const handleConfirmDelete = () => {
     if (selectedRowIndex !== null) {
       setRowData((prevData: any) =>
         prevData.filter((_: any, index: any) => index !== selectedRowIndex)
@@ -189,8 +202,9 @@ const TextInputCellRenderer = (props: any) => {
       api.applyTransaction({
         remove: [api.getDisplayedRowAtIndex(selectedRowIndex).data],
       });
+
       // Example payload for deleteProduct
-      const payload: DeletePayload = {
+      const payload: any = {
         item: data?.material?.id,
         so_id: (params?.id as string)?.replace(/_/g, "/"),
         updaterow: data?.updateid,
@@ -235,11 +249,13 @@ const TextInputCellRenderer = (props: any) => {
           //   "vendorName"
           // ] = `${getComponentData?.ven_com?.comp_name}/ Maker:${getComponentData.make}`;
           data["orderQty"] = data2.closingQty;
-          data["rate"] = data2.gstrate;
+          // data["rate"] = data2.gstrate;
           data["hsnCode"] = data2.hsn;
+          data["prevrate"] = data2.rate;
           if (colDef.field === "exchange_rate") {
             data["foreignValue"] = data["exchange_rate"];
           }
+          // console.log("props.roeIs", props.roeIs);
         }
       });
       dispatch(fetchCurrency());
@@ -317,7 +333,7 @@ const TextInputCellRenderer = (props: any) => {
     let sgst = 0;
     let igst = 0;
     const calculation = (data.localValue * data.gstRate) / 100;
-    if (data.gstType === "L") {
+    if (data.gstType === "L" || data.gstTypeForPO === "L") {
       // Intra-State
       cgst = calculation / 2;
       sgst = calculation / 2; // Same as CGST
@@ -325,7 +341,7 @@ const TextInputCellRenderer = (props: any) => {
       data.cgst = cgst.toFixed(2);
       data.sgst = sgst.toFixed(2);
       data.igst = igst.toFixed(2);
-    } else if (data.gstType === "I") {
+    } else if (data.gstType === "I" || data.gstTypeForPO === "I") {
       // Inter-State
       igst = calculation;
       cgst = 0;
@@ -333,6 +349,17 @@ const TextInputCellRenderer = (props: any) => {
       data.cgst = cgst.toFixed(2);
       data.sgst = sgst.toFixed(2);
       data.igst = igst.toFixed(2);
+    } else if (data.gstType === "0" || data.gstTypeForPO === "0") {
+      // Export
+      // console.log("calculation", calculation);
+
+      cgst = 0;
+      sgst = 0;
+      igst = 0;
+      data.cgst = cgst.toFixed(2);
+      data.sgst = sgst.toFixed(2);
+      data.igst = igst.toFixed(2);
+      data["gstRate"] = 0;
     }
     // setDisplayText(text);
     data[colDef.field] = newValue; // update the data
@@ -355,6 +382,15 @@ const TextInputCellRenderer = (props: any) => {
     }
     if (data["exchange_rate"]) {
       data["foreignValue"] = data["exchange_rate"] * data["localValue"];
+      if (props.roeIs) {
+        data["foreignValue"] = props.roeIs * data["localValue"];
+      }
+    }
+    ///foreign value calucaltion in case of exchanged rate is passed
+    if (props.roeIs) {
+      // console.log("props.roeIs", props.roeIs);
+      // console.log("props.dddddroeIs", props.roeIs * data["localValue"]);
+      data["foreignValue"] = props.roeIs * data["localValue"];
     }
     // Calculate GST based on the updated values
     const gstRate = parseFloat(data.gstRate) || 0;
@@ -370,7 +406,7 @@ const TextInputCellRenderer = (props: any) => {
     ) {
       const calculation = (data.localValue * gstRate) / 100;
 
-      if (data.gstType === "L") {
+      if (data.gstType === "L" || data.gstTypeForPO == "L") {
         // Intra-State
         cgst = calculation / 2;
         sgst = calculation / 2; // Same as CGST
@@ -379,11 +415,19 @@ const TextInputCellRenderer = (props: any) => {
         data.cgst = cgst.toFixed(2);
         data.sgst = sgst.toFixed(2);
         data.igst = igst.toFixed(2);
-      } else if (data.gstType === "I") {
+      } else if (data.gstType === "I" || data.gstTypeForPO == "I") {
         // Inter-State
         igst = calculation;
         cgst = 0;
         sgst = 0;
+        data.cgst = cgst.toFixed(2);
+        data.sgst = sgst.toFixed(2);
+        data.igst = igst.toFixed(2);
+      } else if (data.gstTypeForPO === "0") {
+        // Export
+        cgst = 0;
+        sgst = 0;
+        igst = 0;
         data.cgst = cgst.toFixed(2);
         data.sgst = sgst.toFixed(2);
         data.igst = igst.toFixed(2);
@@ -393,6 +437,7 @@ const TextInputCellRenderer = (props: any) => {
       data["cgst"] = cgst.toFixed(2);
       data["sgst"] = sgst.toFixed(2);
       data["igst"] = igst.toFixed(2);
+      data["gstRate"] = 0;
       if (data["exchange_rate"]) {
         data["foreignValue"] = data["exchange_rate"] * data["localValue"];
       }
@@ -651,6 +696,42 @@ const TextInputCellRenderer = (props: any) => {
             </PopoverContent>
           </Popover>
         );
+      case "gstTypeForPO":
+        return (
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-[100%] justify-between  text-slate-600 items-center  border-slate-400 shadow-none"
+              >
+                {value
+                  ? gstTypeForPO.find((option) => option.value === value)?.label
+                  : colDef.headerName}
+                <FaSortDown className="w-5 h-5 ml-2 mb-[5px] opacity-50 shrink-0" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[250px] p-0  ">
+              <Command>
+                <CommandInput placeholder="Search..." />
+                <CommandEmpty>No {colDef.headerName} found.</CommandEmpty>
+                <CommandList className="max-h-[400px] overflow-y-auto">
+                  {gstTypeForPO.map((framework) => (
+                    <CommandItem
+                      key={framework.value}
+                      value={framework.value}
+                      className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px]"
+                      onSelect={(currentValue) => handleChange(currentValue)}
+                    >
+                      {framework.label}
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        );
       case "gstRate":
         return (
           <Popover open={open} onOpenChange={setOpen}>
@@ -789,7 +870,19 @@ const TextInputCellRenderer = (props: any) => {
             <Input
               onChange={handleInputChange}
               value={value}
-              type="text"
+              type="number"
+              placeholder={colDef.headerName}
+              className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+            />
+          </>
+        );
+      case "prevrate":
+        return (
+          <>
+            <Input
+              onChange={handleInputChange}
+              value={value}
+              type="number"
               placeholder={colDef.headerName}
               className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
             />
@@ -1122,7 +1215,7 @@ const TextInputCellRenderer = (props: any) => {
             onChange={handleInputChange}
             value={value}
             placeholder={colDef.headerName}
-            type="number"
+            // type="number"
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );

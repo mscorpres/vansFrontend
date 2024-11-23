@@ -138,6 +138,7 @@ const MasterBillingAddressPage: React.FC = () => {
           cin: "",
         });
         setSheetOpen(false);
+        getList();
       } else {
         toast({
           title: resultAction.message || "Failed to Create Product",

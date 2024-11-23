@@ -24,14 +24,13 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
       let arr = data?.data.map((r: any, id: any) => {
         return {
           id: id + 1,
-          map_cust_description: r.map_cust_description ?? "--", // Replace null or undefined with "--"
-          map_cust_part_no: r.map_cust_part_no ?? "--", // Replace null or undefined with "--"
-          ven_comp: r.ven_comp ? (r.ven_comp === "" ? "--" : r.ven_comp) : "--", // Handle both null and empty string
-          ven_com_desc: r.ven_com_desc
-            ? r.ven_com_desc === ""
-              ? "--"
-              : r.ven_com_desc
-            : "--", // Handle both null and empty string
+          map_cust_description:
+            r.map_cust_description !== null ? r.map_cust_description : "--", // Replace null or undefined with "--"
+          map_cust_part_no:
+            r.map_cust_part_no !== null ? r.map_cust_part_no : "--", // Replace null or undefined with "--"
+          ven_comp: r.ven_comp !== null ? r.ven_comp : "--", // Handle both null and empty string
+          ven_com_desc: r.ven_com_desc !== null ? r.ven_com_desc : "--",
+          // Handle both null and empty string
           ...r,
         };
       });

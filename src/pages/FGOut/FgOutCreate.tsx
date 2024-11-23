@@ -350,6 +350,7 @@ const FgOutCreate = () => {
           </Button>{" "}
           <Button
             className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+            onClick={() => setRowData([])}
             // onClick={() =>
             // isApprove ? setShowRejectConfirm(true) : setRowData([])
             // }

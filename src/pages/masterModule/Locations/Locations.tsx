@@ -10,6 +10,16 @@ import styled from "styled-components";
 import { Input } from "@/components/ui/input";
 
 import Select from "react-select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import useApi from "@/hooks/useApi";
 import {
@@ -18,7 +28,7 @@ import {
   insertLoations,
 } from "@/components/shared/Api/masterApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import { Form } from "antd";
+import { Form, Row } from "antd";
 import { toast } from "@/components/ui/use-toast";
 import { RowData } from "@/data";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
@@ -27,6 +37,7 @@ const Locations = () => {
   const [asyncOptions, setAsyncOptions] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [form] = Form.useForm();
+  const [resetModel, setResetModel] = useState(false);
 
   const { execFun, loading: loading1 } = useApi();
   let arr: any = [];
@@ -179,7 +190,7 @@ const Locations = () => {
         <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onsubmit)}
-            className="space-y-6 overflow-hidden p-[10px] h-[450px]"
+            className="space-y-6 overflow-hidden p-[10px] h-[550px]"
           >
             {" "}
             <div className="">
@@ -278,16 +289,25 @@ const Locations = () => {
                 />
               </Form.Item>
             </div>{" "}
-            <Button
-              type="submit"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowConfirmation(true);
-              }}
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            >
-              Submit
-            </Button>
+            <Row justify="space-between">
+              <Button
+                type="reset"
+                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                onClick={() => setResetModel(true)}
+              >
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowConfirmation(true);
+                }}
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              >
+                Submit
+              </Button>
+            </Row>
           </form>
         </Form>
       </div>
@@ -310,7 +330,26 @@ const Locations = () => {
         onOkay={handleSubmit}
         title="Confirm Submit!"
         description="Are you sure to submit the entry?"
-      />
+      />{" "}
+      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-600">
+              Are you absolutely sure you want to reset the form?
+            </AlertDialogTitle>
+            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
+              onClick={() => form.resetFields()}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Wrapper>
   );
 };

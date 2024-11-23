@@ -12,7 +12,16 @@ import { searchingHsn } from "@/features/client/clientSlice";
 import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import { fetchHSN, mapHSN } from "@/components/shared/Api/masterApi";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -281,13 +290,32 @@ const Hsn = () => {
       
       </div> */}
       {callreset == true && (
-        <CommonModal
-          isDialogVisible={callreset}
-          handleOk={handleReset}
-          handleCancel={() => setCallReset(false)}
-          title="Reset Details"
-          description={"Are you sure you want to remove this entry?"}
-        />
+        // <CommonModal
+        //   isDialogVisible={callreset}
+        //   handleOk={handleReset}
+        //   handleCancel={() => setCallReset(false)}
+        //   title="Reset Details"
+        //   description={"Are you sure you want to remove ths entry?"}
+        // />
+        <AlertDialog open={callreset} onOpenChange={setCallReset}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-slate-600">
+                Are you absolutely sure you want to reset the form?
+              </AlertDialogTitle>
+              {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
+                onClick={() => handleReset()}
+              >
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
       <div className="h-[calc(100vh-80px)] bg-white ">
         <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
@@ -324,12 +352,12 @@ const Hsn = () => {
             >
               Reset
             </Button>
-            <Button
+            {/* <Button
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
               //   onClick={() => setTab("create")}
             >
               Back
-            </Button>
+            </Button> */}
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}

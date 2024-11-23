@@ -7,10 +7,19 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { transformOptionData } from "@/helper/transform";
 import { InputStyle } from "@/constants/themeContants";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { Form } from "antd";
+import { Form, Row } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
@@ -44,6 +53,7 @@ const Product = () => {
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const { toast } = useToast();
   const dispatch = useDispatch<AppDispatch>();
+  const [resetModel, setResetModel] = useState(false);
 
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
@@ -242,7 +252,6 @@ const Product = () => {
                 // {...field}
               />
             </Form.Item>
-
             <div className="">
               <Form.Item
                 name="customerName"
@@ -263,17 +272,27 @@ const Product = () => {
                   fetchOptionWith="payload"
                 />
               </Form.Item>
-            </div>
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={(e: any) => {
-                e.preventDefault();
-                onsubmit();
-              }}
-            >
-              Submit
-            </Button>
+            </div>{" "}
+            <Row justify="space-between">
+              {" "}
+              <Button
+                type="reset"
+                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                onClick={() => setResetModel(true)}
+              >
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  onsubmit();
+                }}
+              >
+                Submit
+              </Button>
+            </Row>
           </form>
         </Form>{" "}
         {sheetOpenEdit?.length > 0 && (
@@ -296,6 +315,25 @@ const Product = () => {
           suppressCellFocus={true}
         />
       </div>
+      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-600">
+              Are you absolutely sure you want to reset the form?
+            </AlertDialogTitle>
+            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
+              onClick={() => form.resetFields()}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Wrapper>
   );
 };

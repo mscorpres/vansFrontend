@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import CreatePoPage from "./CreatePoPage";
 import AddPO from "./AddPO";
 import { Form } from "antd";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppDispatch } from "@/store";
 import { fetchDataPOEdit } from "@/features/client/clientSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,16 +18,38 @@ const PoCreateTemplate = () => {
   const [isApprove, setIsApprove] = useState(false);
   const [form] = Form.useForm();
   const [paramVal, setParamVal] = useState("");
+  const [roeIs, setRoeIs] = useState("");
+  const [resetSure, setResetSure] = useState(false);
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [bilStateCode, setBillStateCode] = useState("");
   const [shipStateCode, setShipStateCode] = useState("");
   const [codeType, setCodeType] = useState("");
   const selectedVendor = Form.useWatch("vendorName", form);
+  const exchangingRate = Form.useWatch("exchange_rate", form);
+
   const { loading, currency } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const params = useParams();
+  const resetTheValues = () => {
+    setResetSure(true);
+    form.resetFields();
+    setRowData([]);
+    setTabvalue("create");
+
+    console.log("approve", isApprove);
+    if (isApprove == "edit") {
+      navigate("/manage-po");
+      setIsApprove(false);
+    } else if (isApprove == "approve") {
+      navigate("/approve-po");
+      setIsApprove(false);
+    }
+    setIsApprove(false);
+  };
+
   useEffect(() => {
     const currentUrl = window.location.href;
     let urlParts = currentUrl.split("/");
@@ -46,9 +68,10 @@ const PoCreateTemplate = () => {
           if (res.payload.status == "success") {
             let arr = res.payload.data;
             let billinid = {
-              label: arr.bill[0]?.addrbillname,
-              value: arr.bill[0]?.addrbillid,
+              label: arr.bill?.addrbillname,
+              value: arr.bill?.addrbillid,
             };
+
             let ventype = {
               label: arr.vendor[0]?.vendortype_label,
               value: arr.vendor[0]?.vendortype_value,
@@ -66,7 +89,6 @@ const PoCreateTemplate = () => {
               "duedate",
               dayjs(arr.vendor[0]?.duedate, "DD-MM-YYYY")
             );
-            
 
             form.setFieldValue("exchange_rate", arr.vendor[0]?.exchangerate);
 
@@ -106,7 +128,7 @@ const PoCreateTemplate = () => {
               componentKey: r?.componentKey,
               rate: r.rate,
               gstRate: r.gstrate,
-              gstType: r.gsttype[0].id,
+              gstTypeForPO: r.gsttype[0].id,
               materialDescription: r.remark,
               hsnCode: r.hsncode,
               dueDate: r.duedate,
@@ -137,6 +159,11 @@ const PoCreateTemplate = () => {
   useEffect(() => {
     dispatch(fetchCurrency());
   }, []);
+  useEffect(() => {
+    if (exchangingRate) {
+      setRoeIs(exchangingRate);
+    }
+  }, [exchangingRate]);
   return (
     <div>
       <Tabs value={tabvalue} onValueChange={setTabvalue}>
@@ -153,6 +180,8 @@ const PoCreateTemplate = () => {
             shipStateCode={shipStateCode}
             setShipStateCode={setShipStateCode}
             currencyList={currency}
+            setResetSure={setResetSure}
+            resetSure={resetSure}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">
@@ -174,6 +203,10 @@ const PoCreateTemplate = () => {
             setShipStateCode={setShipStateCode}
             codeType={codeType}
             setCodeType={setCodeType}
+            roeIs={roeIs}
+            resetTheValues={resetTheValues}
+            setResetSure={setResetSure}
+            resetSure={resetSure}
           />
         </TabsContent>
       </Tabs>

@@ -223,6 +223,34 @@ export const fetchBomDocsFiles = async (payload: any) => {
   const response = await spigenAxios.post(`/bom/fetchBomDocsFiles`, payload);
   return response;
 };
+export const fetchMaterialDocsFiles = async (payload: any) => {
+  const response = await spigenAxios.post(
+    `/component/fetchImageComponent`,
+    payload
+  );
+  return response;
+};
+export const fetchImageProduct = async (payload: any) => {
+  const response = await spigenAxios.post(
+    "/products/fetchImageProduct",
+    payload
+  );
+  return response;
+};
+export const uploadCompImg = async (formData: any) => {
+  const response = await spigenAxios.post(
+    "/component/upload_comp_img",
+    formData
+  );
+  return response;
+};
+export const uploadProductImg = async (formData: any) => {
+  const response = await spigenAxios.post(
+    "/products/upload_product_img",
+    formData
+  );
+  return response;
+};
 export const fetchCountryList = async () => {
   const response = await spigenAxios.get("/others/countries");
   //console.log("here in api", response);

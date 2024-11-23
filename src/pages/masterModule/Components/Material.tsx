@@ -79,7 +79,6 @@ const Material = () => {
       asinNumber: "B01N1SE4EP",
 
       gstRate: 18,
-
       hsnSearch: "",
       isNew: true,
     };
@@ -344,7 +343,8 @@ const Material = () => {
       textInputCellRenderer: (props: any) => (
         <TextInputCellRenderer
           {...props}
-          setRowData={hsnrowData}
+          setRowData={setHsnRowData}
+          rowData={hsnrowData}
           setSearch={handleSearch}
           search={search}
           onSearch={handleSearch}
@@ -356,13 +356,6 @@ const Material = () => {
   );
 
   const HsncolumnDefs: ColDef<rowData>[] = [
-    // {
-    // {
-    //   headerName: "ID",
-    //   field: "id",
-    //   filter: "agNumberColumnFilter",
-    //   width: 90,
-    // },
     {
       headerName: "",
       valueGetter: "node.rowIndex + 1",
@@ -370,11 +363,13 @@ const Material = () => {
       maxWidth: 100,
       field: "delete",
     },
+    { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
+
     {
       headerName: "HSN/SAC Code",
       field: "hsnSearch",
       // editable: false,
-      // flex: 1,
+      flex: 1,
       cellRenderer: "textInputCellRenderer",
       width: 200,
     },
@@ -383,7 +378,7 @@ const Material = () => {
       headerName: "Tax (%) Percentage",
       field: "gstRate",
       editable: false,
-      // flex: 1,
+      flex: 1,
       cellRenderer: "textInputCellRenderer",
       width: 200,
     },
@@ -513,6 +508,7 @@ const Material = () => {
                     <Form.Item name="moq" label="MOQ Qty" rules={rules.moq}>
                       <Input
                         className={InputStyle}
+                        type="number"
                         placeholder="MOQ Qty"
                         // {...field}
                       />

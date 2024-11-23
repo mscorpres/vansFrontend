@@ -42,6 +42,8 @@ const CreatePoPage: React.FC<Props> = ({
   setBillStateCode,
   setShipStateCode,
   currencyList,
+  setResetSure,
+  resetSure,
 }) => {
   const [searchData, setSearchData] = useState("");
   const dispatch = useDispatch();
@@ -79,7 +81,6 @@ const CreatePoPage: React.FC<Props> = ({
   const selPoType = Form.useWatch("poType", form);
 
   const params = useParams();
-  console.log("params", params);
 
   //
   const getValues = async () => {
@@ -95,8 +96,10 @@ const CreatePoPage: React.FC<Props> = ({
   };
   useEffect(() => {
     dispatch(fetchShippingAddressForPO());
+
     if (selectedVendor) {
       dispatch(listOfVendorBranchList({ vendorcode: selectedVendor?.value }));
+      setResetSure(false);
     }
   }, [selectedVendor]);
 
@@ -122,6 +125,7 @@ const CreatePoPage: React.FC<Props> = ({
   }, [selCostCenter]);
   useEffect(() => {
     if (selShipping) {
+
       dispatch(
         fetchShippingAddressDetails({ shipping_code: selShipping?.value })
       );
@@ -133,20 +137,27 @@ const CreatePoPage: React.FC<Props> = ({
   }, [params]);
   ///setting details from the shipping details
   useEffect(() => {
-    if (shippingPODetails) {
+    if (shippingPODetails && resetSure == false) {
       let arr = shippingPODetails;
       setShipStateCode(shippingPODetails.statecode);
       form.setFieldValue("shipgst", arr?.gstin);
       form.setFieldValue("shippan", arr?.pan);
       form.setFieldValue("shipAddress", arr?.address);
+    } else {
+      form.setFieldValue("shipgst", "");
+      form.setFieldValue("shippan", "");
+      form.setFieldValue("shipAddress", "");
     }
   }, [shippingPODetails]);
   useEffect(() => {
-    if (vendorPODetails) {
+    if (vendorPODetails && resetSure == false) {
       let arr = vendorPODetails;
 
       form.setFieldValue("vendorGst", arr?.gstid);
       form.setFieldValue("address", arr?.address);
+    } else {
+      form.setFieldValue("vendorGst", "");
+      form.setFieldValue("address", "");
     }
   }, [vendorPODetails]);
   useEffect(() => {
@@ -156,12 +167,16 @@ const CreatePoPage: React.FC<Props> = ({
   }, [selBilling]);
 
   useEffect(() => {
-    if (vendorBillingDetails) {
+    if (vendorBillingDetails && resetSure == false) {
       let arr = vendorBillingDetails;
       setBillStateCode(vendorBillingDetails.statecode);
       form.setFieldValue("pan", arr?.pan);
       form.setFieldValue("billgst", arr?.gstin);
       form.setFieldValue("billAddress", arr?.address);
+    } else {
+      form.setFieldValue("pan", "");
+      form.setFieldValue("billgst", "");
+      form.setFieldValue("billAddress", "");
     }
   }, [vendorBillingDetails]);
 
@@ -475,13 +490,7 @@ const CreatePoPage: React.FC<Props> = ({
                     name="color"
                     options={transformOptionData(vendorBillingList)}
                     onChange={(e) => form.setFieldValue("billingId", e)}
-                  />{" "}
-                  {/* <ReusableAsyncSelect
-                    // placeholder="Cost Center"
-                    endpoint="/backend/vendorAddress"
-                    transform={transformOptionData}
-                    fetchOptionWith="payload"
-                  /> */}
+                  />
                 </Form.Item>
                 <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
                   <Form.Item
