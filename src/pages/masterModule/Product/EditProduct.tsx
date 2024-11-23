@@ -812,7 +812,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
               onValueChange={handleFileChange}
               dropzoneOptions={{
                 accept: {
-                  "image/*": [".jpg", ".jpeg", ".png", ".gif", ".pdf"],
+                  "image/*": [".jpg", ".jpeg", ".png", ".gif", ],
                 },
                 maxFiles: 1,
                 maxSize: 4 * 1024 * 1024, // 4 MB
