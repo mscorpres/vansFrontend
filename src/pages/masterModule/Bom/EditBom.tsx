@@ -205,12 +205,12 @@ const EditBom = () => {
       sku: form.getFieldValue("sku"),
     };
     dispatch(updateBomComponent(payload)).then((response: any) => {
-      if (response.payload.code == 200) {
+      if (response?.payload.data.code == 200) {
         toast({
-          title: response.payload.message,
+          title: response.payload.data.message.msg,
           className: "bg-green-700 text-white",
         });
-        // setRowData([]);
+        setRowData([]);
       } else {
         toast({
           title: response.payload.message,
@@ -427,7 +427,8 @@ const EditBom = () => {
   };
   const handleToBackEdit = () => {
     setAlternateModal(false);
-    handleNext();
+    setStage1("2");
+    // handleNext();
   };
   const deleteSelected = async (params) => {
     let payload = {
@@ -478,9 +479,10 @@ const EditBom = () => {
       () => updateselectedBomComponent(payload),
       "fetch"
     );
-    if (response.data.code == 200) {
+
+    if (response?.data.code == 200) {
       toast({
-        title: response.data.message,
+        title: response.data.message?.msg || response.data.message,
         className: "bg-green-700 text-white",
       });
     } else {

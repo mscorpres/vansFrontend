@@ -9,11 +9,20 @@ import { InputStyle } from "@/constants/themeContants";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { Filter, Plus } from "lucide-react";
 import styled from "styled-components";
-import { Dropdown, Menu, Form } from "antd";
+import { Dropdown, Menu, Form, Row } from "antd";
 import { Input } from "@/components/ui/input";
 
 import Select from "react-select";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import useApi from "@/hooks/useApi";
 import {
   fetchPartCodeDetails,
@@ -50,7 +59,7 @@ const CreatingBoxRecipe = () => {
   const theSku = Form.useWatch("sku", form);
   const thepartCode = Form.useWatch("partCode", form);
   const dispatch = useDispatch<AppDispatch>();
-
+  const [resetModel, setResetModel] = useState(false);
   const { execFun, loading: loading1 } = useApi();
   const addNewRow = () => {
     const newRow = {
@@ -286,7 +295,7 @@ const CreatingBoxRecipe = () => {
           >
             {" "}
             <div className="">
-              <Form.Item name="bom">
+              <Form.Item name="bom" label="BOM">
                 <Input
                   className={InputStyle}
                   placeholder="Enter BOM"
@@ -296,7 +305,7 @@ const CreatingBoxRecipe = () => {
             </div>
             <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
               <div className="">
-                <Form.Item name="sku">
+                <Form.Item name="sku" label="SKU">
                   <Input
                     className={InputStyle}
                     placeholder="Enter SKU"
@@ -307,7 +316,7 @@ const CreatingBoxRecipe = () => {
                 /> */}
               </div>
               <div className="">
-                <Form.Item name="product">
+                <Form.Item name="product" label="Product">
                   <Select
                     styles={customStyles}
                     components={{ DropdownIndicator }}
@@ -353,16 +362,26 @@ const CreatingBoxRecipe = () => {
               {/* )}
                 /> */}
             </div>
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={(e) => {
-                e.preventDefault();
-                createBOM();
-              }}
-            >
-              Submit
-            </Button>
+            <Row justify="space-between">
+              {" "}
+              <Button
+                type="reset"
+                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                onClick={() => setResetModel(true)}
+              >
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                onClick={(e) => {
+                  e.preventDefault();
+                  createBOM();
+                }}
+              >
+                Submit
+              </Button>{" "}
+            </Row>
           </form>
         </Form>
       </div>{" "}
@@ -397,6 +416,25 @@ const CreatingBoxRecipe = () => {
       {openView && (
         <ViewBom openView={openView} setSheetOpenView={setSheetOpenView} />
       )}
+      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-600">
+              Are you absolutely sure you want to reset the form?
+            </AlertDialogTitle>
+            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
+              onClick={() => form.resetFields()}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Wrapper>
   );
 };

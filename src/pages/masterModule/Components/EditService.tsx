@@ -66,11 +66,11 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const isEnabledOptions = [
     {
       label: "Yes",
-      value: "yes",
+      value: "Y",
     },
     {
       label: "No",
-      value: "no",
+      value: "N",
     },
   ];
   const fetchComponentDetails = async (sheetOpenEdit) => {
@@ -86,7 +86,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         serviceName: arr.name,
         serviceCategory: arr.name,
         description: arr.description,
-        gstTaxRate: { label: arr.gst_rate.text, value: arr.gst_rate.id },
+        gstTaxRate: arr.gst_rate,
         taxType:
           arr.tax_type == "I"
             ? {

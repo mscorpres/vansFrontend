@@ -75,11 +75,16 @@ const Service = () => {
     const response = await execFun(() => serviceList(), "fetch");
     const { data } = response;
     console.log("response0", response);
-    if (response.status === 200) {
+    if (response?.data.code === 200) {
       let arr = data.data.map((r, id) => {
         return { id: id + 1, ...r };
       });
       setRowData(arr);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   useEffect(() => {
@@ -170,7 +175,7 @@ const Service = () => {
         <Form form={form} layout="vertical" {...form}>
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 overflow-hidden p-[10px]"
+            className="space-y-6 h-[500px] overflow-hidden p-[10px]"
           >
             <div className="grid grid-cols-2 gap-[40px]  ">
               <div className="">

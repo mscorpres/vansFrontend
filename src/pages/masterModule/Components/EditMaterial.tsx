@@ -52,11 +52,21 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const isEnabledOptions = [
     {
       label: "Yes",
-      value: "yes",
+      value: "Y",
     },
     {
       label: "No",
-      value: "no",
+      value: "N",
+    },
+  ];
+  const isqcOptions = [
+    {
+      label: "Enabled",
+      value: "E",
+    },
+    {
+      label: "Disabled",
+      value: "D",
     },
   ];
 
@@ -74,16 +84,16 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         componentName: arr.name,
         uom: { label: arr.uomname, value: arr.uomid },
         soq: { label: arr.soqname, value: arr.soqid },
-        taxTypes: { label: arr.tax_type.text, value: arr.tax_type.id },
-        gstTaxRate: { label: arr.gst_rate.text, value: arr.gst_rate.id },
-        alert: arr.enable_status == "Y" ? "Yes" : "No",
-        // enabled: arr.enable_status == "Y" ? "Yes" : "No",
+        taxTypes: arr.tax_type,
+        gstTaxRate: arr.gst_rate,
+        // alert: arr.enable_status,
+        enabled: arr.enable_status,
         moqQty: arr.moqqty,
         hsn: arr.hsncode,
         componentMake: arr.c_make,
         mrp: arr.mrp,
         jobWork: arr.jobwork_rate,
-        qcStatus: arr.qc_status == "E" ? "Yes" : "No",
+        qcStatus: arr.qc_status,
         description: arr.description,
         group: { label: arr.groupname, value: arr.groupid },
         brand: arr.brand,
@@ -101,12 +111,13 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         purchaseCost: arr.pocost,
         OtherCost: arr.othercost,
       };
-
       editForm.setFieldsValue(a);
     }
   };
   const submitTheForm = async () => {
-    const values = editForm.getFieldsValue();
+    const values = await editForm.validateFields();
+    // console.log("values", values);
+
     // if (values) {
     let payload = {
       componentKey: sheetOpenEdit?.component_key,
@@ -144,6 +155,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       //   alert: values.taxType,category: values.moqQty,
     };
     // }
+    // console.log("payload->", payload);
 
     // return;
     // return;
@@ -162,6 +174,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       setLoading(false);
       setSheetOpenEdit(false);
     } else {
+      setSheetOpenEdit(false);
       toast({
         title: "Failed to update component", // You can show an error message here if the code is not 200
         className: "bg-red-700 text-center text-white",
@@ -285,20 +298,20 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
-      {(loading1("fetch") || loading == true) && <FullPageLoading />}{" "}
+      {(loading1("fetch") || loading == true) && <FullPageLoading />}
       <Sheet
         open={sheetOpenEdit}
         onOpenChange={() => setSheetOpenEdit(setSheetOpenEdit)}
       >
         <SheetTrigger></SheetTrigger>
         <SheetContent
-          className="min-w-[80%] p-0"
+          className="min-w-[85%] p-0"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}
         >
           <SheetHeader className={modelFixHeaderStyle}>
-            <SheetTitle className="text-slate-600">{`Update Component:${sheetOpenEdit?.c_name}`}</SheetTitle>
+            <SheetTitle className="text-slate-600">{`Update Component: ${sheetOpenEdit?.c_name}`}</SheetTitle>
           </SheetHeader>
           <Form form={editForm} layout="vertical">
             <div>
@@ -383,7 +396,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         </Form.Item> */}
                         <Form.Item name="moqQty" label="MOQ" rules={rules.moq}>
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter MOQ"
                             className={InputStyle}
                           />
                         </Form.Item>
@@ -399,7 +412,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         </Form.Item>
                         <Form.Item name="hsn" label="HSN " rules={rules.hsn}>
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter HSN"
                             className={InputStyle}
                           />
                         </Form.Item>
@@ -467,7 +480,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.jobWork}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Job Work"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -481,7 +494,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isDisabled={false}
                             isClearable={true}
                             isSearchable={true}
-                            options={isEnabledOptions}
+                            options={isqcOptions}
                             //   options={asyncOptions}
                             //   onChange={(e) => console.log(e)}
                             //   value={
@@ -627,13 +640,13 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.brand}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Brand"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
                         <Form.Item name="ean" label="EAN" rules={rules.ean}>
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter EAN"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -643,7 +656,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.weight}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Weight (gms)"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -653,7 +666,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.volWeight}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Volumetric Weight (gms)"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -663,7 +676,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.height}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Height (mm)"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -673,7 +686,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.width}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Width (mm)"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -724,7 +737,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.minStock}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Min Stock"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -734,7 +747,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.maxStock}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Max Stock"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -744,7 +757,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.minOrder}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Min Order"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -779,7 +792,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.LeadTime}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Lead Time ( in days)"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -789,7 +802,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.purchaseCost}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Purchase Cost"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -799,7 +812,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           rules={rules.otherCost}
                         >
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter Other Cost"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -807,7 +820,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                       <Form.Item
                         name="alert"
                         label="Enable Alerts"
-                        // rules={rules.alert}
+                        rules={rules.alert}
                       >
                         <Switch
                         // style={{

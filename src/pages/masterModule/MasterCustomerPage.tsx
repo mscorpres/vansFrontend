@@ -496,7 +496,7 @@ const MasterCustomerPage: React.FC = () => {
     <Wrapper>
       {" "}
       {loading1("fetch") && <FullPageLoading />}
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <Sheet open={addBranch} onOpenChange={setAddBranch}>
           <SheetTrigger></SheetTrigger>
           <SheetContent
@@ -933,25 +933,25 @@ const MasterCustomerPage: React.FC = () => {
                     </Card>
                   </div>
                 </Form>
-                <div className={modelFixFooterStyle}>
-                  <Button
-                    variant={"outline"}
-                    className="shadow-slate-300 mr-[10px] border-slate-400 border"
-                    onClick={(e: any) => {
-                      setOpen(true);
-                      e.preventDefault();
-                    }}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="bg-cyan-700 hover:bg-cyan-600"
-                    onClick={() => createNewBranch()}
-                  >
-                    Create
-                  </Button>
-                </div>
+              </div>
+              <div className={modelFixFooterStyle}>
+                <Button
+                  variant={"outline"}
+                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                  onClick={(e: any) => {
+                    setOpen(true);
+                    e.preventDefault();
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-cyan-700 hover:bg-cyan-600"
+                  onClick={() => createNewBranch()}
+                >
+                  Create
+                </Button>
               </div>
             </div>
           </SheetContent>

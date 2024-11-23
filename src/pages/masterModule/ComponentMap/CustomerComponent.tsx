@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { InputStyle } from "@/constants/themeContants";
 
 import styled from "styled-components";
-import { Form } from "antd";
+import { Form, Row } from "antd";
 import { Input } from "@/components/ui/input";
 
 import useApi from "@/hooks/useApi";
@@ -19,9 +19,20 @@ import { toast } from "@/components/ui/use-toast";
 import { Filter } from "lucide-react";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 const CustomerComponent = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-
+  const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
+  const [resetModel, setResetModel] = useState(false);
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const fetchComponentMap = async () => {
@@ -56,6 +67,7 @@ const CustomerComponent = () => {
         className: "bg-green-600 text-white items-center",
       });
       fetchComponentMap();
+      form.resetFields();
       form.resetFields({
         partName: "",
         vendorName: "",
@@ -139,14 +151,22 @@ const CustomerComponent = () => {
               />
             </Form.Item>
           </div>
-
-          <Button
-            type="submit"
-            className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            onClick={() => createEntry()}
-          >
-            Submit
-          </Button>
+          <Row justify="space-between">
+            <Button
+              type="reset"
+              className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+              onClick={() => setResetModel(true)}
+            >
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={() => createEntry()}
+            >
+              Submit
+            </Button>{" "}
+          </Row>
           {/* </form> */}
         </Form>
       </div>
@@ -163,6 +183,27 @@ const CustomerComponent = () => {
           suppressCellFocus={true}
         />
       </div>
+      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-600">
+              Are you absolutely sure you want to reset the form?
+            </AlertDialogTitle>
+            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
+              onClick={() => {
+                form.resetFields();
+              }}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Wrapper>
   );
 };

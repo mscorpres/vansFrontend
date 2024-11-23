@@ -22,7 +22,7 @@ export const updateBomComponent = createAsyncThunk<
     );
     console.log("response", response);
 
-    return response.data;
+    return response;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);

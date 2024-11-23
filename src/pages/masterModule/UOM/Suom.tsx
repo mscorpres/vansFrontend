@@ -54,6 +54,7 @@ const FormSchema = z.object({
 const Suom = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
+  const [resetModel, setResetModel] = useState(false);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   // const form = useForm<z.infer<typeof FormSchema>>({
@@ -131,12 +132,14 @@ const Suom = () => {
       field: "units_name",
       filter: "agTextColumnFilter",
       width: 250,
+      flex: 4,
     },
     {
       headerName: "Unit Description",
       field: "units_details",
       filter: "agTextColumnFilter",
-      width: 550,
+      minWidth: 550,
+      flex: 4,
     },
   ];
 
@@ -152,7 +155,8 @@ const Suom = () => {
           onOkay={createEntry}
           title="Confirm Submit!"
           description="Are you sure to submit the entry?"
-        />{" "}
+        />
+        {loading1("fetch") && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Add
@@ -182,7 +186,7 @@ const Suom = () => {
               >
                 <Input
                   className={InputStyle}
-                  placeholder="Enter Short Name"
+                  placeholder="Enter Short Code"
                   // {...field}
                 />
               </Form.Item>
@@ -203,7 +207,7 @@ const Suom = () => {
               <Button
                 type="reset"
                 className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
-                onClick={() => form.resetFields()}
+                onClick={() => setResetModel(true)}
               >
                 Reset
               </Button>
@@ -231,7 +235,26 @@ const Suom = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
         />
-      </div>
+      </div>{" "}
+      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-600">
+              Are you absolutely sure you want to reset the form?
+            </AlertDialogTitle>
+            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
+              onClick={() => form.resetFields()}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Wrapper>
   );
 };

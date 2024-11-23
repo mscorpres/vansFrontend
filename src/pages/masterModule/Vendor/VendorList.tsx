@@ -90,6 +90,7 @@ const VendorList = () => {
     resolver: zodResolver(FormSchema),
   });
   const thebranch = form.watch("branch");
+
   const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     const dispatch = useDispatch<AppDispatch>();
 
@@ -248,7 +249,6 @@ const VendorList = () => {
       () => vendorGetAllDetailsFromSelectedBranch(id),
       "fetch"
     );
-    console.log("response", response);
     if (response.data.code == 200) {
       const { data } = response;
       let r = data?.data?.final[0];
@@ -309,7 +309,8 @@ const VendorList = () => {
         className: "bg-green-600 text-white items-center",
       });
       setSheetOpenView(false);
-      form.resetFields();
+
+      // form.resetFields();
     } else {
       toast({
         title: response.data.message.msg,
@@ -335,7 +336,7 @@ const VendorList = () => {
         className: "bg-green-600 text-white items-center",
       });
       setSheetOpenEdit(false);
-      form.resetFields();
+      // form.resetFields();
     } else {
       toast({
         title: response.data.message.msg,
@@ -450,7 +451,9 @@ const VendorList = () => {
     downloadCSV(rowData, columnDefs, "Manage Vendor");
   };
   useEffect(() => {
-    getBranchList(sheetOpenView?.data?.vendor_code);
+    if (sheetOpenView) {
+      getBranchList(sheetOpenView?.data?.vendor_code);
+    }
   }, [sheetOpenView]);
 
   useEffect(() => {
@@ -465,6 +468,7 @@ const VendorList = () => {
   useEffect(() => {
     if (sheetOpenView == false) {
       form.setValue("label", "");
+      form.setValue("branch", "");
       form.setValue("mobile", " ");
       form.setValue("city", "");
       form.setValue("gstin", "");
