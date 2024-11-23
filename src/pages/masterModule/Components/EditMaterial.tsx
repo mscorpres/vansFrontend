@@ -820,7 +820,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                       <Form.Item
                         name="alert"
                         label="Enable Alerts"
-                        rules={rules.alert}
+                        // rules={rules.alert}
                       >
                         <Switch
                         // style={{
