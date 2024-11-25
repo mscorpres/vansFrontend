@@ -356,6 +356,12 @@ const Q2 = () => {
       width: 190,
     },
     {
+      headerName: "Closing Qty",
+      field: "CLOSING_QUANTITY",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
       headerName: "Physical Stock",
       field: "PHYSICAL_STOCK",
       filter: "agTextColumnFilter",
