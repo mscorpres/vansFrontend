@@ -49,6 +49,7 @@ import { searchingHsn } from "@/features/client/clientSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { addComponent } from "@/features/client/storeSlice";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const Material = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -126,14 +127,19 @@ const Material = () => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response.status == 200) {
-      let arr = data.data.map((r, index) => {
+    if (response?.status == 200) {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
         };
       });
       setAsyncOptions(arr);
+    } else {
+      toast({
+        title: "Failed to fetch UOM",
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const callUom = async () => {
@@ -159,7 +165,6 @@ const Material = () => {
     //   autoDismiss: true,
     // });
     if (response.status == 200) {
-
       let arr = data?.data?.map((r, index) => {
         return {
           label: r.units_name,
@@ -174,7 +179,6 @@ const Material = () => {
     const response = await spigenAxios.get("/groups/allGroups");
     const { data } = response;
     if (response.status == 200) {
-
       let arr = data?.data.map((r, index) => {
         return {
           label: r.group_name,
@@ -271,7 +275,6 @@ const Material = () => {
         payload
       );
 
-
       if (response.data.code === 200) {
         toast({
           title: response.data.message, // Assuming 'message' is in the response
@@ -304,8 +307,7 @@ const Material = () => {
   const handleSearch = (searchKey: string, type: any) => {
     if (searchKey) {
       let p = { searchTerm: searchKey };
-      dispatch(searchingHsn(p)).then((res) => {
-      });
+      dispatch(searchingHsn(p)).then((res) => {});
     }
   };
   const defaultColDef = useMemo<ColDef>(() => {
@@ -651,6 +653,7 @@ const Material = () => {
                       suppressRowClickSelection={false}
                       rowSelection="multiple"
                       checkboxSelection={true}
+                      overlayNoRowsTemplate={OverlayNoRowsTemplate}
                     />{" "}
                   </div>{" "}
                   <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
@@ -701,6 +704,7 @@ const Material = () => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         </div>{" "}
       </Wrapper>{" "}

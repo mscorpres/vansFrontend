@@ -114,7 +114,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response.status == 200) {
+    if (response?.status == 200) {
       let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
@@ -122,6 +122,11 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         };
       });
       setAsyncOptions(arr);
+    } else {
+      toast({
+        title: "Failed to fetch UOM",
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const saveEdit = async () => {

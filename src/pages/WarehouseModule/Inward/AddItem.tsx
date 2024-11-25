@@ -24,7 +24,6 @@ import { AppDispatch } from "@/store";
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { createSellRequest } from "@/features/salesmodule/SalesSlice";
 import { App, Checkbox, Form } from "antd";
-import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import RejectModal from "@/components/shared/RejectModal";

@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RowData } from "@/data";
 import { AppDispatch, RootState } from "@/store";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -264,7 +265,7 @@ const Hsn = () => {
                   transform={transformOptionData}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
             </div>{" "}
@@ -338,6 +339,7 @@ const Hsn = () => {
             rowSelection="multiple"
             checkboxSelection={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button

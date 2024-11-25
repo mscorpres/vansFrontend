@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { Form, Row } from "antd";
+import { Form, message, Row } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
@@ -36,6 +36,7 @@ import { listOfUoms } from "@/features/client/clientSlice";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -71,18 +72,24 @@ const Product = () => {
     } else {
     }
   };
+
   const listUom = async () => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response.status == 200) {
-      let arr = data.data.map((r: any) => {
+    if (response?.status == 200) {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
         };
       });
       setAsyncOptions(arr);
+    } else {
+      toast({
+        title: response?.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const onsubmit = async () => {
@@ -114,7 +121,7 @@ const Product = () => {
   useEffect(() => {
     fetchProductList();
     listUom();
-    dispatch(listOfUoms());
+    // dispatch(listOfUoms());
   }, []);
 
   const columnDefs: ColDef<RowData>[] = [
@@ -313,6 +320,7 @@ const Product = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>

@@ -81,9 +81,12 @@ export const listOfCostCenter = createAsyncThunk<
   { search?: string }
 >("/backend/costCenter", async ({ search }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>("/backend/costCenter", {
-      search: search,
-    });
+    const response = await spigenAxios.post<uomPayload>(
+      `/backend/costCenter/${search}`
+      //   , {
+      //   search: search,
+      // }
+    );
 
     return response.data;
   } catch (error) {
@@ -259,7 +262,7 @@ export const listOfUoms = createAsyncThunk<uomPayload>("/uom", async () => {
       _: 1717993845490,
     });
 
-    return response.data.data;
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);

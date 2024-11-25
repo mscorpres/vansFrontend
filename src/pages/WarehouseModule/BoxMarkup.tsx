@@ -41,7 +41,6 @@ import ActionCellRenderer from "./ActionCellRenderer";
 import {
   componentList,
   componentMapList,
-  getComponentsByNameAndNo,
   getProductList,
   insertProduct,
   listOfUom,

@@ -30,6 +30,7 @@ import { Filter } from "lucide-react";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
 import RejectModal from "@/components/shared/RejectModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ComponentMap = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [resetModel, setResetModel] = useState(false);
@@ -104,7 +105,7 @@ const ComponentMap = () => {
                   transform={transformOptionData}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
             </div>
@@ -161,6 +162,7 @@ const ComponentMap = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>

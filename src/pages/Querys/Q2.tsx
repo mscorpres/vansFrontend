@@ -32,9 +32,7 @@ import { modelFixHeaderStyle } from "@/constants/themeContants";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   fetchCustomerComponentsByPart,
-  fetchListOfQ1,
   fetchListOfQ2,
-  getComponentsByNameAndNo,
   itemQueryL,
 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
@@ -112,8 +110,6 @@ const Q2 = () => {
   };
   const fetchComponentList = async (e: any) => {
     setSelectedCustomer(e);
-
-    const response = await execFun(() => getComponentsByNameAndNo(e), "fetch");
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     let payload = {
@@ -326,14 +322,27 @@ const Q2 = () => {
       width: 190,
     },
     {
+      headerName: "Rate",
+      field: "in_rate",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
       headerName: "Unit",
       field: "UNIT",
       filter: "agTextColumnFilter",
       width: 190,
     },
+
     {
-      headerName: "Rate",
-      field: "in_rate",
+      headerName: "Physical Stock",
+      field: "PHYSICAL_STOCK",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Box Qty",
+      field: "CLOSING_QUANTITY",
       filter: "agTextColumnFilter",
       width: 190,
     },
@@ -352,12 +361,6 @@ const Q2 = () => {
     {
       headerName: "Min No.",
       field: "MIN_NO",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-    {
-      headerName: "Physical Stock",
-      field: "PHYSICAL_STOCK",
       filter: "agTextColumnFilter",
       width: 190,
     },
@@ -401,7 +404,7 @@ const Q2 = () => {
                       transform={transformOptionData}
                       onChange={fetchComponentList}
                       value={selectedCustomer}
-                      fetchOptionWith="payload"
+                      fetchOptionWith="query2"
                     />
                   </FormControl>
                   <FormMessage />

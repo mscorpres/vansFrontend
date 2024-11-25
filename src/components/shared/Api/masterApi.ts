@@ -46,7 +46,7 @@ export const saveService = async (payload: any) => {
   return response;
 };
 export const saveEditedService = async (payload: any) => {
-  const response = await spigenAxios.post(
+  const response = await spigenAxios.put(
     "/component/updateServiceComponent",
     payload
   );
@@ -85,9 +85,11 @@ export const saveMapCustomer = async (payload: any) => {
   return response;
 };
 export const getComponentsByNameAndNo = async (search: any) => {
-  const response = await spigenAxios.post("/backend/getComponentByNameAndNo", {
-    search: search,
-  });
+  console.log("search", search);
+
+  const response = await spigenAxios.get(
+    `/backend/getComponentByNameAndNo/${search}`
+  );
   return response;
 };
 export const getProductsByNameAndNo = async (search: any) => {
@@ -107,16 +109,16 @@ export const getProductList = async () => {
   const response = await spigenAxios.get("/products");
   return response;
 };
-export const getProductDetails = async (val: any) => {
-  const response = await spigenAxios.post("/products/getProductForUpdate", {
-    product_key: val,
-  });
-  return response;
-};
-export const updateProductDetails = async (val: any) => {
-  const response = await spigenAxios.post("/products/updateProduct", val);
-  return response;
-};
+// export const getProductDetails = async (val: any) => {
+//   const response = await spigenAxios.post("/products/getProductForUpdate", {
+//     product_key: val,
+//   });
+//   return response;
+// };
+// export const updateProductDetails = async (val: any) => {
+//   const response = await spigenAxios.post("/products/updateProduct", val);
+//   return response;
+// };
 export const getCustomerList = async (val: any) => {
   const response = await spigenAxios.post("/others/customerList", {
     search: val,
@@ -138,9 +140,12 @@ export const fetchLocationList = async () => {
   return response;
 };
 export const fetchStateList = async (val: any) => {
-  const response = await spigenAxios.post("backend/stateList", {
-    search: val,
-  });
+  const response = await spigenAxios.get(
+    `backend/stateList/${val}`
+    //   {
+    //   search: val,
+    // }
+  );
   return response;
 };
 export const fetchBillingAddess = async () => {
@@ -159,9 +164,12 @@ export const fetchShippingAddress = async () => {
   return response;
 };
 export const fetchBomTypeWise = async (wise: any) => {
-  const response = await spigenAxios.post("/bom/fetchBOMtypeWise", {
-    wise: wise,
-  });
+  const response = await spigenAxios.get(
+    `/bom/fetchBOMtypeWise/${wise}`
+    //   , {
+    //   wise: wise,
+    // }
+  );
   return response;
 };
 export const fetchPartCodeDetails = async (thepartCode: any) => {
@@ -205,9 +213,11 @@ export const fetchMaterialDocsFiles = async (payload: any) => {
   return response;
 };
 export const fetchImageProduct = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/products/fetchImageProduct",
-    payload
+  console.log("payload", payload);
+
+  const response = await spigenAxios.get(
+    `/products/fetchImageProduct/${payload?.product}`
+    // payload
   );
   return response;
 };
@@ -242,9 +252,11 @@ export const viewListClientEntry = async (obj: any) => {
   return response;
 };
 export const getParentLocationOptions = async (search: any) => {
-  const response = await spigenAxios.post("/location/fetchLocation", {
-    searchTerm: search,
-  });
+  const response = await spigenAxios.get("/location/fetchLocation",
+  //    {
+  //   searchTerm: search,
+  // }
+);
   return response;
 };
 export const insertLoations = async (payload: any) => {
@@ -371,15 +383,25 @@ export const fetchR6 = async (payload: any) => {
   return response;
 };
 export const getComponentDetailsForServices = async (payload: any) => {
-  const response = await spigenAxios.post("/component/fetchUpdateComponent", {
-    componentKey: payload,
-  });
+  // console.log("payload", payload);
+
+  const response = await spigenAxios.get(
+    `/component/fetchUpdateComponent/${payload}`
+    // {
+    //   componentKey: payload,
+    // }
+  );
   return response;
 };
 export const getProductDetailsForEdit = async (payload: any) => {
-  const response = await spigenAxios.post("/products/getProductForUpdate", {
-    product_key: payload,
-  });
+  // console.log("payload", payload);
+
+  const response = await spigenAxios.get(
+    `/products/getProductForUpdate/${payload}`
+    // {
+    //   product_key: payload,
+    // }
+  );
   return response;
 };
 export const getListOFViewCustomers = async (payload: any) => {
@@ -436,21 +458,20 @@ export const getListOfProductSKU = async (payload: any) => {
   return response;
 };
 export const getdetailsOfUpdateComponent = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/component/fetchUpdateComponent",
-    payload
+  // console.log("payload", payload);
+
+  const response = await spigenAxios.get(
+    `/component/fetchUpdateComponent/${payload.componentKey}`
+    // payloadd
   );
   return response;
 };
 export const updateComponentofMaterial = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/component/updateComponent",
-    payload
-  );
+  const response = await spigenAxios.put("/component/updateComponent", payload);
   return response;
 };
 export const updateProductMaterial = async (payload: any) => {
-  const response = await spigenAxios.post("products/updateProduct", payload);
+  const response = await spigenAxios.put("products/updateProduct", payload);
   return response;
 };
 export const saveComponentMap = async (payload: any) => {
@@ -511,9 +532,14 @@ export const addbranchToClient = async (payload: any) => {
   return response;
 };
 export const fetchHSN = async (payload: any) => {
-  const response = await spigenAxios.post("/backend/fetchHsn", {
-    component: payload,
-  });
+  // console.log("payload", payload);
+
+  const response = await spigenAxios.get(
+    `/backend/fetchHsn/${payload}`
+    //    {
+    //   component: payload,
+    // }
+  );
   return response;
 };
 export const mapHSN = async (payload: any) => {
@@ -554,9 +580,14 @@ export const getAlternativeComponents = async (payload: any) => {
 };
 
 export const fetchbomComponents = async (payload: any) => {
-  const response = await spigenAxios.post("/bom/bomComponents", {
-    subject_id: payload,
-  });
+  // console.log("payload", payload);
+
+  const response = await spigenAxios.get(
+    `/bom/bomComponents/${payload}`
+    //    {
+    //   subject_id: payload,
+    // }
+  );
   return response;
 };
 export const fetchViewComponentsOfManage = async (payload: any) => {

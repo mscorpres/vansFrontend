@@ -14,6 +14,7 @@ import { modelFixHeaderStyle } from "@/constants/themeContants";
 import { AgGridReact } from "ag-grid-react";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ViewBom = ({ openView, setSheetOpenView }) => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const { execFun, loading: loading1 } = useApi();
@@ -69,6 +70,7 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
               paginationPageSize={10}
               paginationAutoPageSize={true}
               suppressCellFocus={true}
+              overlayNoRowsTemplate={OverlayNoRowsTemplate}
             />
           </div>
         </SheetContent>

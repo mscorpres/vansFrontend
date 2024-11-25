@@ -20,6 +20,7 @@ import { IoCloudUpload } from "react-icons/io5";
 import { downloadCSVCustomColumns } from "@/components/shared/ExportToCSV";
 import { spigenAxios } from "@/axiosIntercepter";
 import { Filter } from "lucide-react";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -227,6 +228,7 @@ const VendorPrice = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
           <Button

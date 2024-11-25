@@ -40,6 +40,7 @@ import { toast } from "@/components/ui/use-toast";
 import { IoCloudUpload } from "react-icons/io5";
 import { AgGridReact } from "ag-grid-react";
 import { Download } from "lucide-react";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const { execFun, loading: loading1 } = useApi();
   const [editForm] = Form.useForm();
@@ -86,7 +87,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         soq: { label: arr.soqname, value: arr.soqid },
         taxTypes: arr.tax_type,
         gstTaxRate: arr.gst_rate,
-        // alert: arr.enable_status,
+        alert: arr.alert_status == "N" ? false : true,
         enabled: arr.enable_status,
         moqQty: arr.moqqty,
         hsn: arr.hsncode,
@@ -111,6 +112,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         purchaseCost: arr.pocost,
         OtherCost: arr.othercost,
       };
+
       editForm.setFieldsValue(a);
     }
   };
@@ -148,7 +150,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       maxqty: values.MaxStock,
       minorder: values.MinOrder,
       leadtime: values.LeadTime,
-      alert: values.alert,
+      alert: values.alert == true ? "Y" : "N",
       pocost: values.purchaseCost,
       othercost: values.OtherCost,
       //doubtfull param
@@ -160,12 +162,12 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     // return;
     // return;
     setLoading(true);
-    const response = await spigenAxios.post(
+    const response = await spigenAxios.put(
       "/component/updateComponent",
       payload
     );
 
-    if (response.data.code == 200) {
+    if (response?.data.code == 200) {
       toast({
         title: response.data.message, // Assuming 'message' is in the response
         className: "bg-green-700 text-center text-white",
@@ -823,6 +825,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         // rules={rules.alert}
                       >
                         <Switch
+
                         // style={{
                         //   backgroundColor: "#E0f",
                         //   borderColor: "#4CAF50",
@@ -933,6 +936,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
                 suppressCellFocus={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
               />
             </div>
           </div>{" "}

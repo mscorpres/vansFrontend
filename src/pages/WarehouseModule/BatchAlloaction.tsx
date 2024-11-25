@@ -31,7 +31,6 @@ import ActionCellRenderer from "./ActionCellRenderer";
 import {
   componentList,
   componentMapList,
-  getComponentsByNameAndNo,
   getProductList,
   insertProduct,
   listOfUom,
@@ -92,14 +91,19 @@ const BatchAlloaction = () => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response.status == 200) {
-      let arr = data.data.map((r, index) => {
+    if (response?.status == 200) {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
         };
       });
       setAsyncOptions(arr);
+    } else {
+      toast({
+        title: "Failed to fetch UOM",
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const onsubmit = async () => {

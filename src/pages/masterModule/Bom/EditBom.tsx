@@ -49,6 +49,7 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { IoCloudUpload } from "react-icons/io5";
 import { spigenAxios } from "@/axiosIntercepter";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const EditBom = () => {
   const [form] = Form.useForm();
   const gridRef = useRef<AgGridReact<RowData>>(null);
@@ -287,9 +288,7 @@ const EditBom = () => {
               <Button className=" rounded-full bg-white  hover:bg-white-600 h-[25px] w-[25px] flex justify-center items-center p-0">
                 <FiRefreshCcw
                   className="h-[15px] w-[15px] text-blue-500 hover:text-blue-700"
-                  onClick={
-                    () => updateRow(params)
-                  }
+                  onClick={() => updateRow(params)}
                 />
               </Button>
             )}
@@ -707,6 +706,7 @@ const EditBom = () => {
                 suppressRowClickSelection={false}
                 rowSelection="multiple"
                 checkboxSelection={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
               />
               <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
                 {/* <Button
@@ -793,6 +793,7 @@ const EditBom = () => {
                 suppressCellFocus={true}
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
               />
             </div>
           </div>
@@ -886,6 +887,7 @@ const EditBom = () => {
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
                 suppressCellFocus={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
               />
             </div>
           </div>{" "}

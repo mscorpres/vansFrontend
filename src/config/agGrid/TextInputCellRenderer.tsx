@@ -1,4 +1,3 @@
-import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { Button } from "@/components/ui/button";
 import {
@@ -118,7 +117,7 @@ const TextInputCellRenderer = (props: any) => {
             transform={transformOptionData}
             onChange={(e) => handleChange(e.value)}
             // value={selectedCustomer}
-            fetchOptionWith="payload"
+            fetchOptionWith="query2"
           />
         );
       case "asinNumber":

@@ -155,7 +155,7 @@ const ManagePoPage: React.FC = () => {
     },
     {
       field: "po_transaction",
-      headerName: "Po Id ",
+      headerName: "PO Id ",
       width: "220",
       cellRenderer: CopyCellRenderer,
       filterParams: {

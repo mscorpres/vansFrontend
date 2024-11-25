@@ -18,6 +18,7 @@ import { rangePresets } from "@/General";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { useSelector } from "react-redux";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const { RangePicker } = DatePicker;
 const ApproveList: React.FC = () => {
@@ -207,6 +208,7 @@ const ApproveList: React.FC = () => {
           checkboxSelection={true}
           onSelectionChanged={onSelectionChanged}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <ConfirmationModal

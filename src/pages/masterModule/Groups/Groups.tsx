@@ -32,6 +32,7 @@ import {
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { Filter } from "lucide-react";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -197,6 +198,7 @@ const Groups = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>

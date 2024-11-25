@@ -53,6 +53,7 @@ import { AppDispatch, RootState } from "@/store";
 import { spigenAxios } from "@/axiosIntercepter";
 import { AgGridReact } from "ag-grid-react";
 import { Download } from "lucide-react";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [open, setOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -812,7 +813,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
               onValueChange={handleFileChange}
               dropzoneOptions={{
                 accept: {
-                  "image/*": [".jpg", ".jpeg", ".png", ".gif", ],
+                  "image/*": [".jpg", ".jpeg", ".png", ".gif"],
                 },
                 maxFiles: 1,
                 maxSize: 4 * 1024 * 1024, // 4 MB
@@ -868,6 +869,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
                 suppressCellFocus={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
               />
             </div>
           </div>{" "}

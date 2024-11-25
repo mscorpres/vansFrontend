@@ -18,6 +18,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { useNavigate } from "react-router-dom";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   wise: z.string(),
 });
@@ -195,6 +196,7 @@ const CreateBom = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       {/* {sheetOpenEdit && (

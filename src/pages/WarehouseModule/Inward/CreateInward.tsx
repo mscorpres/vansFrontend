@@ -10,7 +10,7 @@ import styled from "styled-components";
 import { Link, useParams } from "react-router-dom";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import Select from "react-select";
-import { transformCurrencyData, transformOptionData } from "@/helper/transform";
+import { transformCurrencyData, transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { Button, Form } from "antd";
 import { primartButtonStyle, InputStyle } from "@/constants/themeContants";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
@@ -338,8 +338,8 @@ const CreateInward: React.FC<Props> = ({
                     <ReusableAsyncSelect
                       placeholder="Cost Center"
                       endpoint="/backend/costCenter"
-                      transform={transformOptionData}
-                      fetchOptionWith="payload"
+                      transform={transformOptionData2}
+                      fetchOptionWith="query2"
                     />
                     {/* <p>error message</p> */}
                   </Form.Item>{" "}

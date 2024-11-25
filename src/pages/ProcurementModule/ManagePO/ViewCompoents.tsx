@@ -38,7 +38,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     },
     {
       field: "componentPartID",
-      headerName: "Po Id",
+      headerName: "PO Id",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -109,7 +109,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
   const [columnDefsCompleted] = useState<ColDef[]>([
     {
       field: "componentPartID",
-      headerName: "Po Id",
+      headerName: "PO Id",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {

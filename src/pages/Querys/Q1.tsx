@@ -1,5 +1,4 @@
-
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,7 +11,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {  Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
 import { transformOptionData } from "@/helper/transform";
@@ -24,7 +23,6 @@ import useApi from "@/hooks/useApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   fetchListOfQ1,
-  getComponentsByNameAndNo,
 } from "@/components/shared/Api/masterApi";
 import { exportDateRangespace } from "@/components/shared/Options";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -52,11 +50,9 @@ const Q1 = () => {
   const { execFun, loading: loading1 } = useApi();
   const { RangePicker } = DatePicker;
 
-
   const fetchComponentList = async (e: any) => {
     setSelectedCustomer(e);
 
-    const response = await execFun(() => getComponentsByNameAndNo(e), "fetch");;
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     let { date } = formData;
@@ -177,7 +173,7 @@ const Q1 = () => {
                       transform={transformOptionData}
                       onChange={fetchComponentList}
                       value={selectedCustomer}
-                      fetchOptionWith="payload"
+                      fetchOptionWith="query2"
                     />
                   </FormControl>
                   <FormMessage />

@@ -5,7 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
-import { transformOptionData } from "@/helper/transform";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { Check, Edit2, Filter, Plus, Trash2 } from "lucide-react";
 import styled from "styled-components";
 import { Checkbox, DatePicker, Form, Space, Typography } from "antd";
@@ -230,7 +230,6 @@ const PickSlip = () => {
       boxqty: finalrows.map((r) => r.qty),
     };
     dispatch(stockOut(payload)).then((res: any) => {
-
       if (res.payload.code == 200) {
         toast({
           title: res.payload.message,
@@ -379,10 +378,10 @@ const PickSlip = () => {
                 <ReusableAsyncSelect
                   placeholder="Cost Center"
                   endpoint="/backend/costCenter"
-                  transform={transformOptionData}
+                  transform={transformOptionData2}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
               <Form.Item name="customerName" label="Customer Name">

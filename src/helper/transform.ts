@@ -8,8 +8,18 @@ export const transformCustomerData = (data: any[]) => {
 };
 
 export const transformOptionData = (data: any[]) => {
+
   if (data?.length) {
     return data?.map((item) => ({
+      label: item.text,
+      value: item.id,
+    }));
+  }
+};
+export const transformOptionData2 = (data: any[]) => {
+  let newData = data?.data;
+  if (newData?.length) {
+    return newData?.map((item) => ({
       label: item.text,
       value: item.id,
     }));
@@ -55,8 +65,8 @@ export const transformClientTds = (data: any[]) => {
 
 export const transformStateOptions = (data: any[]) => {
   return data?.map((item) => ({
-    label: item.name,  // Changed from 'stateName' to 'name'
-    value: item.code,  // Changed from 'stateCode' to 'code'
+    label: item.name, // Changed from 'stateName' to 'name'
+    value: item.code, // Changed from 'stateCode' to 'code'
   }));
 };
 

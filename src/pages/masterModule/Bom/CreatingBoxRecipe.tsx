@@ -38,6 +38,7 @@ import { AppDispatch } from "@/store";
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   wise: z.string(),
 });
@@ -406,6 +407,7 @@ const CreatingBoxRecipe = () => {
           suppressRowClickSelection={false}
           rowSelection="multiple"
           checkboxSelection={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       {openView && (

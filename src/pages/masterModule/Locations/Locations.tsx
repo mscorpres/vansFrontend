@@ -32,6 +32,7 @@ import { Form, Row } from "antd";
 import { toast } from "@/components/ui/use-toast";
 import { RowData } from "@/data";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const Locations = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
@@ -322,6 +323,7 @@ const Locations = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <ConfirmationModal

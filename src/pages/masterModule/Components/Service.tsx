@@ -35,6 +35,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import EditService from "./EditService";
 import { Form } from "antd";
 import { useToast } from "@/components/ui/use-toast";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -57,23 +58,29 @@ const Service = () => {
   const { execFun, loading: loading1 } = useApi();
 
   const listUom = async () => {
-    const response = await execFun(() => listOfUom(), "fetch");
+   const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response.status == 200) {
-      let arr = data.data.map((r, index) => {
+    if (response?.status == 200) {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
         };
       });
       setAsyncOptions(arr);
+    } else {
+      toast({
+        title: "Failed to fetch UOM",
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
 
   const fetchServiceList = async () => {
     const response = await execFun(() => serviceList(), "fetch");
     const { data } = response;
+
     if (response?.data.code === 200) {
       let arr = data.data.map((r, id) => {
         return { id: id + 1, ...r };
@@ -282,6 +289,7 @@ const Service = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

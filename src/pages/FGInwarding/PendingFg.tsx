@@ -52,16 +52,8 @@ import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ActionCellRenderer from "./ActionCellRenderer";
 import {
-  componentList,
-  componentMapList,
-  fetchBomTypeWise,
   fetchListOfPendingFg,
-  getComponentsByNameAndNo,
   getListFgIn,
-  getProductList,
-  listOfUom,
-  serviceList,
-  servicesaddition,
 } from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
 import { FaCheckCircle } from "react-icons/fa";

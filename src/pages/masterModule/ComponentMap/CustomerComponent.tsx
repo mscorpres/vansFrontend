@@ -29,6 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const CustomerComponent = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
@@ -110,7 +111,7 @@ const CustomerComponent = () => {
                   transform={transformOptionData}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
             </div>
@@ -181,6 +182,7 @@ const CustomerComponent = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>

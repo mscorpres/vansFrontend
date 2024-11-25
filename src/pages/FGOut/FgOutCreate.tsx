@@ -43,10 +43,8 @@ import ActionCellRenderer from "./ActionCellRenderer";
 import {
   componentList,
   componentMapList,
-  fetchBomTypeWise,
   fetchListOfCompletedFg,
   fetchListOfCompletedFgOut,
-  getComponentsByNameAndNo,
   getProductList,
   listOfUom,
   serviceList,

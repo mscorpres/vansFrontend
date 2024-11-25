@@ -48,11 +48,9 @@ import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
 import {
   componentList,
   componentMapList,
-  fetchBomTypeWise,
   fetchListOfCompletedFg,
   fetchListOfCompletedFgOut,
   fetchListOfProjectId,
-  getComponentsByNameAndNo,
   getProductList,
   listOfUom,
   serviceList,

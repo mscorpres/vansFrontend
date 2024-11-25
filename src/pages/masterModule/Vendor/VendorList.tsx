@@ -58,6 +58,7 @@ import { MoreOutlined } from "@ant-design/icons";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   wise: z.string().optional(),
   branch: z.string().optional(),
@@ -265,7 +266,6 @@ const VendorList = () => {
         addressCode: r.address_code,
       };
 
-
       form.setValue("label", a.label);
       form.setValue("mobile", a.mobile);
       form.setValue("city", a.city);
@@ -316,7 +316,6 @@ const VendorList = () => {
     }
   };
   const updateVendor = async (data) => {
-
     let p = {
       cinno: data?.cin,
       panno: data?.pan,
@@ -340,7 +339,6 @@ const VendorList = () => {
     }
   };
   const createNewBranch = async (data) => {
-
     let p = {
       vendor: {
         vendorname: sheetOpenBranch,
@@ -374,7 +372,6 @@ const VendorList = () => {
     }
   };
   const addVendor = async (data) => {
-
     let p = {
       vendor: {
         vendorname: data.label,
@@ -449,7 +446,6 @@ const VendorList = () => {
     getDetailsFromBranchList(thebranch);
   }, [thebranch]);
   useEffect(() => {
-
     getupdateDetails(sheetOpenEdit.data?.vendor_code);
   }, [sheetOpenEdit]);
 
@@ -822,7 +818,7 @@ const VendorList = () => {
           >
             <SheetHeader className={modelFixHeaderStyle}>
               <SheetTitle className="text-slate-600">
-                {`Listing Branch & Modification of ${form.getValues(
+                {`Listing Branch & Modification  ${form.getValues(
                   "vendorCode"
                 )}`}
               </SheetTitle>
@@ -1047,14 +1043,14 @@ const VendorList = () => {
                       variant={"outline"}
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
-                        setOpen(true);
+                        setSheetOpenView(false);
                         e.preventDefault();
                       }}
                     >
                       Back
                     </Button>
                     <Button
-                      onClick={() => updateViewBranch()}
+                      // onClick={() => updateViewBranch()}
                       className="bg-cyan-700 hover:bg-cyan-600"
                     >
                       Update
@@ -1290,7 +1286,7 @@ const VendorList = () => {
                       variant={"outline"}
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
-                        setOpen(true);
+                        setSheetOpenBranch(false);
                         e.preventDefault();
                       }}
                     >
@@ -1390,7 +1386,7 @@ const VendorList = () => {
                       variant={"outline"}
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
-                        setOpen(true);
+                        setSheetOpenEdit(false);
                         e.preventDefault();
                       }}
                     >
@@ -1421,6 +1417,7 @@ const VendorList = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>
