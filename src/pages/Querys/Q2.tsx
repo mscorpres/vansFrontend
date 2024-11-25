@@ -326,17 +326,31 @@ const Q2 = () => {
       width: 190,
     },
     {
-      headerName: "Unit",
-      field: "UNIT",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-    {
       headerName: "Rate",
       field: "in_rate",
       filter: "agTextColumnFilter",
       width: 190,
     },
+    {
+      headerName: "Unit",
+      field: "UNIT",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+
+    {
+      headerName: "Box Qty",
+      field: "CLOSING_QUANTITY",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Physical Stock",
+      field: "PHYSICAL_STOCK",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+
     {
       headerName: "Amount (FXC)",
       field: "AMOUNT_FC",
@@ -352,18 +366,6 @@ const Q2 = () => {
     {
       headerName: "Min No.",
       field: "MIN_NO",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-    {
-      headerName: "Closing Qty",
-      field: "CLOSING_QUANTITY",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-    {
-      headerName: "Physical Stock",
-      field: "PHYSICAL_STOCK",
       filter: "agTextColumnFilter",
       width: 190,
     },
