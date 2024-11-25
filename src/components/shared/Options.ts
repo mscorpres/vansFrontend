@@ -74,7 +74,6 @@ export const exportDateRange = (dateRange: any) => {
   //   .reverse()
   //   .join("-");
   let dataString = `${startDate}-${endDate}`;
-  console.log("dateString", dataString);
   return dataString;
 };
 export const exportDateRangespace = (dateRange: any) => {
