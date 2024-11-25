@@ -38,7 +38,7 @@ const NotificationPnnel: React.FC = () => {
   };
   const fetchNotification = async () => {
     dispatch(getNotification()).then((response) => {
-      console.log("response", response);
+      
       if (response.payload.success == true) {
         toast({
           title: response.payload.message,
@@ -48,12 +48,10 @@ const NotificationPnnel: React.FC = () => {
       }
     });
   };
-  console.log("notificationList---", notificationList);
+
 
   useEffect(() => {
     if (anchorEl) {
-      console.log("anchorEl", anchorEl);
-
       fetchNotification();
     }
   }, [anchorEl]);
