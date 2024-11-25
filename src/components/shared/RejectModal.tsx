@@ -18,8 +18,6 @@ const RejectModal: React.FC<Props> = ({
   onOkay,
   setRejectText,
 }) => {
-  // const { cancelShipment, setCancelShipment } = uiState;
-  console.log("V", open);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

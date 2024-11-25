@@ -177,7 +177,6 @@ const TextInputCellRenderer = (props: any) => {
   const { hsnlist, getComponentData, costCenterList } = useSelector(
     (state: RootState) => state.client
   );
-  // console.log("hsnlist", props);
 
   const {
     transactionFromBoxList,
@@ -223,13 +222,10 @@ const TextInputCellRenderer = (props: any) => {
 
   const handleCurrencyChange = (value: any) => {
     data["currency"] = value;
-    console.log("handleCurrencyChange");
 
     setOpenCurrencyDialog(true);
   };
-  //   console.log("materialList", materialList);
   const handleChange = (value: string) => {
-    // console.log("value", value);
 
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
@@ -255,7 +251,6 @@ const TextInputCellRenderer = (props: any) => {
           if (colDef.field === "exchange_rate") {
             data["foreignValue"] = data["exchange_rate"];
           }
-          // console.log("props.roeIs", props.roeIs);
         }
       });
       dispatch(fetchCurrency());
@@ -286,7 +281,6 @@ const TextInputCellRenderer = (props: any) => {
       };
 
       dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
-        console.log("resp", res);
         if (res?.payload.code == 500) {
           toast({
             title: "Out Boxes not available!",
@@ -321,7 +315,6 @@ const TextInputCellRenderer = (props: any) => {
         }
       });
     }
-    console.log("bomStatus", data);
     if (colDef.field === "bomStatus") {
       if (data["bomStatus"] == "Alternative") {
         props.setAlternateModal(data);
@@ -351,7 +344,6 @@ const TextInputCellRenderer = (props: any) => {
       data.igst = igst.toFixed(2);
     } else if (data.gstType === "0" || data.gstTypeForPO === "0") {
       // Export
-      // console.log("calculation", calculation);
 
       cgst = 0;
       sgst = 0;
@@ -388,8 +380,7 @@ const TextInputCellRenderer = (props: any) => {
     }
     ///foreign value calucaltion in case of exchanged rate is passed
     if (props.roeIs) {
-      // console.log("props.roeIs", props.roeIs);
-      // console.log("props.dddddroeIs", props.roeIs * data["localValue"]);
+      
       data["foreignValue"] = props.roeIs * data["localValue"];
     }
     // Calculate GST based on the updated values
@@ -460,7 +451,6 @@ const TextInputCellRenderer = (props: any) => {
     data.dueDate = date ? date.format("DD-MM-YYYY") : ""; // Format the date for storage
     updateData(data); // Update the data
   };
-  // console.log("props--->", props?.currencyList);
 
   const renderContent = () => {
     switch (colDef.field) {

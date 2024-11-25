@@ -67,7 +67,6 @@ export const listOfVendorBranchList = createAsyncThunk<
     const response = await spigenAxios.post<any>("/backend/vendorBranchList", {
       vendorcode: vendorcode,
     });
-    console.log("response", response.data);
 
     return response.data.data;
   } catch (error) {
@@ -106,7 +105,6 @@ export const listOfBillToList = createAsyncThunk<
         cost_center: cost_center,
       }
     );
-    // console.log("response", response.data);
 
     return response.data;
   } catch (error) {
@@ -127,7 +125,6 @@ export const fetchShippingAddressDetails = createAsyncThunk<
         shipping_code: shipping_code,
       }
     );
-    console.log("response", response);
 
     return response.data.data;
   } catch (error) {
@@ -149,7 +146,6 @@ export const fetchBillingList = createAsyncThunk<
         cost_center: cost_center,
       }
     );
-    console.log("response", response);
 
     return response.data;
   } catch (error) {
@@ -170,7 +166,6 @@ export const fetchBillingListDetails = createAsyncThunk<
         billing_code: billing_code,
       }
     );
-    console.log("response", response);
 
     return response.data.data;
   } catch (error) {
@@ -192,7 +187,6 @@ export const fetchVendorAddressDetails = createAsyncThunk<
         branchcode: branchcode,
       }
     );
-    console.log("response", response);
 
     return response.data.data;
   } catch (error) {
@@ -216,7 +210,6 @@ export const fetchComponentDetails = createAsyncThunk<
           component_code: component_code,
         }
       );
-      console.log("response", response);
 
       return response.data.data;
     } catch (error) {
@@ -441,7 +434,6 @@ export const fetchCurrency = createAsyncThunk<uomPayload>(
       const response = await spigenAxios.get<uomPayload>(
         "/backend/fetchAllCurrecy"
       );
-      // console.log("response-->", response?.data?.data);
 
       return response.data.data;
     } catch (error) {
@@ -465,7 +457,6 @@ export const fetchCompletedPo = createAsyncThunk<
         wise: wise,
       }
     );
-    console.log("response.data.data", response.data);
 
     return response.data;
   } catch (error) {
@@ -488,7 +479,6 @@ export const fetchneededApprovalPO = createAsyncThunk<
         wise: wise,
       }
     );
-    // console.log("response", response.data);
 
     return response.data;
   } catch (error) {
@@ -511,7 +501,6 @@ export const rejectPo = createAsyncThunk<
         remark: remark,
       }
     );
-    // console.log("response", response.data);
 
     return response.data;
   } catch (error) {
@@ -530,7 +519,6 @@ export const updatePo = createAsyncThunk<uomPayload, payload>(
         "/purchaseOrder/updateData4Update",
         payload
       );
-      // console.log("response", response.data);
 
       return response;
     } catch (error) {

@@ -39,7 +39,6 @@ const PoCreateTemplate = () => {
     setRowData([]);
     setTabvalue("create");
 
-    console.log("approve", isApprove);
     if (isApprove == "edit") {
       navigate("/manage-po");
       setIsApprove(false);

@@ -235,7 +235,6 @@ const PendingMr: React.FC = () => {
     // let date = exportDateRange(values.data);
     let payload = { status: values.wise.value };
     dispatch(fetchTransactionForApproval(payload)).then((res: any) => {
-      console.log("res", res);
       if (res.payload.code == 200) {
       } else {
         toast({

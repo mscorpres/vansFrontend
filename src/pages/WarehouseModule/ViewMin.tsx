@@ -79,7 +79,6 @@ const dateFormat = "YYYY/MM/DD";
 const ViewMin: React.FC = () => {
   const { managePoList } = useSelector((state: RootState) => state.client);
   const { loading } = useSelector((state: RootState) => state.store);
-  // console.log("loading", loading);
 
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
@@ -222,7 +221,6 @@ const ViewMin: React.FC = () => {
     }
     let payload = { data: date, wise: values.wise.value };
     dispatch(getMinTransactionByDate(payload)).then((res: any) => {
-      // console.log("res", res);
 
       if (res.payload.code == 200) {
         let arr = res.payload.data;

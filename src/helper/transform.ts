@@ -8,7 +8,6 @@ export const transformCustomerData = (data: any[]) => {
 };
 
 export const transformOptionData = (data: any[]) => {
-  // console.log("data", data);
   if (data?.length) {
     return data?.map((item) => ({
       label: item.text,
@@ -17,7 +16,6 @@ export const transformOptionData = (data: any[]) => {
   }
 };
 export const transformOptionDataphy = (data: any[]) => {
-  // console.log("data", data);
   if (data?.length) {
     return data?.map((item) => ({
       label: item.part_no,
@@ -26,7 +24,6 @@ export const transformOptionDataphy = (data: any[]) => {
   }
 };
 export const transformOptionBomData = (data: any[]) => {
-  // console.log("data", data);
   if (data?.length) {
     return data?.map((item) => ({
       label: item.bomname,
@@ -35,7 +32,6 @@ export const transformOptionBomData = (data: any[]) => {
   }
 };
 export const transformCurrencyData = (data: any[]) => {
-  // console.log("data", data);
   if (data?.length) {
     return data?.map((item) => ({
       label: item.currency_symbol,

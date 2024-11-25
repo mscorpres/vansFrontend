@@ -63,7 +63,6 @@ const UoM = () => {
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => listOfUom(), "fetch");
-    // console.log("response", response);
     let { data } = response;
     if (response.data.code === 200) {
       let arr = data.data.map((r, index) => {
@@ -91,13 +90,11 @@ const UoM = () => {
   const createEntry = async () => {
     const values = await form.validateFields();
     setLoading(true);
-    // console.log("values", values);
     let payload = {
       description: values.description,
       uom: values.groupName,
     };
     const response = await execFun(() => createNewUomEntry(payload), "fetch");
-    // console.log("response", response);
     const { data } = response;
     if (data.code === 200) {
       setLoading(false);

@@ -59,22 +59,11 @@ export const vendorTypeOptions = [
   },
 ];
 export const exportDateRange = (dateRange: any) => {
-  console.log("dateRange", dateRange);
 
-  // const startDate = dateRange[0]
-  //   .toLocaleDateString("en-GB")
-  //   .split("/")
-  //   .reverse()
-  //   .join("-");
   const startDate = moment(dateRange[0]).format("DD-MM-YYYY");
   const endDate = moment(dateRange[1]).format("DD-MM-YYYY");
-  // const endDate = dateRange[1]
-  //   .toLocaleDateString("en-GB")
-  //   .split("/")
-  //   .reverse()
-  //   .join("-");
+ 
   let dataString = `${startDate}-${endDate}`;
-  console.log("dateString", dataString);
   return dataString;
 };
 export const exportDateRangespace = (dateRange: any) => {

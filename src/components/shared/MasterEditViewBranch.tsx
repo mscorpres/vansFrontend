@@ -10,7 +10,6 @@ import { Edit2 } from "lucide-react";
 
 const MasterEditViewBranch: React.FC<Props> = ({ uiState }) => {
   const { editView, setEditView ,params} = uiState;
-  console.log(params)
   const components = useMemo(
     () => ({
       editViewCellRenderer:()=>{

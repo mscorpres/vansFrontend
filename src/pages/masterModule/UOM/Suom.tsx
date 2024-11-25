@@ -65,7 +65,6 @@ const Suom = () => {
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => listOfsUom(), "fetch");
-    // console.log("response", response);
     let { data } = response;
     if (response.data.code === 200) {
       let arr = data.data.map((r, index) => {
@@ -95,7 +94,6 @@ const Suom = () => {
       scode: values.code,
     };
     const response = await execFun(() => createNewSUomEntry(payload), "fetch");
-    // console.log("response", response);
     const { data } = response;
     if (data.code === 200) {
       setLoading(false);

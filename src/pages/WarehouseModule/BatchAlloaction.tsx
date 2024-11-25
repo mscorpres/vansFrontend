@@ -63,13 +63,11 @@ const BatchAlloaction = () => {
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
   // });
-  console.log("uomlist", uomlist);
 
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => getProductList(), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (response.status === 200) {
       let arr = data.data.map((r, index) => {
@@ -106,7 +104,6 @@ const BatchAlloaction = () => {
   };
   const onsubmit = async () => {
     const value = await form.validateFields();
-    console.log("value", value);
     let payload = {
       p_sku: value.sku,
       p_name: value.product,
@@ -115,10 +112,8 @@ const BatchAlloaction = () => {
     };
     // return;
     const response = await execFun(() => insertProduct(payload), "fetch");
-    console.log("response", response);
 
     const { data } = response;
-    console.log("data", response);
     if (response.data.code == 200) {
       toast({
         title: data.message,

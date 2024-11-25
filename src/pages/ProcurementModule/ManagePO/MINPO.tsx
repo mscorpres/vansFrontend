@@ -30,7 +30,6 @@ import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
-  console.log("view", viewMinPo);
   const [rowData, setRowData] = useState([]);
   const [search, setSearch] = useState("");
   const [sheetOpen, setSheetOpen] = useState("");

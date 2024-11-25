@@ -54,13 +54,11 @@ const Q1 = () => {
 
 
   const fetchComponentList = async (e: any) => {
-    console.log("here in api", e!.value);
     setSelectedCustomer(e);
 
     const response = await execFun(() => getComponentsByNameAndNo(e), "fetch");;
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let { date } = formData;
     let dataString = "";
     if (date) {
@@ -72,7 +70,6 @@ const Q1 = () => {
       range: dataString,
     };
     const response = await execFun(() => fetchListOfQ1(payload), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.response.data2;

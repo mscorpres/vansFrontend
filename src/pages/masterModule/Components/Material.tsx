@@ -109,11 +109,9 @@ const Material = () => {
   const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
   const listOfComponentList = async () => {
     const response = await execFun(() => componentList(), "fetch");
-    console.log("here in api", response);
     let { data } = response;
     if (response.status == 200) {
       let comp = data.data;
-      // console.log("comp", comp);
 
       let arr = comp?.map((r, index) => {
         return {
@@ -121,11 +119,9 @@ const Material = () => {
           ...r,
         };
       });
-      console.log("arr", arr);
       setRowData(arr);
     }
   };
-  console.log("here in api", rowData);
   const listUom = async () => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
@@ -137,7 +133,6 @@ const Material = () => {
           value: r.units_id,
         };
       });
-      // console.log("arr", arr);
       setAsyncOptions(arr);
     }
   };
@@ -157,7 +152,6 @@ const Material = () => {
   };
   const listSUom = async () => {
     // const response = await execFun(() => listOfUom(), "submit");
-    // console.log("response", response);
     const response = await spigenAxios.get("/suom");
     const { data } = response;
     // addToast("SUom List fetched", {
@@ -165,7 +159,6 @@ const Material = () => {
     //   autoDismiss: true,
     // });
     if (response.status == 200) {
-      console.log("data", data);
 
       let arr = data?.data?.map((r, index) => {
         return {
@@ -181,7 +174,6 @@ const Material = () => {
     const response = await spigenAxios.get("/groups/allGroups");
     const { data } = response;
     if (response.status == 200) {
-      console.log("datadata", data);
 
       let arr = data?.data.map((r, index) => {
         return {
@@ -189,7 +181,6 @@ const Material = () => {
           value: r.group_id,
         };
       });
-      // console.log("arr ssssss", arr);
 
       setGrpOtions(arr);
     }
@@ -274,14 +265,12 @@ const Material = () => {
       // c_group: "GRP100220210910171321",
       // comp_type: values.type,
     };
-    console.log("payload", payload);
     try {
       const response = await spigenAxios.post(
         "/component/addComponent",
         payload
       );
 
-      console.log("response", response); // This will log the full response
 
       if (response.data.code === 200) {
         toast({
@@ -313,11 +302,9 @@ const Material = () => {
     setLoading(false);
   };
   const handleSearch = (searchKey: string, type: any) => {
-    console.log("searchKey", searchKey);
     if (searchKey) {
       let p = { searchTerm: searchKey };
       dispatch(searchingHsn(p)).then((res) => {
-        console.log("res", res);
       });
     }
   };

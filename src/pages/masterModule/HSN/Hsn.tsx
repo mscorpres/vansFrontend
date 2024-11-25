@@ -70,7 +70,6 @@ const Hsn = () => {
 
   const [form] = Form.useForm();
   const isValue = Form.useWatch("partName", form);
-  console.log("isValue", isValue);
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const typeOption = [
@@ -94,11 +93,9 @@ const Hsn = () => {
     },
   ];
 
-  console.log("here in api", rowData);
   const getTheListHSN = async (value) => {
     const response = await execFun(() => fetchHSN(value), "fetch");
     const { data } = response;
-    console.log("here in api", response);
     if (data.code == 200) {
       let arr = data.data.map((r, index) => {
         return {
@@ -109,12 +106,10 @@ const Hsn = () => {
           isNew: true,
         };
       });
-      console.log("arr", arr);
       setRowData(arr);
     }
   };
   const handleSearch = (searchKey: string, type: any) => {
-    console.log("searchKey", searchKey);
     if (searchKey) {
       let p = { searchTerm: searchKey };
       dispatch(searchingHsn(p));
@@ -174,7 +169,6 @@ const Hsn = () => {
 
     let { data } = response;
     if (response.data.code == 200) {
-      console.log("response,", response.data.message);
 
       toast({
         title: data.message,

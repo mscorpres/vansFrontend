@@ -84,14 +84,12 @@ const TextInputCellRenderer = (props: any) => {
     api.refreshCells({ rowNodes: [props.node], columns: [column] }); // refresh the cell to show the new value
     setOpen(false);
   };
-  console.log("props", props);
 
   const handleInputChange = (e: any) => {
     const newValue = e.target.value;
     data[colDef.field] = newValue; // update the data
     api.refreshCells({ rowNodes: [props.node], columns: [column] }); // refresh the cell to show the new value
   };
-  console.log("search om =", val);
   setCompList(search);
 
   const renderContent = () => {

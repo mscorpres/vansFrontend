@@ -124,7 +124,6 @@ export const addComponent = createAsyncThunk<any, payload>(
         "/component/addComponent",
         payload
       );
-      console.log("response in store", response);
 
       return response.data;
     } catch (error) {
@@ -301,7 +300,6 @@ export const stockOut = createAsyncThunk<settleTransferPayload>(
   async (payload) => {
     try {
       const response = await spigenAxios.post("/backend/stockOut", payload);
-      console.log("response yyyyyy", response);
 
       return response.data;
     } catch (error) {

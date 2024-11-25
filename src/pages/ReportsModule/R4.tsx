@@ -35,10 +35,8 @@ const R4 = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
 
     const response = await execFun(() => fetchR4(), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.data.map((r, index) => {
@@ -47,7 +45,6 @@ const R4 = () => {
           ...r,
         };
       });
-      console.log("arr", arr);
 
       setRowData(arr);
     } else {

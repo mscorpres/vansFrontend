@@ -153,7 +153,6 @@ const MasterBillingAddressPage: React.FC = () => {
   };
   const getList = async () => {
     const response = await execFun(() => fetchBillingAddess(), "fetch");
-    console.log("response000", response);
 
     let { data } = response;
     if (data.code === 200) {

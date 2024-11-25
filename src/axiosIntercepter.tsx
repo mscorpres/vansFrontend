@@ -28,7 +28,6 @@ const loggedInUser: LoggedInUser | null = JSON.parse(
 const otherData: OtherData | null = JSON.parse(
   localStorage.getItem("otherData") as string
 );
-console.log("loggedInUser", loggedInUser);
 
 const spigenAxios = axios.create({
   baseURL: imsLink,

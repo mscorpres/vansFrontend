@@ -289,7 +289,6 @@ const EditBom = () => {
                   className="h-[15px] w-[15px] text-blue-500 hover:text-blue-700"
                   onClick={
                     () => updateRow(params)
-                    // console.log("refresh dontn smile to me", params)
                   }
                 />
               </Button>
@@ -532,7 +531,6 @@ const EditBom = () => {
       () => getAlternativeComponents(payload),
       "fetch"
     );
-    // console.log("response-", response);
     if (response.data.code == 200) {
       let arr = response.data.data.map((r: any) => {
         return {
@@ -540,7 +538,6 @@ const EditBom = () => {
           value: r.id,
         };
       });
-      // console.log("arr", arr);
       setType(arr);
     } else {
       toast({
@@ -551,7 +548,6 @@ const EditBom = () => {
   };
   const addNewAlternateComponent = async () => {
     let values = await form.validateFields();
-    // console.log("values", values);
     // return;
 
     let payload = {
@@ -607,7 +603,6 @@ const EditBom = () => {
       sku: form.getFieldValue("sku"),
     };
     const response = await execFun(() => fetchBomDocsFiles(payload), "fetch");
-    console.log("response", response);
 
     if (response.data.code == 200) {
       // toast
@@ -644,7 +639,6 @@ const EditBom = () => {
       setSheetOpenEdit(params?.id);
     }
   }, [params]);
-  // console.log("alternatemodal", alternatemodal);
   useEffect(() => {
     if (alternatemodal) {
       getdetailsOfAlternate(alternatemodal);

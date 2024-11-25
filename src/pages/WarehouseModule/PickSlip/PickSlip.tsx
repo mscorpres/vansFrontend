@@ -230,7 +230,6 @@ const PickSlip = () => {
       boxqty: finalrows.map((r) => r.qty),
     };
     dispatch(stockOut(payload)).then((res: any) => {
-      console.log("res", res);
 
       if (res.payload.code == 200) {
         toast({
@@ -359,7 +358,6 @@ const PickSlip = () => {
     setSheetOpen(false);
     setFinalRows(selectedRows);
   };
-  console.log("loading", loading);
 
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] overflow-hidden">

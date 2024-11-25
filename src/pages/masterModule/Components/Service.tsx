@@ -74,7 +74,6 @@ const Service = () => {
   const fetchServiceList = async () => {
     const response = await execFun(() => serviceList(), "fetch");
     const { data } = response;
-    console.log("response0", response);
     if (response?.data.code === 200) {
       let arr = data.data.map((r, id) => {
         return { id: id + 1, ...r };

@@ -199,7 +199,6 @@ const AddClient: React.FC<Props> = ({
   const getCountryList = async () => {
     // return;
     const response = await execFun(() => fetchCountryList(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
@@ -215,7 +214,6 @@ const AddClient: React.FC<Props> = ({
   const getStateList = async () => {
     // return;
     const response = await execFun(() => fetchState(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
@@ -229,7 +227,6 @@ const AddClient: React.FC<Props> = ({
     }
   };
   const onSubmit = async (data: CreateSalesOrderForm) => {
-    console.log("Submitted Data from CreateSalesOrder:", data); // Debugging log
     let payload = {
       name: data.name,
       gst: data.gst,
@@ -247,7 +244,6 @@ const AddClient: React.FC<Props> = ({
       website: data.website,
     };
     const response = await execFun(() => addClient(payload), "fetch");
-    console.log("response", response);
     if (response?.data?.code == 200) {
       toast({
         title: response?.data?.message?.msg,
@@ -456,7 +452,6 @@ const AddClient: React.FC<Props> = ({
                                 onChange={(value: any) =>
                                   form.setValue("state", value.value)
                                 }
-                                // onChange={(e) => console.log(e)}
                                 // value={
                                 //   data.clientDetails
                                 //     ? {

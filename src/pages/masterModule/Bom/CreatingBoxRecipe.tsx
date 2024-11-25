@@ -76,7 +76,6 @@ const CreatingBoxRecipe = () => {
 
   const fetchingsku = async (theSku: any) => {
     const response = await execFun(() => fetchProductBySku(theSku), "fetch");
-    console.log("response", response);
 
     // return;
     let { data } = response;
@@ -112,9 +111,6 @@ const CreatingBoxRecipe = () => {
     }
   };
   const createBOM = async () => {
-    // const { wise } = formData;
-    // console.log("fetchBOMList", formData);
-    // return;
     const values = await form.validateFields();
     let payload = {
       bom_subject: values.bom,
@@ -274,7 +270,6 @@ const CreatingBoxRecipe = () => {
   const handleSearch = (searchKey: string, type: any, name: string) => {
     if (searchKey) {
       let p = { search: searchKey };
-      console.log("p", p);
 
       dispatch(fetchComponentDetail(p));
     }

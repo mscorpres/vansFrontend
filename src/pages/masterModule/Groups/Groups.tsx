@@ -57,7 +57,6 @@ const Groups = () => {
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => getGroupList(), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (response.status === 200) {
       let arr = data.data.map((r, index) => {
@@ -81,12 +80,10 @@ const Groups = () => {
   const createEntry = async () => {
     const values = await form.validateFields();
     setLoading(true);
-    console.log("values", values);
     let payload = {
       group_name: values.groupName,
     };
     const response = await execFun(() => saveGroups(payload), "fetch");
-    console.log("response", response);
     const { data } = response;
     if (data.code === 200) {
       setLoading(false);

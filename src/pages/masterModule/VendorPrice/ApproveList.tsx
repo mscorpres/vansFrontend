@@ -105,7 +105,6 @@ const ApproveList: React.FC = () => {
       type: "date_wise",
     };
     const response = await execFun(() => getVendorPrice(payload), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       let arr = response.data.data.map((r: any) => {
         return {

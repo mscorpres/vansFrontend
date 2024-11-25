@@ -37,9 +37,6 @@ export const downloadFunction = (buffer: any, filename: string) => {
   const file = new Blob([new Uint8Array(buffer)], {
     type: "application/pdf",
   });
-  // const url = URL.createObjectURL(file);
-  // return url;
-  console.log(filename);
   fileDownload(file, `${filename}.pdf`);
 };
 const downloadExcel = (buffer, filename, type) => {

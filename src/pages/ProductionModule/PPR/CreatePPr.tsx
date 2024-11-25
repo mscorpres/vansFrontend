@@ -91,9 +91,7 @@ const CreatePPr = () => {
   };
   const { execFun, loading: loading1 } = useApi();
   const fetchFgOutList = async (formData: z.infer<typeof FormSchema>) => {
-    // const { date } = formData;
-    console.log("fetchBOMList", formData);
-    console.log("wise", wise);
+
     let dataString = "";
     const startDate = dateRange[0]
       .toLocaleDateString("en-GB")
@@ -106,13 +104,11 @@ const CreatePPr = () => {
       .reverse()
       .join("-");
     dataString = `${startDate}-${endDate}`;
-    console.log("dateString", dataString);
     // return;
     const response = await execFun(
       () => fetchListOfCompletedFgOut(dataString),
       "fetch"
     );
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
@@ -160,9 +156,7 @@ const CreatePPr = () => {
     []
   );
   const getProjectID = async (search) => {
-    console.log("response", search);
     const response = await execFun(() => fetchListOfProjectId(search), "fetch");
-    console.log("response", response);
   };
   const type = [
     {
@@ -245,7 +239,6 @@ const CreatePPr = () => {
   const handleSelectChange = (selectedOption) => {
     // Ensure selectedOption is not null and has a value
     if (selectedOption) {
-      console.log("selectedOption", selectedOption);
 
       form.setValue("projectId", selectedOption.value);
       getProjectID(selectedOption.value);

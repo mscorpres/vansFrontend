@@ -19,14 +19,11 @@ export const createNewSUomEntry = async (payload: any) => {
 };
 export const listOfUom = async () => {
   const response = await spigenAxios.get("/uom");
-  //console.log("here in api");
 
   return response;
 };
 export const listOfsUom = async () => {
   const response = await spigenAxios.get("/suom");
-  //console.log("here in api");
-
   return response;
 };
 export const componentList = async () => {
@@ -60,29 +57,24 @@ export const hsnList = async (search: any) => {
   const response = await spigenAxios.post("backend/searchHsn", {
     searchTerm: search,
   });
-  //console.log("here in api", response);
   return response;
 };
 export const insertProduct = async (payload: any) => {
   const response = await spigenAxios.post("/products/insertProduct", payload);
-  //console.log("here in api", response);
   return response;
 };
 export const servicesaddition = async (payload: any) => {
   const response = await spigenAxios.post("/component/addServices", payload);
-  //console.log("here in api", response);
   return response;
 };
 export const componentMapList = async () => {
   const response = await spigenAxios.get("/component/fetchVendorMapComponents");
-  //console.log("here in api", response);
   return response;
 };
 export const componentMapListCustomers = async () => {
   const response = await spigenAxios.get(
     "/component/fetchCustomerMapComponents"
   );
-  //console.log("here in api", response);
   return response;
 };
 export const saveMapCustomer = async (payload: any) => {
@@ -90,84 +82,71 @@ export const saveMapCustomer = async (payload: any) => {
     "/component/saveMapCustomer",
     payload
   );
-  //console.log("here in api", response);
   return response;
 };
 export const getComponentsByNameAndNo = async (search: any) => {
   const response = await spigenAxios.post("/backend/getComponentByNameAndNo", {
     search: search,
   });
-  //console.log("here in api", response);
   return response;
 };
 export const getProductsByNameAndNo = async (search: any) => {
   const response = await spigenAxios.post("/backend/getProductByNameAndNo", {
     search: search,
   });
-  //console.log("here in api", response);
   return response;
 };
 export const getComponentsList = async (search: any) => {
   const response = await spigenAxios.post("/rate/getcomponents", {
     search: search,
   });
-  //console.log("here in api", response);
   return response;
 };
 
 export const getProductList = async () => {
   const response = await spigenAxios.get("/products");
-  //console.log("here in api", response);
   return response;
 };
 export const getProductDetails = async (val: any) => {
   const response = await spigenAxios.post("/products/getProductForUpdate", {
     product_key: val,
   });
-  //console.log("here in api", response);
   return response;
 };
 export const updateProductDetails = async (val: any) => {
   const response = await spigenAxios.post("/products/updateProduct", val);
-  //console.log("here in api", response);
   return response;
 };
 export const getCustomerList = async (val: any) => {
   const response = await spigenAxios.post("/others/customerList", {
     search: val,
   });
-  //console.log("here in api", response);
   return response;
 };
 export const getGroupList = async () => {
   const response = await spigenAxios.get("/groups/allGroups");
-  //console.log("here in api", response);
   return response;
 };
 export const createNewGroup = async (values: any) => {
   const response = await spigenAxios.post("/groups/insert", {
     group_name: values.group,
   });
-  //console.log("here in api", response);
   return response;
 };
 export const fetchLocationList = async () => {
   const response = await spigenAxios.post("/location/fetchLocationTree");
-  //console.log("here in api", response);
   return response;
 };
 export const fetchStateList = async (val: any) => {
   const response = await spigenAxios.post("backend/stateList", {
     search: val,
   });
-  //console.log("here in api", response);
   return response;
 };
 export const fetchBillingAddess = async () => {
   const response = await spigenAxios.get("/billingAddress/getAll", {
     params: { _: "1718169626779" },
   });
-  //console.log("here in api", response);
   return response;
 };
 
@@ -183,9 +162,6 @@ export const fetchBomTypeWise = async (wise: any) => {
   const response = await spigenAxios.post("/bom/fetchBOMtypeWise", {
     wise: wise,
   });
-  //console.log("here in api", response);
-  //console.log("here in api", response);
-  //console.log("here in aupdateComponentpi", response);
   return response;
 };
 export const fetchPartCodeDetails = async (thepartCode: any) => {
@@ -205,14 +181,12 @@ export const fetchProductBySku = async (wise: any) => {
 
 export const fetchMapComponent = async (search: any) => {
   const response = await spigenAxios.get(`bom/fetchMapComponent/${search}`);
-  //console.log("here in api", response);
   return response;
 };
 export const fetchProductInBom = async (search: any) => {
   const response = await spigenAxios.post(`/bom/fetchProductInBom`, {
     subject_id: search,
   });
-  //console.log("here in api", response);
   return response;
 };
 export const updateselectedBomComponent = async (payload: any) => {
@@ -253,22 +227,18 @@ export const uploadProductImg = async (formData: any) => {
 };
 export const fetchCountryList = async () => {
   const response = await spigenAxios.get("/others/countries");
-  //console.log("here in api", response);
   return response;
 };
 export const fetchState = async () => {
   const response = await spigenAxios.get("/others/states");
-  //console.log("here in api", response);
   return response;
 };
 export const createNewClientEntry = async (obj: any) => {
   const response = await spigenAxios.post("/client/createclient", obj);
-  //console.log("here in api", response);
   return response;
 };
 export const viewListClientEntry = async (obj: any) => {
   const response = await spigenAxios.get("client/viewclients", obj);
-  //console.log("here in api", response);
   return response;
 };
 export const getParentLocationOptions = async (search: any) => {

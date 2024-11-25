@@ -490,7 +490,6 @@ const MasterCustomerPage: React.FC = () => {
       form.setFieldValue("shipAddress2", billAddress2);
     }
   }, [samebilling]);
-  console.log("herer");
 
   return (
     <Wrapper>
@@ -564,7 +563,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("billcountry", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -598,7 +596,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("billstate", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -785,7 +782,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("shipcountry", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -819,7 +815,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("shipState", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -1023,7 +1018,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("billcountry", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -1057,7 +1051,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("billstate", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -1217,7 +1210,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("shipcountry", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -1242,7 +1234,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("shipState", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {

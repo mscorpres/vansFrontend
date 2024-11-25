@@ -46,7 +46,6 @@ const PendingStock = () => {
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     dispatch(pendingPhysical()).then((r) => {
-      console.log("res", r);
 
       if (r.payload.code == 200) {
         let arr = r.payload.data.map((r, index) => {
@@ -69,13 +68,11 @@ const PendingStock = () => {
     });
   };
   const rejectItem = async (e) => {
-    console.log("e", e);
     // return;
     let payload = {
       data: e.data.ID,
     };
     dispatch(rejectStockItem(payload)).then((res) => {
-      console.log("res", res);
       if (res.payload.code == 200) {
         toast({
           title: res.payload.message,
@@ -92,13 +89,11 @@ const PendingStock = () => {
     });
   };
   const aproveItem = async (e) => {
-    console.log("e", e);
     // return;
     let payload = {
       data: e.data.ID,
     };
     dispatch(approveStockItem(payload)).then((res) => {
-      console.log("res", res);
       if (res.payload.code == 200) {
         toast({
           title: res.payload.message,

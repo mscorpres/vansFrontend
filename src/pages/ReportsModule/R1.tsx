@@ -51,12 +51,10 @@ const R1 = () => {
   
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let { date } = formData;
     // if (date) {
 
     let dataString = exportDatepace(formData?.date);
-    console.log("dataString", dataString);
 
     socket.emit("stockPartBoxWise", {
       reqFor: "downloade_trans_out",

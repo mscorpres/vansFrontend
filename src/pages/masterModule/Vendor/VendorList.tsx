@@ -229,7 +229,6 @@ const VendorList = () => {
     // setLoading(true);
 
     const response = await execFun(() => vendorGetAllBranchList(id), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       const { data } = response;
       let arr = data.data.final;
@@ -266,7 +265,6 @@ const VendorList = () => {
         addressCode: r.address_code,
       };
 
-      console.log("a", a);
 
       form.setValue("label", a.label);
       form.setValue("mobile", a.mobile);
@@ -302,7 +300,6 @@ const VendorList = () => {
       () => vendorUpdateSelectedBranch(p),
       "fetch"
     );
-    console.log("response", response);
     if (response.data.code == 200) {
       toast({
         title: response.data.message,
@@ -319,7 +316,6 @@ const VendorList = () => {
     }
   };
   const updateVendor = async (data) => {
-    console.log("Submitted Data from s:", data);
 
     let p = {
       cinno: data?.cin,
@@ -329,7 +325,6 @@ const VendorList = () => {
     };
 
     const response = await execFun(() => vendorUpdateSave(p), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       toast({
         title: response.data.message,
@@ -345,7 +340,6 @@ const VendorList = () => {
     }
   };
   const createNewBranch = async (data) => {
-    console.log("Submitted Data from s:", data);
 
     let p = {
       vendor: {
@@ -365,7 +359,6 @@ const VendorList = () => {
     };
 
     const response = await execFun(() => addVendorBranch(p), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       toast({
         title: response.data.message,
@@ -381,7 +374,6 @@ const VendorList = () => {
     }
   };
   const addVendor = async (data) => {
-    console.log("Submitted Data from s:", data);
 
     let p = {
       vendor: {
@@ -402,7 +394,6 @@ const VendorList = () => {
       },
     };
     const response = await execFun(() => vendoradd(p), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       toast({
         title: response.data.message,
@@ -421,7 +412,6 @@ const VendorList = () => {
     // setLoading(true);
 
     const response = await execFun(() => vendorUpdatedetails(id), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       const { data } = response;
       let arr = data.data[0];
@@ -432,7 +422,6 @@ const VendorList = () => {
         cin: arr.vendor_cin,
         vendorCode: arr.vendor_code,
       };
-      console.log("obj", obj);
 
       form.setValue("vendorName", obj.vendorName);
       form.setValue("pan", obj.pan);
@@ -460,7 +449,6 @@ const VendorList = () => {
     getDetailsFromBranchList(thebranch);
   }, [thebranch]);
   useEffect(() => {
-    console.log("sheetOpenBranch", sheetOpenEdit.data?.vendor_code);
 
     getupdateDetails(sheetOpenEdit.data?.vendor_code);
   }, [sheetOpenEdit]);

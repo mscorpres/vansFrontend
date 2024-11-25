@@ -215,7 +215,6 @@ const ProductActionCellRender = (params: any) => {
       });
     }
   
-    console.log(value);
   }
   
   return (

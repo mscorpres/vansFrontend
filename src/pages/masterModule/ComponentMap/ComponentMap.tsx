@@ -50,7 +50,6 @@ const ComponentMap = () => {
   };
   const createEntry = async () => {
     const values = await form.validateFields();
-    console.log("values", values);
     let payload = {
       comp: values.partName.value,
       vendor: values.vendorName.value,

@@ -43,7 +43,6 @@ const R5 = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let { date } = formData;
 
     let dataString = exportDateRangespace(date);
