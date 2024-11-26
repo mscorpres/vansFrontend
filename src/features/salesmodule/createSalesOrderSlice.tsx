@@ -259,11 +259,11 @@ export const fetchComponentDetail = createAsyncThunk<
   CustomerListDetail[],
   { search: string }
 >("client/fetchComponentDetail", async ({ search }) => {
-  const response = await spigenAxios.post<[]>(
-    `/backend/getComponentByNameAndNo`,
-    {
-      search: search,
-    }
+  const response = await spigenAxios.get<[]>(
+    `/backend/getComponentByNameAndNo/${search}`
+    // {
+    //   search: search,
+    // }
   );
 
   if (response.status === 200) {
