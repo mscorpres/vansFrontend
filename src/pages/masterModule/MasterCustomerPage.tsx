@@ -1338,25 +1338,25 @@ const MasterCustomerPage: React.FC = () => {
                     </Card>
                   </div>
                 </Form>
-                <div className={modelFixFooterStyle}>
-                  <Button
-                    variant={"outline"}
-                    className="shadow-slate-300 mr-[10px] border-slate-400 border"
-                    onClick={(e: any) => {
-                      setOpen(true);
-                      e.preventDefault();
-                    }}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="bg-cyan-700 hover:bg-cyan-600"
-                    onClick={() => updateSelectedBranch()}
-                  >
-                    Update
-                  </Button>
-                </div>
+              </div>
+              <div className={modelFixFooterStyle}>
+                <Button
+                  variant={"outline"}
+                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                  onClick={(e: any) => {
+                    setOpen(true);
+                    e.preventDefault();
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-cyan-700 hover:bg-cyan-600"
+                  onClick={() => updateSelectedBranch()}
+                >
+                  Update
+                </Button>
               </div>
             </div>
           </SheetContent>

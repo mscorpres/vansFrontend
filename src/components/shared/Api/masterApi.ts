@@ -192,13 +192,13 @@ export const fetchMapComponent = async (search: any) => {
   return response;
 };
 export const fetchProductInBom = async (search: any) => {
-  const response = await spigenAxios.post(`/bom/fetchProductInBom`, {
-    subject_id: search,
-  });
+  const response = await spigenAxios.get(
+    `/bom/fetchProductInBom/${search}`
+  );
   return response;
 };
 export const updateselectedBomComponent = async (payload: any) => {
-  const response = await spigenAxios.post(`/bom/updateBomComponent`, payload);
+  const response = await spigenAxios.put(`/bom/updateBomComponent`, payload);
   return response;
 };
 export const fetchBomDocsFiles = async (payload: any) => {
@@ -252,11 +252,10 @@ export const viewListClientEntry = async (obj: any) => {
   return response;
 };
 export const getParentLocationOptions = async (search: any) => {
-  const response = await spigenAxios.get("/location/fetchLocation",
-  //    {
-  //   searchTerm: search,
-  // }
-);
+  const response = await spigenAxios.get(
+    "/location/fetchLocation"
+  
+  );
   return response;
 };
 export const insertLoations = async (payload: any) => {
@@ -270,21 +269,24 @@ export const fetchAllVendorList = async (search: any) => {
   return response;
 };
 export const fetchAllBranchList = async (code: any) => {
-  const response = await spigenAxios.post("vendor/getAllBranchList", {
-    vendor_id: code,
-  });
+  const response = await spigenAxios.get(
+    `vendor/getAllBranchList/${code}`
+   
+  );
   return response;
 };
 export const fetchAllBranchDetails = async (code: any) => {
-  const response = await spigenAxios.post("/vendor/getBranchDetails", {
-    addresscode: code,
-  });
+  const response = await spigenAxios.get(
+    `/vendor/getBranchDetails/${code}`
+   
+  );
   return response;
 };
 export const fetchAllDetailsOfVendor = async (code: any) => {
-  const response = await spigenAxios.post("/vendor/getVendor", {
-    vendor_id: code,
-  });
+  const response = await spigenAxios.get(
+    `/vendor/getVendor/${code}`
+    
+  );
   return response;
 };
 export const fetchAllListOfVendor = async () => {
@@ -427,7 +429,7 @@ export const approveVendorPrice = async (payload: any) => {
   return response;
 };
 export const updateBranchOfCustomer = async (payload: any) => {
-  const response = await spigenAxios.post(
+  const response = await spigenAxios.put(
     `/client/updateBranch
 `,
     payload
@@ -439,7 +441,12 @@ export const createVendorPrice = async (payload: any) => {
   return response;
 };
 export const getVendorPrice = async (payload: any) => {
-  const response = await spigenAxios.post("/price/getVendorPrice", payload);
+ 
+
+  const response = await spigenAxios.get(
+    `/price/getVendorPrice?type=${payload.type}&data=${payload.data}`
+    // payload
+  );
   return response;
 };
 
@@ -487,32 +494,33 @@ export const saveGroups = async (payload: any) => {
   return response;
 };
 export const vendorGetAllBranchList = async (payload: any) => {
-  const response = await spigenAxios.post("/vendor/getAllBranchList", {
-    vendor_id: payload,
-  });
+  const response = await spigenAxios.get(
+    `vendor/getAllBranchList/${payload}`
+   
+  );
   return response;
 };
 export const vendorGetAllDetailsFromSelectedBranch = async (payload: any) => {
-  const response = await spigenAxios.post("/vendor/getBranchDetails", {
-    addresscode: payload,
-  });
+  const response = await spigenAxios.get(
+    `/vendor/getBranchDetails/${payload}`
+   
+  );
   return response;
 };
 export const vendorUpdateSelectedBranch = async (payload: any) => {
-  const response = await spigenAxios.post(
+  const response = await spigenAxios.put(
     "/vendor/updateBranchDetails",
     payload
   );
   return response;
 };
 export const vendorUpdatedetails = async (payload: any) => {
-  const response = await spigenAxios.post("/vendor/getVendor", {
-    vendor_id: payload,
-  });
+  const response = await spigenAxios.get(`/vendor/getVendor/${payload}`);
+  
   return response;
 };
 export const vendorUpdateSave = async (payload: any) => {
-  const response = await spigenAxios.post("/vendor/updateVendor", payload);
+  const response = await spigenAxios.put("/vendor/updateVendor", payload);
   return response;
 };
 export const addVendorBranch = async (payload: any) => {
@@ -547,11 +555,9 @@ export const mapHSN = async (payload: any) => {
   return response;
 };
 export const fetchEdditBomStage2 = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/bom/fetchComponentsInBomForUpdate",
-    {
-      subject_id: payload,
-    }
+  const response = await spigenAxios.get(
+    `/bom/fetchComponentsInBomForUpdate/${payload}`
+    
   );
   return response;
 };
@@ -565,16 +571,18 @@ export const addNewAltComponent = async (payload: any) => {
   return response;
 };
 export const getAllAlternativeComponents = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/bom/getAllAlternativeComponents",
-    payload
+
+  const response = await spigenAxios.get(
+    `/bom/getAllAlternativeComponents/${payload.parent_component}`
+ 
   );
   return response;
 };
 export const getAlternativeComponents = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/bom/getAlternativeComponents",
-    payload
+
+  const response = await spigenAxios.get(
+    `/bom/getAlternativeComponents/${payload.subject}/${payload.current_component}`,
+   
   );
   return response;
 };

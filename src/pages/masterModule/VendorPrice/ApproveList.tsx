@@ -10,7 +10,7 @@ import {
   approveVendorPrice,
   getVendorPrice,
 } from "@/components/shared/Api/masterApi";
-import { exportDateRangespace } from "@/components/shared/Options";
+import { exportDateRangespaceComma } from "@/components/shared/Options";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
@@ -102,7 +102,7 @@ const ApproveList: React.FC = () => {
     // setLoading(true);
     const values = await form.validateFields();
     let payload = {
-      data: exportDateRangespace(values.data),
+      data: exportDateRangespaceComma(values.data),
       type: "date_wise",
     };
     const response = await execFun(() => getVendorPrice(payload), "fetch");

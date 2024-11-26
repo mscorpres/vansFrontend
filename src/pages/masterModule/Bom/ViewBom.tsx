@@ -40,7 +40,7 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
     }
   };
   useEffect(() => {
-    if (openView) {
+    if (openView.length) {
       getData(openView);
     }
   }, [openView]);
