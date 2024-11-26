@@ -172,7 +172,6 @@ const AddPO: React.FC<Props> = ({
   const handleSubmit = async () => {
     let arr = rowData;
 
-
     let payload = {
       vendorname: formVal.vendorName.value,
       vendortype: "v01",
@@ -726,7 +725,7 @@ const AddPO: React.FC<Props> = ({
               animateRows={true}
               gridOptions={commonAgGridConfig}
               suppressRowClickSelection={false}
-              loadingOverlayComponent={OverlayNoRowsTemplate}
+              overlayNoRowsTemplate={OverlayNoRowsTemplate}
               suppressCellFocus={true}
             />
           </div>

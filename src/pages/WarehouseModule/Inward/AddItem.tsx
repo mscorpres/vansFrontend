@@ -37,7 +37,6 @@ import {
 import {
   fetchCurrency,
   rejectPo,
-  updatePo,
 } from "@/features/client/clientSlice";
 import { minTransaction } from "@/features/client/storeSlice";
 import {
@@ -50,6 +49,7 @@ import { IoCloudUpload } from "react-icons/io5";
 import { useToast } from "@/components/ui/use-toast";
 import { spigenAxios } from "@/axiosIntercepter";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
 // }
@@ -624,6 +624,7 @@ const AddPO: React.FC<Props> = ({
               gridOptions={commonAgGridConfig}
               suppressRowClickSelection={false}
               suppressCellFocus={true}
+              overlayNoRowsTemplate={OverlayNoRowsTemplate}
             />
           </div>
         </div>

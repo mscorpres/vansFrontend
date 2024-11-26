@@ -12,7 +12,6 @@ import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
-import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
 import { fetchManagePOList, printPO } from "@/features/client/clientSlice";
 import { modelFixHeaderStyle } from "@/constants/themeContants";
 import {
@@ -301,7 +300,7 @@ const ManagePoPage: React.FC = () => {
         <div className="p-[10px]"></div>
         <Form
           form={form}
-          className="space-y-6 overflow-hidden p-[10px] h-[370px]  "
+          className="space-y-6 overflow-hidden p-[10px] h-[470px]  "
         >
           {/* <form
             onSubmit={form.handleSubmit(fetchManageList)}
@@ -345,7 +344,7 @@ const ManagePoPage: React.FC = () => {
                 transform={transformOptionData}
                 onChange={(e) => form.setFieldValue("data", e)}
                 // value={selectedCustomer}
-                fetchOptionWith="payload"
+                fetchOptionWith="query2"
               />
             </Form.Item>
           ) : (
@@ -380,7 +379,7 @@ const ManagePoPage: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
@@ -391,8 +390,8 @@ const ManagePoPage: React.FC = () => {
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
-          loadingOverlayComponent={OverlayNoRowsTemplate}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <ViewCompoents

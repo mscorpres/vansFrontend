@@ -232,7 +232,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
             pagination={true}
             paginationPageSize={10}
             paginationAutoPageSize={true}
-            loadingOverlayComponent={OverlayNoRowsTemplate}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
             suppressCellFocus={true}
           />
         </div>

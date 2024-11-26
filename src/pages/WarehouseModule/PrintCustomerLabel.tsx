@@ -1,23 +1,15 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form,  } from "antd";
 import { Filter } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
-import Select from "react-select";
+import { useEffect, useState } from "react";
+
 import styled from "styled-components";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
+
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
-import { AgGridReact } from "ag-grid-react";
-import { useDispatch, useSelector } from "react-redux";
-import { cutomerLable, getminBox, qrPrint } from "@/features/client/storeSlice";
+import { useDispatch,  } from "react-redux";
+import { cutomerLable,  } from "@/features/client/storeSlice";
 import { spigenAxios } from "@/axiosIntercepter";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
-import { print } from "./../../assets/print.jpeg";
 import Print from "@/assets/Print.jpg";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 function PrintMinLabel() {

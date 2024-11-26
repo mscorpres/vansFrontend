@@ -1,23 +1,12 @@
 import React, { useMemo } from "react";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
 import { transformOptionData } from "@/helper/transform";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
-import {
-  modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
 import {
@@ -26,31 +15,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Edit2, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Form, Space, Typography } from "antd";
-import { Input } from "@/components/ui/input";
-import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
+import {  Form, Typography } from "antd";
 import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
-// import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
 import {
-  componentList,
-  componentMapList,
-  getProductList,
-  insertProduct,
-  listOfUom,
-  serviceList,
-  servicesaddition,
+  insertProduct
 } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import EditProduct from "../masterModule/Product/EditProduct";
-import { listOfUoms } from "@/features/client/clientSlice";
 import {
   getComponentsFromTransaction,
   getMarkupID,
@@ -59,6 +34,7 @@ import {
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -441,6 +417,7 @@ const BoxMarkup = () => {
           suppressRowClickSelection={false}
           rowSelection="multiple"
           checkboxSelection={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
         />
       </div>{" "}

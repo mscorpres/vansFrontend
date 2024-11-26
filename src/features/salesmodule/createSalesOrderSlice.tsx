@@ -128,9 +128,8 @@ export const fetchBillingAddress = createAsyncThunk<
   { cost_center: string }
 >("client/fetchBillingAddress", async (cost_center) => {
   try {
-    const response = await spigenAxios.post<BillingAddressResponse>(
-      "/backend/billingAddress",
-      { cost_center: cost_center }
+    const response = await spigenAxios.get<BillingAddressResponse>(
+      `/backend/billingAddress/${cost_center}`
     );
     if (response.data.code !== 200) {
       throw new Error("Failed to fetch billing address");

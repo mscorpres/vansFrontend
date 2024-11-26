@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import { DatePicker, Divider, Form, Input, Typography } from "antd";
 import useApi from "@/hooks/useApi";
-import { fetchR4 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -31,6 +30,7 @@ import {
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -226,6 +226,7 @@ const RejectedStock = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       <Sheet open={sheetOpenView} onOpenChange={setSheetOpenView}>

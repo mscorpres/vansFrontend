@@ -1,4 +1,3 @@
-import React from "react";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
@@ -6,25 +5,17 @@ import { Button } from "@/components/ui/button";
 
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import { transformOptionData, transformOptionData2 } from "@/helper/transform";
-import { Check, Edit2, Filter, Plus, Trash2 } from "lucide-react";
+import { Filter, Plus } from "lucide-react";
 import styled from "styled-components";
-import { Checkbox, DatePicker, Form, Space, Typography } from "antd";
-import {
-  fetchComponentDetails,
-  searchingHsn,
-} from "@/features/client/clientSlice";
+import { Form, Typography } from "antd";
 import { toast } from "@/components/ui/use-toast";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 
 import useApi from "@/hooks/useApi";
 import {
-  componentList,
   fetchHSN,
-  mapHSN,
 } from "@/components/shared/Api/masterApi";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { FaFileExcel } from "react-icons/fa";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
@@ -35,7 +26,6 @@ import {
   stockOut,
 } from "@/features/client/storeSlice";
 import {
-  modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
 import {
@@ -45,6 +35,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -448,6 +439,7 @@ const PickSlip = () => {
             suppressRowClickSelection={false}
             rowSelection="multiple"
             checkboxSelection={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button

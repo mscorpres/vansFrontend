@@ -192,9 +192,7 @@ export const fetchMapComponent = async (search: any) => {
   return response;
 };
 export const fetchProductInBom = async (search: any) => {
-  const response = await spigenAxios.get(
-    `/bom/fetchProductInBom/${search}`
-  );
+  const response = await spigenAxios.get(`/bom/fetchProductInBom/${search}`);
   return response;
 };
 export const updateselectedBomComponent = async (payload: any) => {
@@ -252,10 +250,7 @@ export const viewListClientEntry = async (obj: any) => {
   return response;
 };
 export const getParentLocationOptions = async (search: any) => {
-  const response = await spigenAxios.get(
-    "/location/fetchLocation"
-  
-  );
+  const response = await spigenAxios.get("/location/fetchLocation");
   return response;
 };
 export const insertLoations = async (payload: any) => {
@@ -269,24 +264,15 @@ export const fetchAllVendorList = async (search: any) => {
   return response;
 };
 export const fetchAllBranchList = async (code: any) => {
-  const response = await spigenAxios.get(
-    `vendor/getAllBranchList/${code}`
-   
-  );
+  const response = await spigenAxios.get(`vendor/getAllBranchList/${code}`);
   return response;
 };
 export const fetchAllBranchDetails = async (code: any) => {
-  const response = await spigenAxios.get(
-    `/vendor/getBranchDetails/${code}`
-   
-  );
+  const response = await spigenAxios.get(`/vendor/getBranchDetails/${code}`);
   return response;
 };
 export const fetchAllDetailsOfVendor = async (code: any) => {
-  const response = await spigenAxios.get(
-    `/vendor/getVendor/${code}`
-    
-  );
+  const response = await spigenAxios.get(`/vendor/getVendor/${code}`);
   return response;
 };
 export const fetchAllListOfVendor = async () => {
@@ -441,8 +427,6 @@ export const createVendorPrice = async (payload: any) => {
   return response;
 };
 export const getVendorPrice = async (payload: any) => {
- 
-
   const response = await spigenAxios.get(
     `/price/getVendorPrice?type=${payload.type}&data=${payload.data}`
     // payload
@@ -494,17 +478,11 @@ export const saveGroups = async (payload: any) => {
   return response;
 };
 export const vendorGetAllBranchList = async (payload: any) => {
-  const response = await spigenAxios.get(
-    `vendor/getAllBranchList/${payload}`
-   
-  );
+  const response = await spigenAxios.get(`vendor/getAllBranchList/${payload}`);
   return response;
 };
 export const vendorGetAllDetailsFromSelectedBranch = async (payload: any) => {
-  const response = await spigenAxios.get(
-    `/vendor/getBranchDetails/${payload}`
-   
-  );
+  const response = await spigenAxios.get(`/vendor/getBranchDetails/${payload}`);
   return response;
 };
 export const vendorUpdateSelectedBranch = async (payload: any) => {
@@ -516,7 +494,7 @@ export const vendorUpdateSelectedBranch = async (payload: any) => {
 };
 export const vendorUpdatedetails = async (payload: any) => {
   const response = await spigenAxios.get(`/vendor/getVendor/${payload}`);
-  
+
   return response;
 };
 export const vendorUpdateSave = async (payload: any) => {
@@ -557,7 +535,6 @@ export const mapHSN = async (payload: any) => {
 export const fetchEdditBomStage2 = async (payload: any) => {
   const response = await spigenAxios.get(
     `/bom/fetchComponentsInBomForUpdate/${payload}`
-    
   );
   return response;
 };
@@ -571,18 +548,14 @@ export const addNewAltComponent = async (payload: any) => {
   return response;
 };
 export const getAllAlternativeComponents = async (payload: any) => {
-
   const response = await spigenAxios.get(
     `/bom/getAllAlternativeComponents/${payload.parent_component}`
- 
   );
   return response;
 };
 export const getAlternativeComponents = async (payload: any) => {
-
   const response = await spigenAxios.get(
-    `/bom/getAlternativeComponents/${payload.subject}/${payload.current_component}`,
-   
+    `/bom/getAlternativeComponents/${payload.subject}/${payload.current_component}`
   );
   return response;
 };
@@ -599,11 +572,9 @@ export const fetchbomComponents = async (payload: any) => {
   return response;
 };
 export const fetchViewComponentsOfManage = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/purchaseOrder/fetchComponentList4PO",
-    {
-      poid: payload,
-    }
+  const response = await spigenAxios.get(
+    `/purchaseOrder/fetchComponentList4PO?poid=${payload}`,
+
   );
   return response;
 };

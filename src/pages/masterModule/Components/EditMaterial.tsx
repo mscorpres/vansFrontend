@@ -123,10 +123,10 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   };
   const submitTheForm = async () => {
     const values = await editForm.validateFields();
-    // console.log("values", values);
 
-    // if (values) {
-    let payload = {
+    let payload;
+    // if (values && values.taxTypes.value != "") {
+    payload = {
       componentKey: sheetOpenEdit?.component_key,
       componentname: values.componentName,
       uom: values.uom.value,
@@ -166,12 +166,13 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     // return;
     // return;
     setLoading(true);
-    const response = await spigenAxios.put(
-      "/component/updateComponent",
-      payload
+    const response = await execFun(
+      () => updateComponentofMaterial(payload),
+      "fetch"
     );
+   
 
-    if (response?.data.code == 200) {
+    if (response?.data?.code == 200) {
       toast({
         title: response.data.message, // Assuming 'message' is in the response
         className: "bg-green-700 text-center text-white",
@@ -180,9 +181,9 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       setLoading(false);
       setSheetOpenEdit(false);
     } else {
-      setSheetOpenEdit(false);
+      // setSheetOpenEdit(false);
       toast({
-        title: "Failed to update component", // You can show an error message here if the code is not 200
+        title: response?.message, // You can show an error message here if the code is not 200
         className: "bg-red-700 text-center text-white",
       });
     }

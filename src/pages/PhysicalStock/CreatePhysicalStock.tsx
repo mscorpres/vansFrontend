@@ -1,4 +1,3 @@
-import React from "react";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import { Plus } from "lucide-react";
 import styled from "styled-components";
-import { Form, Space } from "antd";
+import { Form } from "antd";
 import { toast } from "@/components/ui/use-toast";
 
 import useApi from "@/hooks/useApi";
@@ -18,6 +17,7 @@ import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBox, insertPhysical } from "@/features/client/storeSlice";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const CreatePhysicalStock = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -293,6 +293,7 @@ const CreatePhysicalStock = () => {
             rowSelection="multiple"
             checkboxSelection={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button

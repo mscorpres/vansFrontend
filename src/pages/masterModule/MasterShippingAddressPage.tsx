@@ -45,6 +45,7 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
 import { fetchShippingAddress } from "@/components/shared/Api/masterApi";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const schema = z.object({
   label: z.string().min(2, {
@@ -417,6 +418,7 @@ const MasterShippingAddressPage: React.FC = () => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         </div>
       </div>

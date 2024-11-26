@@ -3,12 +3,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { colourOptions } from "@/data";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { Badge } from "@/components/ui/badge";
 import styled from "styled-components";
-import { Link, useParams } from "react-router-dom";
-import FullPageLoading from "@/components/shared/FullPageLoading";
+import {  useParams } from "react-router-dom";
 import Select from "react-select";
 import { transformCurrencyData, transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { Button, Form } from "antd";
@@ -34,7 +31,6 @@ import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { DatePicker, Divider, Dropdown, Menu, Space } from "antd";
 import useApi from "@/hooks/useApi";
 import {
@@ -274,7 +270,7 @@ const CreateInward: React.FC<Props> = ({
                       transform={transformOptionData}
                       onChange={(e) => form.setFieldValue("vendorName", e)}
                       // value={selectedCustomer}
-                      fetchOptionWith="payload"
+                      fetchOptionWith="query2"
                     />
                   </Form.Item>{" "}
                   <Form.Item

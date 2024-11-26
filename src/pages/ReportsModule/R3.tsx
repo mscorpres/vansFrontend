@@ -31,6 +31,7 @@ import {
 } from "@/helper/transform";
 import { exportDateRangespace } from "@/components/shared/Options";
 import { toast } from "@/components/ui/use-toast";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -327,6 +328,7 @@ const R3 = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

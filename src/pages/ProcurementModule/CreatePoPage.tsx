@@ -264,7 +264,7 @@ const CreatePoPage: React.FC<Props> = ({
                     transform={transformOptionData}
                     onChange={(e) => form.setFieldValue("vendorName", e)}
                     // value={selectedCustomer}
-                    fetchOptionWith="payload"
+                    fetchOptionWith="query2"
                   />
                 </Form.Item>
                 <div className="mt-[30px] grid grid-cols-2 gap-[40px]">

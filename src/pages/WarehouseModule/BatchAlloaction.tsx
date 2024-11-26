@@ -18,29 +18,22 @@ import {
 
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Form, Space } from "antd";
+import {  Form,  } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
 import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
 import {
-  componentList,
-  componentMapList,
   getProductList,
   insertProduct,
   listOfUom,
-  serviceList,
-  servicesaddition,
 } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import EditProduct from "../masterModule/Product/EditProduct";
 import { listOfUoms } from "@/features/client/clientSlice";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -291,6 +284,7 @@ const BatchAlloaction = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

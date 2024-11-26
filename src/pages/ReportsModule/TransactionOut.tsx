@@ -15,16 +15,15 @@ import {
 } from "@/components/ui/form";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker,  Space } from "antd";
+import { DatePicker, Space } from "antd";
 import Select from "react-select";
 import useApi from "@/hooks/useApi";
-import {
-  fetchListOfMINRegisterOut,
-} from "@/components/shared/Api/masterApi";
+import { fetchListOfMINRegisterOut } from "@/components/shared/Api/masterApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { exportDateRangespace } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -70,7 +69,6 @@ const TransactionOut = () => {
 
       setRowData(arr);
     } else {
-
     }
   };
   useEffect(() => {
@@ -267,6 +265,7 @@ const TransactionOut = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

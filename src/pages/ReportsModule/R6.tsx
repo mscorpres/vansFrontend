@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +27,7 @@ import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { fetchR6 } from "@/components/shared/Api/masterApi";
 import { exportDateRangespace } from "@/components/shared/Options";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -271,6 +271,7 @@ const R6 = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

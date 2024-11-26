@@ -24,6 +24,7 @@ import {
   getProductsByNameAndNo,
 } from "@/components/shared/Api/masterApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -179,6 +180,7 @@ const Q3 = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

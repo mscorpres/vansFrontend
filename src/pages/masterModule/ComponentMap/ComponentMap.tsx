@@ -29,7 +29,6 @@ import { toast } from "@/components/ui/use-toast";
 import { Filter } from "lucide-react";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
-import RejectModal from "@/components/shared/RejectModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ComponentMap = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -117,7 +116,7 @@ const ComponentMap = () => {
                 transform={transformOptionData}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
                 // value={selectedCustomer}
-                fetchOptionWith="payload"
+                fetchOptionWith="query2"
               />
             </Form.Item>
           </div>

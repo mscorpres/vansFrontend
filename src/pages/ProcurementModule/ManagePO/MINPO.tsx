@@ -371,6 +371,10 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
             vendoraddress: arr2?.vendoraddress,
           };
           setVendorDetails(obj);
+          toast({
+            title: response.payload.message,
+            className: "bg-green-600 text-white items-center",
+          });
         }
       }
     );
@@ -530,7 +534,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                   animateRows={true}
                   gridOptions={commonAgGridConfig}
                   suppressRowClickSelection={false}
-                  loadingOverlayComponent={OverlayNoRowsTemplate}
+                  overlayNoRowsTemplate={OverlayNoRowsTemplate}
                   suppressCellFocus={true}
                 />
               </div>{" "}

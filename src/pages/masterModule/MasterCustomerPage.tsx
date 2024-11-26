@@ -5,14 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import { clientFormSchema } from "@/schema/masterModule/customerSchema";
-import ClientActionCellRender from "@/config/agGrid/mastermodule/ClientActionCellRender";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { Badge } from "@/components/ui/badge";
 import { useDispatch } from "react-redux";
 import { useToast } from "@/components/ui/use-toast";
 import { AppDispatch } from "@/store";
-import { createClient } from "@/features/client/clientSlice";
 import styled from "styled-components";
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -42,9 +38,9 @@ import {
 } from "@/components/ui/sheet";
 import { Dropdown, Form, Menu, Switch } from "antd";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import CreateBom from "./Bom/CreateBom";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import CustomTooltip from "@/components/shared/CustomTooltip";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const MasterCustomerPage: React.FC = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [addBranch, setAddBranch] = useState(false);
@@ -1372,6 +1368,7 @@ const MasterCustomerPage: React.FC = () => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         ) : (
           <AgGridReact
@@ -1383,6 +1380,7 @@ const MasterCustomerPage: React.FC = () => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         )}
       </div>

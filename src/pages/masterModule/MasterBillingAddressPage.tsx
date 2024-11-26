@@ -43,6 +43,7 @@ import { fetchBillingAddess } from "@/components/shared/Api/masterApi";
 import { AgGridReact } from "ag-grid-react";
 import useApi from "@/hooks/useApi";
 import { RowData } from "@/data";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const schema = z.object({
   label: z.string().min(2, {
     message: "Label is required",
@@ -462,6 +463,7 @@ const MasterBillingAddressPage: React.FC = () => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         </div>
       </div>

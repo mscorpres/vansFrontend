@@ -1,4 +1,3 @@
-import React from "react";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { fetchTransferLoc, settleTransfer } from "@/features/client/storeSlice";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const TransferBox = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -339,6 +339,7 @@ const TransferBox = () => {
             suppressRowClickSelection={false}
             rowSelection="multiple"
             checkboxSelection={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button

@@ -122,11 +122,9 @@ export const fetchShippingAddressDetails = createAsyncThunk<
   { shipping_code?: string }
 >("/backend/shippingAddress", async ({ shipping_code }) => {
   try {
-    const response = await spigenAxios.post<shippingAddressPayload>(
-      "/backend/shippingAddress",
-      {
-        shipping_code: shipping_code,
-      }
+    const response = await spigenAxios.get<shippingAddressPayload>(
+      `/backend/shippingAddress/${shipping_code}`
+ 
     );
 
     return response.data.data;
@@ -163,11 +161,9 @@ export const fetchBillingListDetails = createAsyncThunk<
   { billing_code?: string }
 >("/backend/billingAddress", async ({ billing_code }) => {
   try {
-    const response = await spigenAxios.post<shippingAddressPayload>(
-      "/backend/billingAddress",
-      {
-        billing_code: billing_code,
-      }
+    const response = await spigenAxios.get<shippingAddressPayload>(
+      `/backend/billingAddress/${billing_code}`
+   
     );
 
     return response.data.data;
@@ -346,9 +342,8 @@ export const fetchManagePOVeiwComponentList = createAsyncThunk<
   { poid: string }
 >("/purchaseOrder/fetchComponentList4PO", async ({ poid }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/purchaseOrder/fetchComponentList4PO",
-      { poid: poid }
+    const response = await spigenAxios.get<uomPayload>(
+      `/purchaseOrder/fetchComponentList4PO?poid=${payload}`
     );
 
     return response.data.response.data;
@@ -381,9 +376,8 @@ export const fetchDataPOforMIN = createAsyncThunk<uomPayload, { poid: string }>(
   "/purchaseOrder/fetchData4MIN",
   async ({ poid }) => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
-        "/purchaseOrder/fetchData4MIN",
-        { pono: poid }
+      const response = await spigenAxios.get<uomPayload>(
+        `/purchaseOrder/fetchData4MIN/?pono=${poid}`
       );
 
       return response.data;
@@ -453,12 +447,9 @@ export const fetchCompletedPo = createAsyncThunk<
   { data: string; wise: string }
 >("/purchaseOrder/fetchCompletePO", async ({ data, wise }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/purchaseOrder/fetchCompletePO",
-      {
-        data: data,
-        wise: wise,
-      }
+    const response = await spigenAxios.get<uomPayload>(
+      `purchaseOrder/fetchCompletePO?wise=${wise}&data=${data}`
+    
     );
 
     return response.data;
@@ -475,12 +466,9 @@ export const fetchneededApprovalPO = createAsyncThunk<
   { data: string; wise: string }
 >("purchaseOrder/fetchneededApprovalPO", async ({ data, wise }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
-      "purchaseOrder/fetchneededApprovalPO",
-      {
-        data: data,
-        wise: wise,
-      }
+    const response = await spigenAxios.get<uomPayload>(
+      `purchaseOrder/fetchneededApprovalPO?wise=${wise}&data=${data}`
+   
     );
 
     return response.data;
@@ -518,7 +506,7 @@ export const updatePo = createAsyncThunk<uomPayload, payload>(
   "/purchaseOrder/updateData4Update",
   async (payload) => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
+      const response = await spigenAxios.put<uomPayload>(
         "/purchaseOrder/updateData4Update",
         payload
       );

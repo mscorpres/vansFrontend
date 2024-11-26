@@ -35,6 +35,7 @@ import { exportDateRangespace } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -321,6 +322,7 @@ const R2 = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
         />
       </div>

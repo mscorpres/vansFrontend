@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import { DatePicker } from "antd";
 import useApi from "@/hooks/useApi";
-import { fetchR4 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -19,8 +18,8 @@ import {
   rejectStockItem,
 } from "@/features/client/storeSlice";
 import { toast } from "@/components/ui/use-toast";
-import { ImCross } from "react-icons/im";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -239,6 +238,7 @@ const PendingStock = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

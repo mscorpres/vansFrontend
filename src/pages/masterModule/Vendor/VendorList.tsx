@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React  from "react";
+import {  useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,7 +11,6 @@ import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import {
   InputStyle,
   LableStyle,
-  primartButtonStyle,
 } from "@/constants/themeContants";
 import {
   Form,
@@ -276,7 +275,7 @@ const VendorList = () => {
       form.setValue("fax", a.fax);
       form.setValue("vendorCode", a.vendorCode);
       form.setValue("addressCode", a.addressCode);
-      form.setValue("state", a.state?.value);
+      form.setValue("state", a?.state);
       setLoading(false);
     }
     setLoading(true);
@@ -443,10 +442,14 @@ const VendorList = () => {
   }, [sheetOpenView]);
 
   useEffect(() => {
-    getDetailsFromBranchList(thebranch);
+    if (thebranch) {
+      getDetailsFromBranchList(thebranch);
+    }
   }, [thebranch]);
   useEffect(() => {
-    getupdateDetails(sheetOpenEdit.data?.vendor_code);
+    if (sheetOpenEdit.data?.vendor_code) {
+      getupdateDetails(sheetOpenEdit.data?.vendor_code);
+    }
   }, [sheetOpenEdit]);
 
   useEffect(() => {
@@ -1102,25 +1105,6 @@ const VendorList = () => {
                       )}
                     />
                     <div className="grid grid-cols-2 gap-[20px]">
-                      {/* <FormField
-                        control={form.control}
-                        name="company"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Company Name
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Company Name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      /> */}{" "}
                       <FormField
                         control={form.control}
                         name="state"
@@ -1141,15 +1125,6 @@ const VendorList = () => {
                                 onChange={(e: any) =>
                                   form.setValue("state", e?.value)
                                 }
-                                // onChange={(e) => console.log(e)}
-                                // value={
-                                //   data.clientDetails
-                                //     ? {
-                                //         label: data.clientDetails.city.name,
-                                //         value: data.clientDetails.city.name,
-                                //       }
-                                //     : null
-                                // }
                               />
                             </FormControl>
                             <FormMessage />

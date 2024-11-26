@@ -1,6 +1,6 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import { Badge, Edit2, EyeIcon, Filter, Trash } from "lucide-react";
+import {  Filter,  } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +12,6 @@ import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
 import useApi from "@/hooks/useApi";
-import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
 
 import { exportDateRangespace } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
@@ -28,6 +27,7 @@ import {
 import { transformOptions } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { rangePresets } from "@/General";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ActionMenu: React.FC<ActionMenuProps> = ({ row, printTheSelectedPo }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -181,22 +181,6 @@ const PrintPickSlip: React.FC = () => {
     // setLoading(false);
   };
   const dispatch = useDispatch<AppDispatch>();
-  const getVendorList = async () => {
-    // return;
-
-    const response = await execFun(() => fetchListOfVendor(), "fetch");
-    // return;
-    let { data } = response;
-    if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          label: r.name,
-          value: r.code,
-        };
-      });
-      setAsyncOptions(arr);
-    }
-  };
   const fetchManageList = async () => {
     const values = await form.validateFields();
 
@@ -327,6 +311,7 @@ const PrintPickSlip: React.FC = () => {
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <ConfirmationModal

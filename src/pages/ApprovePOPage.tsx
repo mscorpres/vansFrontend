@@ -1,7 +1,7 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { Filter } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { rangePresets } from "@/General";
 import { ColGroupDef } from "ag-grid-community";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ActionMenu: React.FC<ActionMenuProp> = ({ row }) => {
   const navigate = useNavigate();
 
@@ -210,7 +211,7 @@ const ApprovePOPage: React.FC = () => {
         <div className="p-[10px]"></div>
         <Form
           form={form}
-          className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+          className="space-y-6 overflow-hidden p-[10px] h-[470px]"
         >
           {/* <form
             onSubmit={form.handleSubmit(fetchManageList)}
@@ -254,7 +255,7 @@ const ApprovePOPage: React.FC = () => {
                 transform={transformOptionData}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
                 // value={selectedCustomer}
-                fetchOptionWith="payload"
+                fetchOptionWith="query2"
               />
             </Form.Item>
           ) : (
@@ -289,7 +290,7 @@ const ApprovePOPage: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
@@ -301,6 +302,7 @@ const ApprovePOPage: React.FC = () => {
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <ViewCompoents
