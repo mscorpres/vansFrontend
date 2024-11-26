@@ -11,6 +11,7 @@ import { Form, Switch } from "antd";
 import {
   fetchMaterialDocsFiles,
   getdetailsOfUpdateComponent,
+  listOfUom,
   updateComponentofMaterial,
   uploadCompImg,
 } from "@/components/shared/Api/masterApi";
@@ -48,6 +49,9 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [files, setFiles] = useState<File[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [docList, setDocList] = useState([]);
+  const [asyncOptions, setAsyncOptions] = useState([]);
+  const [suomOtions, setSuomOtions] = useState([]);
+  const [grpOtions, setGrpOtions] = useState([]);
 
   const isEnabledOptions = [
     {
@@ -83,7 +87,8 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         compCode: arr.partcode,
         componentName: arr.name,
         uom: { label: arr.uomname, value: arr.uomid },
-        soq: { label: arr.soqname, value: arr.soqid },
+        soqqty: arr.soqqty,
+        sUom: { label: arr.soqname, value: arr.soqid },
         taxTypes: arr.tax_type,
         gstTaxRate: arr.gst_rate,
         // alert: arr.enable_status,
@@ -123,8 +128,8 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       componentKey: sheetOpenEdit?.component_key,
       componentname: values.componentName,
       uom: values.uom.value,
-      soq: values.soq.value,
-      soqqty: values.soqQty,
+      suom: values.sUom.value,
+      soqqty: values.soqqty,
       moqqty: values.moqQty,
       hsn: values.hsn,
       //   category: values.moqQty,
@@ -155,7 +160,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       //   alert: values.taxType,category: values.moqQty,
     };
     // }
-    // console.log("payload->", payload);
 
     // return;
     // return;
@@ -181,6 +185,24 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       });
     }
     setLoading(false);
+  };
+  const listSUom = async () => {
+    // const response = await execFun(() => listOfUom(), "submit");
+    const response = await spigenAxios.get("/suom");
+    const { data } = response;
+    // addToast("SUom List fetched", {
+    //   appearance: "success",
+    //   autoDismiss: true,
+    // });
+    if (response.status == 200) {
+      let arr = data?.data?.map((r, index) => {
+        return {
+          label: r.units_name,
+          value: r.units_id,
+        };
+      });
+      setSuomOtions(arr);
+    }
   };
   const getUploadedDoc = async (sheetOpen) => {
     let payload = {
@@ -290,12 +312,51 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       },
     },
   ];
+  const listOfGroups = async () => {
+    // const response = await execFun(() => listOfUom(), "submit");
+    const response = await spigenAxios.get("/groups/allGroups");
+    const { data } = response;
+    if (response.status == 200) {
+      let arr = data?.data.map((r, index) => {
+        return {
+          label: r.group_name,
+          value: r.group_id,
+        };
+      });
+
+      setGrpOtions(arr);
+    }
+  };
+  const listUom = async () => {
+    const response = await execFun(() => listOfUom(), "fetch");
+    const { data } = response;
+
+    if (response?.status == 200) {
+      let arr = data.data.map((r: any, index: any) => {
+        return {
+          label: r.units_name,
+          value: r.units_id,
+        };
+      });
+      setAsyncOptions(arr);
+    } else {
+      toast({
+        title: response?.message,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
   useEffect(() => {
     if (sheetOpenEdit) {
       getDetails(sheetOpenEdit);
     }
   }, [sheetOpenEdit]);
-
+  useEffect(() => {
+    listUom();
+    listOfGroups();
+    listSUom();
+    // listOfComponentList();
+  }, []);
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
       {(loading1("fetch") || loading == true) && <FullPageLoading />}
@@ -364,9 +425,10 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isDisabled={false}
                             isClearable={true}
                             isSearchable={true}
+                            options={asyncOptions}
                           />
                         </Form.Item>
-                        <Form.Item name="soq" label="SOQ" rules={rules.suom}>
+                        <Form.Item name="sUom" label="S UOM" rules={rules.suom}>
                           <Select
                             styles={customStyles}
                             components={{ DropdownIndicator }}
@@ -376,24 +438,15 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isDisabled={false}
                             isClearable={true}
                             isSearchable={true}
-                            //   options={asyncOptions}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
+                            options={suomOtions}
                           />
-                        </Form.Item>{" "}
-                        {/* <Form.Item name="soqQty" label="SOQ Qty">
+                        </Form.Item>
+                        <Form.Item name="soqqty" label="SOQ">
                           <Input
-                            placeholder="Enter Component Code"
+                            placeholder="Enter SOQ"
                             className={InputStyle}
                           />
-                        </Form.Item> */}
+                        </Form.Item>
                         <Form.Item name="moqQty" label="MOQ" rules={rules.moq}>
                           <Input
                             placeholder="Enter MOQ"
@@ -436,16 +489,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isDisabled={false}
                             isClearable={true}
                             isSearchable={true}
-                            //   options={asyncOptions}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
+                            options={grpOtions}
                           />
                         </Form.Item>{" "}
                         <Form.Item
@@ -523,10 +567,10 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             className={InputStyle}
                           />
                         </Form.Item>{" "} */}
-                        <Form.Item
+                        {/* <Form.Item
                           name="customer"
                           label="Customer"
-                          rules={rules.customer}
+                          // rules={rules.customer}
                         >
                           <Input
                             // placeholder="Enter Component Code"
@@ -536,24 +580,24 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         <Form.Item
                           name="customercode"
                           label="Customer Part"
-                          rules={rules.customercode}
+                          // rules={rules.customercode}
                         >
                           <Input
                             // placeholder="Enter Component Code"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
+                        </Form.Item>{" "} */}
                       </div>
-                      <Form.Item
+                      {/* <Form.Item
                         name="custDes"
                         label="Customer. Desc."
-                        rules={rules.custDes}
+                        // rules={rules.custDes}
                       >
                         <Input
                           // placeholder="Enter Component Code"
                           className={InputStyle}
                         />
-                      </Form.Item>{" "}
+                      </Form.Item>{" "} */}
                     </CardContent>
                   </Card>
                   <Card className="rounded shadow bg-[#fff]">

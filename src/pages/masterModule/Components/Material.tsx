@@ -49,6 +49,7 @@ import { searchingHsn } from "@/features/client/clientSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { addComponent } from "@/features/client/storeSlice";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const Material = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -109,11 +110,9 @@ const Material = () => {
   const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
   const listOfComponentList = async () => {
     const response = await execFun(() => componentList(), "fetch");
-    console.log("here in api", response);
     let { data } = response;
     if (response.status == 200) {
       let comp = data.data;
-      // console.log("comp", comp);
 
       let arr = comp?.map((r, index) => {
         return {
@@ -121,24 +120,26 @@ const Material = () => {
           ...r,
         };
       });
-      console.log("arr", arr);
       setRowData(arr);
     }
   };
-  console.log("here in api", rowData);
   const listUom = async () => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response.status == 200) {
-      let arr = data.data.map((r, index) => {
+    if (response?.status == 200) {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
         };
       });
-      // console.log("arr", arr);
       setAsyncOptions(arr);
+    } else {
+      toast({
+        title: response?.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const callUom = async () => {
@@ -157,7 +158,6 @@ const Material = () => {
   };
   const listSUom = async () => {
     // const response = await execFun(() => listOfUom(), "submit");
-    // console.log("response", response);
     const response = await spigenAxios.get("/suom");
     const { data } = response;
     // addToast("SUom List fetched", {
@@ -165,8 +165,6 @@ const Material = () => {
     //   autoDismiss: true,
     // });
     if (response.status == 200) {
-      console.log("data", data);
-
       let arr = data?.data?.map((r, index) => {
         return {
           label: r.units_name,
@@ -181,15 +179,12 @@ const Material = () => {
     const response = await spigenAxios.get("/groups/allGroups");
     const { data } = response;
     if (response.status == 200) {
-      console.log("datadata", data);
-
       let arr = data?.data.map((r, index) => {
         return {
           label: r.group_name,
           value: r.group_id,
         };
       });
-      // console.log("arr ssssss", arr);
 
       setGrpOtions(arr);
     }
@@ -255,11 +250,13 @@ const Material = () => {
   ];
   const onSubmit = async () => {
     setLoading(true);
+
+
     let payload = {
       part: fixedVal.partCode,
       uom: fixedVal.uom.value,
-      // soq: fixedVal.soq,
-      soq: fixedVal.suom.value,
+      soqqty: fixedVal.soq,
+      suom: fixedVal.suom.value,
       moqqty: fixedVal?.moq,
       component: fixedVal.compName,
 
@@ -274,14 +271,11 @@ const Material = () => {
       // c_group: "GRP100220210910171321",
       // comp_type: values.type,
     };
-    console.log("payload", payload);
     try {
       const response = await spigenAxios.post(
         "/component/addComponent",
         payload
       );
-
-      console.log("response", response); // This will log the full response
 
       if (response.data.code === 200) {
         toast({
@@ -313,12 +307,9 @@ const Material = () => {
     setLoading(false);
   };
   const handleSearch = (searchKey: string, type: any) => {
-    console.log("searchKey", searchKey);
     if (searchKey) {
       let p = { searchTerm: searchKey };
-      dispatch(searchingHsn(p)).then((res) => {
-        console.log("res", res);
-      });
+      dispatch(searchingHsn(p)).then((res) => {});
     }
   };
   const defaultColDef = useMemo<ColDef>(() => {
@@ -488,7 +479,7 @@ const Material = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-[40px]  py-[-10px]">
-                  <div className="col-span-3">
+                  <div className="col-span-2">
                     {" "}
                     <Form.Item
                       name="compName"
@@ -504,7 +495,16 @@ const Material = () => {
                   </div>
 
                   <div className="">
-                    {" "}
+                    <Form.Item name="soq" label="SOQ Qty" rules={rules.soq}>
+                      <Input
+                        className={InputStyle}
+                        // type="number"
+                        placeholder="SOQ Qty"
+                        // {...field}
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="">
                     <Form.Item name="moq" label="MOQ Qty" rules={rules.moq}>
                       <Input
                         className={InputStyle}
@@ -664,6 +664,7 @@ const Material = () => {
                       suppressRowClickSelection={false}
                       rowSelection="multiple"
                       checkboxSelection={true}
+                      overlayNoRowsTemplate={OverlayNoRowsTemplate}
                     />{" "}
                   </div>{" "}
                   <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
@@ -714,6 +715,7 @@ const Material = () => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         </div>{" "}
       </Wrapper>{" "}
@@ -763,6 +765,12 @@ const rules = {
     {
       required: true,
       message: "Please provide MOQ Qty!",
+    },
+  ],
+  soq: [
+    {
+      required: true,
+      message: "Please provide SOQ Qty!",
     },
   ],
   group: [
