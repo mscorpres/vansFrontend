@@ -137,7 +137,7 @@ const Material = () => {
       setAsyncOptions(arr);
     } else {
       toast({
-        title: "Failed to fetch UOM",
+        title: response?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -250,11 +250,13 @@ const Material = () => {
   ];
   const onSubmit = async () => {
     setLoading(true);
+
+
     let payload = {
       part: fixedVal.partCode,
       uom: fixedVal.uom.value,
-      // soq: fixedVal.soq,
-      soq: fixedVal.suom.value,
+      soqqty: fixedVal.soq,
+      suom: fixedVal.suom.value,
       moqqty: fixedVal?.moq,
       component: fixedVal.compName,
 
@@ -477,7 +479,7 @@ const Material = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-[40px]  py-[-10px]">
-                  <div className="col-span-3">
+                  <div className="col-span-2">
                     {" "}
                     <Form.Item
                       name="compName"
@@ -493,7 +495,16 @@ const Material = () => {
                   </div>
 
                   <div className="">
-                    {" "}
+                    <Form.Item name="soq" label="SOQ Qty" rules={rules.soq}>
+                      <Input
+                        className={InputStyle}
+                        // type="number"
+                        placeholder="SOQ Qty"
+                        // {...field}
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="">
                     <Form.Item name="moq" label="MOQ Qty" rules={rules.moq}>
                       <Input
                         className={InputStyle}
@@ -754,6 +765,12 @@ const rules = {
     {
       required: true,
       message: "Please provide MOQ Qty!",
+    },
+  ],
+  soq: [
+    {
+      required: true,
+      message: "Please provide SOQ Qty!",
     },
   ],
   group: [
