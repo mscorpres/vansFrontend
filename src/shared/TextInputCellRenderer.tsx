@@ -226,7 +226,6 @@ const TextInputCellRenderer = (props: any) => {
     setOpenCurrencyDialog(true);
   };
   const handleChange = (value: string) => {
-
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "procurementMaterial") {
@@ -364,8 +363,7 @@ const TextInputCellRenderer = (props: any) => {
   const handleInputChange = (e: any) => {
     const newValue = e.target.value;
     data[colDef.field] = newValue; // Update the data object
-
-    // Update localValue if the rate is changed
+   // Update localValue if the rate is changed
     if (colDef.field === "rate") {
       data["localValue"] = newValue * parseFloat(data.orderQty);
     }
@@ -380,7 +378,6 @@ const TextInputCellRenderer = (props: any) => {
     }
     ///foreign value calucaltion in case of exchanged rate is passed
     if (props.roeIs) {
-      
       data["foreignValue"] = props.roeIs * data["localValue"];
     }
     // Calculate GST based on the updated values
@@ -393,7 +390,8 @@ const TextInputCellRenderer = (props: any) => {
     if (
       colDef.field === "rate" ||
       colDef.field === "orderQty" ||
-      colDef.field === "gstRate"
+      colDef.field === "gstRate" ||
+      data["gstRate"]
     ) {
       const calculation = (data.localValue * gstRate) / 100;
 

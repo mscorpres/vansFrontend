@@ -8,8 +8,8 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
-import { useDispatch, } from "react-redux";
-import {  qrPrint } from "@/features/client/storeSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { printsticker2, qrPrint } from "@/features/client/storeSlice";
 import { spigenAxios } from "@/axiosIntercepter";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import Print from "@/assets/Print.jpg";
@@ -18,9 +18,9 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 function PrintMinLabel() {
   const [form] = Form.useForm();
   const selMin = Form.useWatch("min", form);
-  const [loading, setLoading] = useState(false);
   const selType = Form.useWatch("printType", form);
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const { loading } = useSelector((state: RootState) => state.store);
   const dispatch = useDispatch<AppDispatch>();
   const types = [
     {
@@ -49,6 +49,16 @@ function PrintMinLabel() {
 
   const getData = async (formData) => {
     let response = await spigenAxios.post("/qrPrint/getminBox", formData);
+    if (response.data.code == 200) {
+      let { data } = response;
+      let arr = data.data.map((r) => {
+        return {
+          label: r.loc_in,
+          value: r.loc_in,
+        };
+      });
+      setRowData(arr);
+    }
   };
   const getDataBox = async (formData) => {
     let response = await spigenAxios.post(
@@ -57,38 +67,61 @@ function PrintMinLabel() {
     );
   };
   const onsubmit = async () => {
-    setLoading(true);
+    const value = await form.validateFields();
     let payload = {
       type: "MIN",
       min_no: selMin.value,
     };
-    dispatch(qrPrint(payload)).then((res) => {
-      if (res.payload.code == 200) {
-        downloadFunction(
-          res.payload.data.buffer.data,
-          res.payload.data.filename
-        );
-      }
-    });
-    setLoading(false);
+    if (selType == "label" || selType.value == "label") {
+      let payload = {
+        type: "MIN",
+        min_no: selMin.value,
+        box: value.box.map((r) => r.value),
+      };
+      // return;
+
+      dispatch(printsticker2(payload)).then((res) => {
+        if (res.payload.code == 200) {
+          console.log("res", res);
+          
+          downloadFunction(
+            res.payload.data.buffer.data,
+            res.payload.data.filename
+          );
+        }
+      });
+    } else {
+      dispatch(qrPrint(payload)).then((res) => {
+        if (res.payload.code == 200) {
+          downloadFunction(
+            res.payload.data.buffer.data,
+            res.payload.data.filename
+          );
+        }
+      });
+    }
   };
 
   useEffect(() => {
     if (selMin) {
-      const formData = new FormData();
-      formData.append("type", "MIN");
-      formData.append("min_no", selMin.value);
+      let payload = {
+        type: "MIN",
+        min_no: selMin.value,
+      };
+      // const formData = new FormData();
+      // formData.append("type", "MIN");
+      // formData.append("min_no", selMin.value);
       if (selType.value == "Transfer" || selType == "Transfer") {
-        getDataBox(formData);
+        getDataBox(payload);
       } else {
-        getData(formData);
+        getData(payload);
       }
     }
   }, [selMin]);
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white ">
       <div className="bg-[#fff]">
-        {loading == true && <FullPageLoading />}
+        {loading && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -112,7 +145,10 @@ function PrintMinLabel() {
                   options={types}
                 />
               </Form.Item>
-              {selType == "Transfer" || selType?.value == "Transfer" ? (
+              {selType == "Transfer" ||
+              selType?.value == "Transfer" ||
+              selType == "min" ||
+              selType?.value == "min" ? (
                 <Form.Item name="min" label="  MIN">
                   <ReusableAsyncSelect
                     // placeholder="Customer Name"
@@ -124,16 +160,32 @@ function PrintMinLabel() {
                   />
                 </Form.Item>
               ) : (
-                <Form.Item name="min" label="  MIN">
-                  <ReusableAsyncSelect
-                    // placeholder="Customer Name"
-                    endpoint="/backend/getMinsTransaction4Label"
-                    transform={transformOptionData}
-                    // onChange={(e) => form.setValue("customerName", e)}
-                    // value={selectedCustomer}
-                    fetchOptionWith="payloadSearchTerm"
-                  />
-                </Form.Item>
+                <>
+                  <Form.Item name="min" label="  MIN">
+                    <ReusableAsyncSelect
+                      // placeholder="Customer Name"
+                      endpoint="/backend/getMinsTransaction4Label"
+                      transform={transformOptionData}
+                      // onChange={(e) => form.setValue("customerName", e)}
+                      // value={selectedCustomer}
+                      fetchOptionWith="payloadSearchTerm"
+                    />
+                  </Form.Item>
+                  <Form.Item className="w-full" name="box">
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="Select Boxes"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false}
+                      isClearable={true}
+                      isSearchable={true}
+                      isMulti={true}
+                      options={rowData}
+                    />
+                  </Form.Item>
+                </>
               )}
             </div>
 
