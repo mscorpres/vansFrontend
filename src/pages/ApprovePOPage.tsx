@@ -120,7 +120,7 @@ const ApprovePOPage: React.FC = () => {
     },
     {
       field: "po_reg_date",
-      headerName: "Po Reg. Date",
+      headerName: "PO Reg. Date",
       flex: 1,
       filter: "agDateColumnFilter",
       filterParams: {

@@ -36,6 +36,7 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -84,7 +85,7 @@ const R2 = () => {
     }
   };
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "R2 Po Report");
+    downloadCSV(rowData, columnDefs, "R2 PO Report");
   };
   useEffect(() => {
     // fetchComponentList();
@@ -98,7 +99,7 @@ const R2 = () => {
       width: 90,
     },
     {
-      headerName: "Po Date",
+      headerName: "PO Date",
       field: "reg_date",
       filter: "agTextColumnFilter",
       width: 190,
@@ -113,6 +114,7 @@ const R2 = () => {
       headerName: "PO Order Id",
       field: "po_order_id",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 220,
     },
 
@@ -120,6 +122,7 @@ const R2 = () => {
       headerName: "Part",
       field: "part_no",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
 
@@ -127,64 +130,70 @@ const R2 = () => {
       headerName: "Compenent",
       field: "component_name",
       filter: "agTextColumnFilter",
-      width: 190,
+      cellRenderer: CopyCellRenderer,
+      minWidth: 190,
+      flex: 1,
     },
     {
       headerName: "Vendor Compenent Code/Description",
       field: "vendor_name",
       filter: "agTextColumnFilter",
-      width: 190,
+      minWidth: 320,
+      cellRenderer: CopyCellRenderer,
+      flex: 2,
     },
 
     {
       headerName: "UoM",
       field: "unit_name",
       filter: "agTextColumnFilter",
-      width: 220,
+      width: 120,
     },
 
     {
       headerName: "Qty",
       field: "ordered_qty",
       filter: "agTextColumnFilter",
-      width: 220,
+      width: 120,
     },
     {
       headerName: " Pending Qty",
       field: "ordered_pending",
       filter: "agTextColumnFilter",
-      width: 220,
+      width: 180,
     },
     {
       headerName: "Rate",
       field: "po_rate",
       filter: "agTextColumnFilter",
-      width: 220,
+      width: 120,
     },
     {
       headerName: "Currency",
       field: "currency_lable",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 120,
     },
     {
       headerName: "Currency Sym",
       field: "currency_symbol",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 150,
     },
 
     {
       headerName: "Vendor Code",
       field: "vendor_code",
+      cellRenderer: CopyCellRenderer,
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 150,
     },
     {
       headerName: "Vendor Name",
       field: "vendor_name",
+      cellRenderer: CopyCellRenderer,
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 210,
     },
     {
       headerName: "Due Date",
@@ -196,19 +205,19 @@ const R2 = () => {
       headerName: "Cost Center",
       field: "po_cost_center",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 150,
     },
     {
       headerName: "Project Name",
       field: "po_project",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 150,
     },
     {
       headerName: "Branch In",
       field: "branch",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 150,
     },
   ];
   const type = [

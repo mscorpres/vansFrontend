@@ -93,9 +93,9 @@ export const getComponentsByNameAndNo = async (search: any) => {
   return response;
 };
 export const getProductsByNameAndNo = async (search: any) => {
-  const response = await spigenAxios.post("/backend/getProductByNameAndNo", {
-    search: search,
-  });
+  const response = await spigenAxios.post(
+    `/backend/getProductByNameAndNo?search=${search}`
+  );
   return response;
 };
 export const getComponentsList = async (search: any) => {
@@ -288,18 +288,24 @@ export const fetchListOfVendor = async (search: any) => {
   return response;
 };
 export const fetchListOfPendingFg = async () => {
-  const response = await spigenAxios.post("/fgIN/pending");
+  const response = await spigenAxios.get("/fgIN/pending");
   return response;
 };
 export const fetchListOfCompletedFg = async (wise: any, dataString: any) => {
-  const response = await spigenAxios.post("/fgIN/fgInCompleted", {
-    searchBy: wise,
-    searchValue: dataString,
-  });
+  const response = await spigenAxios.get(
+    `fgIN/fgInCompleted?searchBy=${wise}&searchValue=${dataString}`
+    // {
+    //   searchBy: wise,
+    //   searchValue: dataString,
+    // }
+  );
   return response;
 };
 export const fetchListOfCompletedFgOut = async (payload: any) => {
-  const response = await spigenAxios.post("/fgout/fetchFgOutRpt", payload);
+  const response = await spigenAxios.get(
+    `fgout/fetchFgOutRpt?date=${payload.date}&method=${payload.method}`,
+    payload
+  );
   return response;
 };
 export const fetchListOfProjectId = async (search: any) => {
@@ -311,13 +317,14 @@ export const fetchListOfProjectId = async (search: any) => {
 //////////////////////query
 
 export const fetchListOfQ1 = async (payload: any) => {
-  const response = await spigenAxios.post("/itemQueryA/fetchRM_logs", payload);
+  const response = await spigenAxios.get(
+    `/itemQueryA/fetchRM_logs?data=${payload.data}&range=${payload.range}&wise=${payload.wise}`
+  );
   return response;
 };
 export const fetchListOfQ2 = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/itemQueryL/fetchItemquery",
-    payload
+  const response = await spigenAxios.get(
+    `/itemQueryL/fetchItemquery?data=${payload.data}&wise=${payload.wise}`
   );
   return response;
 };
@@ -338,25 +345,30 @@ export const fetchListOfQ3 = async (payload: any) => {
 };
 ///////////////////
 export const fetchListOfMINRegister = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/transaction/transactionIn",
-    payload
+  const response = await spigenAxios.get(
+    `/transaction/transactionIn?min_types=${payload.min_types}&data=${payload.data}`
   );
   return response;
 };
 export const fetchListOfMINRegisterOut = async (payload: any) => {
-  const response = await spigenAxios.post(
-    "/transaction/transactionOut",
+  const response = await spigenAxios.get(
+    `/transaction/transactionOut?min_types=${payload.min_types}&data=${payload.data}`,
     payload
   );
   return response;
 };
 export const fetchR2 = async (payload: any) => {
-  const response = await spigenAxios.post("/report2", payload);
+  const response = await spigenAxios.get(
+    `/report2?data=${payload.data}&wise=${payload.wise}`,
+    payload
+  );
   return response;
 };
 export const fetchR3 = async (payload: any) => {
-  const response = await spigenAxios.post("/report3", payload);
+  const response = await spigenAxios.get(
+    `report3?date=${payload.date}&product=${payload.product}&subject=${payload.subject}`
+    // payload
+  );
   return response;
 };
 export const fetchR4 = async (payload: any) => {
@@ -367,7 +379,10 @@ export const fetchR4 = async (payload: any) => {
   return response;
 };
 export const fetchR6 = async (payload: any) => {
-  const response = await spigenAxios.post("/rate/componentRate", payload);
+  const response = await spigenAxios.get(
+    `rate/componentRate?searchData=${payload.searchData}&searchValues=${payload.searchValues}`,
+    payload
+  );
   return response;
 };
 export const getComponentDetailsForServices = async (payload: any) => {
@@ -445,7 +460,10 @@ export const getListFgIn = async (payload: any) => {
   return response;
 };
 export const getListOfProductSKU = async (payload: any) => {
-  const response = await spigenAxios.post("/backend/fetchProduct", payload);
+  const response = await spigenAxios.post(
+    `/backend/fetchProduct${payload}`,
+    payload
+  );
   return response;
 };
 export const getdetailsOfUpdateComponent = async (payload: any) => {
@@ -573,16 +591,18 @@ export const fetchbomComponents = async (payload: any) => {
 };
 export const fetchViewComponentsOfManage = async (payload: any) => {
   const response = await spigenAxios.get(
-    `/purchaseOrder/fetchComponentList4PO?poid=${payload}`,
-
+    `/purchaseOrder/fetchComponentList4PO?poid=${payload}`
   );
   return response;
 };
 // /purchaseOrder/fetchComponentList4PO
 export const fetchBomForProduct = async (payload: any) => {
-  const response = await spigenAxios.post("/backend/fetchBomForProduct", {
-    search: payload,
-  });
+  const response = await spigenAxios.get(
+    `/backend/fetchBomForProduct?search=${payload}`
+    //    {
+    //   search: payload,
+    // }
+  );
   return response;
 };
 // /purchaseOrder/fetchComponentList4PO

@@ -28,15 +28,17 @@ import { fetchR6 } from "@/components/shared/Api/masterApi";
 import { exportDateRangespace } from "@/components/shared/Options";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
     .length(2)
-    .optional()
     .refine((data) => data === undefined || data.length === 2, {
       message: "Please select a valid date range.",
     }),
-  component: z.string().optional(),
+  types: z.string().refine((data) => data !== undefined && data.length > 0, {
+    message: "Please select a valid types.",
+  }),
 });
 
 const R6 = () => {
@@ -92,6 +94,7 @@ const R6 = () => {
       headerName: "Part",
       field: "PART",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -103,6 +106,7 @@ const R6 = () => {
     {
       headerName: "Box Name",
       field: "BOX_NAME",
+      cellRenderer: CopyCellRenderer,
       filter: "agTextColumnFilter",
       width: 220,
     },

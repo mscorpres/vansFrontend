@@ -1,6 +1,6 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import {  Filter,  } from "lucide-react";
+import { Filter } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,10 +13,7 @@ import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
 import useApi from "@/hooks/useApi";
-import {
-
-  printPO,
-} from "@/features/client/clientSlice";
+import { printPO } from "@/features/client/clientSlice";
 import { MoreOutlined } from "@ant-design/icons";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { useNavigate } from "react-router-dom";
@@ -301,7 +298,7 @@ const PendingMr: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         {" "}
         {loading && <FullPageLoading />}
         <AgGridReact

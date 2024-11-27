@@ -74,6 +74,8 @@ const R3 = () => {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
+          status1: r.status == "A" ? "Active" : "I" ? "Inactive" : "Alternate",
+          category1: r.category == "P" ? "Part" : "Packaging",
           ...r,
         };
       });
@@ -132,14 +134,14 @@ const R3 = () => {
 
     {
       headerName: "Category",
-      field: "category",
+      field: "category1",
       filter: "agTextColumnFilter",
       width: 190,
     },
 
     {
       headerName: "Status",
-      field: "status",
+      field: "status1",
       filter: "agTextColumnFilter",
       width: 190,
     },
@@ -241,7 +243,7 @@ const R3 = () => {
                       transform={transformOptionData}
                       onChange={(e) => form.setValue("part", e?.value)}
                       // value={selectedCustomer}
-                      fetchOptionWith="payload"
+                      fetchOptionWith="querySearchTerm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -258,7 +260,7 @@ const R3 = () => {
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
-                      placeholder="Branch"
+                      placeholder="BOM"
                       className="border-0 basic-single"
                       classNamePrefix="select border-0"
                       isDisabled={false}

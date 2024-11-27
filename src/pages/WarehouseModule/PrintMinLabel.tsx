@@ -24,7 +24,7 @@ function PrintMinLabel() {
   const dispatch = useDispatch<AppDispatch>();
   const types = [
     {
-      value: "min",
+      value: "MIN",
       label: "MIN Wise",
     },
     {
@@ -48,7 +48,12 @@ function PrintMinLabel() {
   ];
 
   const getData = async (formData) => {
-    let response = await spigenAxios.post("/qrPrint/getminBox", formData);
+    const value = await form.getFieldValue("printType");
+    const min = await form.getFieldValue("min");
+    let response = await spigenAxios.get(
+      `qrPrint/getminBox?type=MIN&min_no=${min.value}`,
+      formData
+    );
     if (response.data.code == 200) {
       let { data } = response;
       let arr = data.data.map((r) => {
@@ -82,8 +87,7 @@ function PrintMinLabel() {
 
       dispatch(printsticker2(payload)).then((res) => {
         if (res.payload.code == 200) {
-          console.log("res", res);
-          
+
           downloadFunction(
             res.payload.data.buffer.data,
             res.payload.data.filename
@@ -102,6 +106,11 @@ function PrintMinLabel() {
     }
   };
 
+  useEffect(() => {
+    if (selMin) {
+      form.setFieldValue("box", "");
+    }
+  }, [selMin]);
   useEffect(() => {
     if (selMin) {
       let payload = {
@@ -132,7 +141,11 @@ function PrintMinLabel() {
             className="space-y-6 overflow-hidden p-[10px] h-[1000px]"
           >
             <div className="grid grid-cols-1 gap-[40px]">
-              <Form.Item name="printType" label="Print Type">
+              <Form.Item
+                name="printType"
+                label="Print Type"
+                rules={[{ required: true }]}
+              >
                 <Select
                   styles={customStyles}
                   components={{ DropdownIndicator }}
@@ -149,7 +162,11 @@ function PrintMinLabel() {
               selType?.value == "Transfer" ||
               selType == "min" ||
               selType?.value == "min" ? (
-                <Form.Item name="min" label="  MIN">
+                <Form.Item
+                  name="min"
+                  label="  MIN"
+                  rules={[{ required: true }]}
+                >
                   <ReusableAsyncSelect
                     // placeholder="Customer Name"
                     endpoint="/backend/getTrfMinsTransaction4Label"
@@ -161,7 +178,11 @@ function PrintMinLabel() {
                 </Form.Item>
               ) : (
                 <>
-                  <Form.Item name="min" label="  MIN">
+                  <Form.Item
+                    name="min"
+                    label="  MIN"
+                    rules={[{ required: true }]}
+                  >
                     <ReusableAsyncSelect
                       // placeholder="Customer Name"
                       endpoint="/backend/getMinsTransaction4Label"
@@ -171,7 +192,11 @@ function PrintMinLabel() {
                       fetchOptionWith="payloadSearchTerm"
                     />
                   </Form.Item>
-                  <Form.Item className="w-full" name="box">
+                  <Form.Item
+                    className="w-full"
+                    name="box"
+                    rules={[{ required: true }]}
+                  >
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}

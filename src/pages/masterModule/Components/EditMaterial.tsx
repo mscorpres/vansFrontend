@@ -780,11 +780,11 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         {" "}
                         <Form.Item
                           name="minStock"
-                          label="Min Stock"
+                          label="MIN Stock"
                           rules={rules.minStock}
                         >
                           <Input
-                            placeholder="Enter Min Stock"
+                            placeholder="Enter MIN Stock"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
@@ -800,11 +800,11 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         </Form.Item>{" "}
                         <Form.Item
                           name="MinOrder"
-                          label="Min Order"
+                          label="MIN Order"
                           rules={rules.minOrder}
                         >
                           <Input
-                            placeholder="Enter Min Order"
+                            placeholder="Enter MIN Order"
                             className={InputStyle}
                           />
                         </Form.Item>{" "}

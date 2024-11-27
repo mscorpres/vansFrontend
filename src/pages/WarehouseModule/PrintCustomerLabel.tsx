@@ -1,4 +1,4 @@
-import { Button, Form,  } from "antd";
+import { Button, Form } from "antd";
 import { Filter } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -6,57 +6,21 @@ import styled from "styled-components";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
-import { useDispatch,  } from "react-redux";
-import { cutomerLable,  } from "@/features/client/storeSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { cutomerLable } from "@/features/client/storeSlice";
 import { spigenAxios } from "@/axiosIntercepter";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import Print from "@/assets/Print.jpg";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 function PrintMinLabel() {
   const [form] = Form.useForm();
-  const selMin = Form.useWatch("min", form);
-  const [loading, setLoading] = useState(false);
-  const selType = Form.useWatch("printType", form);
-  const [rowData, setRowData] = useState<RowData[]>([]);
-  const dispatch = useDispatch<AppDispatch>();
-  const types = [
-    {
-      value: "min",
-      label: "MIN Wise",
-    },
-    {
-      value: "label",
-      label: "Label Box Wise",
-    },
-    {
-      value: "Transfer",
-      label: "Transfer MIN Label Box ",
-    },
-  ];
-  const wise = [
-    {
-      value: "MIN",
-      label: "MIN",
-    },
-    {
-      value: "TRN",
-      label: "TRN",
-    },
-  ];
 
-  const getData = async (formData) => {
-    let response = await spigenAxios.post("/qrPrint/getminBox", formData);
-  };
-  const getDataBox = async (formData) => {
-    let response = await spigenAxios.post(
-      "/backend/getTransferminBox",
-      formData
-    );
-  };
+  const { loading } = useSelector((state: RootState) => state.store);
+  const dispatch = useDispatch<AppDispatch>();
+
   const onsubmit = async () => {
     let values = await form.validateFields();
 
-    setLoading(true);
     let payload = {
       pickSlip_no: values.min.value,
     };
@@ -68,25 +32,12 @@ function PrintMinLabel() {
         );
       }
     });
-    setLoading(false);
   };
 
-  useEffect(() => {
-    if (selMin) {
-      const formData = new FormData();
-      formData.append("type", "MIN");
-      formData.append("min_no", selMin.value);
-      if (selType?.value == "Transfer" || selType == "Transfer") {
-        getDataBox(formData);
-      } else {
-        getData(formData);
-      }
-    }
-  }, [selMin]);
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
       <div className="bg-[#fff]">
-        {loading == true && <FullPageLoading />}
+        {loading && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter

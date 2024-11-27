@@ -24,6 +24,7 @@ import { exportDateRangespace } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -86,12 +87,14 @@ const TransactionOut = () => {
       headerName: "Pick Slip No.",
       field: "PICKSLIPNNO",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Cost Center",
       field: "COSTCENTER",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -102,7 +105,7 @@ const TransactionOut = () => {
     },
 
     {
-      headerName: "TYPE",
+      headerName: "Type",
       field: "TYPE",
       filter: "agTextColumnFilter",
       width: 190,
@@ -112,16 +115,18 @@ const TransactionOut = () => {
       headerName: "Part No",
       field: "PART",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Component",
       field: "COMPONENT",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
-      headerName: "Box No",
+      headerName: "Box No.",
       field: "FROMLOCATION",
       filter: "agTextColumnFilter",
       width: 220,

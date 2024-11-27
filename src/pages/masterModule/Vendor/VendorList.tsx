@@ -1,5 +1,5 @@
-import React  from "react";
-import {  useEffect, useState } from "react";
+import React from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,10 +8,7 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  InputStyle,
-  LableStyle,
-} from "@/constants/themeContants";
+import { InputStyle, LableStyle } from "@/constants/themeContants";
 import {
   Form,
   FormControl,
@@ -58,6 +55,7 @@ import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { transformStateOptions } from "@/helper/transform";
 const FormSchema = z.object({
   wise: z.string().optional(),
   branch: z.string().optional(),
@@ -71,7 +69,12 @@ const FormSchema = z.object({
   fax: z.string().optional(),
   vendorCode: z.string().optional(),
   addressCode: z.string().optional(),
-  state: z.string().optional(),
+  state: z
+    .object({
+      label: z.string(),
+      value: z.string(),
+    })
+    .optional(), // Optional state field
   vendorName: z.string().optional(),
   cin: z.string().optional(),
   pan: z.string().optional(),
@@ -275,7 +278,7 @@ const VendorList = () => {
       form.setValue("fax", a.fax);
       form.setValue("vendorCode", a.vendorCode);
       form.setValue("addressCode", a.addressCode);
-      form.setValue("state", a?.state);
+      form.setValue("state", a?.state?.value);
       setLoading(false);
     }
     setLoading(true);
@@ -474,7 +477,6 @@ const VendorList = () => {
       form.setValue("mobile", " ");
       form.setValue("pan", " ");
       form.setValue("cin", " ");
-      form.setValue("state", " ");
       form.setValue("mobile", " ");
       form.setValue("city", "");
       form.setValue("gstin", "");
@@ -638,25 +640,24 @@ const VendorList = () => {
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
-                                placeholder="Branch"
+                                placeholder="State"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
-                                isDisabled={false}
-                                isClearable={true}
-                                isSearchable={true}
-                                options={stateList}
-                                onChange={(e: any) =>
-                                  form.setValue("state", e?.value)
+                                isDisabled={true} // Disable the select dropdown so it cannot be changed
+                                isClearable={false} // Prevent clearing the value
+                                isSearchable={false} // Disable search if not needed
+                                name="state" // Ensure this name aligns with the form field
+                                options={
+                                  stateList
+                                    ? transformStateOptions(stateList)
+                                    : []
                                 }
-                                // onChange={(e) => console.log(e)}
-                                // value={
-                                //   data.clientDetails
-                                //     ? {
-                                //         label: data.clientDetails.city.name,
-                                //         value: data.clientDetails.city.name,
-                                //       }
-                                //     : null
-                                // }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateList)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -895,22 +896,17 @@ const VendorList = () => {
                                 placeholder="State"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
-                                isDisabled={false}
-                                isClearable={true}
-                                isSearchable={true}
+                                isDisabled={true} // Disable the select dropdown so it cannot be changed
+                                isClearable={false} // Prevent clearing the value
+                                isSearchable={false} // Disable search if not needed
+                                name="state" // Ensure this name aligns with the form field
                                 options={stateList}
-                                onChange={(e: any) =>
-                                  form.setValue("state", e?.value)
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  stateList?.find(
+                                    (option) => option?.value === field.value
+                                  ) || null
                                 }
-                                // onChange={(e) => console.log(e)}
-                                // value={
-                                //   data.clientDetails
-                                //     ? {
-                                //         label: data.clientDetails.city.name,
-                                //         value: data.clientDetails.city.name,
-                                //       }
-                                //     : null
-                                // }
                               />
                             </FormControl>
                             <FormMessage />

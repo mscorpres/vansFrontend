@@ -11,9 +11,7 @@ import { Form, Typography } from "antd";
 import { toast } from "@/components/ui/use-toast";
 
 import useApi from "@/hooks/useApi";
-import {
-  fetchHSN,
-} from "@/components/shared/Api/masterApi";
+import { fetchHSN } from "@/components/shared/Api/masterApi";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
@@ -25,9 +23,7 @@ import {
   fetchAvailableStockBoxes,
   stockOut,
 } from "@/features/client/storeSlice";
-import {
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { modelFixHeaderStyle } from "@/constants/themeContants";
 import {
   Sheet,
   SheetContent,
@@ -350,7 +346,7 @@ const PickSlip = () => {
   };
 
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] overflow-hidden">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
       <div className="bg-[#fff]">
         {loading && <FullPageLoading />}{" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -361,7 +357,7 @@ const PickSlip = () => {
         <Form
           form={form}
           layout="vertical"
-          className="space-y-6 overflow-hidden p-[10px] h-[400px]"
+          className="space-y-6 overflow-hidden p-[10px] h-[550px]"
         >
           <div className="grid grid-cols-3 gap-[40px] ">
             <div className="col-span-3 ">
@@ -382,7 +378,7 @@ const PickSlip = () => {
                   transform={transformOptionData}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
             </div>{" "}

@@ -6,9 +6,7 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { transformOptionData } from "@/helper/transform";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
-import {
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { modelFixHeaderStyle } from "@/constants/themeContants";
 import {
   Sheet,
   SheetContent,
@@ -17,13 +15,11 @@ import {
 } from "@/components/ui/sheet";
 import { Filter } from "lucide-react";
 import styled from "styled-components";
-import {  Form, Typography } from "antd";
+import { Form, Typography } from "antd";
 import { RootState } from "@/store";
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import {
-  insertProduct
-} from "@/components/shared/Api/masterApi";
+import { insertProduct } from "@/components/shared/Api/masterApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import EditProduct from "../masterModule/Product/EditProduct";
 import {
@@ -35,6 +31,7 @@ import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -195,25 +192,29 @@ const BoxMarkup = () => {
       headerName: "Part Code",
       field: "part_code",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 120,
     },
     {
       headerName: "Part Name",
       field: "part_name",
       filter: "agTextColumnFilter",
-      width: 150,
+      cellRenderer: CopyCellRenderer,
+      minWidth: 180,
+      flex: 1,
     },
     {
       headerName: "Part Description",
       field: "c_specification",
       filter: "agTextColumnFilter",
-      width: 190,
+      minWidth: 180,
+      flex: 1,
     },
     {
       headerName: "Qty",
       field: "moveQty",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 150,
     },
     {
       headerName: "Box Qty",
@@ -232,12 +233,7 @@ const BoxMarkup = () => {
           <div className="flex gap-[5px] items-center justify-center h-full">
             {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
 
-            <Button
-              // className="h-[20px] w-[20px] bg-white text-cyan-700 "
-              onClick={() => setSheetOpen(e)}
-            >
-              Settle
-            </Button>
+            <Button onClick={() => setSheetOpen(e)}>Settle</Button>
             {/* </Button> */}
           </div>
         );
@@ -335,6 +331,8 @@ const BoxMarkup = () => {
           className: "bg-green-600 text-white items-center",
         });
         setSheetOpen(false);
+        setRowData([]);
+        form.resetFields();
       } else {
         toast({
           title: res.payload.message.msg,
@@ -347,7 +345,7 @@ const BoxMarkup = () => {
   };
 
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[250px_1fr] overflow-hidden">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[250px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -378,7 +376,7 @@ const BoxMarkup = () => {
                   transform={transformOptionData}
                   // onChange={(e) => handleChange(e.value)}
                   // value={selectedCustomer}
-                  fetchOptionWith="payloadSearchTerm"
+                  fetchOptionWith="querySearchTerm"
                 />
               </Form.Item>
             </div>
@@ -402,7 +400,7 @@ const BoxMarkup = () => {
           />
         )}
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-150px)] w-full ml-[10px]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full ml-[10px]">
         <AgGridReact
           ref={gridRef}
           rowData={rowData}

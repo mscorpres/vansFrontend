@@ -13,7 +13,12 @@ interface ReusableAsyncSelectProps<T> {
   transform: (data: T[]) => { label: string; value: string }[];
   onChange: (selectedOption: { label: string; value: string } | null) => void;
   value?: { label: string; value: string } | null; // Add value prop
-  fetchOptionWith: "query" | "query2" | "payload";
+  fetchOptionWith:
+    | "query"
+    | "query2"
+    | "payload"
+    | "querySearchTerm"
+    | "search";
   placeholder: string;
 }
 
@@ -40,6 +45,16 @@ const ReusableAsyncSelect = <T,>({
   ) => {
     if (fetchOptionWith === "query") {
       dispatch(fetchData({ endpoint, query: inputValue })).then((action) => {
+        if (fetchData.fulfilled.match(action)) {
+          const response = action.payload as ApiResponse<T[]>;
+          callback(transform(response.data));
+        } else {
+          callback([]);
+        }
+      });
+    }
+    if (fetchOptionWith === "search") {
+      dispatch(fetchData({ endpoint, search: inputValue })).then((action) => {
         if (fetchData.fulfilled.match(action)) {
           const response = action.payload as ApiResponse<T[]>;
           callback(transform(response.data));
@@ -86,6 +101,21 @@ const ReusableAsyncSelect = <T,>({
           callback([]);
         }
       });
+    } else if (fetchOptionWith === "querySearchTerm") {
+      dispatch(fetchData({ endpoint, querySearchTerm: inputValue })).then(
+        (action) => {
+          if (fetchData.fulfilled.match(action)) {
+            const response = action.payload as ApiResponse<T[]>;
+            if (Array.isArray(response)) {
+              callback(transform(response));
+            } else {
+              callback(transform(response.data));
+            }
+          } else {
+            callback([]);
+          }
+        }
+      );
     }
   };
 

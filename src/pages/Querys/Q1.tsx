@@ -21,9 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import {
-  fetchListOfQ1,
-} from "@/components/shared/Api/masterApi";
+import { fetchListOfQ1 } from "@/components/shared/Api/masterApi";
 import { exportDateRangespace } from "@/components/shared/Options";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
@@ -53,7 +51,6 @@ const Q1 = () => {
 
   const fetchComponentList = async (e: any) => {
     setSelectedCustomer(e);
-
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     let { date } = formData;
@@ -107,7 +104,7 @@ const Q1 = () => {
       headerName: "Transaction Type",
       field: "transaction_type",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 190,
     },
     {
       headerName: "Qty In",
@@ -140,7 +137,7 @@ const Q1 = () => {
       width: 190,
     },
     {
-      headerName: "DonebBy",
+      headerName: "Done By",
       field: "doneby",
       filter: "agTextColumnFilter",
       width: 190,

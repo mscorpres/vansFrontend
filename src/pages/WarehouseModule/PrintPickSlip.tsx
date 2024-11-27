@@ -1,6 +1,6 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import {  Filter,  } from "lucide-react";
+import { Filter } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -223,7 +223,7 @@ const PrintPickSlip: React.FC = () => {
         <div className="p-[10px]"></div>
         <Form
           form={form}
-          className="space-y-6 overflow-hidden p-[10px] h-[370px]  "
+          className="space-y-6 overflow-hidden p-[10px] h-[470px]  "
         >
           {/* <form
             onSubmit={form.handleSubmit(fetchManageList)}
@@ -298,7 +298,7 @@ const PrintPickSlip: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         {" "}
         {loading && <FullPageLoading />}
         <AgGridReact

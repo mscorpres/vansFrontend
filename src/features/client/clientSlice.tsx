@@ -124,7 +124,6 @@ export const fetchShippingAddressDetails = createAsyncThunk<
   try {
     const response = await spigenAxios.get<shippingAddressPayload>(
       `/backend/shippingAddress/${shipping_code}`
- 
     );
 
     return response.data.data;
@@ -163,7 +162,6 @@ export const fetchBillingListDetails = createAsyncThunk<
   try {
     const response = await spigenAxios.get<shippingAddressPayload>(
       `/backend/billingAddress/${billing_code}`
-   
     );
 
     return response.data.data;
@@ -449,7 +447,6 @@ export const fetchCompletedPo = createAsyncThunk<
   try {
     const response = await spigenAxios.get<uomPayload>(
       `purchaseOrder/fetchCompletePO?wise=${wise}&data=${data}`
-    
     );
 
     return response.data;
@@ -468,7 +465,6 @@ export const fetchneededApprovalPO = createAsyncThunk<
   try {
     const response = await spigenAxios.get<uomPayload>(
       `purchaseOrder/fetchneededApprovalPO?wise=${wise}&data=${data}`
-   
     );
 
     return response.data;

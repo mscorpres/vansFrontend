@@ -1,6 +1,6 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import {  Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -110,7 +110,7 @@ const ViewMin: React.FC = () => {
     },
     {
       field: "datetime",
-      headerName: "Min Date Time ",
+      headerName: "MIN Date Time ",
       flex: 1,
       cellRenderer: CopyCellRenderer,
       filterParams: {
@@ -122,7 +122,7 @@ const ViewMin: React.FC = () => {
     },
     {
       field: "transaction",
-      headerName: "Min Id",
+      headerName: "MIN Id",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -167,7 +167,7 @@ const ViewMin: React.FC = () => {
       value: "datewise",
     },
     {
-      label: "Min Wise",
+      label: "MIN Wise",
       value: "minwise",
     },
   ];
@@ -199,7 +199,6 @@ const ViewMin: React.FC = () => {
     }
     let payload = { data: date, wise: values.wise.value };
     dispatch(getMinTransactionByDate(payload)).then((res: any) => {
-
       if (res.payload.code == 200) {
         let arr = res.payload.data;
         let newRow = arr.data.map((r) => {
@@ -283,7 +282,7 @@ const ViewMin: React.FC = () => {
             </Form.Item>
           ) : (
             <Form.Item className="w-full" name="data">
-              <Input placeholder="Min number" />
+              <Input placeholder="MIN number" />
             </Form.Item>
           )}
           <div className="w-full flex justify-end">

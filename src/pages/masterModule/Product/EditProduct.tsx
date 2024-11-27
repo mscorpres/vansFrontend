@@ -705,16 +705,16 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
-                          <Form.Item name="brand" label="Min Stock (FG)">
+                          <Form.Item name="brand" label="MIN Stock (FG)">
                             <Input
                               className={InputStyle}
-                              placeholder="Enter Min Stock (FG)"
+                              placeholder="Enter MIN Stock (FG)"
                             />
                           </Form.Item>
-                          <Form.Item name="minStock" label="Min Stock (RM)">
+                          <Form.Item name="minStock" label="MIN Stock (RM)">
                             <Input
                               className={InputStyle}
-                              placeholder="Enter Min Stock (RM)"
+                              placeholder="Enter MIN Stock (RM)"
                             />
                           </Form.Item>
                           <Form.Item name="batch" label="Mfg Batch Size">

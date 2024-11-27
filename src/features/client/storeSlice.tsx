@@ -351,7 +351,7 @@ export const getMarkupID = createAsyncThunk<settleTransferPayload>(
   "/minSettle/getMarkupID",
   async (payload) => {
     try {
-      const response = await spigenAxios.post("/minSettle/getMarkupID");
+      const response = await spigenAxios.get(`/minSettle/getMarkupID`);
 
       return response.data;
     } catch (error) {
@@ -382,11 +382,15 @@ export const getminBox = createAsyncThunk<ResponseData, FormData>(
   async (payload: FormData) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post("/qrPrint/getminBox", payload, {
-        headers: {
-          "Content-Type": "multipart/form-data", // Important for FormData
-        },
-      });
+      const response = await spigenAxios.post(
+        `qrPrint/getminBox?type=MIN&min_no=MIN/24-25/0117`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Important for FormData
+          },
+        }
+      );
 
       return response.data; // Return the response data to Redux
     } catch (error) {
@@ -434,9 +438,8 @@ export const fetchPrintPickSetelement = createAsyncThunk<ResponseData>(
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
-        "/minSettle/fetchPrintPickSetelement",
-        payload
+      const response = await spigenAxios.get(
+        `/minSettle/fetchPrintPickSetelement?wise=${payload?.wise}&data=${payload?.data}`
       );
 
       return response.data; // Return the response data to Redux
@@ -472,9 +475,8 @@ export const getMinTransactionByDate = createAsyncThunk<ResponseData>(
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
-        "/transaction/getMinTransactionByDate",
-        payload
+      const response = await spigenAxios.get(
+        `/transaction/getMinTransactionByDate?wise=${payload?.wise}&data=${payload?.data}`
       );
 
       return response.data; // Return the response data to Redux
@@ -658,9 +660,8 @@ export const allphysical = createAsyncThunk<ResponseData>(
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
-        "/physicalStock/allphysical_stock",
-        payload
+      const response = await spigenAxios.get(
+        `/physicalStock/allphysical_stock?date=${payload.date}`
       );
 
       return response.data; // Return the response data to Redux
@@ -1050,6 +1051,18 @@ const storeSlice = createSlice({
         state.aproveStock = action.payload;
       })
       .addCase(printsticker2.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(cutomerLable.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cutomerLable.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(cutomerLable.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       });

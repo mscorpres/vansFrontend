@@ -154,9 +154,10 @@ const ApproveList: React.FC = () => {
         <div className="p-[10px]"></div>
         <Form
           form={form}
+          layout="vertical"
           className="space-y-6 overflow-hidden p-[10px] h-[370px]  "
         >
-          <Form.Item className="w-full" name="data">
+          <Form.Item className="w-full" name="data" label="Date Range">
             <Space direction="vertical" size={12} className="w-full">
               <RangePicker
                 className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"

@@ -360,7 +360,7 @@ const Q2 = () => {
       width: 190,
     },
     {
-      headerName: "Min No.",
+      headerName: "MIN No.",
       field: "MIN_NO",
       filter: "agTextColumnFilter",
       width: 190,
