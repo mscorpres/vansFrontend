@@ -219,6 +219,18 @@ const R2 = () => {
       filter: "agTextColumnFilter",
       width: 150,
     },
+    {
+      headerName: "Make",
+      field: "make",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
+      headerName: "Description",
+      field: "description",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
   ];
   const type = [
     {
