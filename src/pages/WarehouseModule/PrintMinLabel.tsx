@@ -15,6 +15,7 @@ import { downloadFunction } from "@/components/shared/PrintFunctions";
 import Print from "@/assets/Print.jpg";
 // import p1 from "@/assets/p1.jpeg";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { toast } from "@/components/ui/use-toast";
 function PrintMinLabel() {
   const [form] = Form.useForm();
   const selMin = Form.useWatch("min", form);
@@ -87,7 +88,6 @@ function PrintMinLabel() {
 
       dispatch(printsticker2(payload)).then((res) => {
         if (res.payload.code == 200) {
-
           downloadFunction(
             res.payload.data.buffer.data,
             res.payload.data.filename
@@ -96,16 +96,22 @@ function PrintMinLabel() {
       });
     } else {
       dispatch(qrPrint(payload)).then((res) => {
+        console.log("res", res);
+
         if (res.payload.code == 200) {
           downloadFunction(
             res.payload.data.buffer.data,
             res.payload.data.filename
           );
+        } else {
+          toast({
+            title: res.payload.message.msg,
+            className: "bg-red-600 text-white items-center",
+          });
         }
       });
     }
   };
-
   useEffect(() => {
     if (selMin) {
       form.setFieldValue("box", "");

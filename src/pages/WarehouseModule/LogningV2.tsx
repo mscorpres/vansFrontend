@@ -189,7 +189,7 @@ const LogningV2: React.FC = () => {
                 </InputLabel>
                 <OutlinedInput
                   autoFocus
-                  autoComplete="off"
+                  // autoComplete="off"
                   {...register("username", {
                     required: "Username is required",
                   })}
@@ -217,7 +217,7 @@ const LogningV2: React.FC = () => {
                     Password
                   </InputLabel>
                   <OutlinedInput
-                    autoComplete="off"
+                    // autoComplete="off"
                     {...register("password", {
                       required: "Password is required",
                     })}

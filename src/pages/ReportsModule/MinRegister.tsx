@@ -201,9 +201,10 @@ const MinRegister = () => {
       width: 190,
     },
     {
-      headerName: "Doc. Id",
+      headerName: "Invoice Id",
       field: "INVOIVENUMBER",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -217,11 +218,12 @@ const MinRegister = () => {
       headerName: "PO No.",
       field: "PONUMBER",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "PO Date",
-      field: "PODATE",
+      field: "DATE",
       filter: "agTextColumnFilter",
       width: 190,
     },
