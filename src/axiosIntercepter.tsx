@@ -64,8 +64,7 @@ spigenAxios.interceptors.response.use(
         window.location.reload();
         return Promise.reject(error);
       }
-
-      if (errorData.success === false || errorData?.status == "error") {
+   if (errorData.success === false || errorData?.status == "error") {
         if (errorData?.message?.msg) {
           toasts({
             title: errorData?.message?.msg,
