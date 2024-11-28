@@ -120,9 +120,12 @@ export const getProductList = async () => {
 //   return response;
 // };
 export const getCustomerList = async (val: any) => {
-  const response = await spigenAxios.post("/others/customerList", {
-    search: val,
-  });
+  const response = await spigenAxios.get(
+    `others/customerList?search=${val}`
+    //   {
+    //   search: val,
+    // }
+  );
   return response;
 };
 export const getGroupList = async () => {

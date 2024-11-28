@@ -162,7 +162,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 }
                                 endpoint="/others/customerList"
                                 transform={transformOptions}
-                                fetchOptionWith="payload"
+                                fetchOptionWith="search"
                                 onChange={handleCustomerSelection}
                                 // value={form.watch("customer_code")}
                               />
@@ -687,14 +687,10 @@ const CreateSalesOrder: React.FC<Props> = ({
                                     const formattedDate = value
                                       ? value.format("DD-MM-YYYY")
                                       : "";
-                                    form.setValue(
-                                      "ref_date",
-                                      formattedDate,
-                                      {
-                                        shouldValidate: true,
-                                        shouldDirty: true,
-                                      }
-                                    );
+                                    form.setValue("ref_date", formattedDate, {
+                                      shouldValidate: true,
+                                      shouldDirty: true,
+                                    });
                                   }}
                                 />
                               </Space>

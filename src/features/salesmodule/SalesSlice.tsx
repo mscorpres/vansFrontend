@@ -124,16 +124,18 @@ export const fetchSellRequestList = createAsyncThunk<
   ApiResponse<SellRequest[]>,
   FetchSellRequestPayload
 >("salesOrder/getSaleOrderList", async (payload) => {
-  const response = await spigenAxios.post("salesOrder/getSaleOrderList", payload);
+  const response = await spigenAxios.get(
+    `salesOrder/getSaleOrderList?data=${payload.data}&type=${payload.type}`,
+    payload
+  );
   return response.data;
 });
-
 
 export const approveSo = createAsyncThunk(
   "sellRequest/approveSo",
   async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>("/salesOrder/approveSo", {
+      const response = await spigenAxios.put<any>("/salesOrder/approveSo", {
         so_id: so_id,
       });
 
@@ -156,7 +158,7 @@ export const rejectSo = createAsyncThunk(
   "client/rejectSo",
   async (payload: any, { rejectWithValue }) => {
     try {
-      const response = (await spigenAxios.post<any>(
+      const response = (await spigenAxios.put<any>(
         "/salesOrder/rejectSo",
         payload
       )) as any;
@@ -182,7 +184,7 @@ export const cancelSalesOrder = createAsyncThunk(
   "client/cancelSalesOrder",
   async (payload: CancelPayload, { rejectWithValue }) => {
     try {
-      const response = (await spigenAxios.post<any>(
+      const response = (await spigenAxios.put<any>(
         "/salesOrder/cancelSO",
         payload
       )) as any;
@@ -208,8 +210,8 @@ export const fetchMaterialList = createAsyncThunk(
   "client/soMaterialList",
   async (payload: any, { rejectWithValue }) => {
     try {
-      const response = (await spigenAxios.post<any>(
-        "/salesOrder/soMaterialList",
+      const response = (await spigenAxios.get<any>(
+        `/salesOrder/soMaterialList?so_id=${payload.so_id}`,
         payload
       )) as any;
 
@@ -493,8 +495,7 @@ const sellRequestSlice = createSlice({
         console.error("Fetch failed:", action.error);
         state.error = action.error?.message || null;
         state.loading = false;
-      })
-
+      });
   },
 });
 

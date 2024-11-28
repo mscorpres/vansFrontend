@@ -2,19 +2,17 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { spigenAxios } from "@/axiosIntercepter";
 import { toast } from "@/components/ui/use-toast";
 
-
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
   message?: string | null;
 }
 
-
 interface Address {
   address1: string;
   address2: string;
   addressId: number;
-  label?: string; 
+  label?: string;
 }
 
 interface Item {
@@ -23,40 +21,37 @@ interface Item {
   name: string;
   quantity: number;
   rate: number;
-  value: number; 
+  value: number;
 }
-
 
 interface SellShipmentRequest {
-    soId: string | number;
-    shipmentId: string | number;
-    client: string;
-    clientCode: string | number;
-    clientAddress: Address;
-    billingAddress: Address;
-    shippingAddress: Address;
-    billingId: number;
-    shippingId: number;
-    delChallanStatus: string;
-    shipmentStatus: string;
-    items: Item[];
-  
+  soId: string | number;
+  shipmentId: string | number;
+  client: string;
+  clientCode: string | number;
+  clientAddress: Address;
+  billingAddress: Address;
+  shippingAddress: Address;
+  billingId: number;
+  shippingId: number;
+  delChallanStatus: string;
+  shipmentStatus: string;
+  items: Item[];
 }
-
 
 interface SellShipmentState {
   data: SellShipmentRequest[];
   successMessage?: string | null;
-  shipmentMaterialList: any[]|null;
-  availableStock:any[];
+  shipmentMaterialList: any[] | null;
+  availableStock: any[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: SellShipmentState = {
   data: [],
-  shipmentMaterialList:null,
-  availableStock:[],
+  shipmentMaterialList: null,
+  availableStock: [],
   loading: false,
   error: null,
 };
@@ -70,20 +65,17 @@ interface CancelPayload {
   shipment_id: string;
 }
 
-
 interface CreateDeliveryChallanPayload {
-    shipment_id: string[];
-    so_id: string[];
-    nos_of_boxes: number;
-    client_id?: number;
-    client_addr_id?: number;
-    bill_id?: number;
-    remark?: string;
-  }
+  shipment_id: string[];
+  so_id: string[];
+  nos_of_boxes: number;
+  client_id?: number;
+  client_addr_id?: number;
+  bill_id?: number;
+  remark?: string;
+}
 
-
-
-  export const createDeliveryChallan = createAsyncThunk<
+export const createDeliveryChallan = createAsyncThunk<
   ApiResponse<null>,
   CreateDeliveryChallanPayload
 >("deliveryChallan/createDeliveryChallan", async (payload) => {
@@ -95,8 +87,8 @@ export const fetchMaterialList = createAsyncThunk(
   "client/soMaterialList",
   async (payload: any, { rejectWithValue }) => {
     try {
-      const response = (await spigenAxios.post<any>(
-        "/salesOrder/shipmentMaterialList",
+      const response = (await spigenAxios.get<any>(
+        `salesOrder/shipmentMaterialList?shipment_id=${payload.shipment_id}`,
         payload
       )) as any;
       return response.data;
@@ -113,7 +105,7 @@ export const cancelShipment = createAsyncThunk(
   "client/cancelShipment",
   async (payload: CancelPayload, { rejectWithValue }) => {
     try {
-      const response = (await spigenAxios.post<any>(
+      const response = (await spigenAxios.put<any>(
         "salesOrder/cancelShipment",
         payload
       )) as any;
@@ -139,9 +131,12 @@ export const approveShipment = createAsyncThunk(
   "sellRequest/approveShipment",
   async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>("/salesOrder/approveShipment", {
-        shipment_id: so_id,
-      });
+      const response = await spigenAxios.post<any>(
+        "/salesOrder/approveShipment",
+        {
+          shipment_id: so_id,
+        }
+      );
 
       if (!response.data) {
         throw new Error("No data received");
@@ -162,7 +157,6 @@ export const approveShipment = createAsyncThunk(
     }
   }
 );
-
 
 export const createInvoice = createAsyncThunk(
   "client/createInvoice",
@@ -232,12 +226,14 @@ export const fetchSalesOrderShipmentList = createAsyncThunk<
   ApiResponse<SellShipmentRequest[]>,
   FetchSellShipmentPayload
 >("sellRequest/fetchSalesOrderShipmentList", async (payload) => {
-  const response = await spigenAxios.post("salesOrder/shipmentDetails", payload);
+  console.log(payload);
+
+  const response = await spigenAxios.get(
+    `salesOrder/shipmentDetails?data=${payload.data}&type=${payload.type}`,
+    payload
+  );
   return response.data;
 });
-
-
-
 
 export const updateSOshipment = createAsyncThunk<
   ApiResponse<null>,
@@ -271,15 +267,12 @@ export const updateSOshipment = createAsyncThunk<
   return response.data;
 });
 
-
-
-
 const sellShipmentSlice = createSlice({
-    name: "shipment",
-    initialState,
-    reducers: {},
-    extraReducers: (builder) => {
-      builder
+  name: "shipment",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
 
       .addCase(createDeliveryChallan.pending, (state) => {
         state.loading = true;
@@ -288,20 +281,23 @@ const sellShipmentSlice = createSlice({
       })
       .addCase(createDeliveryChallan.fulfilled, (state, action) => {
         if (action.payload.success) {
-          state.successMessage = action.payload.message || "Delivery Challan created successfully.";
+          state.successMessage =
+            action.payload.message || "Delivery Challan created successfully.";
           state.error = null;
         } else {
-          state.error = action.payload.message || "Failed to create delivery challan.";
+          state.error =
+            action.payload.message || "Failed to create delivery challan.";
           state.successMessage = null;
         }
         state.loading = false;
       })
       .addCase(createDeliveryChallan.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to create delivery challan.";
+        state.error =
+          action.error.message || "Failed to create delivery challan.";
         state.successMessage = null;
       })
-      
+
       .addCase(fetchSalesOrderShipmentList.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -384,25 +380,25 @@ const sellShipmentSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to create invoice";
       })
-        .addCase(updateSOshipment.pending, (state) => {
-          state.loading = true;
+      .addCase(updateSOshipment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateSOshipment.fulfilled, (state, action) => {
+        if (action.payload.success) {
           state.error = null;
-        })
-        .addCase(updateSOshipment.fulfilled, (state, action) => {
-          if (action.payload.success) {
-            state.error = null;
-          } else {
-            state.error = action.payload.message || "Failed to update sales order shipment";
-          }
-          state.loading = false;
-        })
-        .addCase(updateSOshipment.rejected, (state, action) => {
-          state.loading = false;
-          state.error = action.error.message || "Failed to update sales order shipment";
-        });
-    },
-  });
-  
- 
-  
+        } else {
+          state.error =
+            action.payload.message || "Failed to update sales order shipment";
+        }
+        state.loading = false;
+      })
+      .addCase(updateSOshipment.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to update sales order shipment";
+      });
+  },
+});
+
 export default sellShipmentSlice.reducer;

@@ -276,7 +276,7 @@ const Product = () => {
                   transform={transformOptionData}
                   onChange={(e) => form.setValue("customerName", e)}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="search"
                 />
               </Form.Item>
             </div>{" "}

@@ -123,7 +123,7 @@ const CustomerComponent = () => {
                 transform={transformOptionData}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
                 // value={selectedCustomer}
-                fetchOptionWith="payload"
+                fetchOptionWith="search"
               />
             </Form.Item>
           </div>

@@ -317,7 +317,7 @@ export const fetchCustomerDetail = createAsyncThunk<
 >("client/fetchCustomerDetail", async ({ search }, { rejectWithValue }) => {
   try {
     const response = await spigenAxios.post<ComponentDetailResponse>(
-      `/others/customerList`,
+      `/others/customerList?search=${search}`,
       { search }
     );
 

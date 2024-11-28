@@ -18,7 +18,7 @@ import {
 
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import {  Form,  } from "antd";
+import { Form } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { RootState } from "@/store";
@@ -252,7 +252,7 @@ const BatchAlloaction = () => {
                   transform={transformOptionData}
                   onChange={(e) => form.setValue("customerName", e)}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="search"
                 />
               </Form.Item>
             </div>
