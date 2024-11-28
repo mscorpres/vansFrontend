@@ -278,7 +278,7 @@ export const fetchProductData = createAsyncThunk<
   { comp_key: string }
 >("client/fetchProductData", async ({ comp_key }) => {
   const response = await spigenAxios.post<ComponentDetailResponse>(
-    `/backend/fetchHsnDb`,
+    `/backend/fetchHsnDb/${comp_key}`,
     { comp_key: comp_key }
   );
 
@@ -316,9 +316,8 @@ export const fetchCustomerDetail = createAsyncThunk<
   { search: string } // Argument type
 >("client/fetchCustomerDetail", async ({ search }, { rejectWithValue }) => {
   try {
-    const response = await spigenAxios.post<ComponentDetailResponse>(
-      `/others/customerList?search=${search}`,
-      { search }
+    const response = await spigenAxios.get<ComponentDetailResponse>(
+      `/others/customerList?search=${search}`
     );
 
     // Ensure this line accesses the correct data structure
@@ -360,9 +359,8 @@ export const fetchDataForUpdate = createAsyncThunk(
   "client/fetchData",
   async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>(
-        "/salesOrder/fetchData4Update",
-        { so_id: so_id }
+      const response = await spigenAxios.get<any>(
+        `salesOrder/fetchData4Update?so_id=${so_id}`
       );
 
       if (!response.data) {
@@ -395,7 +393,7 @@ export const updateSalesOrderRequest = createAsyncThunk<
   ApiResponse<any>,
   SellRequestPayload
 >("/sellRequest/updateSalesOrderRequest", async (payload) => {
-  const response = await spigenAxios.post(
+  const response = await spigenAxios.put(
     "/salesOrder/updateSalesOrder",
     payload
   );

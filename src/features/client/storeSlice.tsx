@@ -282,11 +282,11 @@ export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
   "/backend/fetchAvailableStockBoxes",
   async (payload) => {
     try {
-      const response = await spigenAxios.post(
-        "/backend/fetchAvailableStockBoxes",
-        payload
+      const response = await spigenAxios.get(
+        `backend/fetchAvailableStockBoxes?component=${payload?.component}`
       );
-      return response.data;
+
+      return response?.data?.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);

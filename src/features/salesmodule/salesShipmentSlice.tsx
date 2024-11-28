@@ -131,7 +131,7 @@ export const approveShipment = createAsyncThunk(
   "sellRequest/approveShipment",
   async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>(
+      const response = await spigenAxios.put<any>(
         "/salesOrder/approveShipment",
         {
           shipment_id: so_id,
@@ -188,9 +188,8 @@ export const fetchAvailableStock = createAsyncThunk(
   "client/fetchAvailableStock",
   async (payload: any, { rejectWithValue }) => {
     try {
-      const response = (await spigenAxios.post<any>(
-        "/backend/fetchAvailableStockBoxes",
-        payload
+      const response = (await spigenAxios.get<any>(
+       `backend/fetchAvailableStockBoxes?component=${payload?.component}`
       )) as any;
 
       return response.data;

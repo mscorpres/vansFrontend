@@ -155,9 +155,11 @@ const PickSlip = () => {
           costCenter={costCenter}
           form={form}
           setSheetOpen={setSheetOpen}
+          sheetOpen={sheetOpen}
           selectedRows={selectedRows}
           finalrows={finalrows.length}
           boxName={boxName}
+          openDrawer={openDrawer}
           totalQty={selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
         />
       ),
@@ -345,6 +347,11 @@ const PickSlip = () => {
     setFinalRows(selectedRows);
   };
 
+  const openDrawer = () => {
+    setSheetOpen(true);
+    // setFinalRows(selectedRows);
+  };
+
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
       <div className="bg-[#fff]">
@@ -469,7 +476,7 @@ const PickSlip = () => {
 "
       />
       <Sheet
-        open={sheetOpen && availableStockBoxes?.length > 0}
+        open={sheetOpen == true && availableStockBoxes?.length > 0}
         onOpenChange={setSheetOpen}
       >
         <SheetContent

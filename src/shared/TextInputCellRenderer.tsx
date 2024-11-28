@@ -363,7 +363,7 @@ const TextInputCellRenderer = (props: any) => {
   const handleInputChange = (e: any) => {
     const newValue = e.target.value;
     data[colDef.field] = newValue; // Update the data object
-   // Update localValue if the rate is changed
+    // Update localValue if the rate is changed
     if (colDef.field === "rate") {
       data["localValue"] = newValue * parseFloat(data.orderQty);
     }
@@ -988,7 +988,9 @@ const TextInputCellRenderer = (props: any) => {
             readOnly
             value={value}
             type="text"
-            onClick={() => props.setSheetOpen(true)}
+            onClick={() => {
+              props?.openDrawer();
+            }}
             placeholder={colDef.headerName}
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />

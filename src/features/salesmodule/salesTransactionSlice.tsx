@@ -1,32 +1,27 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { spigenAxios } from "@/axiosIntercepter";
 
-
-
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
   message?: string | null;
 }
 
-
-
 interface eInvoice {
-    delivery_challan_dt: string; 
-    so_ship_invoice_id: string | number; 
-    invoiceNo: string; 
-    invoiceDate: string;
-    irnno: string; 
-    client: string; 
-    client_code: string | number; 
-    clientaddress1: string; 
-    clientaddress2: string; 
-    billingaddress1: string;
-    billingaddress2: string; 
-    shippingaddress1: string;
-    shippingaddress2: string; 
-  }
-
+  delivery_challan_dt: string;
+  so_ship_invoice_id: string | number;
+  invoiceNo: string;
+  invoiceDate: string;
+  irnno: string;
+  client: string;
+  client_code: string | number;
+  clientaddress1: string;
+  clientaddress2: string;
+  billingaddress1: string;
+  billingaddress2: string;
+  shippingaddress1: string;
+  shippingaddress2: string;
+}
 
 interface eInvoiceState {
   data: eInvoice[];
@@ -44,12 +39,13 @@ interface FetchTransactionPayload {
   data: string;
 }
 
-
 export const fetchInvoiceList = createAsyncThunk<
-ApiResponse<eInvoice[]>,
-FetchTransactionPayload
+  ApiResponse<eInvoice[]>,
+  FetchTransactionPayload
 >("salesInvoice/getEinvoiceList", async (payload) => {
-  const response = await spigenAxios.post("salesInvoice/fetchEnvoiceDetail", payload);
+  const response = await spigenAxios.get(
+    `salesInvoice/fetchEnvoiceDetail?wise=${payload.wise}&data=${payload.data}`
+  );
   return response.data;
 });
 
@@ -57,23 +53,32 @@ export const fetchEwayList = createAsyncThunk<
   ApiResponse<any>,
   FetchTransactionPayload
 >("salesInvoice/getEwayBillList", async (payload) => {
-  const response = await spigenAxios.post("salesInvoice/fetchEwayBillDetail", payload);
+  const response = await spigenAxios.get(
+    `salesInvoice/fetchEwayBillDetail?wise=${payload.wise}&data=${payload.data}`
+  );
+
   return response.data;
 });
 
 export const cancelEInvoice = createAsyncThunk<
-ApiResponse<eInvoice[]>,
-FetchTransactionPayload
+  ApiResponse<eInvoice[]>,
+  FetchTransactionPayload
 >("salesInvoice/cancelEinvoice", async (payload) => {
-  const response = await spigenAxios.post("salesInvoice/cancelEinvoice", payload);
+  const response = await spigenAxios.put(
+    "salesInvoice/cancelEinvoice",
+    payload
+  );
   return response.data;
 });
 
 export const cancelEwayBill = createAsyncThunk<
-ApiResponse<eInvoice[]>,
-FetchTransactionPayload
+  ApiResponse<eInvoice[]>,
+  FetchTransactionPayload
 >("salesInvoice/cancelEwayBill", async (payload) => {
-  const response = await spigenAxios.post("salesInvoice/cancelEwaybill", payload);
+  const response = await spigenAxios.put(
+    "salesInvoice/cancelEwaybill",
+    payload
+  );
   return response.data;
 });
 
@@ -83,8 +88,7 @@ const eTranactionRegisterSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      
-     
+
       .addCase(fetchInvoiceList.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -94,13 +98,15 @@ const eTranactionRegisterSlice = createSlice({
           state.data = action.payload.data;
           state.error = null;
         } else {
-          state.error = action.payload.message || "Failed to fetch transaction list";
+          state.error =
+            action.payload.message || "Failed to fetch transaction list";
         }
         state.loading = false;
       })
       .addCase(fetchInvoiceList.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch transcation list";
+        state.error =
+          action.error.message || "Failed to fetch transcation list";
       })
       .addCase(cancelEwayBill.pending, (state) => {
         state.loading = true;
@@ -121,11 +127,8 @@ const eTranactionRegisterSlice = createSlice({
       .addCase(cancelEInvoice.rejected, (state, action) => {
         state.error = action.error?.message || null;
         state.loading = false;
-      })
-
-
+      });
   },
 });
-
 
 export default eTranactionRegisterSlice.reducer;

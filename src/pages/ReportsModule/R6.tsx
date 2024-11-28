@@ -29,6 +29,8 @@ import { exportDateRangespace } from "@/components/shared/Options";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { IoMdDownload } from "react-icons/io";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -81,6 +83,9 @@ const R6 = () => {
   };
   const handleCompChange = (e: any) => {
     setSelectedCustomer(e);
+  };
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "R6 BOX Rate Report");
   };
 
   const columnDefs: ColDef<rowData>[] = [
@@ -250,16 +255,30 @@ const R6 = () => {
                 )}
               />
             )}
-            {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            {/* )} */}{" "}
+            <div className="flex gap-[10px] justify-end  px-[5px]">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                // onClick={() => {}}
+                disabled={rowData.length === 0}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

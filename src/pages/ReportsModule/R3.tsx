@@ -32,6 +32,8 @@ import {
 import { exportDateRangespace } from "@/components/shared/Options";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { IoMdDownload } from "react-icons/io";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -216,7 +218,9 @@ const R3 = () => {
       value: "PROJECT",
     },
   ];
-
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "R3 BOM Wise Report");
+  };
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
@@ -305,16 +309,30 @@ const R3 = () => {
                 </FormItem>
               )}
             />
-            {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            {/* )} */}{" "}
+            <div className="flex gap-[10px] justify-end  px-[5px]">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                // onClick={() => {}}
+                disabled={rowData.length === 0}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

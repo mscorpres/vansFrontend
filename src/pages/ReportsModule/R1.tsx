@@ -48,11 +48,9 @@ const R1 = () => {
   });
   const { execFun, loading: loading1 } = useApi();
   //   const { addToast } = useToastContainer()
-  
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     let { date } = formData;
-    // if (date) {
 
     let dataString = exportDatepace(formData?.date);
 
