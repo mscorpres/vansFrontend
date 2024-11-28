@@ -570,13 +570,13 @@ export const addNewAltComponent = async (payload: any) => {
 };
 export const getAllAlternativeComponents = async (payload: any) => {
   const response = await spigenAxios.get(
-    `/bom/getAllAlternativeComponents/${payload.parent_component}`
+    `bom/getAllAlternativeComponents/:${payload.parent_component}/:${payload.subjectid}/:${payload.product_id}`
   );
   return response;
 };
 export const getAlternativeComponents = async (payload: any) => {
   const response = await spigenAxios.get(
-    `/bom/getAlternativeComponents/${payload.subject}/${payload.current_component}`
+    `bom/getAlternativeComponents?subject=${payload.subject}&current_component=${payload.current_component}`
   );
   return response;
 };

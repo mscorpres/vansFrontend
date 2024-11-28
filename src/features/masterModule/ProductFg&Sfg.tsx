@@ -15,7 +15,7 @@ export const updateBomComponent = createAsyncThunk<
   { addressID: string }
 >("/bom/updateBomComponent", async (payload) => {
   try {
-    const response = await spigenAxios.post<updateBOM>(
+    const response = await spigenAxios.put<updateBOM>(
       "/bom/updateBomComponent",
       payload
     );
