@@ -167,9 +167,7 @@ export const fetchBillAddressList = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { id: string } // Define the type of the argument you expect
 >("/client/uploadBillAddressExcel", async (id: any) => {
-  const response = await spigenAxios.post(`backend/billingAddressList`, {
-    cost_center: id,
-  });
+  const response = await spigenAxios.get(`/backend/billingAddressList/${id}`);
 
   return response.data;
 });

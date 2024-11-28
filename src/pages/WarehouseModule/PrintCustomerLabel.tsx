@@ -1,14 +1,11 @@
 import { Button, Form } from "antd";
 import { Filter } from "lucide-react";
-import { useEffect, useState } from "react";
-
 import styled from "styled-components";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData } from "@/helper/transform";
 import { useDispatch, useSelector } from "react-redux";
 import { cutomerLable } from "@/features/client/storeSlice";
-import { spigenAxios } from "@/axiosIntercepter";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import Print from "@/assets/Print.jpg";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -55,7 +52,7 @@ function PrintMinLabel() {
                   transform={transformOptionData}
                   // onChange={(e) => form.setValue("customerName", e)}
                   // value={selectedCustomer}
-                  fetchOptionWith="payloadSearchTerm"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
               {/* // )} */}

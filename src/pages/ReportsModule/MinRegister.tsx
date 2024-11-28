@@ -318,7 +318,7 @@ const MinRegister = () => {
                         // placeholder="State"
                         endpoint="/backend/searchPoByPoNo"
                         transform={transformOptionData}
-                        fetchOptionWith="payload"
+                        fetchOptionWith="search"
                         onChange={(e: any) => form.setValue("search", e.value)}
                       />
                     </FormControl>

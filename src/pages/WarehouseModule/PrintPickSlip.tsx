@@ -24,7 +24,7 @@ import {
   fetchPrintPickSetelement,
   printPickSetelement,
 } from "@/features/client/storeSlice";
-import { transformOptions } from "@/helper/transform";
+import { transformOptionData2 } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { rangePresets } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
@@ -264,8 +264,8 @@ const PrintPickSlip: React.FC = () => {
               <ReusableAsyncSelect
                 // placeholder="Cost Center"
                 endpoint="/backend/getOutTransaction"
-                transform={transformOptions}
-                fetchOptionWith="payloadSearchTerm"
+                transform={transformOptionData2}
+                fetchOptionWith="query2"
                 // onChange={handleCostCenterChange}
                 // value={selectedCostCenter}
               />

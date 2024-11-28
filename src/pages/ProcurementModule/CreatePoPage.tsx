@@ -225,7 +225,7 @@ const CreatePoPage: React.FC<Props> = ({
                         transform={transformOptionData}
                         onChange={(e) => form.setFieldValue("originalPO", e)}
                         // value={selectedCustomer}
-                        fetchOptionWith="payload"
+                        fetchOptionWith="search"
                       />
                     </Form.Item>
                   )}

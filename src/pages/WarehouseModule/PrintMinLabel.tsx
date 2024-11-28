@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformOptionData } from "@/helper/transform";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { useDispatch, useSelector } from "react-redux";
 import { printsticker2, qrPrint } from "@/features/client/storeSlice";
 import { spigenAxios } from "@/axiosIntercepter";
@@ -192,10 +192,10 @@ function PrintMinLabel() {
                     <ReusableAsyncSelect
                       // placeholder="Customer Name"
                       endpoint="/backend/getMinsTransaction4Label"
-                      transform={transformOptionData}
+                      transform={transformOptionData2}
                       // onChange={(e) => form.setValue("customerName", e)}
                       // value={selectedCustomer}
-                      fetchOptionWith="payloadSearchTerm"
+                      fetchOptionWith="query2"
                     />
                   </Form.Item>
                   <Form.Item

@@ -34,10 +34,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  fetchCurrency,
-  rejectPo,
-} from "@/features/client/clientSlice";
+import { fetchCurrency, rejectPo } from "@/features/client/clientSlice";
 import { minTransaction } from "@/features/client/storeSlice";
 import {
   FileInput,
