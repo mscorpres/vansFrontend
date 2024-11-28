@@ -178,9 +178,12 @@ export const fetchBillAddress = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { id: string } // Define the type of the argument you expect
 >("/client/fetchBillAddress", async (id: any) => {
-  const response = await spigenAxios.post(`backend/billingAddress`, {
-    billing_code: id,
-  });
+  const response = await spigenAxios.get(
+    `/backend/billingAddress/${id}`
+    //    {
+    //   billing_code: id,
+    // }
+  );
 
   return response.data;
 });
@@ -296,9 +299,13 @@ export const fetchComponentDetailByCode = createAsyncThunk<
   ComponentDetail[],
   { component_code: string; vencode: string }
 >("client/fetchProductData", async ({ component_code, vencode }) => {
-  const response = await spigenAxios.post<ComponentDetailResponse>(
-    `/soCreate/getComponentDetailsByCode`,
-    { component_code: component_code, vencode: vencode }
+  const response = await spigenAxios.get<ComponentDetailResponse>(
+    // `/soCreate/getComponentDetailsByCode`,
+    // {
+    //   component_code: component_code,
+    //   vencode: vencode,
+    // }
+    `salesOrder/getComponentDetailsByCode?component_code=${component_code}`
   );
 
   if (response.data.status === "success") {
