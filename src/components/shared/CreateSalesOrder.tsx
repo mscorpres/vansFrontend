@@ -13,6 +13,7 @@ import {
   transformCurrencyData,
   transformOptionData,
   transformOptions,
+  transformOptionsData,
   transformStateOptions,
 } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
@@ -1015,8 +1016,8 @@ const CreateSalesOrder: React.FC<Props> = ({
                                   : "Cost Center"
                               }
                               endpoint="backend/costCenter"
-                              transform={transformOptions}
-                              fetchOptionWith="payload"
+                              transform={transformOptionsData}
+                              fetchOptionWith="query2"
                               onChange={handleCostCenterChange}
                             />
                           </FormControl>

@@ -8,7 +8,6 @@ export const transformCustomerData = (data: any[]) => {
 };
 
 export const transformOptionData = (data: any[]) => {
-
   if (data?.length) {
     return data?.map((item) => ({
       label: item.text,
@@ -74,8 +73,27 @@ export const transformOptions = (
   data: any[]
 ): { label: string; value: string }[] => {
   // Ensure the function always returns an array
+  console.log("data", data);
+
   if (data?.length) {
     return data.map((item) => ({
+      label: item.text,
+      value: item.id,
+    }));
+  }
+
+  // Return an empty array if data is empty or undefined
+  return [];
+};
+
+export const transformOptionsData = (
+  data: any[]
+): { label: string; value: string }[] => {
+  // Ensure the function always returns an array
+  console.log("data", data);
+
+  if (data?.data?.length) {
+    return data?.data.map((item) => ({
       label: item.text,
       value: item.id,
     }));

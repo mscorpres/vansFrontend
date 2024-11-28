@@ -76,6 +76,7 @@ const R2 = () => {
       let arr = data.response.data.map((r, index) => {
         return {
           id: index + 1,
+          vendorDes: r.vendor_part_code + "/" + r.vendor_part_desc,
           ...r,
         };
       });
@@ -119,7 +120,7 @@ const R2 = () => {
     },
 
     {
-      headerName: "Part",
+      headerName: "Part No.",
       field: "part_no",
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
@@ -136,7 +137,7 @@ const R2 = () => {
     },
     {
       headerName: "Vendor Compenent Code/Description",
-      field: "vendor_name",
+      field: "vendorDes",
       filter: "agTextColumnFilter",
       minWidth: 320,
       cellRenderer: CopyCellRenderer,
@@ -193,7 +194,8 @@ const R2 = () => {
       field: "vendor_name",
       cellRenderer: CopyCellRenderer,
       filter: "agTextColumnFilter",
-      width: 210,
+      minWidth: 210,
+      flex: 1,
     },
     {
       headerName: "Due Date",
