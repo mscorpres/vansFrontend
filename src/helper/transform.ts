@@ -73,7 +73,7 @@ export const transformOptions = (
   data: any[]
 ): { label: string; value: string }[] => {
   // Ensure the function always returns an array
-  console.log("data", data);
+
 
   if (data?.length) {
     return data.map((item) => ({
@@ -90,7 +90,6 @@ export const transformOptionsData = (
   data: any[]
 ): { label: string; value: string }[] => {
   // Ensure the function always returns an array
-  console.log("data", data);
 
   if (data?.data?.length) {
     return data?.data.map((item) => ({
