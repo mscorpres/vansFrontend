@@ -9,7 +9,7 @@ import HomePage from "./pages/HomePage";
 import CompletedPOPage from "./pages/CompletedPOPage";
 import ApprovePOPage from "./pages/ApprovePOPage";
 import ManagePoPage from "./pages/ProcurementModule/ManagePO/ManagePoPage";
-import ForgotPassword from "./pages/ForgotPassword";
+// import ForgotPassword from "./pages/ForgotPassword";
 import RegisterSalesOrderPage from "./pages/salesModule/RegisterSalesOrderPage";
 import "@ag-grid-community/styles/ag-grid.css";
 import "@ag-grid-community/styles/ag-theme-quartz.css";
@@ -102,6 +102,8 @@ import UoM from "./pages/masterModule/UOM/UoM";
 import Suom from "./pages/masterModule/UOM/Suom";
 import SopPage from "@/pages/fileupload/SopPage";
 import LogningV2 from "@/pages/WarehouseModule/LogningV2";
+import ForgetPasswordNew from "./pages/ForgetPasswordNew";
+import ChangePassword from "./pages/ChangePassword";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -124,16 +126,16 @@ const router = createBrowserRouter([
     ),
     path: "/login",
   },
-  {
-    element: (
-      <Protected authentication={false}>
-        <AuthLayout>
-          <ForgotPassword />
-        </AuthLayout>
-      </Protected>
-    ),
-    path: "/forgot-password",
-  },
+  // {
+  //   element: (
+  //     <Protected authentication={false}>
+  //       <AuthLayout>
+  //         <ForgotPassword />
+  //       </AuthLayout>
+  //     </Protected>
+  //   ),
+  //   path: "/forgot-password",
+  // },
   ////
   {
     element: (
@@ -1110,6 +1112,22 @@ const router = createBrowserRouter([
     element: (
       <MainLayout>
         <BlockedPageRenderPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: "/forgot-password",
+    element: (
+      <MainLayout>
+        <ForgetPasswordNew />
+      </MainLayout>
+    ),
+  },
+  {
+    path: "/change-password",
+    element: (
+      <MainLayout>
+        <ChangePassword />
       </MainLayout>
     ),
   },
