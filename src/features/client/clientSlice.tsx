@@ -172,7 +172,6 @@ export const fetchVendorAddressDetails = createAsyncThunk<
   try {
     const response = await spigenAxios.get<shippingAddressPayload>(
       `backend/vendorAddress?vendorcode=${vendorcode}&branchcode=${branchcode}`
-     
     );
 
     return response.data.data;
@@ -192,7 +191,6 @@ export const fetchComponentDetails = createAsyncThunk<
     try {
       const response = await spigenAxios.get<shippingAddressPayload>(
         `/purchaseOrder/getComponentDetailsByCode?component_code=${component_code}&vencode=${vencode}`
-      
       );
 
       return response.data.data;
@@ -226,8 +224,9 @@ export const searchingHsn = createAsyncThunk<hsnPayload>(
       const response = await spigenAxios.get<hsnPayload>(
         `backend/searchHsn/${payload.searchTerm}`
       );
+      console.log("response", response);
 
-      return response.data;
+      return response.data.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);

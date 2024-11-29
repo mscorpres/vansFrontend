@@ -33,6 +33,11 @@ export const componentList = async () => {
 
   return response;
 };
+export const addComponentInMaterial = async (payload: any) => {
+  const response = await spigenAxios.post("/component/addComponent", payload);
+
+  return response;
+};
 export const serviceList = async () => {
   const response = await spigenAxios.get("/component/service", {
     params: { _: 1718005226978 },
@@ -54,9 +59,7 @@ export const saveEditedService = async (payload: any) => {
   return response;
 };
 export const hsnList = async (search: any) => {
-  const response = await spigenAxios.post("backend/searchHsn", {
-    searchTerm: search,
-  });
+  const response = await spigenAxios.get(`backend/searchHsn/${search}`);
   return response;
 };
 export const insertProduct = async (payload: any) => {

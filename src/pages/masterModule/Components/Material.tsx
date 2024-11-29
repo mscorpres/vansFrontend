@@ -38,7 +38,12 @@ import {
 } from "@/constants/themeContants";
 import useApi from "@/hooks/useApi";
 import { listOfUoms } from "@/features/client/clientSlice";
-import { componentList, listOfUom } from "@/components/shared/Api/masterApi";
+import {
+  addComponentInMaterial,
+  componentList,
+  getGroupList,
+  listOfUom,
+} from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
 
 import EditMaterial from "./EditMaterial";
@@ -50,6 +55,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { addComponent } from "@/features/client/storeSlice";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 
 const Material = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -66,6 +72,8 @@ const Material = () => {
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
+  const [open, setOpen] = useState(false);
+
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
   // });
@@ -111,7 +119,7 @@ const Material = () => {
   const listOfComponentList = async () => {
     const response = await execFun(() => componentList(), "fetch");
     let { data } = response;
-    if (response.status == 200) {
+    if (data.success) {
       let comp = data.data;
 
       let arr = comp?.map((r, index) => {
@@ -121,13 +129,22 @@ const Material = () => {
         };
       });
       setRowData(arr);
+      toast({
+        title: data?.message,
+        className: "bg-green-600 text-white items-center",
+      });
+    } else {
+      toast({
+        title: data?.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const listUom = async () => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response?.status == 200) {
+    if (data.success) {
       let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
@@ -135,9 +152,13 @@ const Material = () => {
         };
       });
       setAsyncOptions(arr);
+      // toast({
+      //   title: data?.message,
+      //   className: "bg-green-600 text-white items-center",
+      // });
     } else {
       toast({
-        title: response?.message,
+        title: data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -157,14 +178,9 @@ const Material = () => {
     setAsyncOptions(arr);
   };
   const listSUom = async () => {
-    // const response = await execFun(() => listOfUom(), "submit");
     const response = await spigenAxios.get("/suom");
     const { data } = response;
-    // addToast("SUom List fetched", {
-    //   appearance: "success",
-    //   autoDismiss: true,
-    // });
-    if (response.status == 200) {
+    if (data.success) {
       let arr = data?.data?.map((r, index) => {
         return {
           label: r.units_name,
@@ -172,13 +188,21 @@ const Material = () => {
         };
       });
       setSuomOtions(arr);
+      // toast({
+      //   title: data?.message,
+      //   className: "bg-green-600 text-white items-center",
+      // });
+    } else {
+      toast({
+        title: data?.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const listOfGroups = async () => {
-    // const response = await execFun(() => listOfUom(), "submit");
-    const response = await spigenAxios.get("/groups/allGroups");
+    const response = await execFun(() => getGroupList(), "fetch");
     const { data } = response;
-    if (response.status == 200) {
+    if (data.success) {
       let arr = data?.data.map((r, index) => {
         return {
           label: r.group_name,
@@ -187,6 +211,11 @@ const Material = () => {
       });
 
       setGrpOtions(arr);
+    } else {
+      toast({
+        title: data?.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   useEffect(() => {
@@ -249,8 +278,7 @@ const Material = () => {
     },
   ];
   const onSubmit = async () => {
-    setLoading(true);
-
+    setOpen(false);
 
     let payload = {
       part: fixedVal.partCode,
@@ -268,48 +296,52 @@ const Material = () => {
       isSmt: fixedVal.smt.value,
       c_make: fixedVal.maker,
       //  doubtfull
-      // c_group: "GRP100220210910171321",
       // comp_type: values.type,
     };
-    try {
-      const response = await spigenAxios.post(
-        "/component/addComponent",
-        payload
-      );
-
-      if (response.data.code === 200) {
-        toast({
-          title: response.data.message, // Assuming 'message' is in the response
-          className: "bg-green-700 text-center text-white",
-        });
-        form.resetFields();
-        setRowData([]);
-        setHsnRowData([]);
-        setSheetOpenHSN(false);
-        setLoading(false);
-        listOfComponentList();
-      } else {
-        toast({
-          title: "Failed to add component", // You can show an error message here if the code is not 200
-          className: "bg-red-700 text-center text-white",
-        });
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error while adding component:", error);
+    // try {
+    // const response = await spigenAxios.post(
+    //   "/component/addComponent",
+    //   payload
+    // );
+    const response = await execFun(
+      () => addComponentInMaterial(payload),
+      "fetch"
+    );
+    let { data } = response;
+    if (data.success) {
       toast({
-        title: error.message.msg || "An unknown error occurred",
+        title: data.message, // Assuming 'message' is in the response
+        className: "bg-green-700 text-center text-white",
+      });
+      form.resetFields();
+      setRowData([]);
+      setHsnRowData([]);
+      setSheetOpenHSN(false);
+      setLoading(false);
+      listOfComponentList();
+    } else {
+      toast({
+        title: data.message, // Assuming 'message' is in the response
         className: "bg-red-700 text-center text-white",
       });
-      // You can also display an error toast here if needed
     }
+    setLoading(false);
+    // } catch (error) {
+    //   console.error("Error while adding component:", error);
+    //   toast({
+    //     title: error.message,
+    //     className: "bg-red-700 text-center text-white",
+    //   });
+    //   // You can also display an error toast here if needed
+    // }
 
     setLoading(false);
   };
   const handleSearch = (searchKey: string, type: any) => {
     if (searchKey) {
       let p = { searchTerm: searchKey };
-      dispatch(searchingHsn(p)).then((res) => {});
+      dispatch(searchingHsn(p)).then((res) => {
+      });
     }
   };
   const defaultColDef = useMemo<ColDef>(() => {
@@ -374,23 +406,6 @@ const Material = () => {
       width: 200,
     },
 
-    // {
-    //   field: "action",
-    //   headerName: "",
-    //   flex: 1,
-    //   cellRenderer: (e) => {
-    //     return (
-    //       <div className="flex gap-[5px] items-center justify-center h-full">
-    //         <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600">
-    //           <Trash2
-    //             className="h-[15px] w-[15px] text-white"
-    //             onClick={() => setSheetOpenEdit(e?.data?.product_key)}
-    //           />
-    //         </Button>{" "}
-    //       </div>
-    //     );
-    //   },
-    // },
   ];
   const addHsn = async () => {
     values = await form.validateFields();
@@ -407,10 +422,7 @@ const Material = () => {
             Add
           </div>
           <Form form={form} layout="vertical" className="p-[10px]">
-            {/* <form
-              // onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 overflow-y-scroll p-[10px] h-[calc(100vh-150px)]"
-            > */}
+            
             {sheetOpenHSN == false ? (
               <>
                 <div className="grid grid-cols-3 gap-[40px] ">
@@ -440,15 +452,7 @@ const Material = () => {
                         isClearable={true}
                         isSearchable={true}
                         options={asyncOptions}
-                        //   onChange={(e) => console.log(e)}
-                        //   value={
-                        //     data.clientDetails
-                        //       ? {
-                        //           label: data.clientDetails.city.name,
-                        //           value: data.clientDetails.city.name,
-                        //         }
-                        //       : null
-                        //   }
+                        
                       />
                     </Form.Item>
                   </div>
@@ -465,15 +469,7 @@ const Material = () => {
                         isClearable={true}
                         isSearchable={true}
                         options={suomOtions}
-                        //   onChange={(e) => console.log(e)}
-                        //   value={
-                        //     data.clientDetails
-                        //       ? {
-                        //           label: data.clientDetails.city.name,
-                        //           value: data.clientDetails.city.name,
-                        //         }
-                        //       : null
-                        //   }
+                       
                       />
                     </Form.Item>
                   </div>
@@ -529,15 +525,7 @@ const Material = () => {
                         isClearable={true}
                         isSearchable={true}
                         options={grpOtions}
-                        //   onChange={(e) => console.log(e)}
-                        //   value={
-                        //     data.clientDetails
-                        //       ? {
-                        //           label: data.clientDetails.city.name,
-                        //           value: data.clientDetails.city.name,
-                        //         }
-                        //       : null
-                        //   }
+                       
                       />
                     </Form.Item>
                   </div>
@@ -555,15 +543,7 @@ const Material = () => {
                         isClearable={true}
                         isSearchable={true}
                         options={typeOption}
-                        //   onChange={(e) => console.log(e)}
-                        //   value={
-                        //     data.clientDetails
-                        //       ? {
-                        //           label: data.clientDetails.city.name,
-                        //           value: data.clientDetails.city.name,
-                        //         }
-                        //       : null
-                        //   }
+                       
                       />
                     </Form.Item>
                   </div>
@@ -580,15 +560,7 @@ const Material = () => {
                         isClearable={true}
                         isSearchable={true}
                         options={smtOption}
-                        //   onChange={(e) => console.log(e)}
-                        //   value={
-                        //     data.clientDetails
-                        //       ? {
-                        //           label: data.clientDetails.city.name,
-                        //           value: data.clientDetails.city.name,
-                        //         }
-                        //       : null
-                        //   }
+                      
                       />
                     </Form.Item>
                   </div>
@@ -665,29 +637,22 @@ const Material = () => {
                       rowSelection="multiple"
                       checkboxSelection={true}
                       overlayNoRowsTemplate={OverlayNoRowsTemplate}
-                    />{" "}
-                  </div>{" "}
+                    />
+                  </div>
                   <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
                     <Button
                       className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
                       onClick={() => setSheetOpenHSN(false)}
                     >
                       Back
-                    </Button>{" "}
-                    {/* <Button
-                      className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
-                      onClick={() =>
-                        isApprove ? setShowRejectConfirm(true) : setRowData([])
-                      }
-                    >
-                      {isApprove ? "Reject" : "Reset"}
-                    </Button> */}
+                    </Button>
+                   
                     <Button
                       type="submit"
                       className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
                       // onClick={(e) => e.preventDefault()}
                       onClick={(e: any) => {
-                        onSubmit();
+                        setOpen(true);
                         e.preventDefault();
                       }}
                     >
@@ -705,7 +670,7 @@ const Material = () => {
         </div>
         <div className="ag-theme-quartz h-[calc(100vh-100px)]">
           {" "}
-          {(loading1("fetch") || loading) && <FullPageLoading />}
+          {loading1("fetch") && <FullPageLoading />}
           <AgGridReact
             loadingCellRenderer={loadingCellRenderer}
             rowData={rowData}
@@ -718,6 +683,16 @@ const Material = () => {
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         </div>{" "}
+        <ConfirmationModal
+          open={open}
+          onClose={setOpen}
+          onOkay={() => {
+            onSubmit();
+          }}
+          loading={loading1("fetch")}
+          title="Confirm Submit!"
+          description="Are you sure to submit the entry?"
+        />{" "}
       </Wrapper>{" "}
       {sheetOpenEdit?.c_part_no && (
         <EditMaterial
