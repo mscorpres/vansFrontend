@@ -5,7 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { transformOptionData } from "@/helper/transform";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { InputStyle } from "@/constants/themeContants";
 import {
   AlertDialog,
@@ -37,6 +37,7 @@ import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -56,10 +57,12 @@ const Product = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [resetModel, setResetModel] = useState(false);
 
+  const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => getProductList(), "fetch");
+
     let { data } = response;
     if (response.status === 200) {
       let arr = data.data.map((r: any, index: any) => {
@@ -70,6 +73,10 @@ const Product = () => {
       });
       setRowData(arr);
     } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
 
@@ -77,7 +84,7 @@ const Product = () => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response?.status == 200) {
+    if (data.success) {
       let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
@@ -87,12 +94,13 @@ const Product = () => {
       setAsyncOptions(arr);
     } else {
       toast({
-        title: response?.message,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
   };
   const onsubmit = async () => {
+    setOpen(false);
     const value = await form.validateFields();
     let payload = {
       p_sku: value.sku,
@@ -104,7 +112,7 @@ const Product = () => {
     const response = await execFun(() => insertProduct(payload), "fetch");
 
     const { data } = response;
-    if (response.data.code == 200) {
+    if (data.success) {
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -294,7 +302,7 @@ const Product = () => {
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
                 onClick={(e: any) => {
                   e.preventDefault();
-                  onsubmit();
+                  setOpen(true);
                 }}
               >
                 Submit
@@ -342,6 +350,16 @@ const Product = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <ConfirmationModal
+        open={open}
+        onClose={setOpen}
+        onOkay={() => {
+          onsubmit();
+        }}
+        loading={loading1("fetch")}
+        title="Confirm Submit!"
+        description="Are you sure to submit the entry?"
+      />{" "}
     </Wrapper>
   );
 };

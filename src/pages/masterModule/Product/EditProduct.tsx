@@ -103,7 +103,9 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       () => getProductDetailsForEdit(sheetOpenEdit),
       "fetch"
     );
-    if (response.status == 200) {
+    let { data } = response;
+
+    if (data.success) {
       let { data } = response;
       let arr: any = data.data[0];
       let obj = {
@@ -158,7 +160,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       form.setFieldsValue(obj);
     } else {
       toast({
-        title: response.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -237,10 +239,12 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     });
 
     const response = await execFun(() => uploadProductImg(formData), "fetch");
-    if (response.data.code == 200) {
+    let { data } = response;
+
+    if (data.success) {
       // toast
       toast({
-        title: "Doc Uploaded successfully",
+        title: data.message,
         className: "bg-green-600 text-white items-center",
       });
       setFiles([]);
@@ -248,6 +252,11 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       // setLoading(false);
       setSheetOpen(false);
       setAttachmentFile(response.data.data);
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
     // setLoading(false);
   };
@@ -262,8 +271,8 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       mrp: values.mrp,
       // producttype: values.type.value,
       isenabled: values.enabled.value,
-      gsttype: values.tax.value,
-      gstrate: values.gst.value,
+      gsttype: values.tax?.value,
+      gstrate: values.gst?.value,
       uom: values.uom.value ?? values.uom,
       location: "--",
       hsn: values.hsn,
@@ -285,16 +294,16 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
 
     // return;
     const response = await execFun(() => updateProductMaterial(hehe), "fetch");
-
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data.success) {
       toast({
-        title: response.data.message,
+        title: data.message,
         className: "bg-green-600 text-white items-center",
       });
       setSheetOpenEdit(false);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -309,9 +318,8 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       product: sheetOpenEdit,
     };
     const response = await execFun(() => fetchImageProduct(payload), "fetch");
-    console.log("response", response);
-
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data.success) {
       // toast
       let arr = response.data.data.map((r: any) => {
         return {
@@ -325,7 +333,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       });
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }

@@ -154,45 +154,40 @@ const Hsn = () => {
   useEffect(() => {
     if (isValue?.value) {
       getTheListHSN(isValue?.value);
+      setRowData([]);
     }
   }, [isValue]);
 
   const handleSubmit = async () => {
+    setShowConfirmation(false);
     const value = form.getFieldsValue();
-
     let payload = {
       component: value.partName.value,
-      hsn: rowData.map((r) => r.hsnSearch.value),
+      hsn: rowData.map((r) => r.hsnSearch.value ?? r.hsnSearch),
       tax: rowData.map((r) => r.gstRate),
     };
 
     const response = await execFun(() => mapHSN(payload), "fetch");
 
     let { data } = response;
-    if (response.data.code == 200) {
-
+    if (data.success) {
+      setRowData([]);
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
       });
       form.resetFields();
-      setRowData([]);
+
       setShowConfirmation(false);
     } else {
       toast({
-        title: data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
   };
   const columnDefs: ColDef<rowData>[] = [
-    // {
-    // {
-    //   headerName: "ID",
-    //   field: "id",
-    //   filter: "agNumberColumnFilter",
-    //   width: 90,
-    // },
+
     {
       headerName: "",
       valueGetter: "node.rowIndex + 1",
@@ -218,23 +213,6 @@ const Hsn = () => {
       minWidth: 200,
     },
 
-    // {
-    //   field: "action",
-    //   headerName: "",
-    //   flex: 1,
-    //   cellRenderer: (e) => {
-    //     return (
-    //       <div className="flex gap-[5px] items-center justify-center h-full">
-    //         <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600">
-    //           <Trash2
-    //             className="h-[15px] w-[15px] text-white"
-    //             onClick={() => setSheetOpenEdit(e?.data?.product_key)}
-    //           />
-    //         </Button>{" "}
-    //       </div>
-    //     );
-    //   },
-    // },
   ];
   const handleReset = () => {
     form.resetFields();
@@ -268,30 +246,14 @@ const Hsn = () => {
                   fetchOptionWith="query2"
                 />
               </Form.Item>
-            </div>{" "}
+            </div>
           </div>
-          {/* <Button
-            type="submit"
-            className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-          >
-            Submit
-          </Button> */}
-          {/* </form> */}
-        </Form>{" "}
-      </div>{" "}
-      {/* <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
-        {loading1("fetch") && <FullPageLoading />}
+        
+        </Form>
+      </div>
       
-      </div> */}
       {callreset == true && (
-        // <CommonModal
-        //   isDialogVisible={callreset}
-        //   handleOk={handleReset}
-        //   handleCancel={() => setCallReset(false)}
-        //   title="Reset Details"
-        //   description={"Are you sure you want to remove ths entry?"}
-        // />
+       
         <AlertDialog open={callreset} onOpenChange={setCallReset}>
           <AlertDialogContent>
             <AlertDialogHeader>

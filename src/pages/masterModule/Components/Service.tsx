@@ -1,21 +1,12 @@
-import React from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import {  useEffect, useState } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { InputStyle, LableStyle } from "@/constants/themeContants";
-// import {
-//   Form,
-//   FormControl,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormMessage,
-// } from "@/components/ui/form";
+import { InputStyle,  } from "@/constants/themeContants";
+
 
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
@@ -28,37 +19,26 @@ import {
   listOfUom,
   saveService,
   serviceList,
-  servicesaddition,
 } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import EditService from "./EditService";
 import { Form } from "antd";
 import { useToast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-const FormSchema = z.object({
-  dateRange: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  soWise: z.string().optional(),
-});
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
+
 const Service = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const { toast } = useToast();
-  // const form = useForm<z.infer<typeof FormSchema>>({
-  //   resolver: zodResolver(FormSchema),
-  // });
+  const [open, setOpen] = useState(false);
+ 
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
 
   const listUom = async () => {
-   const response = await execFun(() => listOfUom(), "fetch");
+    const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
     if (response?.status == 200) {
@@ -71,7 +51,7 @@ const Service = () => {
       setAsyncOptions(arr);
     } else {
       toast({
-        title: "Failed to fetch UOM",
+        title: data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -81,14 +61,18 @@ const Service = () => {
     const response = await execFun(() => serviceList(), "fetch");
     const { data } = response;
 
-    if (response?.data.code === 200) {
+    if (data.success) {
       let arr = data.data.map((r, id) => {
         return { id: id + 1, ...r };
       });
       setRowData(arr);
+      toast({
+        title: data.message,
+        className: "bg-green-600 text-white items-center",
+      });
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -130,18 +114,18 @@ const Service = () => {
       cellRenderer: (e) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
-            {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+           
             <Edit2
               className="h-[20px] w-[20px] text-cyan-700 "
               onClick={() => setSheetOpenEdit(e?.data?.component_key)}
             />
-            {/* </Button> */}
           </div>
         );
       },
     },
   ];
   const onSubmit = async () => {
+    setOpen(false);
     const values = await form.validateFields();
     let payload = {
       part: values.partCode,
@@ -150,8 +134,9 @@ const Service = () => {
       notes: values.specifiction,
     };
     const response = await execFun(() => saveService(payload), "fetch");
+
     let { data } = response;
-    if (response.data.code == 200) {
+    if (data.success) {
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -161,7 +146,7 @@ const Service = () => {
       fetchServiceList();
     } else {
       toast({
-        title: data.message.msg || "Failed to Create Group",
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -263,7 +248,7 @@ const Service = () => {
             <Button
               type="submit"
               onClick={(e: any) => {
-                onSubmit();
+                setOpen(true);
                 e.preventDefault();
               }}
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
@@ -292,6 +277,16 @@ const Service = () => {
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
+      <ConfirmationModal
+        open={open}
+        onClose={setOpen}
+        onOkay={() => {
+          onSubmit();
+        }}
+        loading={loading1("fetch")}
+        title="Confirm Submit!"
+        description="Are you sure to submit the entry?"
+      />
     </Wrapper>
   );
 };

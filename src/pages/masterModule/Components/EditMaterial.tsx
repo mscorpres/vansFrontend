@@ -82,7 +82,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       "fetch"
     );
     let { data } = response;
-    if (response.status === 200) {
+    if (data.success) {
       let arr = data.data[0];
       let a = {
         compCode: arr.partcode,
@@ -117,8 +117,14 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         purchaseCost: arr.pocost,
         OtherCost: arr.othercost,
       };
+    
 
       editForm.setFieldsValue(a);
+    } else {
+      toast({
+        title: "Material Details Failed to Fetch",
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const submitTheForm = async () => {
@@ -142,8 +148,8 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       qc_status: values.qcStatus ? "E" : "D",
       description: values.description,
       comp_make: values.componentMake,
-      taxtype: values.taxTypes.value,
-      taxrate: values.gstTaxRate.value,
+      taxtype: values.taxTypes?.value,
+      taxrate: values.gstTaxRate?.value,
       //   taxrate: values.componentMake,
       brand: values.brand,
       ean: values.ean,
@@ -170,11 +176,10 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       () => updateComponentofMaterial(payload),
       "fetch"
     );
-   
-
-    if (response?.data?.code == 200) {
+    let { data } = response;
+    if (data?.success) {
       toast({
-        title: response.data.message, // Assuming 'message' is in the response
+        title: data.message, // Assuming 'message' is in the response
         className: "bg-green-700 text-center text-white",
       });
       editForm.resetFields();
@@ -182,6 +187,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       setSheetOpenEdit(false);
     } else {
       // setSheetOpenEdit(false);
+
       toast({
         title: response?.message, // You can show an error message here if the code is not 200
         className: "bg-red-700 text-center text-white",
@@ -193,10 +199,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     // const response = await execFun(() => listOfUom(), "submit");
     const response = await spigenAxios.get("/suom");
     const { data } = response;
-    // addToast("SUom List fetched", {
-    //   appearance: "success",
-    //   autoDismiss: true,
-    // });
+  
     if (response.status == 200) {
       let arr = data?.data?.map((r, index) => {
         return {
@@ -215,8 +218,8 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       () => fetchMaterialDocsFiles(payload),
       "fetch"
     );
-
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data.success) {
       // toast
       let arr = response.data.data.map((r: any) => {
         return {
@@ -230,7 +233,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       });
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -244,10 +247,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     setFiles(newFiles);
   };
   const uploadDocs = async () => {
-    // setLoading(true);
-    // const values = await editForm.validateFields();
-    // console.log("valeus", values);
-    // return;
+    
     const formData = new FormData();
     formData.append("caption", captions);
     formData.append("component", sheetOpenEdit?.component_key);
@@ -256,17 +256,23 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     });
 
     const response = await execFun(() => uploadCompImg(formData), "fetch");
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data.success) {
       // toast
       toast({
-        title: "Doc Uploaded successfully",
+        title: data.message,
         className: "bg-green-600 text-white items-center",
       });
       setFiles([]);
       setCaptions("");
       // setLoading(false);
       setSheetOpen(false);
-      // setAttachmentFile(response.data.data);
+      // seelsetAttachmentFile(response.data.data);
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-green-600 text-white items-center",
+      });
     }
     // setLoading(false);
   };
@@ -301,22 +307,16 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       cellRenderer: (params) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
-            {/* <Button className=" rounded-full bg-white  hover:bg-white-600 h-[25px] w-[25px] flex justify-center items-center p-0"> */}
-            {/* <Trash2
-              className="h-[15px] w-[15px] text-red-500 hover:text-red-700"
-              onClick={() => deleteSelected(params)}
-            /> */}
+           
             <a href={params?.data?.image_url} target="_blank">
               <Download className="h-[15px] w-[15px] text-blue-500 hover:text-blue-700" />
             </a>
-            {/* </Button> */}
           </div>
         );
       },
     },
   ];
   const listOfGroups = async () => {
-    // const response = await execFun(() => listOfUom(), "submit");
     const response = await spigenAxios.get("/groups/allGroups");
     const { data } = response;
     if (response.status == 200) {
@@ -379,8 +379,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
           </SheetHeader>
           <Form form={editForm} layout="vertical">
             <div>
-              {" "}
-              {/* <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto"> */}
               <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
                 {" "}
                 {(loading1("fetch") || loading == true) && (
@@ -393,7 +391,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         Basic Details
                       </h3>
                       <p className="text-slate-600 text-[13px]">
-                        {/* Type Name or Code of the Client */}
                       </p>
                     </CardHeader>
                     <CardContent className="mt-[30px]">
@@ -617,7 +614,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         <Form.Item
                           name="taxTypes"
                           label="Tax Type"
-                          rules={rules.taxTypes}
+                          // rules={rules.taxTypes}
                         >
                           <Select
                             styles={customStyles}
@@ -629,17 +626,9 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isClearable={true}
                             isSearchable={true}
                             options={taxType}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
+                          
                           />
-                        </Form.Item>{" "}
+                        </Form.Item>
                         <Form.Item
                           name="gstTaxRate"
                           label="GST Tax Rate"
@@ -655,17 +644,9 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isClearable={true}
                             isSearchable={true}
                             options={gstRateList}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
+                           
                           />
-                        </Form.Item>{" "}
+                        </Form.Item>
                       </div>
                     </CardContent>
                   </Card>
@@ -680,7 +661,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                     </CardHeader>
                     <CardContent className="mt-[30px]">
                       <div className="grid grid-cols-2 gap-[20px]">
-                        {" "}
+                      
                         <Form.Item
                           name="brand"
                           label="Brand"
@@ -739,27 +720,9 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         </Form.Item>{" "}
                       </div>
                       <div className="grid w-full max-w-sm items-center gap-1.5">
-                        {/* <Label htmlFor="picture">Picture</Label>
-                        <Input
-                          id="picture"
-                          type="file"
-                          accept="image/*" // Only allow image files
-                          onChange={handleFileChange}
-                        /> */}
-                        {/* {preview && (
-                            <img
-                              src={preview}
-                              alt="Preview"
-                              style={{
-                                width: "100px",
-                                height: "100px",
-                                marginTop: "10px",
-                              }}
-                            />
-                          )} */}
+                      
                         <Button
                           onClick={() => setSheetOpen(true)}
-                          // disabled={!selectedFile}
                         >
                           Attach Image
                         </Button>
@@ -772,7 +735,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         Production Plan :
                       </h3>
                       <p className="text-slate-600 text-[13px]">
-                        {/* Type Name or Code of the Client */}
                       </p>
                     </CardHeader>
                     <CardContent className="mt-[30px]">
@@ -808,31 +770,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
-                        {/* <Form.Item
-                          name="StockLoc"
-                          label="Default Stock Location"
-                        >
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            //   placeholder="UOM"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
-                            //   options={asyncOptions}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
-                          />
-                        </Form.Item>{" "} */}
+                       
                         <Form.Item
                           name="LeadTime"
                           label="Lead Time ( in days)"

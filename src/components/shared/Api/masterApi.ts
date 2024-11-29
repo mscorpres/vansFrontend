@@ -210,9 +210,10 @@ export const fetchBomDocsFiles = async (payload: any) => {
   return response;
 };
 export const fetchMaterialDocsFiles = async (payload: any) => {
-  const response = await spigenAxios.post(
-    `/component/fetchImageComponent`,
-    payload
+
+  const response = await spigenAxios.get(
+    `/component/fetchImageComponent/${payload.component}`
+    // payload
   );
   return response;
 };

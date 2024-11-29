@@ -117,7 +117,7 @@ const MasterShippingAddressPage: React.FC = () => {
         })
       ).unwrap();
 
-      if (resultAction?.status == "success") {
+      if (resultAction?.success) {
         toast({
           title: "Shipping Address created successfully",
           className: "bg-green-600 text-white items-center",
@@ -149,7 +149,7 @@ const MasterShippingAddressPage: React.FC = () => {
     const response = await execFun(() => fetchShippingAddress(), "fetch");
 
     let { data } = response;
-    if (data.code === 200) {
+    if (data.success) {
       let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
@@ -159,7 +159,7 @@ const MasterShippingAddressPage: React.FC = () => {
       setRowData(arr);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-700 text-center text-white",
       });
     }

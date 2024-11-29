@@ -78,7 +78,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       () => getComponentDetailsForServices(sheetOpenEdit),
       "fetch"
     );
-    if (response.status == 200) {
+    if (response.success) {
       let { data } = response;
       let arr = data.data[0];
       let obj = {
@@ -105,7 +105,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       form.setFieldsValue(obj);
     } else {
       toast({
-        title: response.message.msg,
+        title: response.message,
         className: "bg-red-600 text-white items-center",
       });
     }

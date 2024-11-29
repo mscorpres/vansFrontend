@@ -224,7 +224,6 @@ export const searchingHsn = createAsyncThunk<hsnPayload>(
       const response = await spigenAxios.get<hsnPayload>(
         `backend/searchHsn/${payload.searchTerm}`
       );
-      console.log("response", response);
 
       return response.data.data;
     } catch (error) {

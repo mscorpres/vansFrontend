@@ -84,25 +84,30 @@ const Locations = () => {
   const fetchGrouplist = async () => {
     const response = await execFun(() => fetchLocationList(), "fetch");
     let { data } = response;
-    if (response.status === 200) {
+
+    if (data.success) {
       let a = customFlatArray(data.data);
       let arr = a.map((r: any, id: any) => {
         return { id: id + 1, ...r };
       });
       setRowData(arr);
-      //   addToast(response.message, {
-      //     appearance: "success",
-      //     autoDismiss: true,
-      //   });
+     
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const fetchGroupOptionslist = async () => {
     const response = await execFun(() => getParentLocationOptions(), "fetch");
-    if (response.status == 200) {
-      let { data } = response;
+    let { data } = response;
+
+    if (data.success) {
+
       //   let arr = convertSelectOptions(data);
       //
-      let arr = data?.map((r: any, index: any) => {
+      let arr = data?.data?.map((r: any, index: any) => {
         return {
           label: r.text,
           value: r.id,
@@ -110,9 +115,15 @@ const Locations = () => {
       });
 
       setAsyncOptions(arr);
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const handleSubmit = async () => {
+    setShowConfirmation(false);
     const values = await form.validateFields();
     let payload = {
       location_address: values.address,
@@ -123,7 +134,7 @@ const Locations = () => {
 
     const response = await execFun(() => insertLoations(payload), "fetch");
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -134,7 +145,7 @@ const Locations = () => {
       setShowConfirmation(false);
     } else {
       toast({
-        title: data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
