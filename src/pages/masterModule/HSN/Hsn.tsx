@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
-import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 
@@ -7,7 +6,7 @@ import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import { transformOptionData } from "@/helper/transform";
 import { Filter, Plus } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Form, Space } from "antd";
+import { Form } from "antd";
 import { searchingHsn } from "@/features/client/clientSlice";
 import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
@@ -17,7 +16,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -25,35 +23,18 @@ import {
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import { useDispatch, useSelector } from "react-redux";
 import { RowData } from "@/data";
 import { AppDispatch, RootState } from "@/store";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-const FormSchema = z.object({
-  dateRange: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  soWise: z.string().optional(),
-  compCode: z.string().optional(),
-});
 
 const Hsn = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [callreset, setCallReset] = useState(false);
   const [search, setSearch] = useState("");
-  const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [formValues, setFormValues] = useState({ compCode: "" });
   const dispatch = useDispatch<AppDispatch>();
-  //   const { upda, currency } = useSelector(
-  //     (state: RootState) => state.createSalesOrder
-  //   );
   const { hsnlist } = useSelector((state: RootState) => state.client);
 
   const { execFun, loading: loading1 } = useApi();
@@ -73,32 +54,12 @@ const Hsn = () => {
   const isValue = Form.useWatch("partName", form);
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
-  const typeOption = [
-    {
-      label: "Component",
-      value: "Component",
-    },
-    {
-      text: "Other",
-      value: "Other",
-    },
-  ];
-  const smtOption = [
-    {
-      label: "Yes",
-      value: "yes",
-    },
-    {
-      label: "No",
-      value: "no",
-    },
-  ];
 
-  const getTheListHSN = async (value) => {
+  const getTheListHSN = async (value: any) => {
     const response = await execFun(() => fetchHSN(value), "fetch");
     const { data } = response;
     if (data.code == 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
           //   ...r,
@@ -163,8 +124,8 @@ const Hsn = () => {
     const value = form.getFieldsValue();
     let payload = {
       component: value.partName.value,
-      hsn: rowData.map((r) => r.hsnSearch.value ?? r.hsnSearch),
-      tax: rowData.map((r) => r.gstRate),
+      hsn_code: rowData.map((r: any) => r.hsnSearch.value ?? r.hsnSearch),
+      tax: rowData.map((r: any) => r.gstRate),
     };
 
     const response = await execFun(() => mapHSN(payload), "fetch");
@@ -187,7 +148,6 @@ const Hsn = () => {
     }
   };
   const columnDefs: ColDef<rowData>[] = [
-
     {
       headerName: "",
       valueGetter: "node.rowIndex + 1",
@@ -212,7 +172,6 @@ const Hsn = () => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-
   ];
   const handleReset = () => {
     form.resetFields();
@@ -248,12 +207,9 @@ const Hsn = () => {
               </Form.Item>
             </div>
           </div>
-        
         </Form>
       </div>
-      
       {callreset == true && (
-       
         <AlertDialog open={callreset} onOpenChange={setCallReset}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -297,7 +253,6 @@ const Hsn = () => {
             paginationPageSize={10}
             animateRows={true}
             gridOptions={commonAgGridConfig}
-            suppressRowClickSelection={false}
             rowSelection="multiple"
             checkboxSelection={true}
             suppressCellFocus={true}

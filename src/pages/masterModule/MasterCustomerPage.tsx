@@ -237,7 +237,7 @@ const MasterCustomerPage: React.FC = () => {
       "fetch"
     );
     let { data } = response;
-    if (response.data.code === 200) {
+    if (response.data.success) {
       let bill = data.data.billingAddress;
       let ship = data.data.shippingAddress;
       let billcomp = {
@@ -277,7 +277,7 @@ const MasterCustomerPage: React.FC = () => {
       setOpenView(bill);
     } else {
       toast({
-        title: response.message.msg,
+        title: response.data.message,
         className: "bg-red-700",
       });
       //   addToast(response.message, {
@@ -316,10 +316,10 @@ const MasterCustomerPage: React.FC = () => {
       () => getListOFViewCustomersOfSelected(payload),
       "fetch"
     );
+    let { data } = response;
 
     // return;
-    let { data } = response;
-    if (response?.data?.code === 200) {
+    if (data?.success) {
       let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
@@ -343,7 +343,7 @@ const MasterCustomerPage: React.FC = () => {
     } else {
       setViewBranch(false);
       toast({
-        title: response.message,
+        title: response?.message,
         className: "bg-red-700 text-white items-center",
       });
       //   addToast(response.message, {
@@ -379,9 +379,10 @@ const MasterCustomerPage: React.FC = () => {
     };
 
     const response = await execFun(() => addbranchToClient(payload), "fetch");
-    if (response?.data?.code == 200) {
+
+    if (response?.data?.success) {
       toast({
-        title: response?.data?.message?.msg,
+        title: response?.data?.message,
         className: "bg-green-600 text-white items-center",
       });
       form.resetFields();
@@ -389,7 +390,7 @@ const MasterCustomerPage: React.FC = () => {
       setSameBilling(false);
     } else {
       toast({
-        title: response?.message,
+        title: response?.data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -426,16 +427,16 @@ const MasterCustomerPage: React.FC = () => {
       () => updateBranchOfCustomer(payload),
       "fetch"
     );
-    if (response?.data?.code === 200) {
+    if (response?.data?.success) {
       toast({
-        title: response.data.message.msg,
+        title: response.data.message,
         className: "bg-green-600 text-white items-center",
       });
       form.resetFields();
       setOpenView(false);
     } else {
       toast({
-        title: response.message,
+        title: response.data.message,
         className: "bg-red-600 text-white items-center",
       });
     }

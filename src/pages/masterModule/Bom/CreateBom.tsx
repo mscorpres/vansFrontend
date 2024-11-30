@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
@@ -15,32 +14,27 @@ import useApi from "@/hooks/useApi";
 import { fetchBomTypeWise } from "@/components/shared/Api/masterApi";
 import ViewBom from "./ViewBom";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import { useNavigate } from "react-router-dom";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-const FormSchema = z.object({
-  wise: z.string(),
-});
 
 const CreateBom = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [openView, setSheetOpenView] = useState<any>([]);
   const [sheetOpenEdit, setSheetOpenEdit] = useState([]);
   const [form] = Form.useForm();
-  const theSku = Form.useWatch("product");
 
   const { execFun, loading: loading1 } = useApi();
 
-  const fetchBOMList = async (formData: z.infer<typeof FormSchema>) => {
+  const fetchBOMList = async () => {
     const values = await form.validateFields();
 
-    let wise = values.wise.value;
+    let wise = values?.wise?.value;
     const response = await execFun(() => fetchBomTypeWise(wise), "fetch");
-    // return;
     let { data } = response;
-    if (response.status === 200) {
-      let arr = data.response.data.map((r: any, index: any) => {
+
+    if (data?.success) {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
           ...r,
@@ -51,16 +45,6 @@ const CreateBom = () => {
     }
   };
 
-  const sfgType = [
-    {
-      label: "Yes",
-      value: "yes",
-    },
-    {
-      label: "No",
-      value: "no",
-    },
-  ];
   const type = [
     {
       label: "FG",
@@ -71,9 +55,9 @@ const CreateBom = () => {
       value: "SGF",
     },
   ];
-  useEffect(() => {
-    fetchBOMList();
-  }, []);
+  // useEffect(() => {
+  //   fetchBOMList();
+  // }, []);
   const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     const menu = (
       <Menu>

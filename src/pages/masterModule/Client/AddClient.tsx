@@ -134,7 +134,7 @@ const AddClient: React.FC<Props> = ({
   const data = useSelector((state: RootState) => state.createSalesOrder);
   const navigate = useNavigate();
   useEffect(() => {
-    dispatch(fetchBillingAddress({ billing_code: "R26331LI" }));
+    // dispatch(fetchBillingAddress({ billing_code: "R26331LI" }));
     // dispatch(fetchBillingAddressList({ search: "" }));
     dispatch(fetchCountries());
     dispatch(fetchStates());
@@ -244,9 +244,10 @@ const AddClient: React.FC<Props> = ({
       website: data.website,
     };
     const response = await execFun(() => addClient(payload), "fetch");
-    if (response?.data?.code == 200) {
+
+    if (response?.data?.success) {
       toast({
-        title: response?.data?.message?.msg,
+        title: response?.data?.message,
         className: "bg-green-600 text-white items-center",
       });
       form.setValue("name", "");
@@ -265,7 +266,7 @@ const AddClient: React.FC<Props> = ({
       navigate("/master/customer");
     } else {
       toast({
-        title: response?.data.message.msg,
+        title: response?.data.message,
         className: "bg-red-600 text-white items-center",
       });
     }

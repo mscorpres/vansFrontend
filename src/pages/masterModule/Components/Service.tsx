@@ -1,12 +1,10 @@
-
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { InputStyle,  } from "@/constants/themeContants";
-
+import { InputStyle } from "@/constants/themeContants";
 
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
@@ -33,7 +31,7 @@ const Service = () => {
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
- 
+
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
 
@@ -83,6 +81,21 @@ const Service = () => {
   }, []);
   const columnDefs: ColDef<rowData>[] = [
     {
+      field: "action",
+      headerName: "ACTION",
+      flex: 1,
+      cellRenderer: (e) => {
+        return (
+          <div className="flex gap-[5px] items-center justify-center h-full">
+            <Edit2
+              className="h-[20px] w-[20px] text-cyan-700 "
+              onClick={() => setSheetOpenEdit(e?.data?.component_key)}
+            />
+          </div>
+        );
+      },
+    },
+    {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
@@ -106,22 +119,6 @@ const Service = () => {
       field: "units_name",
       filter: "agTextColumnFilter",
       width: 200,
-    },
-    {
-      field: "action",
-      headerName: "ACTION",
-      flex: 1,
-      cellRenderer: (e) => {
-        return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
-           
-            <Edit2
-              className="h-[20px] w-[20px] text-cyan-700 "
-              onClick={() => setSheetOpenEdit(e?.data?.component_key)}
-            />
-          </div>
-        );
-      },
     },
   ];
   const onSubmit = async () => {

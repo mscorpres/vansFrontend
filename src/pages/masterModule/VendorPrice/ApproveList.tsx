@@ -106,7 +106,7 @@ const ApproveList: React.FC = () => {
       type: "date_wise",
     };
     const response = await execFun(() => getVendorPrice(payload), "fetch");
-    if (response.data.code == 200) {
+    if (response?.data?.success) {
       let arr = response.data.data.map((r: any) => {
         return {
           ...r,
@@ -116,7 +116,7 @@ const ApproveList: React.FC = () => {
     } else {
       toast({
         title: response.data.message,
-        className: "bg-red-700",
+        className: "bg-red-700 text-white items-center",
       });
     }
   };
@@ -127,18 +127,20 @@ const ApproveList: React.FC = () => {
   };
 
   const approveTheSelected = async () => {
+    setShowConfirmation(false);
     let payload = selectedRows.map((r) => r.id);
     const response = await execFun(() => approveVendorPrice(payload), "fetch");
-    if (response.data.code == 200) {
+
+    if (response?.data?.success) {
       toast({
         title: response.data.message,
-        className: "bg-green-500",
+        className: "bg-green-700 text-white items-center",
       });
       setShowConfirmation(false);
     } else {
       toast({
         title: response.data.message,
-        className: "bg-red-700",
+        className: "bg-red-700 text-white items-center",
       });
       setShowConfirmation(false);
     }

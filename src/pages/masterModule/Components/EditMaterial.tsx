@@ -117,7 +117,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         purchaseCost: arr.pocost,
         OtherCost: arr.othercost,
       };
-    
 
       editForm.setFieldsValue(a);
     } else {
@@ -199,9 +198,9 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     // const response = await execFun(() => listOfUom(), "submit");
     const response = await spigenAxios.get("/suom");
     const { data } = response;
-  
+
     if (response.status == 200) {
-      let arr = data?.data?.map((r, index) => {
+      let arr = data?.data?.map((r: any, index: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
@@ -247,7 +246,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     setFiles(newFiles);
   };
   const uploadDocs = async () => {
-    
     const formData = new FormData();
     formData.append("caption", captions);
     formData.append("component", sheetOpenEdit?.component_key);
@@ -304,10 +302,9 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       field: "action",
       headerName: "",
       width: 50,
-      cellRenderer: (params) => {
+      cellRenderer: (params: any) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
-           
             <a href={params?.data?.image_url} target="_blank">
               <Download className="h-[15px] w-[15px] text-blue-500 hover:text-blue-700" />
             </a>
@@ -390,8 +387,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                       <h3 className="text-[17px] font-[600] text-slate-600">
                         Basic Details
                       </h3>
-                      <p className="text-slate-600 text-[13px]">
-                      </p>
+                      <p className="text-slate-600 text-[13px]"></p>
                     </CardHeader>
                     <CardContent className="mt-[30px]">
                       {" "}
@@ -626,7 +622,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isClearable={true}
                             isSearchable={true}
                             options={taxType}
-                          
                           />
                         </Form.Item>
                         <Form.Item
@@ -644,7 +639,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isClearable={true}
                             isSearchable={true}
                             options={gstRateList}
-                           
                           />
                         </Form.Item>
                       </div>
@@ -661,7 +655,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                     </CardHeader>
                     <CardContent className="mt-[30px]">
                       <div className="grid grid-cols-2 gap-[20px]">
-                      
                         <Form.Item
                           name="brand"
                           label="Brand"
@@ -720,10 +713,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         </Form.Item>{" "}
                       </div>
                       <div className="grid w-full max-w-sm items-center gap-1.5">
-                      
-                        <Button
-                          onClick={() => setSheetOpen(true)}
-                        >
+                        <Button onClick={() => setSheetOpen(true)}>
                           Attach Image
                         </Button>
                       </div>
@@ -734,8 +724,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                       <h3 className="text-[17px] font-[600] text-slate-600">
                         Production Plan :
                       </h3>
-                      <p className="text-slate-600 text-[13px]">
-                      </p>
+                      <p className="text-slate-600 text-[13px]"></p>
                     </CardHeader>
                     <CardContent className="mt-[30px]">
                       <div className="grid grid-cols-2 gap-[20px]">
@@ -770,7 +759,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
-                       
                         <Form.Item
                           name="LeadTime"
                           label="Lead Time ( in days)"

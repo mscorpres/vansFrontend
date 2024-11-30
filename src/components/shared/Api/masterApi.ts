@@ -160,6 +160,10 @@ export const fetchBillingAddess = async () => {
   });
   return response;
 };
+export const uplaodPriceList = async (formData) => {
+  const response = await spigenAxios.post("/price/upload", formData);
+  return response;
+};
 
 export const fetchShippingAddress = async () => {
   const response = await spigenAxios.get("/shippingAddress/getAll", {
@@ -210,7 +214,6 @@ export const fetchBomDocsFiles = async (payload: any) => {
   return response;
 };
 export const fetchMaterialDocsFiles = async (payload: any) => {
-
   const response = await spigenAxios.get(
     `/component/fetchImageComponent/${payload.component}`
     // payload
@@ -218,7 +221,6 @@ export const fetchMaterialDocsFiles = async (payload: any) => {
   return response;
 };
 export const fetchImageProduct = async (payload: any) => {
-  console.log("payload", payload);
 
   const response = await spigenAxios.get(
     `/products/fetchImageProduct/${payload?.product}`
@@ -423,10 +425,10 @@ export const getListOFViewCustomers = async (payload: any) => {
 
 export const getListOFbranchDetails = async (payload: any) => {
   const response = await spigenAxios.get(
-    `/client/branchDetails?addressID=${payload}`,
-    {
-      componentKey: payload,
-    }
+    `/client/branchDetails?addressID=${payload}`
+    // {
+    //   componentKey: payload,
+    // }
   );
   return response;
 };
@@ -565,7 +567,11 @@ export const fetchEdditBomStage2 = async (payload: any) => {
 };
 
 export const removeAltComponent = async (payload: any) => {
-  const response = await spigenAxios.post("/bom/removeAltComponent", payload);
+  const response = await spigenAxios.delete(
+    // "/bom/removeAltComponent"
+    `bom/removeAltComponent?child_component=${payload.child_component}&parent_component=${payload.parent_component}&product=${payload.product}&subject=${payload.subject}&refid=${payload.refid}`
+    // payload
+  );
   return response;
 };
 export const addNewAltComponent = async (payload: any) => {
@@ -574,7 +580,7 @@ export const addNewAltComponent = async (payload: any) => {
 };
 export const getAllAlternativeComponents = async (payload: any) => {
   const response = await spigenAxios.get(
-    `bom/getAllAlternativeComponents/:${payload.parent_component}/:${payload.subjectid}/:${payload.product_id}`
+    `bom/getAllAlternativeComponents?parent_component=${payload.parent_component}&product_id=${payload.product_id}&subject_id=${payload.subjectid}`
   );
   return response;
 };

@@ -197,6 +197,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     };
     // return;
     const response = await execFun(() => saveProductDetails(payload), "fetch");
+
     if (response.status == "success") {
       toast({
         title: response.message,

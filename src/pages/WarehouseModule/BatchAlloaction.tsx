@@ -179,7 +179,7 @@ const BatchAlloaction = () => {
       cellRenderer: (e) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
-            {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+            {/* <Button className="bg-green-700 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
             <Edit2
               className="h-[20px] w-[20px] text-cyan-700 "
               onClick={() => setSheetOpenEdit(e?.data?.product_key)}

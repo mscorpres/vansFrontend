@@ -69,12 +69,13 @@ const FormSchema = z.object({
   fax: z.string().optional(),
   vendorCode: z.string().optional(),
   addressCode: z.string().optional(),
-  state: z
-    .object({
-      label: z.string(),
-      value: z.string(),
-    })
-    .optional(), // Optional state field
+  state: z.string().optional(),
+  // state: z
+  //   .object({
+  //     label: z.string(),
+  //     value: z.string(),
+  //   })
+  //   .optional(), // Optional state field
   vendorName: z.string().optional(),
   cin: z.string().optional(),
   pan: z.string().optional(),
@@ -166,13 +167,14 @@ const VendorList = () => {
     const response = await execFun(() => fetchState(), "fetch");
     // return;
     let { data } = response;
-    if (response.status === 200) {
+
+    if (data?.success) {
       let arr = data.data.map((r) => {
         return {
-          label: r.name,
-          value: r.code,
+          ...r,
         };
       });
+
       setStateList(arr);
     }
   };
@@ -251,8 +253,8 @@ const VendorList = () => {
       () => vendorGetAllDetailsFromSelectedBranch(id),
       "fetch"
     );
-    if (response.data.code == 200) {
-      const { data } = response;
+    let { data } = response;
+    if (data?.success) {
       let r = data?.data?.final[0];
       let a = {
         state: { label: r.statename, value: r.statecode },
@@ -280,6 +282,15 @@ const VendorList = () => {
       form.setValue("addressCode", a.addressCode);
       form.setValue("state", a?.state?.value);
       setLoading(false);
+      toast({
+        title: data.message || "Details Fetched",
+        className: "bg-green-600 text-white items-center",
+      });
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
     setLoading(true);
   };
@@ -302,7 +313,7 @@ const VendorList = () => {
       () => vendorUpdateSelectedBranch(p),
       "fetch"
     );
-    if (response.data.code == 200) {
+    if (response.data?.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
@@ -312,7 +323,7 @@ const VendorList = () => {
       // form.resetFields();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response?.data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -326,7 +337,8 @@ const VendorList = () => {
     };
 
     const response = await execFun(() => vendorUpdateSave(p), "fetch");
-    if (response.data.code == 200) {
+    // let { data } = response;
+    if (response?.data?.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
@@ -335,7 +347,7 @@ const VendorList = () => {
       // form.resetFields();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response?.data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -359,7 +371,8 @@ const VendorList = () => {
     };
 
     const response = await execFun(() => addVendorBranch(p), "fetch");
-    if (response.data.code == 200) {
+
+    if (response.data.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
@@ -368,7 +381,7 @@ const VendorList = () => {
       form.resetField();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response.data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -392,8 +405,10 @@ const VendorList = () => {
         gstin: data.gstin,
       },
     };
+
     const response = await execFun(() => vendoradd(p), "fetch");
-    if (response.data.code == 200) {
+    // let { data } = response;
+    if (response.data?.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
@@ -402,7 +417,7 @@ const VendorList = () => {
       setSheetOpen(false);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response?.data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -411,8 +426,8 @@ const VendorList = () => {
     // setLoading(true);
 
     const response = await execFun(() => vendorUpdatedetails(id), "fetch");
-    if (response.data.code == 200) {
-      const { data } = response;
+    const { data } = response;
+    if (data?.success) {
       let arr = data.data[0];
       let obj = {
         vendorName: arr.vendor_name,
@@ -433,6 +448,11 @@ const VendorList = () => {
       //   };
       // });
       // setViewAllBranch(a);
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const handleDownloadExcel = () => {
@@ -489,7 +509,6 @@ const VendorList = () => {
       form.setValue("state", "");
     }
   }, [sheetOpen]);
-
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[250px_1fr]">
       <div className="bg-[#fff]">
@@ -549,6 +568,7 @@ const VendorList = () => {
               <SheetTitle className="text-slate-600">Add Vendor</SheetTitle>
             </SheetHeader>
             <div>
+              {loading1("fetch") && <FullPageLoading />}
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(addVendor)} className="">
                   <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
@@ -635,7 +655,7 @@ const VendorList = () => {
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
+                            <FormLabel className={LableStyle}>Staste</FormLabel>
                             <FormControl>
                               <Select
                                 styles={customStyles}
@@ -643,7 +663,7 @@ const VendorList = () => {
                                 placeholder="State"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
-                                isDisabled={true} // Disable the select dropdown so it cannot be changed
+                                isDisabled={false} // Disable the select dropdown so it cannot be changed
                                 isClearable={false} // Prevent clearing the value
                                 isSearchable={false} // Disable search if not needed
                                 name="state" // Ensure this name aligns with the form field
@@ -657,6 +677,9 @@ const VendorList = () => {
                                   transformStateOptions(stateList)?.find(
                                     (option) => option.value === field.value
                                   ) || null
+                                }
+                                onChange={(e: any) =>
+                                  form.setValue("state", e?.value)
                                 }
                               />
                             </FormControl>
@@ -711,6 +734,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Pin Number"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />
@@ -745,6 +769,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Mobile"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />
@@ -900,12 +925,19 @@ const VendorList = () => {
                                 isClearable={false} // Prevent clearing the value
                                 isSearchable={false} // Disable search if not needed
                                 name="state" // Ensure this name aligns with the form field
-                                options={stateList}
+                                options={
+                                  stateList
+                                    ? transformStateOptions(stateList)
+                                    : []
+                                }
                                 value={
                                   // Find the corresponding option based on field.value (which is the stateCode)
-                                  stateList?.find(
-                                    (option) => option?.value === field.value
+                                  transformStateOptions(stateList)?.find(
+                                    (option) => option.value === field.value
                                   ) || null
+                                }
+                                onChange={(e: any) =>
+                                  form.setValue("state", e?.value)
                                 }
                               />
                             </FormControl>
@@ -960,6 +992,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Pin Number"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />
@@ -993,6 +1026,7 @@ const VendorList = () => {
                               <Input
                                 className={InputStyle}
                                 placeholder="Enter Mobile"
+                                type="Number"
                                 {...field}
                               />
                             </FormControl>
@@ -1075,6 +1109,8 @@ const VendorList = () => {
               </SheetTitle>
             </SheetHeader>
             <div>
+              {" "}
+              {loading1("fetch") && <FullPageLoading />}
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(createNewBranch)}
@@ -1117,7 +1153,17 @@ const VendorList = () => {
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
-                                options={stateList}
+                                options={
+                                  stateList
+                                    ? transformStateOptions(stateList)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateList)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
                                 onChange={(e: any) =>
                                   form.setValue("state", e?.value)
                                 }
@@ -1174,6 +1220,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Pin Number"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />
@@ -1208,6 +1255,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Mobile"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />

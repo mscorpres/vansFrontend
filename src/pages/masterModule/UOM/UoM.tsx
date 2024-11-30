@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +28,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { Filter } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { ColDef } from "@ag-grid-community/core";
 
 const UoM = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -49,10 +49,10 @@ const UoM = () => {
         };
       });
       setRowData(arr);
-      toast({
-        title: data.message,
-        className: "bg-green-600 text-white items-center",
-      });
+      // toast({
+      //   title: data.message,
+      //   className: "bg-green-600 text-white items-center",
+      // });
     } else {
       toast({
         title: data.message,
@@ -122,7 +122,6 @@ const UoM = () => {
           open={open}
           onClose={setOpen}
           onOkay={createEntry}
-          loading={loading1("fetch")}
           title="Confirm Submit!"
           description="Are you sure to submit the entry?"
         />{" "}

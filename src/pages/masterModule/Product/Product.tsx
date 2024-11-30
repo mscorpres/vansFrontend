@@ -1,28 +1,24 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { transformOptionData, transformOptionData2 } from "@/helper/transform";
+import { transformOptionData } from "@/helper/transform";
 import { InputStyle } from "@/constants/themeContants";
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { Form, message, Row } from "antd";
+import { Form, Row } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
-import { AppDispatch, RootState } from "@/store";
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import {
@@ -32,29 +28,17 @@ import {
 } from "@/components/shared/Api/masterApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import EditProduct from "./EditProduct";
-import { listOfUoms } from "@/features/client/clientSlice";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-const FormSchema = z.object({
-  dateRange: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  soWise: z.string().optional(),
-});
 
 const Product = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const { toast } = useToast();
-  const dispatch = useDispatch<AppDispatch>();
   const [resetModel, setResetModel] = useState(false);
 
   const [open, setOpen] = useState(false);
@@ -84,8 +68,8 @@ const Product = () => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (data.success) {
-      let arr = data.data.map((r: any, index: any) => {
+    if (data?.success) {
+      let arr = data.data.map((r: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
@@ -134,6 +118,23 @@ const Product = () => {
 
   const columnDefs: ColDef<RowData>[] = [
     {
+      field: "action",
+      headerName: "Action",
+      flex: 1,
+      cellRenderer: (e: any) => {
+        return (
+          <div className="flex gap-[5px] items-center justify-center h-full">
+            {/* <Button className="bg-green-700 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+            <Edit2
+              className="h-[20px] w-[20px] text-cyan-700 "
+              onClick={() => setSheetOpenEdit(e?.data?.product_key)}
+            />
+            {/* </Button> */}
+          </div>
+        );
+      },
+    },
+    {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
@@ -168,23 +169,6 @@ const Product = () => {
       field: "cname",
       filter: "agTextColumnFilter",
       width: 190,
-    },
-    {
-      field: "action",
-      headerName: "Action",
-      flex: 1,
-      cellRenderer: (e: any) => {
-        return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
-            {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
-            <Edit2
-              className="h-[20px] w-[20px] text-cyan-700 "
-              onClick={() => setSheetOpenEdit(e?.data?.product_key)}
-            />
-            {/* </Button> */}
-          </div>
-        );
-      },
     },
   ];
 
@@ -282,7 +266,7 @@ const Product = () => {
                   placeholder="Customer Name"
                   endpoint="/others/customerList"
                   transform={transformOptionData}
-                  onChange={(e) => form.setValue("customerName", e)}
+                  onChange={(e) => form.setFieldValue("customerName", e)}
                   // value={selectedCustomer}
                   fetchOptionWith="search"
                 />
@@ -356,7 +340,6 @@ const Product = () => {
         onOkay={() => {
           onsubmit();
         }}
-        loading={loading1("fetch")}
         title="Confirm Submit!"
         description="Are you sure to submit the entry?"
       />{" "}

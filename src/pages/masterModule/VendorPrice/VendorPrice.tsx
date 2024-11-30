@@ -12,13 +12,15 @@ import {
   FileUploaderContent,
   FileUploaderItem,
 } from "@/components/shared/FileUpload";
-import { createVendorPrice } from "@/components/shared/Api/masterApi";
+import {
+  createVendorPrice,
+  uplaodPriceList,
+} from "@/components/shared/Api/masterApi";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { IoCloudUpload } from "react-icons/io5";
 import { downloadCSVCustomColumns } from "@/components/shared/ExportToCSV";
-import { spigenAxios } from "@/axiosIntercepter";
 import { Filter } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
@@ -57,9 +59,10 @@ const VendorPrice = () => {
     files.map((comp) => {
       formData.append("file", comp);
     });
-    const response = await spigenAxios.post("/price/upload", formData);
-
-    if (response.data.code == 200) {
+    const response = await execFun(() => uplaodPriceList(formData), "fetch");
+   
+    let { data } = response;
+    if (data?.success) {
       let arr = response.data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
@@ -70,16 +73,16 @@ const VendorPrice = () => {
 
       setRowData(arr);
       // toast
-      toast({
-        title: "Doc Uploaded successfully",
-        className: "bg-green-600 text-white items-center",
-      });
+      // toast({
+      //   title: response.data.message,
+      //   className: "bg-green-600 text-white items-center",
+      // });
       // setLoading(false);
       setSheetOpen(false);
       // setAttachmentFile(response.data.data);
     } else {
       toast({
-        title: "Doc Uploaded successfully",
+        title: response.data.message,
         className: "bg-green-600 text-white items-center",
       });
     }
@@ -90,7 +93,7 @@ const VendorPrice = () => {
     const response = await execFun(() => createVendorPrice(rowData), "fetch");
 
     const { data } = response;
-    if (response.data.code == 200) {
+    if (data?.success) {
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -100,7 +103,7 @@ const VendorPrice = () => {
       setFiles([]);
     } else {
       toast({
-        title: data.message.msg || "Failed to Product",
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }

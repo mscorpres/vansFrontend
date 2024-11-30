@@ -20,7 +20,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -37,7 +36,6 @@ const ComponentMap = () => {
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const [open, setOpen] = useState(false);
-  const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
   const fetchComponentMap = async () => {
     const response = await execFun(() => componentMapList(), "fetch");
     let { data } = response;

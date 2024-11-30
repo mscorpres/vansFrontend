@@ -128,16 +128,16 @@ const CreatingBoxRecipe = () => {
 
     // return;
     let { data } = response;
-    if (response.data.code == 200) {
+    if (data.success) {
       toast({
-        title: response.data.message,
-        className: "bg-green-500 text-center text-white",
+        title: data.message,
+        className: "bg-green-700 text-center text-white",
       });
       setRowData([]);
       form.resetFields();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-700 text-center text-white",
       });
     }

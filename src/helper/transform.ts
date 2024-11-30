@@ -16,7 +16,7 @@ export const transformOptionData = (data: any[]) => {
   }
 };
 export const transformOptionData2 = (data: any[]) => {
-  let newData = data?.data;
+  let newData: any[] = data?.data;
   if (newData?.length) {
     return newData?.map((item) => ({
       label: item.text,
@@ -92,7 +92,7 @@ export const transformOptionsData = (
   // console.log("data", data);
 
   if (data?.data?.length) {
-    return data?.data.map((item) => ({
+    return data?.data.map((item: any) => ({
       label: item.text,
       value: item.id,
     }));

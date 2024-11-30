@@ -49,10 +49,10 @@ const Suom = () => {
         };
       });
       setRowData(arr);
-      toast({
-        title: data.message,
-        className: "bg-green-600 text-white items-center",
-      });
+      // toast({
+      //   title: data.message,
+      //   className: "bg-green-600 text-white items-center",
+      // });
     } else {
       toast({
         title: data.message,

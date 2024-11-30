@@ -15,13 +15,14 @@ import { AgGridReact } from "ag-grid-react";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { toast } from "react-toastify";
 const ViewBom = ({ openView, setSheetOpenView }) => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const { execFun, loading: loading1 } = useApi();
   const getData = async () => {
     const response = await execFun(() => fetchbomComponents(openView), "fetch");
-    if (response.data.code == 200) {
-      let { data } = response;
+    let { data } = response;
+    if (data?.success) {
       let arr = data?.data.map((r: any, id: any) => {
         return {
           id: id + 1,
@@ -37,10 +38,15 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
       });
 
       setRowData(arr);
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   useEffect(() => {
-    if (openView.length) {
+    if (openView?.length) {
       getData(openView);
     }
   }, [openView]);
