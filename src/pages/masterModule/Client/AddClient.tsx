@@ -134,7 +134,7 @@ const AddClient: React.FC<Props> = ({
   const data = useSelector((state: RootState) => state.createSalesOrder);
   const navigate = useNavigate();
   useEffect(() => {
-    dispatch(fetchBillingAddress({ billing_code: "R26331LI" }));
+    // dispatch(fetchBillingAddress({ billing_code: "R26331LI" }));
     // dispatch(fetchBillingAddressList({ search: "" }));
     dispatch(fetchCountries());
     dispatch(fetchStates());
@@ -199,7 +199,6 @@ const AddClient: React.FC<Props> = ({
   const getCountryList = async () => {
     // return;
     const response = await execFun(() => fetchCountryList(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
@@ -215,7 +214,6 @@ const AddClient: React.FC<Props> = ({
   const getStateList = async () => {
     // return;
     const response = await execFun(() => fetchState(), "fetch");
-    console.log("response", response);
     // return;
     let { data } = response;
     if (response.status === 200) {
@@ -229,7 +227,6 @@ const AddClient: React.FC<Props> = ({
     }
   };
   const onSubmit = async (data: CreateSalesOrderForm) => {
-    console.log("Submitted Data from CreateSalesOrder:", data); // Debugging log
     let payload = {
       name: data.name,
       gst: data.gst,
@@ -247,10 +244,10 @@ const AddClient: React.FC<Props> = ({
       website: data.website,
     };
     const response = await execFun(() => addClient(payload), "fetch");
-    console.log("response", response);
-    if (response?.data?.code == 200) {
+
+    if (response?.data?.success) {
       toast({
-        title: response?.data?.message?.msg,
+        title: response?.data?.message,
         className: "bg-green-600 text-white items-center",
       });
       form.setValue("name", "");
@@ -269,7 +266,7 @@ const AddClient: React.FC<Props> = ({
       navigate("/master/customer");
     } else {
       toast({
-        title: response?.data.message.msg,
+        title: response?.data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -456,7 +453,6 @@ const AddClient: React.FC<Props> = ({
                                 onChange={(value: any) =>
                                   form.setValue("state", value.value)
                                 }
-                                // onChange={(e) => console.log(e)}
                                 // value={
                                 //   data.clientDetails
                                 //     ? {

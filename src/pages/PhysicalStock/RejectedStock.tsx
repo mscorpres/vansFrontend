@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import { DatePicker, Divider, Form, Input, Typography } from "antd";
 import useApi from "@/hooks/useApi";
-import { fetchR4 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -31,6 +30,7 @@ import {
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -100,7 +100,7 @@ const RejectedStock = () => {
       cellRenderer: (e) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
-            {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+            {/* <Button className="bg-green-700 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
 
             <Edit2
               onClick={() => {
@@ -226,6 +226,7 @@ const RejectedStock = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       <Sheet open={sheetOpenView} onOpenChange={setSheetOpenView}>

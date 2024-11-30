@@ -38,6 +38,7 @@ import { AppDispatch } from "@/store";
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   wise: z.string(),
 });
@@ -76,7 +77,6 @@ const CreatingBoxRecipe = () => {
 
   const fetchingsku = async (theSku: any) => {
     const response = await execFun(() => fetchProductBySku(theSku), "fetch");
-    console.log("response", response);
 
     // return;
     let { data } = response;
@@ -112,9 +112,6 @@ const CreatingBoxRecipe = () => {
     }
   };
   const createBOM = async () => {
-    // const { wise } = formData;
-    // console.log("fetchBOMList", formData);
-    // return;
     const values = await form.validateFields();
     let payload = {
       bom_subject: values.bom,
@@ -131,16 +128,16 @@ const CreatingBoxRecipe = () => {
 
     // return;
     let { data } = response;
-    if (response.data.code == 200) {
+    if (data.success) {
       toast({
-        title: response.data.message,
-        className: "bg-green-500 text-center text-white",
+        title: data.message,
+        className: "bg-green-700 text-center text-white",
       });
       setRowData([]);
       form.resetFields();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-700 text-center text-white",
       });
     }
@@ -274,7 +271,6 @@ const CreatingBoxRecipe = () => {
   const handleSearch = (searchKey: string, type: any, name: string) => {
     if (searchKey) {
       let p = { search: searchKey };
-      console.log("p", p);
 
       dispatch(fetchComponentDetail(p));
     }
@@ -411,6 +407,7 @@ const CreatingBoxRecipe = () => {
           suppressRowClickSelection={false}
           rowSelection="multiple"
           checkboxSelection={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       {openView && (

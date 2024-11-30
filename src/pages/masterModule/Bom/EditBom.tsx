@@ -1,4 +1,3 @@
-import React from "react";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import styled from "styled-components";
 import {
@@ -44,11 +43,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useParams } from "react-router-dom";
 import { RowData } from "@/data";
 import { toast } from "@/components/ui/use-toast";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { IoCloudUpload } from "react-icons/io5";
 import { spigenAxios } from "@/axiosIntercepter";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { ColDef, StatusPanelDef } from "@ag-grid-community/core";
 const EditBom = () => {
   const [form] = Form.useForm();
   const gridRef = useRef<AgGridReact<RowData>>(null);
@@ -57,6 +58,7 @@ const EditBom = () => {
   const [materialList, setMaterialList] = useState([]);
   const [stage1, setStage1] = useState("1");
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
   const [resetModel, setResetModel] = useState<boolean>(false);
@@ -69,10 +71,10 @@ const EditBom = () => {
   const [files, setFiles] = useState<File[] | null>(null);
   const { execFun, loading: loading1 } = useApi();
   const dispatch = useDispatch<AppDispatch>();
-  const { componentDetails, currency } = useSelector(
+  const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
-  const { loading } = useSelector((state: RootState) => state.product);
+  const { loading } = useSelector((state: RootState) => state.prod);
   const params = useParams();
 
   const addNewRow = () => {
@@ -115,12 +117,18 @@ const EditBom = () => {
       () => fetchProductInBom(sheetOpenEdit),
       "fetch"
     );
+
     let { data } = response;
-    if (data.code) {
+    if (data?.success) {
       form.setFieldValue("bom", data.data.subject);
       form.setFieldValue("name", data.data.product);
       form.setFieldValue("sku", data.data.sku);
       form.setFieldValue("subjectId", data.data.subjectid);
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const handleNext = async () => {
@@ -129,9 +137,9 @@ const EditBom = () => {
       () => fetchEdditBomStage2(params.id),
       "fetch"
     );
-
-    if (response.data.code == 200) {
-      let arr = response.data.data.map((r: any) => {
+    let { data } = response;
+    if (data?.success) {
+      let arr = data?.data.map((r: any) => {
         return {
           orderQty: r.requiredQty,
           material: { text: r.component, value: r.compKey },
@@ -154,6 +162,11 @@ const EditBom = () => {
       });
 
       setRowData(arr);
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
 
@@ -205,15 +218,16 @@ const EditBom = () => {
       sku: form.getFieldValue("sku"),
     };
     dispatch(updateBomComponent(payload)).then((response: any) => {
-      if (response?.payload.data.code == 200) {
+
+      if (response?.payload.data.success) {
         toast({
-          title: response.payload.data.message.msg,
+          title: response.payload.data.message,
           className: "bg-green-700 text-white",
         });
         setRowData([]);
       } else {
         toast({
-          title: response.payload.message,
+          title: response.payload.data.message,
           className: "bg-red-700 text-white",
         });
       }
@@ -269,7 +283,7 @@ const EditBom = () => {
       field: "action",
       headerName: "",
       width: 50,
-      cellRenderer: (params) => {
+      cellRenderer: (params: any) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
             {stage1 == "1" ? (
@@ -287,10 +301,7 @@ const EditBom = () => {
               <Button className=" rounded-full bg-white  hover:bg-white-600 h-[25px] w-[25px] flex justify-center items-center p-0">
                 <FiRefreshCcw
                   className="h-[15px] w-[15px] text-blue-500 hover:text-blue-700"
-                  onClick={
-                    () => updateRow(params)
-                    // console.log("refresh dontn smile to me", params)
-                  }
+                  onClick={() => updateRow(params)}
                 />
               </Button>
             )}
@@ -327,7 +338,7 @@ const EditBom = () => {
       field: "action",
       headerName: "",
       width: 150,
-      cellRenderer: (params) => {
+      cellRenderer: (params: any) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
             {/* <Button className=" rounded-full bg-white  hover:bg-white-600 h-[25px] w-[25px] flex justify-center items-center p-0"> */}
@@ -369,7 +380,7 @@ const EditBom = () => {
       field: "action",
       headerName: "",
       width: 50,
-      cellRenderer: (params) => {
+      cellRenderer: (params: any) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
             {/* <Button className=" rounded-full bg-white  hover:bg-white-600 h-[25px] w-[25px] flex justify-center items-center p-0"> */}
@@ -386,51 +397,18 @@ const EditBom = () => {
       },
     },
   ];
-  const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
-    const dispatch = useDispatch<AppDispatch>();
 
-    const menu = (
-      <Menu>
-        {" "}
-        {stage1 == "1" ? (
-          <Menu.Item
-            key="AddBranch"
-            onClick={() => setAddBranch(row.name)}
-            // disabled={isDisabled}
-          >
-            Add Branch
-          </Menu.Item>
-        ) : (
-          <Menu.Item
-            key="AddBranch"
-            onClick={() => setAddBranch(row.name)}
-            // disabled={isDisabled}
-          >
-            Add Branch
-          </Menu.Item>
-        )}
-      </Menu>
-    );
-
-    return (
-      <>
-        <Dropdown overlay={menu} trigger={["click"]}>
-          {/* <Button icon={<Badge />} /> */}
-          <MoreOutlined />
-        </Dropdown>
-      </>
-    );
-  };
   const handleReset = () => {};
-  const handleBack = () => {
-    setStage1("1");
-  };
+  // const handleBack = () => {
+  //   setStage1("1");
+  // };
   const handleToBackEdit = () => {
     setAlternateModal(false);
     setStage1("2");
     // handleNext();
   };
-  const deleteSelected = async (params) => {
+  const deleteSelected = async (params: any) => {
+
     let payload = {
       child_component: params.data.child_component,
       refid: params.data.refid,
@@ -440,14 +418,15 @@ const EditBom = () => {
     };
     // return;
     const response = await execFun(() => removeAltComponent(payload), "fetch");
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data.success) {
       toast({
-        title: response.data.message,
+        title: data.message,
         className: "bg-green-700 text-white",
       });
     } else {
       toast({
-        title: response.data.message,
+        title: data.message,
         className: "bg-red-700 text-white",
       });
       // setRowDataAlter({})
@@ -479,15 +458,15 @@ const EditBom = () => {
       () => updateselectedBomComponent(payload),
       "fetch"
     );
-
-    if (response?.data.code == 200) {
+    let { data } = response;
+    if (data.success) {
       toast({
-        title: response.data.message?.msg || response.data.message,
+        title: data.message,
         className: "bg-green-700 text-white",
       });
     } else {
       toast({
-        title: response.data.message,
+        title: data.message,
         className: "bg-red-700 text-white",
       });
       // setRowDataAlter({})
@@ -505,8 +484,9 @@ const EditBom = () => {
       () => getAllAlternativeComponents(payload),
       "fetch"
     );
-    if (response.data.code == 200) {
-      let arr = response.data.data.map((r) => {
+    let { data } = response;
+    if (data?.success) {
+      let arr = data.data.map((r) => {
         return {
           ...r,
         };
@@ -515,7 +495,7 @@ const EditBom = () => {
     } else {
       setRowDataAlter([]);
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-700 text-white",
       });
     }
@@ -532,26 +512,24 @@ const EditBom = () => {
       () => getAlternativeComponents(payload),
       "fetch"
     );
-    // console.log("response-", response);
-    if (response.data.code == 200) {
-      let arr = response.data.data.map((r: any) => {
+    let { data } = response;
+    if (data?.success) {
+      let arr = data.data.map((r: any) => {
         return {
           label: r.text,
           value: r.id,
         };
       });
-      // console.log("arr", arr);
       setType(arr);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-700 text-white",
       });
     }
   };
   const addNewAlternateComponent = async () => {
     let values = await form.validateFields();
-    // console.log("values", values);
     // return;
 
     let payload = {
@@ -563,15 +541,16 @@ const EditBom = () => {
 
     // return;
     const response = await execFun(() => addNewAltComponent(payload), "fetch");
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data?.success) {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-green-700 text-white",
       });
       getdetailsOfAlternate();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-700 text-white",
       });
     }
@@ -579,7 +558,9 @@ const EditBom = () => {
   const handleFileChange = (newFiles: File[] | null) => {
     setFiles(newFiles);
   };
+
   const uploadDocs = async () => {
+    setIsLoading(true);
     const formData = new FormData();
     formData.append("caption", captions);
     formData.append("subject", sheetOpenEdit);
@@ -589,17 +570,26 @@ const EditBom = () => {
       formData.append("files", comp);
     });
     const response = await spigenAxios.post("/bom/uploadDocs", formData);
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data?.success) {
       // toast
       toast({
         title: "Doc Uploaded successfully",
         className: "bg-green-600 text-white items-center",
       });
+      setCaptions("");
+      setFiles([]);
       // setLoading(false);
       setSheetOpen(false);
+      setIsLoading(false);
       // setAttachmentFile(response.data.data);
+    } else {
+      toast({
+        title: data?.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
-    // setLoading(false);
+    setIsLoading(false);
   };
   const getUploadedDoc = async (sheetOpen) => {
     let payload = {
@@ -607,9 +597,8 @@ const EditBom = () => {
       sku: form.getFieldValue("sku"),
     };
     const response = await execFun(() => fetchBomDocsFiles(payload), "fetch");
-    console.log("response", response);
-
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data?.success) {
       // toast
       let arr = response.data.data.map((r: any) => {
         return {
@@ -619,6 +608,11 @@ const EditBom = () => {
       setDocList(arr);
       toast({
         title: "Docs fetched successfully",
+        className: "bg-green-600 text-white items-center",
+      });
+    } else {
+      toast({
+        title: data.success,
         className: "bg-green-600 text-white items-center",
       });
     }
@@ -644,7 +638,6 @@ const EditBom = () => {
       setSheetOpenEdit(params?.id);
     }
   }, [params]);
-  // console.log("alternatemodal", alternatemodal);
   useEffect(() => {
     if (alternatemodal) {
       getdetailsOfAlternate(alternatemodal);
@@ -713,6 +706,7 @@ const EditBom = () => {
                 suppressRowClickSelection={false}
                 rowSelection="multiple"
                 checkboxSelection={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
               />
               <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
                 {/* <Button
@@ -742,12 +736,11 @@ const EditBom = () => {
                   </Button>
                 )}
               </div>
-            </div>{" "}
+            </div>
           </div>
         </div>
       ) : (
         <>
-          {" "}
           <div className="h-[calc(100vh-110px)] grid grid-cols-[350px_1fr] flex ">
             <div className="bg-[#fff]">
               {loading1("fetch") && <FullPageLoading />}
@@ -799,6 +792,7 @@ const EditBom = () => {
                 suppressCellFocus={true}
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
               />
             </div>
           </div>
@@ -830,7 +824,7 @@ const EditBom = () => {
             <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
           </SheetHeader>{" "}
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-            {/* {loading && <FullPageLoading />} */}
+            {isLoading && <FullPageLoading />}
             <FileUploader
               value={files}
               onValueChange={handleFileChange}
@@ -892,6 +886,7 @@ const EditBom = () => {
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
                 suppressCellFocus={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
               />
             </div>
           </div>{" "}

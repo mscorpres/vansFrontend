@@ -64,10 +64,9 @@ export const listOfVendorBranchList = createAsyncThunk<
   { vendorcode?: string }
 >("/backend/vendorBranchList", async ({ vendorcode }) => {
   try {
-    const response = await spigenAxios.post<any>("/backend/vendorBranchList", {
-      vendorcode: vendorcode,
-    });
-    console.log("response", response.data);
+    const response = await spigenAxios.get<any>(
+      `/backend/vendorBranchList/${vendorcode}`
+    );
 
     return response.data.data;
   } catch (error) {
@@ -82,9 +81,12 @@ export const listOfCostCenter = createAsyncThunk<
   { search?: string }
 >("/backend/costCenter", async ({ search }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>("/backend/costCenter", {
-      search: search,
-    });
+    const response = await spigenAxios.post<uomPayload>(
+      `/backend/costCenter/${search}`
+      //   , {
+      //   search: search,
+      // }
+    );
 
     return response.data;
   } catch (error) {
@@ -99,14 +101,9 @@ export const listOfBillToList = createAsyncThunk<
   { cost_center?: string; search?: string }
 >("/backend/billingAddressList", async ({ cost_center, search }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/backend/billingAddressList",
-      {
-        search: search,
-        cost_center: cost_center,
-      }
+    const response = await spigenAxios.get<uomPayload>(
+      `/backend/billingAddressList/${cost_center}`
     );
-    // console.log("response", response.data);
 
     return response.data;
   } catch (error) {
@@ -121,13 +118,9 @@ export const fetchShippingAddressDetails = createAsyncThunk<
   { shipping_code?: string }
 >("/backend/shippingAddress", async ({ shipping_code }) => {
   try {
-    const response = await spigenAxios.post<shippingAddressPayload>(
-      "/backend/shippingAddress",
-      {
-        shipping_code: shipping_code,
-      }
+    const response = await spigenAxios.get<shippingAddressPayload>(
+      `/backend/shippingAddress/${shipping_code}`
     );
-    console.log("response", response);
 
     return response.data.data;
   } catch (error) {
@@ -143,13 +136,9 @@ export const fetchBillingList = createAsyncThunk<
   { cost_center?: string }
 >("/backend/billingAddressList", async ({ cost_center }) => {
   try {
-    const response = await spigenAxios.post<shippingAddressPayload>(
-      "/backend/billingAddressList",
-      {
-        cost_center: cost_center,
-      }
+    const response = await spigenAxios.get<shippingAddressPayload>(
+      `/backend/billingAddressList/${cost_center}`
     );
-    console.log("response", response);
 
     return response.data;
   } catch (error) {
@@ -164,13 +153,9 @@ export const fetchBillingListDetails = createAsyncThunk<
   { billing_code?: string }
 >("/backend/billingAddress", async ({ billing_code }) => {
   try {
-    const response = await spigenAxios.post<shippingAddressPayload>(
-      "/backend/billingAddress",
-      {
-        billing_code: billing_code,
-      }
+    const response = await spigenAxios.get<shippingAddressPayload>(
+      `/backend/billingAddress/${billing_code}`
     );
-    console.log("response", response);
 
     return response.data.data;
   } catch (error) {
@@ -185,14 +170,9 @@ export const fetchVendorAddressDetails = createAsyncThunk<
   { vendorcode?: string; branchcode?: string }
 >("/backend/vendorAddress", async ({ vendorcode, branchcode }) => {
   try {
-    const response = await spigenAxios.post<shippingAddressPayload>(
-      "/backend/vendorAddress",
-      {
-        vendorcode: vendorcode,
-        branchcode: branchcode,
-      }
+    const response = await spigenAxios.get<shippingAddressPayload>(
+      `backend/vendorAddress?vendorcode=${vendorcode}&branchcode=${branchcode}`
     );
-    console.log("response", response);
 
     return response.data.data;
   } catch (error) {
@@ -209,14 +189,9 @@ export const fetchComponentDetails = createAsyncThunk<
   "/purchaseOrder/getComponentDetailsByCode",
   async ({ component_code, vencode }) => {
     try {
-      const response = await spigenAxios.post<shippingAddressPayload>(
-        "/purchaseOrder/getComponentDetailsByCode",
-        {
-          vencode: vencode,
-          component_code: component_code,
-        }
+      const response = await spigenAxios.get<shippingAddressPayload>(
+        `/purchaseOrder/getComponentDetailsByCode?component_code=${component_code}&vencode=${vencode}`
       );
-      console.log("response", response);
 
       return response.data.data;
     } catch (error) {
@@ -246,12 +221,11 @@ export const searchingHsn = createAsyncThunk<hsnPayload>(
   "backend/searchHsn",
   async (payload) => {
     try {
-      const response = await spigenAxios.post<hsnPayload>(
-        "backend/searchHsn",
-        payload
+      const response = await spigenAxios.get<hsnPayload>(
+        `backend/searchHsn/${payload.searchTerm}`
       );
 
-      return response.data;
+      return response.data.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -266,7 +240,7 @@ export const listOfUoms = createAsyncThunk<uomPayload>("/uom", async () => {
       _: 1717993845490,
     });
 
-    return response.data.data;
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -278,7 +252,7 @@ export const fetchShippingAddressForPO = createAsyncThunk<uomPayload>(
   "/backend/shipingAddressList",
   async () => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
+      const response = await spigenAxios.get<uomPayload>(
         "/backend/shipingAddressList"
       );
 
@@ -296,9 +270,8 @@ export const fetchManagePOList = createAsyncThunk<
   { data: string; wise: string }
 >("/purchaseOrder/fetchPendingData4PO", async ({ data, wise }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/purchaseOrder/fetchPendingData4PO",
-      { data: data, wise: wise }
+    const response = await spigenAxios.get<uomPayload>(
+      `purchaseOrder/fetchPendingData4PO?wise=${wise}&data=${data}`
     );
 
     return response.data;
@@ -331,7 +304,7 @@ export const poApprove = createAsyncThunk<uomPayload>(
   "/purchaseOrder/po_approve",
   async (payload) => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
+      const response = await spigenAxios.put<uomPayload>(
         "/purchaseOrder/po_approve",
         payload
       );
@@ -350,9 +323,8 @@ export const fetchManagePOVeiwComponentList = createAsyncThunk<
   { poid: string }
 >("/purchaseOrder/fetchComponentList4PO", async ({ poid }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/purchaseOrder/fetchComponentList4PO",
-      { poid: poid }
+    const response = await spigenAxios.get<uomPayload>(
+      `/purchaseOrder/fetchComponentList4PO?poid=${payload}`
     );
 
     return response.data.response.data;
@@ -385,9 +357,8 @@ export const fetchDataPOforMIN = createAsyncThunk<uomPayload, { poid: string }>(
   "/purchaseOrder/fetchData4MIN",
   async ({ poid }) => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
-        "/purchaseOrder/fetchData4MIN",
-        { pono: poid }
+      const response = await spigenAxios.get<uomPayload>(
+        `/purchaseOrder/fetchData4MIN/?pono=${poid}`
       );
 
       return response.data;
@@ -403,9 +374,8 @@ export const fetchDataPOEdit = createAsyncThunk<uomPayload, { pono: string }>(
   "/purchaseOrder/fetchData4Update",
   async ({ pono }) => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
-        "/purchaseOrder/fetchData4Update",
-        { pono: pono }
+      const response = await spigenAxios.get<uomPayload>(
+        `/purchaseOrder/fetchData4Update?pono=${pono}`
       );
 
       return response.data;
@@ -441,7 +411,6 @@ export const fetchCurrency = createAsyncThunk<uomPayload>(
       const response = await spigenAxios.get<uomPayload>(
         "/backend/fetchAllCurrecy"
       );
-      // console.log("response-->", response?.data?.data);
 
       return response.data.data;
     } catch (error) {
@@ -458,14 +427,9 @@ export const fetchCompletedPo = createAsyncThunk<
   { data: string; wise: string }
 >("/purchaseOrder/fetchCompletePO", async ({ data, wise }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
-      "/purchaseOrder/fetchCompletePO",
-      {
-        data: data,
-        wise: wise,
-      }
+    const response = await spigenAxios.get<uomPayload>(
+      `purchaseOrder/fetchCompletePO?wise=${wise}&data=${data}`
     );
-    console.log("response.data.data", response.data);
 
     return response.data;
   } catch (error) {
@@ -481,14 +445,9 @@ export const fetchneededApprovalPO = createAsyncThunk<
   { data: string; wise: string }
 >("purchaseOrder/fetchneededApprovalPO", async ({ data, wise }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
-      "purchaseOrder/fetchneededApprovalPO",
-      {
-        data: data,
-        wise: wise,
-      }
+    const response = await spigenAxios.get<uomPayload>(
+      `purchaseOrder/fetchneededApprovalPO?wise=${wise}&data=${data}`
     );
-    // console.log("response", response.data);
 
     return response.data;
   } catch (error) {
@@ -504,14 +463,13 @@ export const rejectPo = createAsyncThunk<
   { poid: string; remark: string }
 >("/purchaseOrder/rejectPo", async ({ poid, remark }) => {
   try {
-    const response = await spigenAxios.post<uomPayload>(
+    const response = await spigenAxios.put<uomPayload>(
       "/purchaseOrder/rejectPo",
       {
         poid: poid,
         remark: remark,
       }
     );
-    // console.log("response", response.data);
 
     return response.data;
   } catch (error) {
@@ -526,11 +484,10 @@ export const updatePo = createAsyncThunk<uomPayload, payload>(
   "/purchaseOrder/updateData4Update",
   async (payload) => {
     try {
-      const response = await spigenAxios.post<uomPayload>(
+      const response = await spigenAxios.put<uomPayload>(
         "/purchaseOrder/updateData4Update",
         payload
       );
-      // console.log("response", response.data);
 
       return response;
     } catch (error) {

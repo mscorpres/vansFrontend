@@ -53,6 +53,7 @@ import { AppDispatch, RootState } from "@/store";
 import { spigenAxios } from "@/axiosIntercepter";
 import { AgGridReact } from "ag-grid-react";
 import { Download } from "lucide-react";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [open, setOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -102,7 +103,9 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       () => getProductDetailsForEdit(sheetOpenEdit),
       "fetch"
     );
-    if (response.status == 200) {
+    let { data } = response;
+
+    if (data.success) {
       let { data } = response;
       let arr: any = data.data[0];
       let obj = {
@@ -157,7 +160,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       form.setFieldsValue(obj);
     } else {
       toast({
-        title: response.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -194,6 +197,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     };
     // return;
     const response = await execFun(() => saveProductDetails(payload), "fetch");
+
     if (response.status == "success") {
       toast({
         title: response.message,
@@ -236,10 +240,12 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     });
 
     const response = await execFun(() => uploadProductImg(formData), "fetch");
-    if (response.data.code == 200) {
+    let { data } = response;
+
+    if (data.success) {
       // toast
       toast({
-        title: "Doc Uploaded successfully",
+        title: data.message,
         className: "bg-green-600 text-white items-center",
       });
       setFiles([]);
@@ -247,6 +253,11 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       // setLoading(false);
       setSheetOpen(false);
       setAttachmentFile(response.data.data);
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
     // setLoading(false);
   };
@@ -261,8 +272,8 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       mrp: values.mrp,
       // producttype: values.type.value,
       isenabled: values.enabled.value,
-      gsttype: values.tax.value,
-      gstrate: values.gst.value,
+      gsttype: values.tax?.value,
+      gstrate: values.gst?.value,
       uom: values.uom.value ?? values.uom,
       location: "--",
       hsn: values.hsn,
@@ -284,16 +295,16 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
 
     // return;
     const response = await execFun(() => updateProductMaterial(hehe), "fetch");
-
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data.success) {
       toast({
-        title: response.data.message,
+        title: data.message,
         className: "bg-green-600 text-white items-center",
       });
       setSheetOpenEdit(false);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -308,9 +319,8 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       product: sheetOpenEdit,
     };
     const response = await execFun(() => fetchImageProduct(payload), "fetch");
-    console.log("response", response);
-
-    if (response.data.code == 200) {
+    let { data } = response;
+    if (data.success) {
       // toast
       let arr = response.data.data.map((r: any) => {
         return {
@@ -324,7 +334,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       });
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -704,16 +714,16 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
-                          <Form.Item name="brand" label="Min Stock (FG)">
+                          <Form.Item name="brand" label="MIN Stock (FG)">
                             <Input
                               className={InputStyle}
-                              placeholder="Enter Min Stock (FG)"
+                              placeholder="Enter MIN Stock (FG)"
                             />
                           </Form.Item>
-                          <Form.Item name="minStock" label="Min Stock (RM)">
+                          <Form.Item name="minStock" label="MIN Stock (RM)">
                             <Input
                               className={InputStyle}
-                              placeholder="Enter Min Stock (RM)"
+                              placeholder="Enter MIN Stock (RM)"
                             />
                           </Form.Item>
                           <Form.Item name="batch" label="Mfg Batch Size">
@@ -812,7 +822,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
               onValueChange={handleFileChange}
               dropzoneOptions={{
                 accept: {
-                  "image/*": [".jpg", ".jpeg", ".png", ".gif", ],
+                  "image/*": [".jpg", ".jpeg", ".png", ".gif"],
                 },
                 maxFiles: 1,
                 maxSize: 4 * 1024 * 1024, // 4 MB
@@ -868,6 +878,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
                 suppressCellFocus={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
               />
             </div>
           </div>{" "}

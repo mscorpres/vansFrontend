@@ -8,7 +8,6 @@ export interface ApiResponse<T> {
   data: T;
   message?: string | null;
 }
-console.log("herer");
 
 // Define the async thunk for fetching client address detail
 export const updateBomComponent = createAsyncThunk<
@@ -16,11 +15,10 @@ export const updateBomComponent = createAsyncThunk<
   { addressID: string }
 >("/bom/updateBomComponent", async (payload) => {
   try {
-    const response = await spigenAxios.post<updateBOM>(
+    const response = await spigenAxios.put<updateBOM>(
       "/bom/updateBomComponent",
       payload
     );
-    console.log("response", response);
 
     return response;
   } catch (error) {

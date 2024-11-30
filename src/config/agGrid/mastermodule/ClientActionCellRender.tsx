@@ -14,7 +14,6 @@ const ClientActionCellRender: React.FC = (params: any) => {
  
 
   const clientId = params.data.clientID; 
-  console.log(clientId)
 
   const uiState: MasterCustomer = {
     clientEdit,

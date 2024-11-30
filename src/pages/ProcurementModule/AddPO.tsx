@@ -171,8 +171,6 @@ const AddPO: React.FC<Props> = ({
 
   const handleSubmit = async () => {
     let arr = rowData;
-    console.log("arr", arr);
-    console.log("formVal", formVal);
 
     let payload = {
       vendorname: formVal.vendorName.value,
@@ -212,7 +210,6 @@ const AddPO: React.FC<Props> = ({
       remark: arr.map((r: any) => r.remark),
       original_po: formVal.originalPO?.value,
     };
-    console.log("payload", payload);
 
     // return;
     try {
@@ -588,7 +585,6 @@ const AddPO: React.FC<Props> = ({
     // Clear interval on component unmount
     return () => clearInterval(intervalId);
   }, [rowData]);
-  console.log("isApprove", isApprove);
 
   return (
     <Wrapper>
@@ -729,7 +725,7 @@ const AddPO: React.FC<Props> = ({
               animateRows={true}
               gridOptions={commonAgGridConfig}
               suppressRowClickSelection={false}
-              loadingOverlayComponent={OverlayNoRowsTemplate}
+              overlayNoRowsTemplate={OverlayNoRowsTemplate}
               suppressCellFocus={true}
             />
           </div>

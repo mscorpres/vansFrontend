@@ -5,14 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import { clientFormSchema } from "@/schema/masterModule/customerSchema";
-import ClientActionCellRender from "@/config/agGrid/mastermodule/ClientActionCellRender";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { Badge } from "@/components/ui/badge";
 import { useDispatch } from "react-redux";
 import { useToast } from "@/components/ui/use-toast";
 import { AppDispatch } from "@/store";
-import { createClient } from "@/features/client/clientSlice";
 import styled from "styled-components";
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -42,9 +38,9 @@ import {
 } from "@/components/ui/sheet";
 import { Dropdown, Form, Menu, Switch } from "antd";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import CreateBom from "./Bom/CreateBom";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import CustomTooltip from "@/components/shared/CustomTooltip";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const MasterCustomerPage: React.FC = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [addBranch, setAddBranch] = useState(false);
@@ -241,7 +237,7 @@ const MasterCustomerPage: React.FC = () => {
       "fetch"
     );
     let { data } = response;
-    if (response.data.code === 200) {
+    if (response.data.success) {
       let bill = data.data.billingAddress;
       let ship = data.data.shippingAddress;
       let billcomp = {
@@ -281,7 +277,7 @@ const MasterCustomerPage: React.FC = () => {
       setOpenView(bill);
     } else {
       toast({
-        title: response.message.msg,
+        title: response.data.message,
         className: "bg-red-700",
       });
       //   addToast(response.message, {
@@ -320,10 +316,10 @@ const MasterCustomerPage: React.FC = () => {
       () => getListOFViewCustomersOfSelected(payload),
       "fetch"
     );
+    let { data } = response;
 
     // return;
-    let { data } = response;
-    if (response?.data?.code === 200) {
+    if (data?.success) {
       let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
@@ -347,7 +343,7 @@ const MasterCustomerPage: React.FC = () => {
     } else {
       setViewBranch(false);
       toast({
-        title: response.message,
+        title: response?.message,
         className: "bg-red-700 text-white items-center",
       });
       //   addToast(response.message, {
@@ -383,9 +379,10 @@ const MasterCustomerPage: React.FC = () => {
     };
 
     const response = await execFun(() => addbranchToClient(payload), "fetch");
-    if (response?.data?.code == 200) {
+
+    if (response?.data?.success) {
       toast({
-        title: response?.data?.message?.msg,
+        title: response?.data?.message,
         className: "bg-green-600 text-white items-center",
       });
       form.resetFields();
@@ -393,7 +390,7 @@ const MasterCustomerPage: React.FC = () => {
       setSameBilling(false);
     } else {
       toast({
-        title: response?.message,
+        title: response?.data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -430,16 +427,16 @@ const MasterCustomerPage: React.FC = () => {
       () => updateBranchOfCustomer(payload),
       "fetch"
     );
-    if (response?.data?.code === 200) {
+    if (response?.data?.success) {
       toast({
-        title: response.data.message.msg,
+        title: response.data.message,
         className: "bg-green-600 text-white items-center",
       });
       form.resetFields();
       setOpenView(false);
     } else {
       toast({
-        title: response.message,
+        title: response.data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -490,7 +487,6 @@ const MasterCustomerPage: React.FC = () => {
       form.setFieldValue("shipAddress2", billAddress2);
     }
   }, [samebilling]);
-  console.log("herer");
 
   return (
     <Wrapper>
@@ -564,7 +560,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("billcountry", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -598,7 +593,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("billstate", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -785,7 +779,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("shipcountry", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -819,7 +812,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("shipState", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -1023,7 +1015,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("billcountry", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -1057,7 +1048,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("billstate", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -1217,7 +1207,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("shipcountry", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -1242,7 +1231,6 @@ const MasterCustomerPage: React.FC = () => {
                               onChange={(value: any) =>
                                 form.setFieldValue("shipState", value)
                               }
-                              // onChange={(e) => console.log(e)}
                               // value={
                               //   data.clientDetails
                               //     ? {
@@ -1347,25 +1335,25 @@ const MasterCustomerPage: React.FC = () => {
                     </Card>
                   </div>
                 </Form>
-                <div className={modelFixFooterStyle}>
-                  <Button
-                    variant={"outline"}
-                    className="shadow-slate-300 mr-[10px] border-slate-400 border"
-                    onClick={(e: any) => {
-                      setOpen(true);
-                      e.preventDefault();
-                    }}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="bg-cyan-700 hover:bg-cyan-600"
-                    onClick={() => updateSelectedBranch()}
-                  >
-                    Update
-                  </Button>
-                </div>
+              </div>
+              <div className={modelFixFooterStyle}>
+                <Button
+                  variant={"outline"}
+                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                  onClick={(e: any) => {
+                    setOpen(true);
+                    e.preventDefault();
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-cyan-700 hover:bg-cyan-600"
+                  onClick={() => updateSelectedBranch()}
+                >
+                  Update
+                </Button>
               </div>
             </div>
           </SheetContent>
@@ -1381,6 +1369,7 @@ const MasterCustomerPage: React.FC = () => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         ) : (
           <AgGridReact
@@ -1392,6 +1381,7 @@ const MasterCustomerPage: React.FC = () => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         )}
       </div>

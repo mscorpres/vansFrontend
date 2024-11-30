@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
-import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 
@@ -7,7 +6,7 @@ import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import { transformOptionData } from "@/helper/transform";
 import { Filter, Plus } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Form, Space } from "antd";
+import { Form } from "antd";
 import { searchingHsn } from "@/features/client/clientSlice";
 import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
@@ -17,7 +16,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -25,34 +23,18 @@ import {
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import { useDispatch, useSelector } from "react-redux";
 import { RowData } from "@/data";
 import { AppDispatch, RootState } from "@/store";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-const FormSchema = z.object({
-  dateRange: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  soWise: z.string().optional(),
-  compCode: z.string().optional(),
-});
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const Hsn = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [callreset, setCallReset] = useState(false);
   const [search, setSearch] = useState("");
-  const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [formValues, setFormValues] = useState({ compCode: "" });
   const dispatch = useDispatch<AppDispatch>();
-  //   const { upda, currency } = useSelector(
-  //     (state: RootState) => state.createSalesOrder
-  //   );
   const { hsnlist } = useSelector((state: RootState) => state.client);
 
   const { execFun, loading: loading1 } = useApi();
@@ -70,37 +52,14 @@ const Hsn = () => {
 
   const [form] = Form.useForm();
   const isValue = Form.useWatch("partName", form);
-  console.log("isValue", isValue);
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
-  const typeOption = [
-    {
-      label: "Component",
-      value: "Component",
-    },
-    {
-      text: "Other",
-      value: "Other",
-    },
-  ];
-  const smtOption = [
-    {
-      label: "Yes",
-      value: "yes",
-    },
-    {
-      label: "No",
-      value: "no",
-    },
-  ];
 
-  console.log("here in api", rowData);
-  const getTheListHSN = async (value) => {
+  const getTheListHSN = async (value: any) => {
     const response = await execFun(() => fetchHSN(value), "fetch");
     const { data } = response;
-    console.log("here in api", response);
     if (data.code == 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
           //   ...r,
@@ -109,12 +68,10 @@ const Hsn = () => {
           isNew: true,
         };
       });
-      console.log("arr", arr);
       setRowData(arr);
     }
   };
   const handleSearch = (searchKey: string, type: any) => {
-    console.log("searchKey", searchKey);
     if (searchKey) {
       let p = { searchTerm: searchKey };
       dispatch(searchingHsn(p));
@@ -158,46 +115,39 @@ const Hsn = () => {
   useEffect(() => {
     if (isValue?.value) {
       getTheListHSN(isValue?.value);
+      setRowData([]);
     }
   }, [isValue]);
 
   const handleSubmit = async () => {
+    setShowConfirmation(false);
     const value = form.getFieldsValue();
-
     let payload = {
       component: value.partName.value,
-      hsn: rowData.map((r) => r.hsnSearch.value),
-      tax: rowData.map((r) => r.gstRate),
+      hsn_code: rowData.map((r: any) => r.hsnSearch.value ?? r.hsnSearch),
+      tax: rowData.map((r: any) => r.gstRate),
     };
 
     const response = await execFun(() => mapHSN(payload), "fetch");
 
     let { data } = response;
-    if (response.data.code == 200) {
-      console.log("response,", response.data.message);
-
+    if (data.success) {
+      setRowData([]);
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
       });
       form.resetFields();
-      setRowData([]);
+
       setShowConfirmation(false);
     } else {
       toast({
-        title: data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
   };
   const columnDefs: ColDef<rowData>[] = [
-    // {
-    // {
-    //   headerName: "ID",
-    //   field: "id",
-    //   filter: "agNumberColumnFilter",
-    //   width: 90,
-    // },
     {
       headerName: "",
       valueGetter: "node.rowIndex + 1",
@@ -222,24 +172,6 @@ const Hsn = () => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-
-    // {
-    //   field: "action",
-    //   headerName: "",
-    //   flex: 1,
-    //   cellRenderer: (e) => {
-    //     return (
-    //       <div className="flex gap-[5px] items-center justify-center h-full">
-    //         <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600">
-    //           <Trash2
-    //             className="h-[15px] w-[15px] text-white"
-    //             onClick={() => setSheetOpenEdit(e?.data?.product_key)}
-    //           />
-    //         </Button>{" "}
-    //       </div>
-    //     );
-    //   },
-    // },
   ];
   const handleReset = () => {
     form.resetFields();
@@ -270,33 +202,14 @@ const Hsn = () => {
                   transform={transformOptionData}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
-            </div>{" "}
+            </div>
           </div>
-          {/* <Button
-            type="submit"
-            className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-          >
-            Submit
-          </Button> */}
-          {/* </form> */}
-        </Form>{" "}
-      </div>{" "}
-      {/* <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
-        {loading1("fetch") && <FullPageLoading />}
-      
-      </div> */}
+        </Form>
+      </div>
       {callreset == true && (
-        // <CommonModal
-        //   isDialogVisible={callreset}
-        //   handleOk={handleReset}
-        //   handleCancel={() => setCallReset(false)}
-        //   title="Reset Details"
-        //   description={"Are you sure you want to remove ths entry?"}
-        // />
         <AlertDialog open={callreset} onOpenChange={setCallReset}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -340,10 +253,10 @@ const Hsn = () => {
             paginationPageSize={10}
             animateRows={true}
             gridOptions={commonAgGridConfig}
-            suppressRowClickSelection={false}
             rowSelection="multiple"
             checkboxSelection={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button

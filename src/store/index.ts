@@ -4,6 +4,7 @@ import selectReducer from "../features/reactSelect/RectSelectSlice";
 import gridReducer from "../features/agGrid/aggridSlice";
 import createSalesOrderReducer from "../features/salesmodule/createSalesOrderSlice";
 import productSlice from "@/features/product/productSlice";
+import productfg from "@/features/masterModule/ProductFg&Sfg"
 import billingAdressSlice from "@/features/billingAddress/billingAdressSlice";
 import shippingAdressSlice from "@/features/shippingAddress/shippingAdressSlice";
 import clientSlice from "@/features/client/clientSlice";
@@ -21,7 +22,7 @@ export const store = configureStore({
     select: selectReducer,
     aggrid: gridReducer,
     createSalesOrder: createSalesOrderReducer,
-    prod: productSlice,
+    prod: productfg,
     billing: billingAdressSlice,
     shipping: shippingAdressSlice,
     client: clientSlice,

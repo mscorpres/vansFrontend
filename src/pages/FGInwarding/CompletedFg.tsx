@@ -72,7 +72,7 @@ const CompeletedFg = () => {
     );
 
     let { data } = response;
-    if (data.code === 200) {
+    if (data?.code === 200) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -82,7 +82,7 @@ const CompeletedFg = () => {
       setRowData(arr);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response.message,
         className: "bg-red-700 text-center text-white",
       });
     }
@@ -238,7 +238,7 @@ const CompeletedFg = () => {
                         endpoint="/backend/fetchProduct"
                         transform={transformOptionData}
                         onChange={(e) => form.setValue("datainp", e.value)}
-                        fetchOptionWith="payload"
+                        fetchOptionWith="querySearchTerm"
                       />
                     </FormControl>
                     <FormMessage />

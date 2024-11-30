@@ -31,6 +31,9 @@ import {
 } from "@/helper/transform";
 import { exportDateRangespace } from "@/components/shared/Options";
 import { toast } from "@/components/ui/use-toast";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { IoMdDownload } from "react-icons/io";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -73,6 +76,8 @@ const R3 = () => {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
+          status1: r.status == "A" ? "Active" : "I" ? "Inactive" : "Alternate",
+          category1: r.category == "P" ? "Part" : "Packaging",
           ...r,
         };
       });
@@ -131,14 +136,14 @@ const R3 = () => {
 
     {
       headerName: "Category",
-      field: "category",
+      field: "category1",
       filter: "agTextColumnFilter",
       width: 190,
     },
 
     {
       headerName: "Status",
-      field: "status",
+      field: "status1",
       filter: "agTextColumnFilter",
       width: 190,
     },
@@ -213,7 +218,9 @@ const R3 = () => {
       value: "PROJECT",
     },
   ];
-
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "R3 BOM Wise Report");
+  };
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
@@ -240,7 +247,7 @@ const R3 = () => {
                       transform={transformOptionData}
                       onChange={(e) => form.setValue("part", e?.value)}
                       // value={selectedCustomer}
-                      fetchOptionWith="payload"
+                      fetchOptionWith="querySearchTerm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -257,7 +264,7 @@ const R3 = () => {
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
-                      placeholder="Branch"
+                      placeholder="BOM"
                       className="border-0 basic-single"
                       classNamePrefix="select border-0"
                       isDisabled={false}
@@ -302,16 +309,30 @@ const R3 = () => {
                 </FormItem>
               )}
             />
-            {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            {/* )} */}{" "}
+            <div className="flex gap-[10px] justify-end  px-[5px]">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                // onClick={() => {}}
+                disabled={rowData.length === 0}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
@@ -327,6 +348,7 @@ const R3 = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

@@ -128,9 +128,8 @@ export const fetchBillingAddress = createAsyncThunk<
   { cost_center: string }
 >("client/fetchBillingAddress", async (cost_center) => {
   try {
-    const response = await spigenAxios.post<BillingAddressResponse>(
-      "/backend/billingAddress",
-      { cost_center: cost_center }
+    const response = await spigenAxios.get<BillingAddressResponse>(
+      `/backend/billingAddress/${cost_center}`
     );
     if (response.data.code !== 200) {
       throw new Error("Failed to fetch billing address");
@@ -168,9 +167,7 @@ export const fetchBillAddressList = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { id: string } // Define the type of the argument you expect
 >("/client/uploadBillAddressExcel", async (id: any) => {
-  const response = await spigenAxios.post(`backend/billingAddressList`, {
-    cost_center: id,
-  });
+  const response = await spigenAxios.get(`/backend/billingAddressList/${id}`);
 
   return response.data;
 });
@@ -179,9 +176,12 @@ export const fetchBillAddress = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { id: string } // Define the type of the argument you expect
 >("/client/fetchBillAddress", async (id: any) => {
-  const response = await spigenAxios.post(`backend/billingAddress`, {
-    billing_code: id,
-  });
+  const response = await spigenAxios.get(
+    `/backend/billingAddress/${id}`
+    //    {
+    //   billing_code: id,
+    // }
+  );
 
   return response.data;
 });
@@ -259,11 +259,11 @@ export const fetchComponentDetail = createAsyncThunk<
   CustomerListDetail[],
   { search: string }
 >("client/fetchComponentDetail", async ({ search }) => {
-  const response = await spigenAxios.post<[]>(
-    `/backend/getComponentByNameAndNo`,
-    {
-      search: search,
-    }
+  const response = await spigenAxios.get<[]>(
+    `/backend/getComponentByNameAndNo/${search}`
+    // {
+    //   search: search,
+    // }
   );
 
   if (response.status === 200) {
@@ -279,7 +279,7 @@ export const fetchProductData = createAsyncThunk<
   { comp_key: string }
 >("client/fetchProductData", async ({ comp_key }) => {
   const response = await spigenAxios.post<ComponentDetailResponse>(
-    `/backend/fetchHsnDb`,
+    `/backend/fetchHsnDb/${comp_key}`,
     { comp_key: comp_key }
   );
 
@@ -297,9 +297,13 @@ export const fetchComponentDetailByCode = createAsyncThunk<
   ComponentDetail[],
   { component_code: string; vencode: string }
 >("client/fetchProductData", async ({ component_code, vencode }) => {
-  const response = await spigenAxios.post<ComponentDetailResponse>(
-    `/soCreate/getComponentDetailsByCode`,
-    { component_code: component_code, vencode: vencode }
+  const response = await spigenAxios.get<ComponentDetailResponse>(
+    // `/soCreate/getComponentDetailsByCode`,
+    // {
+    //   component_code: component_code,
+    //   vencode: vencode,
+    // }
+    `salesOrder/getComponentDetailsByCode?component_code=${component_code}`
   );
 
   if (response.data.status === "success") {
@@ -317,9 +321,8 @@ export const fetchCustomerDetail = createAsyncThunk<
   { search: string } // Argument type
 >("client/fetchCustomerDetail", async ({ search }, { rejectWithValue }) => {
   try {
-    const response = await spigenAxios.post<ComponentDetailResponse>(
-      `/others/customerList`,
-      { search }
+    const response = await spigenAxios.get<ComponentDetailResponse>(
+      `/others/customerList?search=${search}`
     );
 
     // Ensure this line accesses the correct data structure
@@ -361,9 +364,8 @@ export const fetchDataForUpdate = createAsyncThunk(
   "client/fetchData",
   async ({ so_id }: { so_id: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>(
-        "/salesOrder/fetchData4Update",
-        { so_id: so_id }
+      const response = await spigenAxios.get<any>(
+        `salesOrder/fetchData4Update?so_id=${so_id}`
       );
 
       if (!response.data) {
@@ -396,7 +398,7 @@ export const updateSalesOrderRequest = createAsyncThunk<
   ApiResponse<any>,
   SellRequestPayload
 >("/sellRequest/updateSalesOrderRequest", async (payload) => {
-  const response = await spigenAxios.post(
+  const response = await spigenAxios.put(
     "/salesOrder/updateSalesOrder",
     payload
   );

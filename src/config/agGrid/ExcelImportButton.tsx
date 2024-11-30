@@ -27,7 +27,7 @@ const ExcelImportButton: React.FC<ExcelImportButtonProps> = ({
 
         uploadFunction(file) // Call the passed upload function
           .then((resultAction) => {
-            console.log("API Response:", resultAction);
+            // console.log("API Response:", resultAction);
 
             if (resultAction.payload?.success) {
               toast({

@@ -1,5 +1,4 @@
-
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -24,6 +23,7 @@ import {
   getProductsByNameAndNo,
 } from "@/components/shared/Api/masterApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -148,7 +148,7 @@ const Q3 = () => {
                       transform={transformOptionData}
                       onChange={fetchComponentList}
                       value={selectedCustomer}
-                      fetchOptionWith="payload"
+                      fetchOptionWith="search"
                     />
                   </FormControl>
                   <FormMessage />
@@ -179,6 +179,7 @@ const Q3 = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

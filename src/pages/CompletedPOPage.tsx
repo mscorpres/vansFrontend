@@ -1,7 +1,7 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { Filter } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
@@ -126,7 +126,7 @@ const CompletedPOPage: React.FC = () => {
     },
     {
       field: "po_reg_date",
-      headerName: "Po Reg. Date",
+      headerName: "PO Reg. Date",
       flex: 1,
       filter: "agDateColumnFilter",
       filterParams: {
@@ -226,7 +226,11 @@ const CompletedPOPage: React.FC = () => {
             onSubmit={form.handleSubmit(fetchManageList)}
             className="space-y-6 overflow-hidden p-[10px] h-[370px]"
           > */}
-          <Form.Item className="w-full" name="wise">
+          <Form.Item
+            className="w-full"
+            name="wise"
+            rules={[{ required: true }]}
+          >
             <Select
               styles={customStyles}
               components={{ DropdownIndicator }}
@@ -240,7 +244,11 @@ const CompletedPOPage: React.FC = () => {
             />
           </Form.Item>
           {selectedwise?.value === "datewise" ? (
-            <Form.Item className="w-full" name="data">
+            <Form.Item
+              className="w-full"
+              name="data"
+              rules={[{ required: true }]}
+            >
               <Space direction="vertical" size={12} className="w-full">
                 <RangePicker
                   className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
@@ -257,18 +265,26 @@ const CompletedPOPage: React.FC = () => {
               </Space>
             </Form.Item>
           ) : selectedwise?.value === "vendorwise" ? (
-            <Form.Item className="w-full" name="data">
+            <Form.Item
+              className="w-full"
+              name="data"
+              rules={[{ required: true }]}
+            >
               <ReusableAsyncSelect
                 placeholder="Vendor Name"
                 endpoint="/backend/vendorList"
                 transform={transformOptionData}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
                 // value={selectedCustomer}
-                fetchOptionWith="payload"
+                fetchOptionWith="query2"
               />
             </Form.Item>
           ) : (
-            <Form.Item className="w-full" name="data">
+            <Form.Item
+              className="w-full"
+              name="data"
+              rules={[{ required: true }]}
+            >
               <Input placeholder="PO number" />
             </Form.Item>
           )}{" "}
@@ -299,7 +315,7 @@ const CompletedPOPage: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
@@ -310,7 +326,7 @@ const CompletedPOPage: React.FC = () => {
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
-          loadingOverlayComponent={OverlayNoRowsTemplate}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
         />
       </div>{" "}

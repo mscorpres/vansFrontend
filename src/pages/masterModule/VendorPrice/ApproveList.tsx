@@ -10,7 +10,7 @@ import {
   approveVendorPrice,
   getVendorPrice,
 } from "@/components/shared/Api/masterApi";
-import { exportDateRangespace } from "@/components/shared/Options";
+import { exportDateRangespaceComma } from "@/components/shared/Options";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
@@ -18,6 +18,7 @@ import { rangePresets } from "@/General";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { useSelector } from "react-redux";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const { RangePicker } = DatePicker;
 const ApproveList: React.FC = () => {
@@ -101,12 +102,11 @@ const ApproveList: React.FC = () => {
     // setLoading(true);
     const values = await form.validateFields();
     let payload = {
-      data: exportDateRangespace(values.data),
+      data: exportDateRangespaceComma(values.data),
       type: "date_wise",
     };
     const response = await execFun(() => getVendorPrice(payload), "fetch");
-    console.log("response", response);
-    if (response.data.code == 200) {
+    if (response?.data?.success) {
       let arr = response.data.data.map((r: any) => {
         return {
           ...r,
@@ -116,7 +116,7 @@ const ApproveList: React.FC = () => {
     } else {
       toast({
         title: response.data.message,
-        className: "bg-red-700",
+        className: "bg-red-700 text-white items-center",
       });
     }
   };
@@ -127,18 +127,20 @@ const ApproveList: React.FC = () => {
   };
 
   const approveTheSelected = async () => {
+    setShowConfirmation(false);
     let payload = selectedRows.map((r) => r.id);
     const response = await execFun(() => approveVendorPrice(payload), "fetch");
-    if (response.data.code == 200) {
+
+    if (response?.data?.success) {
       toast({
         title: response.data.message,
-        className: "bg-green-500",
+        className: "bg-green-700 text-white items-center",
       });
       setShowConfirmation(false);
     } else {
       toast({
         title: response.data.message,
-        className: "bg-red-700",
+        className: "bg-red-700 text-white items-center",
       });
       setShowConfirmation(false);
     }
@@ -154,9 +156,10 @@ const ApproveList: React.FC = () => {
         <div className="p-[10px]"></div>
         <Form
           form={form}
+          layout="vertical"
           className="space-y-6 overflow-hidden p-[10px] h-[370px]  "
         >
-          <Form.Item className="w-full" name="data">
+          <Form.Item className="w-full" name="data" label="Date Range">
             <Space direction="vertical" size={12} className="w-full">
               <RangePicker
                 className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
@@ -208,6 +211,7 @@ const ApproveList: React.FC = () => {
           checkboxSelection={true}
           onSelectionChanged={onSelectionChanged}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <ConfirmationModal

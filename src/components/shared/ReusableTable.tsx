@@ -42,7 +42,6 @@ const ReusableTable: React.FC<GridTableProps> = ({ endpoint, columns, payload, t
 
   const onGridReady = useCallback(() => {
     dispatch(fetchTableData({ endpoint, payload, method })).then((response: any) => {
-      console.log("response", response);
       if (loading) {
         setRowData(null);
       } else if (response.payload?.code === 200 || response.payload.success === true) {

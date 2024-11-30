@@ -39,7 +39,6 @@ const PoCreateTemplate = () => {
     setRowData([]);
     setTabvalue("create");
 
-    console.log("approve", isApprove);
     if (isApprove == "edit") {
       navigate("/manage-po");
       setIsApprove(false);
@@ -61,7 +60,7 @@ const PoCreateTemplate = () => {
     } else {
       setIsApprove(false);
     }
-    if (params) {
+    if (params && params?.id) {
       setParamVal(params.id?.replaceAll("_", "/"));
       dispatch(fetchDataPOEdit({ pono: params.id?.replaceAll("_", "/") })).then(
         (res) => {

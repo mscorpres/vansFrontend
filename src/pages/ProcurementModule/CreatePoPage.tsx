@@ -8,7 +8,7 @@ import { DatePickerStyle, primartButtonStyle } from "@/constants/themeContants";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
-import { transformCurrencyData, transformOptionData } from "@/helper/transform";
+import { transformCurrencyData, transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { Button, DatePicker, Form } from "antd";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
@@ -125,7 +125,6 @@ const CreatePoPage: React.FC<Props> = ({
   }, [selCostCenter]);
   useEffect(() => {
     if (selShipping) {
-
       dispatch(
         fetchShippingAddressDetails({ shipping_code: selShipping?.value })
       );
@@ -226,7 +225,7 @@ const CreatePoPage: React.FC<Props> = ({
                         transform={transformOptionData}
                         onChange={(e) => form.setFieldValue("originalPO", e)}
                         // value={selectedCustomer}
-                        fetchOptionWith="payload"
+                        fetchOptionWith="search"
                       />
                     </Form.Item>
                   )}
@@ -265,7 +264,7 @@ const CreatePoPage: React.FC<Props> = ({
                     transform={transformOptionData}
                     onChange={(e) => form.setFieldValue("vendorName", e)}
                     // value={selectedCustomer}
-                    fetchOptionWith="payload"
+                    fetchOptionWith="query2"
                   />
                 </Form.Item>
                 <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
@@ -360,8 +359,8 @@ const CreatePoPage: React.FC<Props> = ({
                     <ReusableAsyncSelect
                       placeholder="Cost Center"
                       endpoint="/backend/costCenter"
-                      transform={transformOptionData}
-                      fetchOptionWith="payload"
+                      transform={transformOptionData2}
+                      fetchOptionWith="query2"
                     />
                     {/* <p>error message</p> */}
                   </Form.Item>

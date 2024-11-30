@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,11 +8,7 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import { InputStyle, LableStyle } from "@/constants/themeContants";
 import {
   Form,
   FormControl,
@@ -58,6 +54,8 @@ import { MoreOutlined } from "@ant-design/icons";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { transformStateOptions } from "@/helper/transform";
 const FormSchema = z.object({
   wise: z.string().optional(),
   branch: z.string().optional(),
@@ -72,6 +70,12 @@ const FormSchema = z.object({
   vendorCode: z.string().optional(),
   addressCode: z.string().optional(),
   state: z.string().optional(),
+  // state: z
+  //   .object({
+  //     label: z.string(),
+  //     value: z.string(),
+  //   })
+  //   .optional(), // Optional state field
   vendorName: z.string().optional(),
   cin: z.string().optional(),
   pan: z.string().optional(),
@@ -163,13 +167,14 @@ const VendorList = () => {
     const response = await execFun(() => fetchState(), "fetch");
     // return;
     let { data } = response;
-    if (response.status === 200) {
+
+    if (data?.success) {
       let arr = data.data.map((r) => {
         return {
-          label: r.name,
-          value: r.code,
+          ...r,
         };
       });
+
       setStateList(arr);
     }
   };
@@ -229,7 +234,6 @@ const VendorList = () => {
     // setLoading(true);
 
     const response = await execFun(() => vendorGetAllBranchList(id), "fetch");
-    console.log("response", response);
     if (response.data.code == 200) {
       const { data } = response;
       let arr = data.data.final;
@@ -249,8 +253,8 @@ const VendorList = () => {
       () => vendorGetAllDetailsFromSelectedBranch(id),
       "fetch"
     );
-    if (response.data.code == 200) {
-      const { data } = response;
+    let { data } = response;
+    if (data?.success) {
       let r = data?.data?.final[0];
       let a = {
         state: { label: r.statename, value: r.statecode },
@@ -266,8 +270,6 @@ const VendorList = () => {
         addressCode: r.address_code,
       };
 
-      console.log("a", a);
-
       form.setValue("label", a.label);
       form.setValue("mobile", a.mobile);
       form.setValue("city", a.city);
@@ -278,8 +280,17 @@ const VendorList = () => {
       form.setValue("fax", a.fax);
       form.setValue("vendorCode", a.vendorCode);
       form.setValue("addressCode", a.addressCode);
-      form.setValue("state", a.state?.value);
+      form.setValue("state", a?.state?.value);
       setLoading(false);
+      toast({
+        title: data.message || "Details Fetched",
+        className: "bg-green-600 text-white items-center",
+      });
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
     setLoading(true);
   };
@@ -302,8 +313,7 @@ const VendorList = () => {
       () => vendorUpdateSelectedBranch(p),
       "fetch"
     );
-    console.log("response", response);
-    if (response.data.code == 200) {
+    if (response.data?.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
@@ -313,14 +323,12 @@ const VendorList = () => {
       // form.resetFields();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response?.data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
   };
   const updateVendor = async (data) => {
-    console.log("Submitted Data from s:", data);
-
     let p = {
       cinno: data?.cin,
       panno: data?.pan,
@@ -329,8 +337,8 @@ const VendorList = () => {
     };
 
     const response = await execFun(() => vendorUpdateSave(p), "fetch");
-    console.log("response", response);
-    if (response.data.code == 200) {
+    // let { data } = response;
+    if (response?.data?.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
@@ -339,14 +347,12 @@ const VendorList = () => {
       // form.resetFields();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response?.data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
   };
   const createNewBranch = async (data) => {
-    console.log("Submitted Data from s:", data);
-
     let p = {
       vendor: {
         vendorname: sheetOpenBranch,
@@ -365,8 +371,8 @@ const VendorList = () => {
     };
 
     const response = await execFun(() => addVendorBranch(p), "fetch");
-    console.log("response", response);
-    if (response.data.code == 200) {
+
+    if (response.data.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
@@ -375,14 +381,12 @@ const VendorList = () => {
       form.resetField();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response.data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
   };
   const addVendor = async (data) => {
-    console.log("Submitted Data from s:", data);
-
     let p = {
       vendor: {
         vendorname: data.label,
@@ -401,9 +405,10 @@ const VendorList = () => {
         gstin: data.gstin,
       },
     };
+
     const response = await execFun(() => vendoradd(p), "fetch");
-    console.log("response", response);
-    if (response.data.code == 200) {
+    // let { data } = response;
+    if (response.data?.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
@@ -412,7 +417,7 @@ const VendorList = () => {
       setSheetOpen(false);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response?.data?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -421,9 +426,8 @@ const VendorList = () => {
     // setLoading(true);
 
     const response = await execFun(() => vendorUpdatedetails(id), "fetch");
-    console.log("response", response);
-    if (response.data.code == 200) {
-      const { data } = response;
+    const { data } = response;
+    if (data?.success) {
       let arr = data.data[0];
       let obj = {
         vendorName: arr.vendor_name,
@@ -432,7 +436,6 @@ const VendorList = () => {
         cin: arr.vendor_cin,
         vendorCode: arr.vendor_code,
       };
-      console.log("obj", obj);
 
       form.setValue("vendorName", obj.vendorName);
       form.setValue("pan", obj.pan);
@@ -445,6 +448,11 @@ const VendorList = () => {
       //   };
       // });
       // setViewAllBranch(a);
+    } else {
+      toast({
+        title: data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const handleDownloadExcel = () => {
@@ -457,12 +465,14 @@ const VendorList = () => {
   }, [sheetOpenView]);
 
   useEffect(() => {
-    getDetailsFromBranchList(thebranch);
+    if (thebranch) {
+      getDetailsFromBranchList(thebranch);
+    }
   }, [thebranch]);
   useEffect(() => {
-    console.log("sheetOpenBranch", sheetOpenEdit.data?.vendor_code);
-
-    getupdateDetails(sheetOpenEdit.data?.vendor_code);
+    if (sheetOpenEdit.data?.vendor_code) {
+      getupdateDetails(sheetOpenEdit.data?.vendor_code);
+    }
   }, [sheetOpenEdit]);
 
   useEffect(() => {
@@ -487,7 +497,6 @@ const VendorList = () => {
       form.setValue("mobile", " ");
       form.setValue("pan", " ");
       form.setValue("cin", " ");
-      form.setValue("state", " ");
       form.setValue("mobile", " ");
       form.setValue("city", "");
       form.setValue("gstin", "");
@@ -500,7 +509,6 @@ const VendorList = () => {
       form.setValue("state", "");
     }
   }, [sheetOpen]);
-
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[250px_1fr]">
       <div className="bg-[#fff]">
@@ -560,6 +568,7 @@ const VendorList = () => {
               <SheetTitle className="text-slate-600">Add Vendor</SheetTitle>
             </SheetHeader>
             <div>
+              {loading1("fetch") && <FullPageLoading />}
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(addVendor)} className="">
                   <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
@@ -646,30 +655,32 @@ const VendorList = () => {
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
+                            <FormLabel className={LableStyle}>Staste</FormLabel>
                             <FormControl>
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
-                                placeholder="Branch"
+                                placeholder="State"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
-                                isDisabled={false}
-                                isClearable={true}
-                                isSearchable={true}
-                                options={stateList}
+                                isDisabled={false} // Disable the select dropdown so it cannot be changed
+                                isClearable={false} // Prevent clearing the value
+                                isSearchable={false} // Disable search if not needed
+                                name="state" // Ensure this name aligns with the form field
+                                options={
+                                  stateList
+                                    ? transformStateOptions(stateList)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateList)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
                                 onChange={(e: any) =>
                                   form.setValue("state", e?.value)
                                 }
-                                // onChange={(e) => console.log(e)}
-                                // value={
-                                //   data.clientDetails
-                                //     ? {
-                                //         label: data.clientDetails.city.name,
-                                //         value: data.clientDetails.city.name,
-                                //       }
-                                //     : null
-                                // }
                               />
                             </FormControl>
                             <FormMessage />
@@ -723,6 +734,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Pin Number"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />
@@ -757,6 +769,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Mobile"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />
@@ -834,7 +847,7 @@ const VendorList = () => {
           >
             <SheetHeader className={modelFixHeaderStyle}>
               <SheetTitle className="text-slate-600">
-                {`Listing Branch & Modification of ${form.getValues(
+                {`Listing Branch & Modification  ${form.getValues(
                   "vendorCode"
                 )}`}
               </SheetTitle>
@@ -908,22 +921,24 @@ const VendorList = () => {
                                 placeholder="State"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
-                                isDisabled={false}
-                                isClearable={true}
-                                isSearchable={true}
-                                options={stateList}
+                                isDisabled={true} // Disable the select dropdown so it cannot be changed
+                                isClearable={false} // Prevent clearing the value
+                                isSearchable={false} // Disable search if not needed
+                                name="state" // Ensure this name aligns with the form field
+                                options={
+                                  stateList
+                                    ? transformStateOptions(stateList)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateList)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
                                 onChange={(e: any) =>
                                   form.setValue("state", e?.value)
                                 }
-                                // onChange={(e) => console.log(e)}
-                                // value={
-                                //   data.clientDetails
-                                //     ? {
-                                //         label: data.clientDetails.city.name,
-                                //         value: data.clientDetails.city.name,
-                                //       }
-                                //     : null
-                                // }
                               />
                             </FormControl>
                             <FormMessage />
@@ -977,6 +992,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Pin Number"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />
@@ -1010,6 +1026,7 @@ const VendorList = () => {
                               <Input
                                 className={InputStyle}
                                 placeholder="Enter Mobile"
+                                type="Number"
                                 {...field}
                               />
                             </FormControl>
@@ -1059,14 +1076,14 @@ const VendorList = () => {
                       variant={"outline"}
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
-                        setOpen(true);
+                        setSheetOpenView(false);
                         e.preventDefault();
                       }}
                     >
                       Back
                     </Button>
                     <Button
-                      onClick={() => updateViewBranch()}
+                      // onClick={() => updateViewBranch()}
                       className="bg-cyan-700 hover:bg-cyan-600"
                     >
                       Update
@@ -1092,6 +1109,8 @@ const VendorList = () => {
               </SheetTitle>
             </SheetHeader>
             <div>
+              {" "}
+              {loading1("fetch") && <FullPageLoading />}
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(createNewBranch)}
@@ -1118,25 +1137,6 @@ const VendorList = () => {
                       )}
                     />
                     <div className="grid grid-cols-2 gap-[20px]">
-                      {/* <FormField
-                        control={form.control}
-                        name="company"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Company Name
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Company Name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      /> */}{" "}
                       <FormField
                         control={form.control}
                         name="state"
@@ -1153,19 +1153,20 @@ const VendorList = () => {
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
-                                options={stateList}
+                                options={
+                                  stateList
+                                    ? transformStateOptions(stateList)
+                                    : []
+                                }
+                                value={
+                                  // Find the corresponding option based on field.value (which is the stateCode)
+                                  transformStateOptions(stateList)?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                }
                                 onChange={(e: any) =>
                                   form.setValue("state", e?.value)
                                 }
-                                // onChange={(e) => console.log(e)}
-                                // value={
-                                //   data.clientDetails
-                                //     ? {
-                                //         label: data.clientDetails.city.name,
-                                //         value: data.clientDetails.city.name,
-                                //       }
-                                //     : null
-                                // }
                               />
                             </FormControl>
                             <FormMessage />
@@ -1219,6 +1220,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Pin Number"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />
@@ -1253,6 +1255,7 @@ const VendorList = () => {
                                 className={InputStyle}
                                 placeholder="Enter Mobile"
                                 {...field}
+                                type="Number"
                               />
                             </FormControl>
                             <FormMessage />
@@ -1302,7 +1305,7 @@ const VendorList = () => {
                       variant={"outline"}
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
-                        setOpen(true);
+                        setSheetOpenBranch(false);
                         e.preventDefault();
                       }}
                     >
@@ -1402,7 +1405,7 @@ const VendorList = () => {
                       variant={"outline"}
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
-                        setOpen(true);
+                        setSheetOpenEdit(false);
                         e.preventDefault();
                       }}
                     >
@@ -1433,6 +1436,7 @@ const VendorList = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

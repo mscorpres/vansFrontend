@@ -124,7 +124,6 @@ export const addComponent = createAsyncThunk<any, payload>(
         "/component/addComponent",
         payload
       );
-      console.log("response in store", response);
 
       return response.data;
     } catch (error) {
@@ -283,11 +282,11 @@ export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
   "/backend/fetchAvailableStockBoxes",
   async (payload) => {
     try {
-      const response = await spigenAxios.post(
-        "/backend/fetchAvailableStockBoxes",
-        payload
+      const response = await spigenAxios.get(
+        `backend/fetchAvailableStockBoxes?component=${payload?.component}`
       );
-      return response.data;
+
+      return response?.data?.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -301,7 +300,6 @@ export const stockOut = createAsyncThunk<settleTransferPayload>(
   async (payload) => {
     try {
       const response = await spigenAxios.post("/backend/stockOut", payload);
-      console.log("response yyyyyy", response);
 
       return response.data;
     } catch (error) {
@@ -353,7 +351,7 @@ export const getMarkupID = createAsyncThunk<settleTransferPayload>(
   "/minSettle/getMarkupID",
   async (payload) => {
     try {
-      const response = await spigenAxios.post("/minSettle/getMarkupID");
+      const response = await spigenAxios.get(`/minSettle/getMarkupID`);
 
       return response.data;
     } catch (error) {
@@ -384,11 +382,15 @@ export const getminBox = createAsyncThunk<ResponseData, FormData>(
   async (payload: FormData) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post("/qrPrint/getminBox", payload, {
-        headers: {
-          "Content-Type": "multipart/form-data", // Important for FormData
-        },
-      });
+      const response = await spigenAxios.post(
+        `qrPrint/getminBox?type=MIN&min_no=MIN/24-25/0117`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Important for FormData
+          },
+        }
+      );
 
       return response.data; // Return the response data to Redux
     } catch (error) {
@@ -415,14 +417,29 @@ export const qrPrint = createAsyncThunk<ResponseData, FormData>(
     }
   }
 );
+export const printsticker2 = createAsyncThunk<ResponseData, FormData>(
+  "//qrPrint/printsticker", // Action type
+  async (payload: FormData) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post("/qrPrint/printsticker", payload);
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
 export const fetchPrintPickSetelement = createAsyncThunk<ResponseData>(
   "/minSettle/fetchPrintPickSetelement", // Action type
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
-        "/minSettle/fetchPrintPickSetelement",
-        payload
+      const response = await spigenAxios.get(
+        `/minSettle/fetchPrintPickSetelement?wise=${payload?.wise}&data=${payload?.data}`
       );
 
       return response.data; // Return the response data to Redux
@@ -458,9 +475,8 @@ export const getMinTransactionByDate = createAsyncThunk<ResponseData>(
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
-        "/transaction/getMinTransactionByDate",
-        payload
+      const response = await spigenAxios.get(
+        `/transaction/getMinTransactionByDate?wise=${payload?.wise}&data=${payload?.data}`
       );
 
       return response.data; // Return the response data to Redux
@@ -644,9 +660,8 @@ export const allphysical = createAsyncThunk<ResponseData>(
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
-        "/physicalStock/allphysical_stock",
-        payload
+      const response = await spigenAxios.get(
+        `/physicalStock/allphysical_stock?date=${payload.date}`
       );
 
       return response.data; // Return the response data to Redux
@@ -1012,6 +1027,42 @@ const storeSlice = createSlice({
         state.aproveStock = action.payload;
       })
       .addCase(approveStockItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(qrPrint.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(qrPrint.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(qrPrint.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(printsticker2.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(printsticker2.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(printsticker2.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(cutomerLable.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cutomerLable.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(cutomerLable.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       });

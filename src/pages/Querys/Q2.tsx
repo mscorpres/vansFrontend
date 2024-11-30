@@ -32,14 +32,13 @@ import { modelFixHeaderStyle } from "@/constants/themeContants";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   fetchCustomerComponentsByPart,
-  fetchListOfQ1,
   fetchListOfQ2,
-  getComponentsByNameAndNo,
   itemQueryL,
 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -112,8 +111,6 @@ const Q2 = () => {
   };
   const fetchComponentList = async (e: any) => {
     setSelectedCustomer(e);
-
-    const response = await execFun(() => getComponentsByNameAndNo(e), "fetch");
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     let payload = {
@@ -364,7 +361,7 @@ const Q2 = () => {
       width: 190,
     },
     {
-      headerName: "Min No.",
+      headerName: "MIN No.",
       field: "MIN_NO",
       filter: "agTextColumnFilter",
       width: 190,
@@ -409,7 +406,7 @@ const Q2 = () => {
                       transform={transformOptionData}
                       onChange={fetchComponentList}
                       value={selectedCustomer}
-                      fetchOptionWith="payload"
+                      fetchOptionWith="query2"
                     />
                   </FormControl>
                   <FormMessage />
@@ -468,6 +465,7 @@ const Q2 = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       <Sheet open={openView == true} onOpenChange={setSheetOpenView}>
@@ -493,6 +491,7 @@ const Q2 = () => {
               paginationPageSize={10}
               paginationAutoPageSize={true}
               suppressCellFocus={true}
+              overlayNoRowsTemplate={OverlayNoRowsTemplate}
             />
           </div>
         </SheetContent>
@@ -535,6 +534,7 @@ const Q2 = () => {
               paginationPageSize={10}
               paginationAutoPageSize={true}
               suppressCellFocus={true}
+              overlayNoRowsTemplate={OverlayNoRowsTemplate}
             />
           </div>
         </SheetContent>

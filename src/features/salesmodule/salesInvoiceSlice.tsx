@@ -53,9 +53,8 @@ export const fetchSalesOrderInvoiceList = createAsyncThunk<
   ApiResponse<any>,
   FetchSellInvoicePayload
 >("so_challan_shipment/fetchInvoiceList", async (payload) => {
-  const response = await spigenAxios.post(
-    "salesInvoice/fetchInvoiceList",
-    payload
+  const response = await spigenAxios.get(
+    `salesInvoice/fetchInvoiceList?data=${payload.data}&type=${payload.type}`
   );
   return response.data;
 });
@@ -64,7 +63,10 @@ export const printSellInvoice = createAsyncThunk(
   "client/printSellInvoice",
   async (payload: any, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>("/salesInvoice/printEInvoice",payload);
+      const response = await spigenAxios.post<any>(
+        "/salesInvoice/printEInvoice",
+        payload
+      );
 
       if (!response.data) {
         throw new Error("No data received");
@@ -84,9 +86,8 @@ export const fetchDataForEwayBill = createAsyncThunk(
   "so_challan_shipment/fetchDataForEwayBill",
   async ({ shipment_id }: { shipment_id: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>(
-        "invoice/fetchEWB",
-        { so_inv_id: shipment_id }
+      const response = await spigenAxios.get<any>(
+        `invoice/fetchEWB?so_inv_id=${shipment_id}`
       );
 
       if (!response.data) {
@@ -107,9 +108,9 @@ export const fetchDataForInvoice = createAsyncThunk(
   "so_challan_shipment/fetchEinvoice",
   async ({ shipment_id }: { shipment_id: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>(
-        "/invoice/fetchEinvoice",
-        { so_inv_id: shipment_id }
+      const response = await spigenAxios.get<any>(
+        `invoice/fetchEinvoice?so_inv_id=${shipment_id}`
+        
       );
 
       if (!response.data) {
@@ -131,7 +132,7 @@ export const cancelInvoice = createAsyncThunk(
   "client/cancelInvoice",
   async (payload: CancelPayload, { rejectWithValue }) => {
     try {
-      const response = (await spigenAxios.post<any>(
+      const response = (await spigenAxios.put<any>(
         "/invoice/cancelInvoice",
         payload
       )) as any;
@@ -193,9 +194,10 @@ export const fetchInvoiceDetail = createAsyncThunk(
   "client/fetchInvoiceDetail",
   async ({ invoiceNo }: { invoiceNo: string }, { rejectWithValue }) => {
     try {
-      const response = await spigenAxios.post<any>("/salesInvoice/fetchInvoiceDetail", {
-        invoiceNo: invoiceNo,
-      });
+      const response = await spigenAxios.get<any>(
+        `salesInvoice/fetchInvoiceDetail?invoiceNo=${invoiceNo}`
+        
+      );
 
       if (!response.data) {
         throw new Error("No data received");
@@ -232,9 +234,9 @@ const sellInvoiceSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(createEwayBill.fulfilled, (state,action) => {
+      .addCase(createEwayBill.fulfilled, (state, action) => {
         state.loading = false;
-        state.invoiceData=action.payload.data
+        state.invoiceData = action.payload.data;
       })
       .addCase(createEwayBill.rejected, (state, action) => {
         state.loading = false;
@@ -244,9 +246,9 @@ const sellInvoiceSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(generateEInvoice.fulfilled, (state,action) => {
+      .addCase(generateEInvoice.fulfilled, (state, action) => {
         state.loading = false;
-        state.invoiceData=action.payload.data
+        state.invoiceData = action.payload.data;
       })
       .addCase(generateEInvoice.rejected, (state, action) => {
         state.loading = false;
@@ -275,8 +277,7 @@ const sellInvoiceSlice = createSlice({
       .addCase(fetchInvoiceDetail.fulfilled, (state, action) => {
         state.challanDetails = action.payload.data;
         state.error =
-          action.payload.message ||
-          "Failed to fetch invoice challan details";
+          action.payload.message || "Failed to fetch invoice challan details";
         state.loading = false;
       })
       .addCase(fetchInvoiceDetail.rejected, (state, action) => {

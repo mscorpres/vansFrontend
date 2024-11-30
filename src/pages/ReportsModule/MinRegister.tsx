@@ -28,13 +28,13 @@ import Select from "react-select";
 import useApi from "@/hooks/useApi";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import {
-  fetchListOfMINRegister,
-} from "@/components/shared/Api/masterApi";
+import { fetchListOfMINRegister } from "@/components/shared/Api/masterApi";
 import { exportDateRangespace } from "@/components/shared/Options";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -44,7 +44,7 @@ const FormSchema = z.object({
       message: "Please select a valid date range.",
     }),
   types: z.string(),
-  search: z.string().optional(),
+  search: z.string(),
 });
 
 const MinRegister = () => {
@@ -60,7 +60,8 @@ const MinRegister = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    let { date } = formData;
+    let { date, search } = formData;
+
     let dataString = "";
     if (date) {
       dataString = exportDateRangespace(date);
@@ -86,7 +87,6 @@ const MinRegister = () => {
 
       setRowData(arr);
     } else {
-  
     }
   };
   useEffect(() => {
@@ -107,26 +107,28 @@ const MinRegister = () => {
       width: 220,
     },
     {
-      headerName: "Tran Type",
+      headerName: "Transaction Type",
       field: "TYPE",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 200,
     },
     {
-      headerName: "Part No",
+      headerName: "Part No.",
       field: "PART",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Component",
       field: "COMPONENT",
       filter: "agTextColumnFilter",
-      width: 190,
+      cellRenderer: CopyCellRenderer,
+      width: 280,
     },
     {
       headerName: "In Box",
-      field: "bom_product_sku",
+      field: "LOCATION",
       filter: "agTextColumnFilter",
       width: 220,
     },
@@ -143,14 +145,20 @@ const MinRegister = () => {
       width: 190,
     },
     {
-      headerName: "Curr.",
+      headerName: "Currency",
       field: "CURRENCY",
+      filter: "agTextColumnFilter",
+      width: 120,
+    },
+    {
+      headerName: "Currency Code",
+      field: "CURRENCYSYMBOL",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Curr. Code",
-      field: "CURRENCYSYMBOL",
+      headerName: "In Qty",
+      field: "INQTY",
       filter: "agTextColumnFilter",
       width: 190,
     },
@@ -176,13 +184,15 @@ const MinRegister = () => {
       headerName: "Vendor Code",
       field: "VENDOR_CODE",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 150,
     },
     {
       headerName: "Vendor Name",
       field: "VENDOR_NAME",
       filter: "agTextColumnFilter",
-      width: 190,
+      cellRenderer: CopyCellRenderer,
+      width: 250,
     },
     {
       headerName: "Vendor Branch",
@@ -191,26 +201,29 @@ const MinRegister = () => {
       width: 190,
     },
     {
-      headerName: "Doc. Id",
+      headerName: "Invoice Id",
       field: "INVOIVENUMBER",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "TXT ID",
       field: "TRANSACTION",
       filter: "agTextColumnFilter",
-      width: 190,
+      cellRenderer: CopyCellRenderer,
+      width: 200,
     },
     {
       headerName: "PO No.",
       field: "PONUMBER",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "PO Date",
-      field: "PODATE",
+      field: "DATE",
       filter: "agTextColumnFilter",
       width: 190,
     },
@@ -246,8 +259,15 @@ const MinRegister = () => {
     },
   ];
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "Min Register");
+    downloadCSV(rowData, columnDefs, "MIN Register");
   };
+  useEffect(() => {
+    if (theWise) {
+      form.setValue("date", "");
+      setRowData([]);
+      form.setValue("search", "");
+    }
+  }, [theWise]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -261,7 +281,7 @@ const MinRegister = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(fetchQueryResults)}
-            className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+            className="space-y-6 overflow-hidden p-[10px] h-[470px]"
           >
             <FormField
               control={form.control}
@@ -285,7 +305,7 @@ const MinRegister = () => {
                   <FormMessage />
                 </FormItem>
               )}
-            />{" "}
+            />
             {theWise == "POMIN" ? (
               <FormField
                 control={form.control}
@@ -298,7 +318,7 @@ const MinRegister = () => {
                         // placeholder="State"
                         endpoint="/backend/searchPoByPoNo"
                         transform={transformOptionData}
-                        fetchOptionWith="payload"
+                        fetchOptionWith="search"
                         onChange={(e: any) => form.setValue("search", e.value)}
                       />
                     </FormControl>
@@ -368,6 +388,7 @@ const MinRegister = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

@@ -52,16 +52,8 @@ import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ActionCellRenderer from "./ActionCellRenderer";
 import {
-  componentList,
-  componentMapList,
-  fetchBomTypeWise,
   fetchListOfPendingFg,
-  getComponentsByNameAndNo,
   getListFgIn,
-  getProductList,
-  listOfUom,
-  serviceList,
-  servicesaddition,
 } from "@/components/shared/Api/masterApi";
 import { spigenAxios } from "@/axiosIntercepter";
 import { FaCheckCircle } from "react-icons/fa";
@@ -178,7 +170,6 @@ const PendingFg = () => {
       },
     },
   ];
-  // console.log("sheetOpenView", sheetOpenView);
   const getinwardingDetails = async (sheetOpenView) => {
     let payload = {
       pprrequest2: sheetOpenView.mfg_transaction,
@@ -186,10 +177,8 @@ const PendingFg = () => {
       pprsku: sheetOpenView.mfg_sku,
     };
     const response = await execFun(() => getListFgIn(payload), "fetch");
-    // console.log("response", response);
     let { data } = response;
     if (response.status == 200) {
-      // console.log(" data.data[0]", data.data);
       let val = {
         pprName: data.data.pprName,
         pprSku: data.data.pprSku,
@@ -198,7 +187,6 @@ const PendingFg = () => {
         qty: data.data.pendingQty + "/" + data.data.completedQty,
         inqty: data.data.pendingQty,
       };
-      console.log("val", val);
 
       fgForm.setFieldValue("pprName", val.pprName);
       fgForm.setFieldValue("combination", val.pprName + "/" + val.pprSku);
@@ -207,22 +195,18 @@ const PendingFg = () => {
       fgForm.setFieldValue("mfgTransaction", val.mfgTransaction);
       fgForm.setFieldValue("qty", val.qty);
       fgForm.setFieldValue("inqty", val.inqty);
-      // console.log("val", val);
     }
   };
   const handleSubmit = async () => {
     const values = await fgForm.validateFields();
-    console.log("e.preventDefault();", values);
     let payload = {
       pprqty: values.inqty,
       pprrequest1: fgForm.getFieldValue("pprTransaction"),
       pprrequest2: fgForm.getFieldValue("mfgTransaction"),
       pprsku: fgForm.getFieldValue("pprSku"),
     };
-    console.log("payload", payload);
 
     dispatch(saveFGs(payload)).then((res: any) => {
-      console.log("res", res);
       if (res.payload.code == 200) {
         toast({
           title: res.payload?.message,

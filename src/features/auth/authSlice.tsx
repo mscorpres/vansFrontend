@@ -87,7 +87,6 @@ const authSlice = createSlice({
       })
       .addCase(loginUserAsync.fulfilled, (state, action) => {
         const data = action.payload.data.data;
-        console.log("her ethe data", data);
 
         const userObj = {
           email: data?.crn_email,
@@ -103,7 +102,6 @@ const authSlice = createSlice({
           showLegal: data?.department === "legal",
           session: "24-25",
         };
-        console.log("userObj", userObj,JSON.stringify(userObj));
 
         localStorage.setItem("loggedInUser", JSON.stringify(userObj));
 

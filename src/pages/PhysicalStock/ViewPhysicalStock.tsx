@@ -5,9 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import { Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Form, Space } from "antd";
-import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import { fetchListOfCompletedFgOut } from "@/components/shared/Api/masterApi";
 import { exportDatepace } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
@@ -16,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store";
 import { Button } from "@/components/ui/button";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -179,6 +178,7 @@ const ViewPhysicalStock = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

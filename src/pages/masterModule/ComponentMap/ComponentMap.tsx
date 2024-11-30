@@ -13,14 +13,13 @@ import {
   componentMapList,
   saveComponentMap,
 } from "@/components/shared/Api/masterApi";
-import { transformOptionData } from "@/helper/transform";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -29,16 +28,18 @@ import { toast } from "@/components/ui/use-toast";
 import { Filter } from "lucide-react";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
-import RejectModal from "@/components/shared/RejectModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 const ComponentMap = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [resetModel, setResetModel] = useState(false);
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
-  const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
   const fetchComponentMap = async () => {
     const response = await execFun(() => componentMapList(), "fetch");
-    if (response.status === 200) {
+    let { data } = response;
+    if (data.success) {
       let arr = response.data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
@@ -46,11 +47,17 @@ const ComponentMap = () => {
         };
       });
       setRowData(arr);
+     
+    } else {
+      toast({
+        title: data.data.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const createEntry = async () => {
+    setOpen(false);
     const values = await form.validateFields();
-    console.log("values", values);
     let payload = {
       comp: values.partName.value,
       vendor: values.vendorName.value,
@@ -59,9 +66,8 @@ const ComponentMap = () => {
     };
     // return;
     const response = await execFun(() => saveComponentMap(payload), "fetch");
-
     let { data } = response;
-    if (response.data.code == 200) {
+    if (data.success) {
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -70,7 +76,7 @@ const ComponentMap = () => {
       form.resetFields();
     } else {
       toast({
-        title: data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -92,10 +98,6 @@ const ComponentMap = () => {
           layout="vertical"
           className="space-y-6 overflow-hidden p-[10px] h-[500px]"
         >
-          {/* <form
-            onSubmit={form.handleSubmit(createEntry)}
-            className="space-y-6 overflow-hidden p-[10px] h-[500px]"
-          > */}
           <div className="grid grid-cols-2 gap-[40px] ">
             <div className="">
               <Form.Item name="partName" label="Part Name">
@@ -105,7 +107,7 @@ const ComponentMap = () => {
                   transform={transformOptionData}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
             </div>
@@ -114,10 +116,10 @@ const ComponentMap = () => {
               <ReusableAsyncSelect
                 placeholder="Vendor Name"
                 endpoint="/backend/vendorList"
-                transform={transformOptionData}
+                transform={transformOptionData2}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
                 // value={selectedCustomer}
-                fetchOptionWith="payload"
+                fetchOptionWith="query2"
               />
             </Form.Item>
           </div>
@@ -141,7 +143,7 @@ const ComponentMap = () => {
             <Button
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={() => createEntry()}
+              onClick={() => setOpen(true)}
             >
               Submit
             </Button>
@@ -151,7 +153,7 @@ const ComponentMap = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz">
-        {" "}
+      
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
@@ -162,8 +164,9 @@ const ComponentMap = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
-      </div>{" "}
+      </div>
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -183,6 +186,16 @@ const ComponentMap = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <ConfirmationModal
+        open={open}
+        onClose={setOpen}
+        onOkay={() => {
+          createEntry();
+        }}
+        loading={loading1("fetch")}
+        title="Confirm Submit!"
+        description="Are you sure to submit the entry?"
+      />
     </Wrapper>
   );
 };

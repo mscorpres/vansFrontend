@@ -1,5 +1,4 @@
-
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,7 +11,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {  Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
 import { transformOptionData } from "@/helper/transform";
@@ -22,12 +21,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import {
-  fetchListOfQ1,
-  getComponentsByNameAndNo,
-} from "@/components/shared/Api/masterApi";
+import { fetchListOfQ1 } from "@/components/shared/Api/masterApi";
 import { exportDateRangespace } from "@/components/shared/Options";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -52,15 +49,10 @@ const Q1 = () => {
   const { execFun, loading: loading1 } = useApi();
   const { RangePicker } = DatePicker;
 
-
   const fetchComponentList = async (e: any) => {
-    console.log("here in api", e!.value);
     setSelectedCustomer(e);
-
-    const response = await execFun(() => getComponentsByNameAndNo(e), "fetch");;
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let { date } = formData;
     let dataString = "";
     if (date) {
@@ -72,7 +64,6 @@ const Q1 = () => {
       range: dataString,
     };
     const response = await execFun(() => fetchListOfQ1(payload), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.response.data2;
@@ -113,7 +104,7 @@ const Q1 = () => {
       headerName: "Transaction Type",
       field: "transaction_type",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 190,
     },
     {
       headerName: "Qty In",
@@ -146,7 +137,7 @@ const Q1 = () => {
       width: 190,
     },
     {
-      headerName: "DonebBy",
+      headerName: "Done By",
       field: "doneby",
       filter: "agTextColumnFilter",
       width: 190,
@@ -180,7 +171,7 @@ const Q1 = () => {
                       transform={transformOptionData}
                       onChange={fetchComponentList}
                       value={selectedCustomer}
-                      fetchOptionWith="payload"
+                      fetchOptionWith="query2"
                     />
                   </FormControl>
                   <FormMessage />
@@ -258,6 +249,7 @@ const Q1 = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

@@ -73,13 +73,14 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       value: "N",
     },
   ];
+
   const fetchComponentDetails = async (sheetOpenEdit) => {
     const response = await execFun(
       () => getComponentDetailsForServices(sheetOpenEdit),
       "fetch"
     );
-    if (response.status == 200) {
-      let { data } = response;
+    let { data } = response;
+    if (response.data.success) {
       let arr = data.data[0];
       let obj = {
         serviceCode: arr.partcode,
@@ -105,7 +106,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       form.setFieldsValue(obj);
     } else {
       toast({
-        title: response.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -114,7 +115,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response.status == 200) {
+    if (response?.status == 200) {
       let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
@@ -122,6 +123,11 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         };
       });
       setAsyncOptions(arr);
+    } else {
+      toast({
+        title: "Failed to fetch UOM",
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const saveEdit = async () => {
@@ -141,7 +147,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
 
     let { data } = response;
 
-    if (response.data.code == 200) {
+    if (response.data.success) {
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -149,7 +155,7 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       setSheetOpenEdit(false);
     } else {
       toast({
-        title: data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }

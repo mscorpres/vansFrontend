@@ -43,6 +43,7 @@ import { fetchBillingAddess } from "@/components/shared/Api/masterApi";
 import { AgGridReact } from "ag-grid-react";
 import useApi from "@/hooks/useApi";
 import { RowData } from "@/data";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const schema = z.object({
   label: z.string().min(2, {
     message: "Label is required",
@@ -120,7 +121,7 @@ const MasterBillingAddressPage: React.FC = () => {
         })
       ).unwrap();
 
-      if (resultAction?.status == "success") {
+      if (resultAction?.success) {
         toast({
           title: "Billing Address created successfully",
           className: "bg-green-600 text-white items-center",
@@ -153,10 +154,11 @@ const MasterBillingAddressPage: React.FC = () => {
   };
   const getList = async () => {
     const response = await execFun(() => fetchBillingAddess(), "fetch");
-    console.log("response000", response);
 
     let { data } = response;
-    if (data.code === 200) {
+    console.log("response", response);
+
+    if (data.success) {
       let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
@@ -166,7 +168,7 @@ const MasterBillingAddressPage: React.FC = () => {
       setRowData(arr);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: data.message,
         className: "bg-red-700 text-center text-white",
       });
     }
@@ -463,6 +465,7 @@ const MasterBillingAddressPage: React.FC = () => {
             paginationPageSize={10}
             paginationAutoPageSize={true}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import { Badge, Edit2, EyeIcon, Filter, Trash } from "lucide-react";
+import { Filter } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,12 +13,7 @@ import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
 import useApi from "@/hooks/useApi";
-import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
-import {
-  cancelPO,
-  fetchManagePOList,
-  printPO,
-} from "@/features/client/clientSlice";
+import { printPO } from "@/features/client/clientSlice";
 import { MoreOutlined } from "@ant-design/icons";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +22,7 @@ import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { fetchTransactionForApproval } from "@/features/client/storeSlice";
 import { toast } from "@/components/ui/use-toast";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -213,29 +209,13 @@ const PendingMr: React.FC = () => {
     // setLoading(false);
   };
   const dispatch = useDispatch<AppDispatch>();
-  const getVendorList = async () => {
-    // return;
 
-    const response = await execFun(() => fetchListOfVendor(), "fetch");
-    // return;
-    let { data } = response;
-    if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          label: r.name,
-          value: r.code,
-        };
-      });
-      setAsyncOptions(arr);
-    }
-  };
   const fetchManageList = async () => {
     // setLoading(true);
     const values = await form.validateFields();
     // let date = exportDateRange(values.data);
     let payload = { status: values.wise.value };
     dispatch(fetchTransactionForApproval(payload)).then((res: any) => {
-      console.log("res", res);
       if (res.payload.code == 200) {
       } else {
         toast({
@@ -318,7 +298,7 @@ const PendingMr: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         {" "}
         {loading && <FullPageLoading />}
         <AgGridReact
@@ -331,6 +311,7 @@ const PendingMr: React.FC = () => {
           paginationPageSize={10}
           suppressCellFocus={true}
           paginationPageSizeSelector={[10, 25, 50]}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       {/* <ViewCompoents

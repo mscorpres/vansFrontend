@@ -1,30 +1,19 @@
-import React from "react";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
-import { transformOptionData } from "@/helper/transform";
-import { Check, Edit2, Filter, Plus, Trash2 } from "lucide-react";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
+import { Filter, Plus } from "lucide-react";
 import styled from "styled-components";
-import { Checkbox, DatePicker, Form, Space, Typography } from "antd";
-import {
-  fetchComponentDetails,
-  searchingHsn,
-} from "@/features/client/clientSlice";
+import { Form, Typography } from "antd";
 import { toast } from "@/components/ui/use-toast";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 
 import useApi from "@/hooks/useApi";
-import {
-  componentList,
-  fetchHSN,
-  mapHSN,
-} from "@/components/shared/Api/masterApi";
+import { fetchHSN } from "@/components/shared/Api/masterApi";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { FaFileExcel } from "react-icons/fa";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
@@ -34,10 +23,7 @@ import {
   fetchAvailableStockBoxes,
   stockOut,
 } from "@/features/client/storeSlice";
-import {
-  modelFixFooterStyle,
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { modelFixHeaderStyle } from "@/constants/themeContants";
 import {
   Sheet,
   SheetContent,
@@ -45,6 +31,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -168,9 +155,11 @@ const PickSlip = () => {
           costCenter={costCenter}
           form={form}
           setSheetOpen={setSheetOpen}
+          sheetOpen={sheetOpen}
           selectedRows={selectedRows}
           finalrows={finalrows.length}
           boxName={boxName}
+          openDrawer={openDrawer}
           totalQty={selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
         />
       ),
@@ -230,8 +219,6 @@ const PickSlip = () => {
       boxqty: finalrows.map((r) => r.qty),
     };
     dispatch(stockOut(payload)).then((res: any) => {
-      console.log("res", res);
-
       if (res.payload.code == 200) {
         toast({
           title: res.payload.message,
@@ -359,10 +346,14 @@ const PickSlip = () => {
     setSheetOpen(false);
     setFinalRows(selectedRows);
   };
-  console.log("loading", loading);
+
+  const openDrawer = () => {
+    setSheetOpen(true);
+    // setFinalRows(selectedRows);
+  };
 
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr] overflow-hidden">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
       <div className="bg-[#fff]">
         {loading && <FullPageLoading />}{" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -373,7 +364,7 @@ const PickSlip = () => {
         <Form
           form={form}
           layout="vertical"
-          className="space-y-6 overflow-hidden p-[10px] h-[400px]"
+          className="space-y-6 overflow-hidden p-[10px] h-[550px]"
         >
           <div className="grid grid-cols-3 gap-[40px] ">
             <div className="col-span-3 ">
@@ -381,10 +372,10 @@ const PickSlip = () => {
                 <ReusableAsyncSelect
                   placeholder="Cost Center"
                   endpoint="/backend/costCenter"
-                  transform={transformOptionData}
+                  transform={transformOptionData2}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
               <Form.Item name="customerName" label="Customer Name">
@@ -394,7 +385,7 @@ const PickSlip = () => {
                   transform={transformOptionData}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
             </div>{" "}
@@ -451,6 +442,7 @@ const PickSlip = () => {
             suppressRowClickSelection={false}
             rowSelection="multiple"
             checkboxSelection={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
@@ -484,7 +476,7 @@ const PickSlip = () => {
 "
       />
       <Sheet
-        open={sheetOpen && availableStockBoxes?.length > 0}
+        open={sheetOpen == true && availableStockBoxes?.length > 0}
         onOpenChange={setSheetOpen}
       >
         <SheetContent

@@ -15,16 +15,16 @@ import {
 } from "@/components/ui/form";
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker,  Space } from "antd";
+import { DatePicker, Space } from "antd";
 import Select from "react-select";
 import useApi from "@/hooks/useApi";
-import {
-  fetchListOfMINRegisterOut,
-} from "@/components/shared/Api/masterApi";
+import { fetchListOfMINRegisterOut } from "@/components/shared/Api/masterApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { exportDateRangespace } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -46,7 +46,6 @@ const TransactionOut = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    console.log("formData", formData);
     let { date } = formData;
     let dataString = "";
     if (date) {
@@ -60,7 +59,6 @@ const TransactionOut = () => {
       () => fetchListOfMINRegisterOut(payload),
       "fetch"
     );
-    console.log("response", response);
     let { data } = response;
     if (data.code == 200) {
       let arr = data.data.map((r, index) => {
@@ -69,11 +67,9 @@ const TransactionOut = () => {
           ...r,
         };
       });
-      console.log("arr", arr);
 
       setRowData(arr);
     } else {
-
     }
   };
   useEffect(() => {
@@ -91,12 +87,14 @@ const TransactionOut = () => {
       headerName: "Pick Slip No.",
       field: "PICKSLIPNNO",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Cost Center",
       field: "COSTCENTER",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -107,7 +105,7 @@ const TransactionOut = () => {
     },
 
     {
-      headerName: "TYPE",
+      headerName: "Type",
       field: "TYPE",
       filter: "agTextColumnFilter",
       width: 190,
@@ -117,16 +115,18 @@ const TransactionOut = () => {
       headerName: "Part No",
       field: "PART",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Component",
       field: "COMPONENT",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
-      headerName: "Box No",
+      headerName: "Box No.",
       field: "FROMLOCATION",
       filter: "agTextColumnFilter",
       width: 220,
@@ -270,6 +270,7 @@ const TransactionOut = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

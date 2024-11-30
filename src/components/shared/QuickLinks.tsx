@@ -1,8 +1,9 @@
 import * as React from "react";
 import { CircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import {
-    CommandDialog,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -15,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import clsx, { ClassValue } from "clsx";
 import { DialogProps } from "@radix-ui/react-dialog";
+import NotificationPnnel from "../ui/NotificationPnnel";
 
 const navLinks = [
   {
@@ -89,7 +91,6 @@ const navLinks = [
   },
 ];
 
-
 export default function QuickLink({ ...props }: DialogProps) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
@@ -136,6 +137,7 @@ export default function QuickLink({ ...props }: DialogProps) {
           <span className="text-xs">⌘</span>f
         </kbd>
       </Button>
+      <NotificationPnnel />
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
@@ -166,5 +168,5 @@ export default function QuickLink({ ...props }: DialogProps) {
 }
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }

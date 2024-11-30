@@ -1,6 +1,6 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
-import { Badge, Edit2, EyeIcon, Filter, Trash } from "lucide-react";
+import { Filter } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,18 +13,10 @@ import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
 import useApi from "@/hooks/useApi";
-import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
-import {
-  cancelPO,
-  fetchManagePOList,
-  printPO,
-} from "@/features/client/clientSlice";
-import { exportDatepace, exportDateRange } from "@/components/shared/Options";
+
+import { exportDatepace } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
-// import ViewCompoents from "./ViewCompoents";
-// import POCancel from "./POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-// import MINPO from "./MINPO";
 import { useNavigate } from "react-router-dom";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
@@ -34,6 +26,7 @@ import {
   printSingleMin,
 } from "@/features/client/storeSlice";
 import { toast } from "@/components/ui/use-toast";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -79,7 +72,6 @@ const dateFormat = "YYYY/MM/DD";
 const ViewMin: React.FC = () => {
   const { managePoList } = useSelector((state: RootState) => state.client);
   const { loading } = useSelector((state: RootState) => state.store);
-  // console.log("loading", loading);
 
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
@@ -118,7 +110,7 @@ const ViewMin: React.FC = () => {
     },
     {
       field: "datetime",
-      headerName: "Min Date Time ",
+      headerName: "MIN Date Time ",
       flex: 1,
       cellRenderer: CopyCellRenderer,
       filterParams: {
@@ -130,7 +122,7 @@ const ViewMin: React.FC = () => {
     },
     {
       field: "transaction",
-      headerName: "Min Id",
+      headerName: "MIN Id",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -175,7 +167,7 @@ const ViewMin: React.FC = () => {
       value: "datewise",
     },
     {
-      label: "Min Wise",
+      label: "MIN Wise",
       value: "minwise",
     },
   ];
@@ -195,22 +187,7 @@ const ViewMin: React.FC = () => {
     // setLoading(false);
   };
   const dispatch = useDispatch<AppDispatch>();
-  const getVendorList = async () => {
-    // return;
 
-    const response = await execFun(() => fetchListOfVendor(), "fetch");
-    // return;
-    let { data } = response;
-    if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
-        return {
-          label: r.name,
-          value: r.code,
-        };
-      });
-      setAsyncOptions(arr);
-    }
-  };
   const fetchManageList = async () => {
     // setLoading(true);
     const values = await form.validateFields();
@@ -222,8 +199,6 @@ const ViewMin: React.FC = () => {
     }
     let payload = { data: date, wise: values.wise.value };
     dispatch(getMinTransactionByDate(payload)).then((res: any) => {
-      // console.log("res", res);
-
       if (res.payload.code == 200) {
         let arr = res.payload.data;
         let newRow = arr.data.map((r) => {
@@ -307,7 +282,7 @@ const ViewMin: React.FC = () => {
             </Form.Item>
           ) : (
             <Form.Item className="w-full" name="data">
-              <Input placeholder="Min number" />
+              <Input placeholder="MIN number" />
             </Form.Item>
           )}
           <div className="w-full flex justify-end">
@@ -349,6 +324,7 @@ const ViewMin: React.FC = () => {
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       {/* <ViewCompoents

@@ -18,30 +18,22 @@ import {
 
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Form, Space } from "antd";
+import { Form } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
-import { fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
 import { RootState } from "@/store";
-import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
 import {
-  componentList,
-  componentMapList,
-  getComponentsByNameAndNo,
   getProductList,
   insertProduct,
   listOfUom,
-  serviceList,
-  servicesaddition,
 } from "@/components/shared/Api/masterApi";
-import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import EditProduct from "../masterModule/Product/EditProduct";
 import { listOfUoms } from "@/features/client/clientSlice";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -63,13 +55,11 @@ const BatchAlloaction = () => {
   // const form = useForm<z.infer<typeof FormSchema>>({
   //   resolver: zodResolver(FormSchema),
   // });
-  console.log("uomlist", uomlist);
 
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => getProductList(), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (response.status === 200) {
       let arr = data.data.map((r, index) => {
@@ -94,19 +84,23 @@ const BatchAlloaction = () => {
     const response = await execFun(() => listOfUom(), "fetch");
     const { data } = response;
 
-    if (response.status == 200) {
-      let arr = data.data.map((r, index) => {
+    if (response?.status == 200) {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           label: r.units_name,
           value: r.units_id,
         };
       });
       setAsyncOptions(arr);
+    } else {
+      toast({
+        title: "Failed to fetch UOM",
+        className: "bg-red-600 text-white items-center",
+      });
     }
   };
   const onsubmit = async () => {
     const value = await form.validateFields();
-    console.log("value", value);
     let payload = {
       p_sku: value.sku,
       p_name: value.product,
@@ -115,10 +109,8 @@ const BatchAlloaction = () => {
     };
     // return;
     const response = await execFun(() => insertProduct(payload), "fetch");
-    console.log("response", response);
 
     const { data } = response;
-    console.log("data", response);
     if (response.data.code == 200) {
       toast({
         title: data.message,
@@ -187,7 +179,7 @@ const BatchAlloaction = () => {
       cellRenderer: (e) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
-            {/* <Button className="bg-green-500 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
+            {/* <Button className="bg-green-700 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
             <Edit2
               className="h-[20px] w-[20px] text-cyan-700 "
               onClick={() => setSheetOpenEdit(e?.data?.product_key)}
@@ -260,7 +252,7 @@ const BatchAlloaction = () => {
                   transform={transformOptionData}
                   onChange={(e) => form.setValue("customerName", e)}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="search"
                 />
               </Form.Item>
             </div>
@@ -292,6 +284,7 @@ const BatchAlloaction = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

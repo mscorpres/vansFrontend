@@ -1,38 +1,31 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form } from "antd";
 import { Filter } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import { useEffect, useState } from "react";
+
 import Select from "react-select";
 import styled from "styled-components";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformOptionData } from "@/helper/transform";
-import { AgGridReact } from "ag-grid-react";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { useDispatch, useSelector } from "react-redux";
-import { getminBox, qrPrint } from "@/features/client/storeSlice";
+import { printsticker2, qrPrint } from "@/features/client/storeSlice";
 import { spigenAxios } from "@/axiosIntercepter";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
-import { images } from "@/assets/images.jpg";
 import Print from "@/assets/Print.jpg";
 // import p1 from "@/assets/p1.jpeg";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import { FaWarehouse } from "react-icons/fa";
-import { MdLocalPrintshop } from "react-icons/md";
+import { toast } from "@/components/ui/use-toast";
 function PrintMinLabel() {
   const [form] = Form.useForm();
   const selMin = Form.useWatch("min", form);
-  const [loading, setLoading] = useState(false);
   const selType = Form.useWatch("printType", form);
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const { loading } = useSelector((state: RootState) => state.store);
   const dispatch = useDispatch<AppDispatch>();
   const types = [
     {
-      value: "min",
+      value: "MIN",
       label: "MIN Wise",
     },
     {
@@ -56,7 +49,22 @@ function PrintMinLabel() {
   ];
 
   const getData = async (formData) => {
-    let response = await spigenAxios.post("/qrPrint/getminBox", formData);
+    const value = await form.getFieldValue("printType");
+    const min = await form.getFieldValue("min");
+    let response = await spigenAxios.get(
+      `qrPrint/getminBox?type=MIN&min_no=${min.value}`,
+      formData
+    );
+    if (response.data.code == 200) {
+      let { data } = response;
+      let arr = data.data.map((r) => {
+        return {
+          label: r.loc_in,
+          value: r.loc_in,
+        };
+      });
+      setRowData(arr);
+    }
   };
   const getDataBox = async (formData) => {
     let response = await spigenAxios.post(
@@ -65,38 +73,70 @@ function PrintMinLabel() {
     );
   };
   const onsubmit = async () => {
-    setLoading(true);
+    const value = await form.validateFields();
     let payload = {
       type: "MIN",
       min_no: selMin.value,
     };
-    dispatch(qrPrint(payload)).then((res) => {
-      if (res.payload.code == 200) {
-        downloadFunction(
-          res.payload.data.buffer.data,
-          res.payload.data.filename
-        );
-      }
-    });
-    setLoading(false);
-  };
+    if (selType == "label" || selType.value == "label") {
+      let payload = {
+        type: "MIN",
+        min_no: selMin.value,
+        box: value.box.map((r) => r.value),
+      };
+      // return;
 
+      dispatch(printsticker2(payload)).then((res) => {
+        if (res.payload.code == 200) {
+          downloadFunction(
+            res.payload.data.buffer.data,
+            res.payload.data.filename
+          );
+        }
+      });
+    } else {
+      dispatch(qrPrint(payload)).then((res) => {
+        console.log("res", res);
+
+        if (res.payload.code == 200) {
+          downloadFunction(
+            res.payload.data.buffer.data,
+            res.payload.data.filename
+          );
+        } else {
+          toast({
+            title: res.payload.message.msg,
+            className: "bg-red-600 text-white items-center",
+          });
+        }
+      });
+    }
+  };
   useEffect(() => {
     if (selMin) {
-      const formData = new FormData();
-      formData.append("type", "MIN");
-      formData.append("min_no", selMin.value);
+      form.setFieldValue("box", "");
+    }
+  }, [selMin]);
+  useEffect(() => {
+    if (selMin) {
+      let payload = {
+        type: "MIN",
+        min_no: selMin.value,
+      };
+      // const formData = new FormData();
+      // formData.append("type", "MIN");
+      // formData.append("min_no", selMin.value);
       if (selType.value == "Transfer" || selType == "Transfer") {
-        getDataBox(formData);
+        getDataBox(payload);
       } else {
-        getData(formData);
+        getData(payload);
       }
     }
   }, [selMin]);
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white ">
       <div className="bg-[#fff]">
-        {loading == true && <FullPageLoading />}
+        {loading && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -107,7 +147,11 @@ function PrintMinLabel() {
             className="space-y-6 overflow-hidden p-[10px] h-[1000px]"
           >
             <div className="grid grid-cols-1 gap-[40px]">
-              <Form.Item name="printType" label="Print Type">
+              <Form.Item
+                name="printType"
+                label="Print Type"
+                rules={[{ required: true }]}
+              >
                 <Select
                   styles={customStyles}
                   components={{ DropdownIndicator }}
@@ -120,8 +164,15 @@ function PrintMinLabel() {
                   options={types}
                 />
               </Form.Item>
-              {selType == "Transfer" || selType?.value == "Transfer" ? (
-                <Form.Item name="min" label="  MIN">
+              {selType == "Transfer" ||
+              selType?.value == "Transfer" ||
+              selType == "min" ||
+              selType?.value == "min" ? (
+                <Form.Item
+                  name="min"
+                  label="  MIN"
+                  rules={[{ required: true }]}
+                >
                   <ReusableAsyncSelect
                     // placeholder="Customer Name"
                     endpoint="/backend/getTrfMinsTransaction4Label"
@@ -132,16 +183,40 @@ function PrintMinLabel() {
                   />
                 </Form.Item>
               ) : (
-                <Form.Item name="min" label="  MIN">
-                  <ReusableAsyncSelect
-                    // placeholder="Customer Name"
-                    endpoint="/backend/getMinsTransaction4Label"
-                    transform={transformOptionData}
-                    // onChange={(e) => form.setValue("customerName", e)}
-                    // value={selectedCustomer}
-                    fetchOptionWith="payloadSearchTerm"
-                  />
-                </Form.Item>
+                <>
+                  <Form.Item
+                    name="min"
+                    label="  MIN"
+                    rules={[{ required: true }]}
+                  >
+                    <ReusableAsyncSelect
+                      // placeholder="Customer Name"
+                      endpoint="/backend/getMinsTransaction4Label"
+                      transform={transformOptionData2}
+                      // onChange={(e) => form.setValue("customerName", e)}
+                      // value={selectedCustomer}
+                      fetchOptionWith="query2"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    className="w-full"
+                    name="box"
+                    rules={[{ required: true }]}
+                  >
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="Select Boxes"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false}
+                      isClearable={true}
+                      isSearchable={true}
+                      isMulti={true}
+                      options={rowData}
+                    />
+                  </Form.Item>
+                </>
               )}
             </div>
 

@@ -13,19 +13,57 @@ interface ReusableAsyncSelectProps<T> {
   transform: (data: T[]) => { label: string; value: string }[];
   onChange: (selectedOption: { label: string; value: string } | null) => void;
   value?: { label: string; value: string } | null; // Add value prop
-  fetchOptionWith: "query" | "payload";
+  fetchOptionWith:
+    | "query"
+    | "query2"
+    | "payload"
+    | "querySearchTerm"
+    | "search";
   placeholder: string;
 }
 
-const ReusableAsyncSelect = <T,>({ endpoint, transform, onChange, value, fetchOptionWith, placeholder }: ReusableAsyncSelectProps<T>) => {
+const ReusableAsyncSelect = <T,>({
+  endpoint,
+  transform,
+  onChange,
+  value,
+  fetchOptionWith,
+  placeholder,
+}: ReusableAsyncSelectProps<T>) => {
   const dispatch = useDispatch<AppDispatch>();
   const [isOpen, setIsOpen] = useState(false); // State to track if select is open
-  const options = useSelector((state: RootState) => state.select[endpoint]?.options || []);
-  const loading = useSelector((state: RootState) => state.select[endpoint]?.loading || false);
+  const options = useSelector(
+    (state: RootState) => state.select[endpoint]?.options || []
+  );
+  const loading = useSelector(
+    (state: RootState) => state.select[endpoint]?.loading || false
+  );
 
-  const loadOptions = (inputValue: string, callback: (options: { label: string; value: string }[]) => void) => {
+  const loadOptions = (
+    inputValue: string,
+    callback: (options: { label: string; value: string }[]) => void
+  ) => {
     if (fetchOptionWith === "query") {
       dispatch(fetchData({ endpoint, query: inputValue })).then((action) => {
+        if (fetchData.fulfilled.match(action)) {
+          const response = action.payload as ApiResponse<T[]>;
+          callback(transform(response.data));
+        } else {
+          callback([]);
+        }
+      });
+    }
+    if (fetchOptionWith === "search") {
+      dispatch(fetchData({ endpoint, search: inputValue })).then((action) => {
+        if (fetchData.fulfilled.match(action)) {
+          const response = action.payload as ApiResponse<T[]>;
+          callback(transform(response.data));
+        } else {
+          callback([]);
+        }
+      });
+    } else if (fetchOptionWith === "query2") {
+      dispatch(fetchData({ endpoint, query2: inputValue })).then((action) => {
         if (fetchData.fulfilled.match(action)) {
           const response = action.payload as ApiResponse<T[]>;
           callback(transform(response.data));
@@ -49,7 +87,22 @@ const ReusableAsyncSelect = <T,>({ endpoint, transform, onChange, value, fetchOp
         }
       );
     } else if (fetchOptionWith === "payloadSearchTerm") {
-      dispatch(fetchData({ endpoint, payload: { searchTerm: inputValue } })).then(
+      dispatch(
+        fetchData({ endpoint, payload: { searchTerm: inputValue } })
+      ).then((action) => {
+        if (fetchData.fulfilled.match(action)) {
+          const response = action.payload as ApiResponse<T[]>;
+          if (Array.isArray(response)) {
+            callback(transform(response));
+          } else {
+            callback(transform(response.data));
+          }
+        } else {
+          callback([]);
+        }
+      });
+    } else if (fetchOptionWith === "querySearchTerm") {
+      dispatch(fetchData({ endpoint, querySearchTerm: inputValue })).then(
         (action) => {
           if (fetchData.fulfilled.match(action)) {
             const response = action.payload as ApiResponse<T[]>;
@@ -77,7 +130,9 @@ const ReusableAsyncSelect = <T,>({ endpoint, transform, onChange, value, fetchOp
   const handleMenuClose = () => {
     setIsOpen(false);
   };
-  const handleChange = (selectedOption: { label: string; value: string } | null) => {
+  const handleChange = (
+    selectedOption: { label: string; value: string } | null
+  ) => {
     onChange(selectedOption); // Call the onChange prop with selected option
     // Optionally handle any other actions on select change
   };

@@ -24,20 +24,23 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 const CustomerComponent = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
   const [resetModel, setResetModel] = useState(false);
+  const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const fetchComponentMap = async () => {
     const response = await execFun(() => componentMapListCustomers(), "fetch");
-    if (response.status === 200) {
+    let { data } = response;
+    if (data.success) {
       let arr = response.data.data.map((r: any, index: number) => {
         return {
           id: index + 1,
@@ -45,9 +48,16 @@ const CustomerComponent = () => {
         };
       });
       setRowData(arr);
+    } else {
+      toast({
+        title: data?.message,
+        className: "bg-green-600 text-white items-center",
+      });
     }
   };
   const createEntry = async () => {
+    setOpen(false);
+
     const values = await form.validateFields();
     let payload = {
       comp: values.partName?.value,
@@ -61,7 +71,7 @@ const CustomerComponent = () => {
     const response = await execFun(() => saveMapCustomer(payload), "fetch");
 
     let { data } = response;
-    if (response.data.code == 200) {
+    if (data.success) {
       toast({
         title: data.message,
         className: "bg-green-600 text-white items-center",
@@ -75,7 +85,7 @@ const CustomerComponent = () => {
       });
     } else {
       toast({
-        title: data.message.msg,
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -110,7 +120,7 @@ const CustomerComponent = () => {
                   transform={transformOptionData}
                   // onChange={(e) => log}
                   // value={selectedCustomer}
-                  fetchOptionWith="payload"
+                  fetchOptionWith="query2"
                 />
               </Form.Item>
             </div>
@@ -122,7 +132,7 @@ const CustomerComponent = () => {
                 transform={transformOptionData}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
                 // value={selectedCustomer}
-                fetchOptionWith="payload"
+                fetchOptionWith="search"
               />
             </Form.Item>
           </div>
@@ -162,7 +172,7 @@ const CustomerComponent = () => {
             <Button
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={() => createEntry()}
+              onClick={() => setOpen(true)}
             >
               Submit
             </Button>{" "}
@@ -181,6 +191,7 @@ const CustomerComponent = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>
@@ -203,7 +214,17 @@ const CustomerComponent = () => {
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>{" "}
+      <ConfirmationModal
+        open={open}
+        onClose={setOpen}
+        onOkay={() => {
+          createEntry();
+        }}
+        loading={loading1("fetch")}
+        title="Confirm Submit!"
+        description="Are you sure to submit the entry?"
+      />{" "}
     </Wrapper>
   );
 };

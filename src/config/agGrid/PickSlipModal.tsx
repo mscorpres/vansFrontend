@@ -62,7 +62,6 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     };
     dispatch(fetchAvailableStock(payload) as any).then((response: any) => {
       if (response.payload.code === 200) {
-        console.log(response.payload.data);
       }
     });
   };
@@ -167,7 +166,6 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       boxqty: qty,
     };
 
-    console.log("Payload to submit: ", payload);
     dispatch(stockOut(payload) as any).then((res: any) => {
       if (res.payload.code === 200) {
         toast({
@@ -189,7 +187,6 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     setQty((prevQty) => [...prevQty, newQtys.join(",")]);
     setSheetOpen(false);
   };
-  console.log(box, qty);
   return (
     <Sheet open={visible} onOpenChange={onClose}>
       <SheetHeader></SheetHeader>

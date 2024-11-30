@@ -240,7 +240,6 @@ const CreateSalesOrderPage = () => {
     const payload = {
       cost_center: e.value,
     };
-    console.log(payload);
     dispatch(fetchBillAddressList(e.value));
     // dispatch(fetchBillAddress("USLSDFSS2"));
   };
@@ -283,7 +282,6 @@ const CreateSalesOrderPage = () => {
 
   const searchCustomerList = (e: any) => {
     const response = dispatch(fetchCustomerDetail({ search: e }));
-    console.log(response);
   };
 
   return (

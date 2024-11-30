@@ -90,7 +90,7 @@ export const useApi = () => {
       } else if (error instanceof Error) {
         message = error.message;
       } else {
-        message = error?.message?.msg;
+        message = error?.message;
       }
       console.log("Some error occured in the api", error);
       toast.error(message);
@@ -99,7 +99,7 @@ export const useApi = () => {
         data: null,
         error: true,
         success: false,
-        message,
+        message: error.message,
       };
     } finally {
       setLoading(loadingLabel, false);

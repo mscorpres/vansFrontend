@@ -246,7 +246,7 @@ function MainLayout(props: { children: React.ReactNode }) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TooltipProvider>
+            {/* <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
                   <BiSupport className="h-[25px] w-[25px] text-white" />
@@ -255,7 +255,7 @@ function MainLayout(props: { children: React.ReactNode }) {
                   <p>Help & Support</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>

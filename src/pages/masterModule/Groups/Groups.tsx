@@ -1,30 +1,25 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
 
-import { z } from "zod";
+import {  useEffect, useState } from "react";
+
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 
 import {
   InputStyle,
-  LableStyle,
-  primartButtonStyle,
 } from "@/constants/themeContants";
 
 import styled from "styled-components";
-import { DatePicker, Row, Space, Form } from "antd";
+import {  Row, Form } from "antd";
 import { Input } from "@/components/ui/input";
 
 import { useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
-import ActionCellRenderer from "./ActionCellRenderer";
 import { getGroupList, saveGroups } from "@/components/shared/Api/masterApi";
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -32,32 +27,19 @@ import {
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { Filter } from "lucide-react";
-const FormSchema = z.object({
-  dateRange: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  soWise: z.string().optional(),
-});
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+
 
 const Groups = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [asyncOptions, setAsyncOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
- const [resetModel, setResetModel] = useState(false); 
-  // const form = useForm<z.infer<typeof FormSchema>>({
-  //   resolver: zodResolver(FormSchema),
-  // });
+  const [resetModel, setResetModel] = useState(false);
   const [form] = Form.useForm();
   const { toast } = useToast();
   const { execFun, loading: loading1 } = useApi();
   const fetchProductList = async () => {
     const response = await execFun(() => getGroupList(), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (response.status === 200) {
       let arr = data.data.map((r, index) => {
@@ -67,28 +49,21 @@ const Groups = () => {
         };
       });
       setRowData(arr);
-      //   addToast(response.message, {
-      //     appearance: "success",
-      //     autoDismiss: true,
-      //   });
+      
     } else {
-      //   addToast(response.message, {
-      //     appearance: "error",
-      //     autoDismiss: true,
-      //   });
+      
     }
   };
   const createEntry = async () => {
+    setOpen(false);
     const values = await form.validateFields();
     setLoading(true);
-    console.log("values", values);
     let payload = {
       group_name: values.groupName,
     };
     const response = await execFun(() => saveGroups(payload), "fetch");
-    console.log("response", response);
     const { data } = response;
-    if (data.code === 200) {
+    if (data.success) {
       setLoading(false);
       toast({
         title: data.message,
@@ -99,7 +74,7 @@ const Groups = () => {
     } else {
       setLoading(false);
       toast({
-        title: data.message || "Failed to Create Group",
+        title: data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -153,7 +128,6 @@ const Groups = () => {
         </div>
         <Form form={form} layout="vertical">
           <form
-            // onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6 overflow-hidden p-[10px]"
           >
             {" "}
@@ -200,6 +174,7 @@ const Groups = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>

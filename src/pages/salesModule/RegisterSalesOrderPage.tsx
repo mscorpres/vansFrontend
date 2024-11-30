@@ -103,7 +103,6 @@ const RegisterSalesOrderPage: React.FC = () => {
   const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
 
   const onBtExport = useCallback(() => {
-    console.log("object", gridRef.current);
     if (gridRef.current) {
       gridRef.current.api.exportDataAsCsv();
     }

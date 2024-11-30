@@ -8,7 +8,6 @@ export const transformCustomerData = (data: any[]) => {
 };
 
 export const transformOptionData = (data: any[]) => {
-  // console.log("data", data);
   if (data?.length) {
     return data?.map((item) => ({
       label: item.text,
@@ -16,8 +15,16 @@ export const transformOptionData = (data: any[]) => {
     }));
   }
 };
+export const transformOptionData2 = (data: any[]) => {
+  let newData: any[] = data?.data;
+  if (newData?.length) {
+    return newData?.map((item) => ({
+      label: item.text,
+      value: item.id,
+    }));
+  }
+};
 export const transformOptionDataphy = (data: any[]) => {
-  // console.log("data", data);
   if (data?.length) {
     return data?.map((item) => ({
       label: item.part_no,
@@ -26,7 +33,6 @@ export const transformOptionDataphy = (data: any[]) => {
   }
 };
 export const transformOptionBomData = (data: any[]) => {
-  // console.log("data", data);
   if (data?.length) {
     return data?.map((item) => ({
       label: item.bomname,
@@ -35,7 +41,6 @@ export const transformOptionBomData = (data: any[]) => {
   }
 };
 export const transformCurrencyData = (data: any[]) => {
-  // console.log("data", data);
   if (data?.length) {
     return data?.map((item) => ({
       label: item.currency_symbol,
@@ -59,8 +64,8 @@ export const transformClientTds = (data: any[]) => {
 
 export const transformStateOptions = (data: any[]) => {
   return data?.map((item) => ({
-    label: item.name,  // Changed from 'stateName' to 'name'
-    value: item.code,  // Changed from 'stateCode' to 'code'
+    label: item.name, // Changed from 'stateName' to 'name'
+    value: item.code, // Changed from 'stateCode' to 'code'
   }));
 };
 
@@ -68,8 +73,26 @@ export const transformOptions = (
   data: any[]
 ): { label: string; value: string }[] => {
   // Ensure the function always returns an array
+
   if (data?.length) {
     return data.map((item) => ({
+      label: item.text,
+      value: item.id,
+    }));
+  }
+
+  // Return an empty array if data is empty or undefined
+  return [];
+};
+
+export const transformOptionsData = (
+  data: any[]
+): { label: string; value: string }[] => {
+  // Ensure the function always returns an array
+  // console.log("data", data);
+
+  if (data?.data?.length) {
+    return data?.data.map((item: any) => ({
       label: item.text,
       value: item.id,
     }));

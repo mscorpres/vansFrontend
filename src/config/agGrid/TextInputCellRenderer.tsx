@@ -1,4 +1,3 @@
-import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,14 +83,12 @@ const TextInputCellRenderer = (props: any) => {
     api.refreshCells({ rowNodes: [props.node], columns: [column] }); // refresh the cell to show the new value
     setOpen(false);
   };
-  console.log("props", props);
 
   const handleInputChange = (e: any) => {
     const newValue = e.target.value;
     data[colDef.field] = newValue; // update the data
     api.refreshCells({ rowNodes: [props.node], columns: [column] }); // refresh the cell to show the new value
   };
-  console.log("search om =", val);
   setCompList(search);
 
   const renderContent = () => {
@@ -120,7 +117,7 @@ const TextInputCellRenderer = (props: any) => {
             transform={transformOptionData}
             onChange={(e) => handleChange(e.value)}
             // value={selectedCustomer}
-            fetchOptionWith="payload"
+            fetchOptionWith="query2"
           />
         );
       case "asinNumber":

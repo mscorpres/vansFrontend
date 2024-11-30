@@ -94,7 +94,7 @@ const InwardLayout = (props: { children: React.ReactNode }) => {
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }
             >
-              View Min
+              View MIN
             </NavLink>
           </li>
          

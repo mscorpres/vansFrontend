@@ -64,14 +64,22 @@ spigenAxios.interceptors.response.use(
         window.location.reload();
         return Promise.reject(error);
       }
-
-      if (errorData.success === false || errorData?.status == "error") {
-        toasts({
-          title: errorData?.message,
-          className: "bg-red-600 text-white items-center",
-        });
-        toast.error(errorData?.message || "Error occurred.");
-        return Promise.reject(errorData);
+   if (errorData.success === false || errorData?.status == "error") {
+        if (errorData?.message?.msg) {
+          toasts({
+            title: errorData?.message?.msg,
+            className: "bg-red-600 text-white items-center",
+          });
+          toast.error(errorData?.message?.msg || "Error occurred.");
+          return Promise.reject(errorData);
+        } else {
+          toasts({
+            title: errorData?.message,
+            className: "bg-red-600 text-white items-center",
+          });
+          toast.error(errorData?.message || "Error occurred.");
+          return Promise.reject(errorData);
+        }
       }
 
       if (errorData.message) {

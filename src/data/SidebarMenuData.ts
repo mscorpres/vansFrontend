@@ -285,3 +285,7 @@ export const printMenu = [
   { name: "Pick Slip", path: "/warehouse/PickSlip/print" },
   { name: " Customer Label", path: "/warehouse/printCustomerLabel" },
 ];
+export const useFullLinks = [
+  { name: " Forgot password", path: "/forgot-password" },
+  { name: " Change password", path: "/change-password" },
+];

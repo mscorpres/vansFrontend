@@ -1,7 +1,7 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { Filter } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
@@ -12,7 +12,6 @@ import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
-import { fetchListOfVendor } from "@/components/shared/Api/masterApi";
 import { fetchManagePOList, printPO } from "@/features/client/clientSlice";
 import { modelFixHeaderStyle } from "@/constants/themeContants";
 import {
@@ -129,6 +128,7 @@ const ManagePoPage: React.FC = () => {
   const [files, setFiles] = useState<File[] | null>(null);
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
+  const [loadingPage, setLoadingPage] = useState(false);
   const [remarkDescription, setRemarkDescription] = useState(false);
   const [captions, setCaptions] = useState("");
   const [cancel, setCancel] = useState(false);
@@ -155,7 +155,7 @@ const ManagePoPage: React.FC = () => {
     },
     {
       field: "po_transaction",
-      headerName: "Po Id ",
+      headerName: "PO Id ",
       width: "220",
       cellRenderer: CopyCellRenderer,
       filterParams: {
@@ -235,7 +235,6 @@ const ManagePoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const fetchManageList = async () => {
-    // setLoading(true);
     const values = await form.validateFields();
     let date;
     let payload;
@@ -245,7 +244,7 @@ const ManagePoPage: React.FC = () => {
     } else if (selectedwise?.value === "vendorwise") {
       payload = { data: values.data.value, wise: values.wise.value };
     } else {
-      payload = { data: date, wise: values.wise.value };
+      payload = { data: values.data, wise: values.wise.value };
     }
     dispatch(fetchManagePOList(payload)).then((res: any) => {
       if (res.payload.code == 200) {
@@ -262,6 +261,7 @@ const ManagePoPage: React.FC = () => {
     setFiles(newFiles);
   };
   const uploadDocs = async () => {
+    setLoadingPage(true);
     const formData = new FormData();
     files.map((comp) => {
       formData.append("files", comp);
@@ -278,11 +278,11 @@ const ManagePoPage: React.FC = () => {
         title: "Doc Uploaded successfully",
         className: "bg-green-600 text-white items-center",
       });
-      // setLoading(false);
+      setLoadingPage(false);
       setSheetOpen(false);
       setAttachmentFile(response.data.data);
     }
-    // setLoading(false);
+    setLoadingPage(false);
   };
   const defaultColDef = useMemo(() => {
     return {
@@ -290,6 +290,10 @@ const ManagePoPage: React.FC = () => {
       floatingFilter: true,
     };
   }, []);
+  useEffect(() => {
+    form.setFieldValue("data", "");
+  }, [selectedwise]);
+
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
@@ -301,13 +305,17 @@ const ManagePoPage: React.FC = () => {
         <div className="p-[10px]"></div>
         <Form
           form={form}
-          className="space-y-6 overflow-hidden p-[10px] h-[370px]  "
+          className="space-y-6 overflow-hidden p-[10px] h-[470px]  "
         >
           {/* <form
             onSubmit={form.handleSubmit(fetchManageList)}
             className="space-y-6 overflow-hidden p-[10px] h-[370px]"
           > */}
-          <Form.Item className="w-full" name="wise">
+          <Form.Item
+            className="w-full"
+            name="wise"
+            rules={[{ required: true }]}
+          >
             <Select
               styles={customStyles}
               components={{ DropdownIndicator }}
@@ -321,7 +329,11 @@ const ManagePoPage: React.FC = () => {
             />
           </Form.Item>
           {selectedwise?.value === "datewise" ? (
-            <Form.Item className="w-full" name="data">
+            <Form.Item
+              className="w-full"
+              name="data"
+              rules={[{ required: true }]}
+            >
               <Space direction="vertical" size={12} className="w-full">
                 <RangePicker
                   className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
@@ -338,18 +350,26 @@ const ManagePoPage: React.FC = () => {
               </Space>
             </Form.Item>
           ) : selectedwise?.value === "vendorwise" ? (
-            <Form.Item className="w-full" name="data">
+            <Form.Item
+              className="w-full"
+              name="data"
+              rules={[{ required: true }]}
+            >
               <ReusableAsyncSelect
                 placeholder="Vendor Name"
                 endpoint="/backend/vendorList"
                 transform={transformOptionData}
                 onChange={(e) => form.setFieldValue("data", e)}
                 // value={selectedCustomer}
-                fetchOptionWith="payload"
+                fetchOptionWith="query2"
               />
             </Form.Item>
           ) : (
-            <Form.Item className="w-full" name="data">
+            <Form.Item
+              className="w-full"
+              name="data"
+              rules={[{ required: true }]}
+            >
               <Input placeholder="PO number" />
             </Form.Item>
           )}
@@ -380,7 +400,7 @@ const ManagePoPage: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
@@ -391,8 +411,8 @@ const ManagePoPage: React.FC = () => {
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
-          loadingOverlayComponent={OverlayNoRowsTemplate}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>{" "}
       <ViewCompoents
@@ -429,7 +449,7 @@ const ManagePoPage: React.FC = () => {
             <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
           </SheetHeader>{" "}
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-            {loading && <FullPageLoading />}
+            {(loading || loadingPage) && <FullPageLoading />}
             <FileUploader
               value={files}
               onValueChange={handleFileChange}

@@ -24,7 +24,6 @@ import { AppDispatch } from "@/store";
 import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import { createSellRequest } from "@/features/salesmodule/SalesSlice";
 import { App, Checkbox, Form } from "antd";
-import { getComponentsByNameAndNo } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import RejectModal from "@/components/shared/RejectModal";
@@ -35,11 +34,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  fetchCurrency,
-  rejectPo,
-  updatePo,
-} from "@/features/client/clientSlice";
+import { fetchCurrency, rejectPo } from "@/features/client/clientSlice";
 import { minTransaction } from "@/features/client/storeSlice";
 import {
   FileInput,
@@ -51,6 +46,7 @@ import { IoCloudUpload } from "react-icons/io5";
 import { useToast } from "@/components/ui/use-toast";
 import { spigenAxios } from "@/axiosIntercepter";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
 // }
@@ -625,6 +621,7 @@ const AddPO: React.FC<Props> = ({
               gridOptions={commonAgGridConfig}
               suppressRowClickSelection={false}
               suppressCellFocus={true}
+              overlayNoRowsTemplate={OverlayNoRowsTemplate}
             />
           </div>
         </div>
