@@ -412,7 +412,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             className={InputStyle}
                           />
                         </Form.Item>{" "}
-                        <Form.Item name="UOM" label="uom" rules={rules.uom}>
+                        <Form.Item name="uom" label="UOM" rules={rules.uom}>
                           <Select
                             styles={customStyles}
                             components={{ DropdownIndicator }}
