@@ -8,8 +8,7 @@ import { AppDispatch } from "@/store";
 import { fetchDataPOEdit } from "@/features/client/clientSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
-import { formatDate } from "date-fns";
-import { exportDatepace } from "@/components/shared/Options";
+import { toast } from "@/components/ui/use-toast";
 import dayjs from "dayjs";
 const PoCreateTemplate = () => {
   const [tabvalue, setTabvalue] = useState<string>("create");
@@ -64,7 +63,7 @@ const PoCreateTemplate = () => {
       setParamVal(params.id?.replaceAll("_", "/"));
       dispatch(fetchDataPOEdit({ pono: params.id?.replaceAll("_", "/") })).then(
         (res) => {
-          if (res.payload.status == "success") {
+          if (res.payload.success) {
             let arr = res.payload.data;
             let billinid = {
               label: arr.bill?.addrbillname,
@@ -113,34 +112,39 @@ const PoCreateTemplate = () => {
             form.setFieldValue("shippan", arr.ship?.shippanno);
             form.setFieldValue("shipgst", arr.ship?.shipgstid);
             form.setFieldValue("shipAddress", arr.ship?.shipaddress);
+            let materials = res.payload.data?.materials;
+            let matLst = materials?.map((r) => {
+              return {
+                isNew: true,
+                procurementMaterial: r?.selectedComponent[0]?.text,
+
+                vendorName: r.make,
+                // currency: r.currency,
+                // currency: r.exchangerate,
+                orderQty: r.orderqty,
+                componentKey: r?.componentKey,
+                rate: r.rate,
+                gstRate: r.gstrate,
+                gstTypeForPO: r.gsttype[0].id,
+                materialDescription: r.remark,
+                hsnCode: r.hsncode,
+                dueDate: r.duedate,
+                localValue: r.taxablevalue,
+                foreignValue: r.exchangetaxablevalue,
+                igst: r.igst,
+                sgst: r.sgst,
+                cgst: r.cgst,
+                updateingId: r?.updateid,
+              };
+            });
+
+            setRowData(matLst);
+          } else {
+            toast({
+              title: "Something went wrong",
+              className: "bg-red-700 text-white",
+            });
           }
-          let materials = res.payload.data?.materials;
-          let matLst = materials?.map((r) => {
-            return {
-              isNew: true,
-              procurementMaterial: r?.selectedComponent[0]?.text,
-
-              vendorName: r.make,
-              // currency: r.currency,
-              // currency: r.exchangerate,
-              orderQty: r.orderqty,
-              componentKey: r?.componentKey,
-              rate: r.rate,
-              gstRate: r.gstrate,
-              gstTypeForPO: r.gsttype[0].id,
-              materialDescription: r.remark,
-              hsnCode: r.hsncode,
-              dueDate: r.duedate,
-              localValue: r.taxablevalue,
-              foreignValue: r.exchangetaxablevalue,
-              igst: r.igst,
-              sgst: r.sgst,
-              cgst: r.cgst,
-              updateingId: r?.updateid,
-            };
-          });
-
-          setRowData(matLst);
           // setPayloadData(res.payload);
         }
       );

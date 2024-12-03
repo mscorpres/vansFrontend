@@ -20,7 +20,7 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { useNavigate } from "react-router-dom";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformOptionData } from "@/helper/transform";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { rangePresets } from "@/General";
@@ -163,6 +163,7 @@ const ApprovePOPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const fetchManageList = async () => {
+    setRowData([]);
     const values = await form.validateFields();
     let data;
     if (values.wise.value === "datewise") {
@@ -176,7 +177,7 @@ const ApprovePOPage: React.FC = () => {
     let payload = { data: data, wise: values.wise.value };
 
     dispatch(fetchneededApprovalPO(payload)).then((res: any) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         let arr = res.payload.data;
 
         arr.map((r: any) => {
@@ -252,7 +253,7 @@ const ApprovePOPage: React.FC = () => {
               <ReusableAsyncSelect
                 placeholder="Vendor Name"
                 endpoint="/backend/vendorList"
-                transform={transformOptionData}
+                transform={transformOptionData2}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
                 // value={selectedCustomer}
                 fetchOptionWith="query2"

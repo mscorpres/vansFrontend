@@ -182,6 +182,8 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     // if (managePoViewComponentList) {
     //   setRowData(managePoViewComponentList);
     // }
+
+    setLoading(true);
     let response = await execFun(
       () =>
         fetchViewComponentsOfManage(
@@ -189,9 +191,8 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
         ),
       "fetch"
     );
-    setLoading(true);
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data?.data.data.map((r, id) => {
         return {
           id: id + 1,
@@ -216,13 +217,13 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       onOpenChange={setView}
     >
       {" "}
-      {loading == true && <FullPageLoading />}
       <SheetContent className="min-w-[100%] p-0">
         <SheetHeader className={modelFixHeaderStyle}>
           <SheetTitle className="text-slate-600">
             View Components {view.po_transaction || view.po_transaction_code}
           </SheetTitle>
         </SheetHeader>{" "}
+        {loading && <FullPageLoading />}
         <div className="ag-theme-quartz h-[calc(100vh-100px)] px-[10px]">
           <AgGridReact
             //   loadingCellRenderer={loadingCellRenderer}

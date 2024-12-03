@@ -41,7 +41,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { spigenAxios } from "@/axiosIntercepter";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformOptionData } from "@/helper/transform";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { rangePresets } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const ActionMenu: React.FC<ActionMenuProps> = ({
@@ -226,7 +226,8 @@ const ManagePoPage: React.FC = () => {
     };
 
     dispatch(printPO({ poid: row?.po_transaction })).then((res: any) => {
-      if (res.payload.code == 200) {
+
+      if (res.payload.success) {
         let { data } = res.payload;
         downloadFunction(data.buffer.data, data.filename);
       }
@@ -247,11 +248,12 @@ const ManagePoPage: React.FC = () => {
       payload = { data: values.data, wise: values.wise.value };
     }
     dispatch(fetchManagePOList(payload)).then((res: any) => {
-      if (res.payload.code == 200) {
+      setRowData([]);
+      if (res.payload.success) {
         setRowData(res.payload.response.data);
       } else {
         toast({
-          title: res.payload.message.msg,
+          title: res.payload.message,
           className: "bg-red-700 text-white",
         });
       }
@@ -261,18 +263,20 @@ const ManagePoPage: React.FC = () => {
     setFiles(newFiles);
   };
   const uploadDocs = async () => {
-    setLoadingPage(true);
     const formData = new FormData();
     files.map((comp) => {
       formData.append("files", comp);
       formData.append("doc_name", captions);
       formData.append("po_id", sheetOpen?.po_transaction);
     });
+    // setLoadingPage(true);
     const response = await spigenAxios.post(
       "/purchaseOrder/uploadAttachment",
       formData
     );
-    if (response.data.code == 200) {
+
+    if (response.data.success) {
+      setLoadingPage(true);
       // toast
       toast({
         title: "Doc Uploaded successfully",
@@ -280,9 +284,11 @@ const ManagePoPage: React.FC = () => {
       });
       setLoadingPage(false);
       setSheetOpen(false);
-      setAttachmentFile(response.data.data);
+      setFiles([]);
+      setCaptions("");
+      setLoadingPage(false);
     }
-    setLoadingPage(false);
+    // setLoadingPage(false);
   };
   const defaultColDef = useMemo(() => {
     return {
@@ -358,7 +364,7 @@ const ManagePoPage: React.FC = () => {
               <ReusableAsyncSelect
                 placeholder="Vendor Name"
                 endpoint="/backend/vendorList"
-                transform={transformOptionData}
+                transform={transformOptionData2}
                 onChange={(e) => form.setFieldValue("data", e)}
                 // value={selectedCustomer}
                 fetchOptionWith="query2"

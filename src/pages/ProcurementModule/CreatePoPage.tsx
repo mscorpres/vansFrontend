@@ -8,7 +8,11 @@ import { DatePickerStyle, primartButtonStyle } from "@/constants/themeContants";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
-import { transformCurrencyData, transformOptionData, transformOptionData2 } from "@/helper/transform";
+import {
+  transformCurrencyData,
+  transformOptionData,
+  transformOptionData2,
+} from "@/helper/transform";
 import { Button, DatePicker, Form } from "antd";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
@@ -261,7 +265,7 @@ const CreatePoPage: React.FC<Props> = ({
                   <ReusableAsyncSelect
                     placeholder="Vendor Name"
                     endpoint="/backend/vendorList"
-                    transform={transformOptionData}
+                    transform={transformOptionData2}
                     onChange={(e) => form.setFieldValue("vendorName", e)}
                     // value={selectedCustomer}
                     fetchOptionWith="query2"
@@ -487,7 +491,7 @@ const CreatePoPage: React.FC<Props> = ({
                     isSearchable={true}
                     // labe
                     name="color"
-                    options={transformOptionData(vendorBillingList)}
+                    options={transformOptionData2(vendorBillingList)}
                     onChange={(e) => form.setFieldValue("billingId", e)}
                   />
                 </Form.Item>
@@ -550,7 +554,7 @@ const CreatePoPage: React.FC<Props> = ({
                     isClearable={true}
                     isSearchable={true}
                     name="color"
-                    options={transformOptionData(shippingPOList)}
+                    options={transformOptionData2(shippingPOList)}
                     onChange={(e) => form.setFieldValue("shipId", e)}
                   />
                 </Form.Item>
