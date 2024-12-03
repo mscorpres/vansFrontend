@@ -20,6 +20,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -44,12 +45,11 @@ const PendingStock = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    dispatch(pendingPhysical()).then((r) => {
-
-      if (r.payload.code == 200) {
+    dispatch(pendingPhysical()).then((r) => {if (r.payload.success) {
         let arr = r.payload.data.map((r, index) => {
           return {
             id: index + 1,
+            c_name: r.c_name == null ? "--" : r.c_name,
             ...r,
           };
         });
@@ -71,8 +71,7 @@ const PendingStock = () => {
     let payload = {
       data: e.data.ID,
     };
-    dispatch(rejectStockItem(payload)).then((res) => {
-      if (res.payload.code == 200) {
+    dispatch(rejectStockItem(payload)).then((res) => {if (res.payload.success) {
         toast({
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
@@ -93,7 +92,7 @@ const PendingStock = () => {
       data: e.data.ID,
     };
     dispatch(approveStockItem(payload)).then((res) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         toast({
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
@@ -143,18 +142,21 @@ const PendingStock = () => {
       headerName: "Box Number",
       field: "box_no",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 140,
     },
     {
       headerName: "Part Code",
       field: "part_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Part Name",
       field: "c_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 320,
     },
 
@@ -169,6 +171,7 @@ const PendingStock = () => {
       headerName: "Physical Stock",
       field: "physical_stock",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 150,
     },
     {
@@ -180,6 +183,7 @@ const PendingStock = () => {
     {
       headerName: "Cost Center",
       field: "cost_center_name",
+      cellRenderer: CopyCellRenderer,
       filter: "agTextColumnFilter",
       width: 180,
     },

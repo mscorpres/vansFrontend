@@ -31,6 +31,7 @@ import {
 } from "@/constants/themeContants";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -59,12 +60,12 @@ const RejectedStock = () => {
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     dispatch(rejectedPhysical()).then((r) => {
-      if (r.payload.code == 200) {
+      if (r.payload?.data.success) {
         toast({
-          title: r.payload?.message,
+          title: r.payload?.data.message,
           className: "bg-green-700 text-white text-center",
         });
-        let arr = r.payload.data.map((r, index) => {
+        let arr = r.payload.data.data.map((r, index) => {
           return {
             id: index + 1,
             ...r,
@@ -73,14 +74,16 @@ const RejectedStock = () => {
         setRowData(arr);
       } else {
         toast({
-          title: r.payload?.message,
+          title: r.payload?.data.message,
           className: "bg-red-700 text-white text-center",
         });
       }
     });
   };
   const handleSubmit = async () => {
-    let values = Form.validateFields();
+    setShowConfirmation(false);
+    let values = await fgForm.validateFields();
+    console.log("values", values);
 
     const payload = {
       boxname: sheetOpenView.data.box_no,
@@ -89,7 +92,21 @@ const RejectedStock = () => {
       componentname: sheetOpenView.data.part_name,
       auditKey: sheetOpenView.data.ID,
     };
-    dispatch(updateRejectphysical(payload)).then((r) => {});
+    dispatch(updateRejectphysical(payload)).then((r) => {
+      if (r.payload?.data?.success) {
+        toast({
+          title: r.payload?.data?.message,
+          className: "bg-green-700 text-white text-center",
+        });
+
+        setSheetOpenView(false);
+      } else {
+        toast({
+          title: r.payload?.message,
+          className: "bg-red-700 text-white text-center",
+        });
+      }
+    });
   };
 
   const columnDefs: ColDef<rowData>[] = [
@@ -122,18 +139,21 @@ const RejectedStock = () => {
       headerName: "Box Number",
       field: "box_no",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 140,
     },
     {
       headerName: "Part Code",
       field: "part_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Part Name",
       field: "c_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 320,
     },
 
@@ -141,6 +161,7 @@ const RejectedStock = () => {
       headerName: "IMS Stock",
       field: "ims_closing_stock",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 150,
     },
 
@@ -148,6 +169,7 @@ const RejectedStock = () => {
       headerName: "Physical Stock",
       field: "physical_stock",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 150,
     },
     {
@@ -160,6 +182,7 @@ const RejectedStock = () => {
       headerName: "Verified By",
       field: "user_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 180,
     },
     {
@@ -190,7 +213,7 @@ const RejectedStock = () => {
     },
   ];
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "RejectedStock All Item Closing Stock");
+    downloadCSV(rowData, columnDefs, "Rejected Stock ");
   };
 
   useEffect(() => {
@@ -248,6 +271,7 @@ const RejectedStock = () => {
                 //   onSubmit={form.handleSubmit(onSubmit)}
                 className=""
               >
+                {loading && <FullPageLoading />}
                 <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto w-full">
                   <div className="col col-span-1 flex justify-between">
                     <Typography.Title level={5}>BOX Number:</Typography.Title>{" "}

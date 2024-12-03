@@ -145,8 +145,7 @@ const CreatePhysicalStock = () => {
       remark: rowData.map((r) => r.remark),
     };
 
-    dispatch(insertPhysical(payload)).then((res: any) => {
-      if (res.payload.code == 200) {
+    dispatch(insertPhysical(payload)).then((res: any) => { if (res.payload.success) {
         toast({
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
@@ -154,7 +153,7 @@ const CreatePhysicalStock = () => {
         setRowData([]);
       } else {
         toast({
-          title: res.payload.message.msg,
+          title: res.payload.message,
           className: "bg-red-600 text-white items-center",
         });
       }
@@ -302,12 +301,12 @@ const CreatePhysicalStock = () => {
             >
               Reset
             </Button>
-            <Button
+            {/* <Button
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
               //   onClick={() => setTab("create")}
             >
               Back
-            </Button>
+            </Button> */}
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}
