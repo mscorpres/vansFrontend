@@ -7,17 +7,10 @@ import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
+import { DatePicker, Divider, Space, Form } from "antd";
 import {
   transformCustomerData,
   transformOptionData,
@@ -35,49 +28,40 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-const FormSchema = z.object({
-  date: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  types: z.string(),
-  search: z.string(),
-});
+import { rangePresets } from "@/General";
 
 const MinRegister = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
-  const theWise = form.watch("types");
+  const [form] = Form.useForm();
+
+  const theWise = Form.useWatch("types", form);
   const { execFun, loading: loading1 } = useApi();
   //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
 
   const dateFormat = "YYYY/MM/DD";
 
-  const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    let { date, search } = formData;
+  const fetchQueryResults = async () => {
+    let value = await form.validateFields();
+    // let { date, search } = formData;
 
     let dataString = "";
-    if (date) {
+    if (value?.date) {
       dataString = exportDateRangespace(date);
     } else {
-      dataString = formData.search;
+      dataString = value.search;
     }
     let payload = {
-      min_types: formData.types,
+      min_types: value.types.value,
       data: dataString,
     };
     const response = await execFun(
       () => fetchListOfMINRegister(payload),
       "fetch"
     );
+    setRowData([]);
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -92,6 +76,11 @@ const MinRegister = () => {
   useEffect(() => {
     // fetchComponentList();
   }, []);
+  // useEffect(() => {
+  //   // fetchComponentList();
+  //   form.setFieldValue("search", "");
+  //   form.setFieldValue("date", "");
+  // }, [theWise]);
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -101,7 +90,7 @@ const MinRegister = () => {
       width: 90,
     },
     {
-      headerName: "Date",
+      headerName: "Date & Time",
       field: "DATE",
       filter: "agTextColumnFilter",
       width: 220,
@@ -263,9 +252,8 @@ const MinRegister = () => {
   };
   useEffect(() => {
     if (theWise) {
-      form.setValue("date", "");
-      setRowData([]);
-      form.setValue("search", "");
+      form.setFieldValue("date", []);
+      // form.setValue("date", "");
     }
   }, [theWise]);
 
@@ -278,103 +266,93 @@ const MinRegister = () => {
           Filter
         </div>
         <div className="p-[10px]"></div>
-        <Form {...form}>
-          <form
+        <Form form={form} layout="vertical" className="p-[10px]">
+          {/* <form
             onSubmit={form.handleSubmit(fetchQueryResults)}
             className="space-y-6 overflow-hidden p-[10px] h-[470px]"
-          >
-            <FormField
+          > */}
+          {/* <FormField
               control={form.control}
-              name="types"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Select
-                      styles={customStyles}
-                      components={{ DropdownIndicator }}
-                      placeholder=" Enter Type"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
-                      options={type}
-                      onChange={(e: any) => form.setValue("types", e.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => ( */}
+          <Form.Item className="w-full" name="types">
+            {/* <FormControl> */}
+            <Select
+              styles={customStyles}
+              components={{ DropdownIndicator }}
+              placeholder=" Enter Type"
+              className="border-0 basic-single"
+              classNamePrefix="select border-0"
+              isDisabled={false}
+              isClearable={true}
+              isSearchable={true}
+              options={type}
+              // onChange={(e: any) => form.setFieldValue("types", e.value)}
             />
-            {theWise == "POMIN" ? (
-              <FormField
-                control={form.control}
-                name="search"
-                render={() => (
-                  <FormItem>
-                    <FormLabel className="text-slate-600"></FormLabel>
-                    <FormControl>
-                      <ReusableAsyncSelect
-                        // placeholder="State"
-                        endpoint="/backend/searchPoByPoNo"
-                        transform={transformOptionData}
-                        fetchOptionWith="search"
-                        onChange={(e: any) => form.setValue("search", e.value)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            {/* </FormControl> */}
+            {/* <FormMessage /> */}
+          </Form.Item>
+          {/* )}
+            /> */}
+          {theWise == "POMIN" ? (
+            <Form.Item name="search">
+              <ReusableAsyncSelect
+                // placeholder="State"
+                endpoint="/backend/searchPoByPoNo"
+                transform={transformOptionData}
+                fetchOptionWith="search"
+                onChange={(e: any) => form.setFieldValue("search", e.value)}
               />
-            ) : (
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Space direction="vertical" size={12} className="w-full">
-                        <RangePicker
-                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                          onChange={(value) =>
-                            field.onChange(
-                              value ? value.map((date) => date!.toDate()) : []
-                            )
-                          }
-                          format={"DD/MM/YYYY"}
-                        />
-                      </Space>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            {/* )} */}
-            <div className="flex gap-[10px] justify-end  px-[5px]">
-              <Button
-                type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                //   onClick={() => {
-                //     fetchBOMList();
-                //   }}
-              >
-                Search
-              </Button>{" "}
-              <Button
-                // type="submit"
-                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
-                // onClick={() => {}}
-                disabled={rowData.length === 0}
-                onClick={(e: any) => {
-                  e.preventDefault();
-                  handleDownloadExcel();
-                }}
-              >
-                <IoMdDownload size={20} />
-              </Button>
-            </div>
-          </form>
+            </Form.Item>
+          ) : (
+            //   )}
+            // />
+
+            <Form.Item className="w-full" name="date">
+              <Space direction="vertical" size={12} className="w-full">
+                <RangePicker
+                  className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
+                  // onChange={(value) =>
+                  //   field.onChange(
+                  //     value ? value.map((date) => date!.toDate()) : []
+                  //   )
+                  // }
+                  onChange={(value) =>
+                    form.setFieldValue(
+                      "date",
+                      value ? value.map((date) => date!.toDate()) : []
+                    )
+                  }
+                  format={"DD/MM/YYYY"}
+                  presets={rangePresets}
+                />
+              </Space>
+            </Form.Item>
+          )}
+          {/* )} */}
+          <div className="flex gap-[10px] justify-end  px-[5px]">
+            <Button
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={() => {
+                fetchQueryResults();
+              }}
+            >
+              Search
+            </Button>{" "}
+            <Button
+              // type="submit"
+              className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+              // onClick={() => {}}
+              disabled={rowData.length === 0}
+              onClick={(e: any) => {
+                e.preventDefault();
+                handleDownloadExcel();
+              }}
+            >
+              <IoMdDownload size={20} />
+            </Button>
+          </div>
+          {/* </form> */}
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">

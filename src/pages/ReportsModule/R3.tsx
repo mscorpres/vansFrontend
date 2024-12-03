@@ -34,6 +34,7 @@ import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
+import { rangePresets } from "@/General";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -72,7 +73,7 @@ const R3 = () => {
     // return;
     const response = await execFun(() => fetchR3(payload), "fetch");
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -92,7 +93,7 @@ const R3 = () => {
   };
   const fetchBom = async (payload) => {
     const response = await execFun(() => fetchBomForProduct(payload), "fetch");
-    if (response.data.code == 200) {
+    if (response.data.success) {
       let { data } = response;
       let arr = data.data.map((r) => {
         return {
@@ -302,6 +303,7 @@ const R3 = () => {
                           )
                         }
                         format={dateFormat}
+                        presets={rangePresets}
                       />
                     </Space>
                   </FormControl>

@@ -37,6 +37,7 @@ import { IoMdDownload } from "react-icons/io";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { rangePresets } from "@/General";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -72,7 +73,7 @@ const R2 = () => {
 
     const response = await execFun(() => fetchR2(payload), "fetch");
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.response.data.map((r, index) => {
         return {
           id: index + 1,
@@ -301,6 +302,7 @@ const R2 = () => {
                           )
                         }
                         format={"DD/MM/YYYY"}
+                        presets={rangePresets}
                       />
                     </Space>
                   </FormControl>

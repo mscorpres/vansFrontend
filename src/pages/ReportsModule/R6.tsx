@@ -31,6 +31,7 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { rangePresets } from "@/General";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -69,7 +70,7 @@ const R6 = () => {
 
     const response = await execFun(() => fetchR6(payload), "fetch");
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -225,6 +226,7 @@ const R6 = () => {
                               value ? value.map((date) => date!.toDate()) : []
                             )
                           }
+                          presets={rangePresets}
                           format={"DD/MM/YYYY"}
                         />
                       </Space>

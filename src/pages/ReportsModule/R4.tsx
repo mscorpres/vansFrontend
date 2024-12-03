@@ -13,6 +13,7 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -36,10 +37,9 @@ const R4 = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-
     const response = await execFun(() => fetchR4(), "fetch");
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -50,7 +50,7 @@ const R4 = () => {
       setRowData(arr);
     } else {
       toast({
-        title: response?.data.message?.msg,
+        title: response?.data.message,
         className: "bg-red-700 text-white",
       });
     }
@@ -67,16 +67,18 @@ const R4 = () => {
       headerName: "Part Code",
       field: "part_no",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 140,
     },
     {
       headerName: "Part Name",
       field: "name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
-      headerName: "Desc",
+      headerName: "Description",
       field: "c_specification",
       filter: "agTextColumnFilter",
       width: 320,
@@ -108,7 +110,7 @@ const R4 = () => {
       width: 180,
     },
     {
-      headerName: "Soq",
+      headerName: "SOQ",
       field: "soq",
       filter: "agTextColumnFilter",
       width: 150,
