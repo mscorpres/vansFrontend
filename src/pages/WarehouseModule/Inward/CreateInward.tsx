@@ -35,7 +35,7 @@ import {
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
-import {  Divider,} from "antd";
+import { Divider } from "antd";
 import useApi from "@/hooks/useApi";
 import {
   fetchState,
@@ -271,7 +271,7 @@ const CreateInward: React.FC<Props> = ({
                     <ReusableAsyncSelect
                       placeholder="Vendor Name"
                       endpoint="/backend/vendorList"
-                      transform={transformOptionData}
+                      transform={transformOptionData2}
                       onChange={(e) => form.setFieldValue("vendorName", e)}
                       // value={selectedCustomer}
                       fetchOptionWith="query2"

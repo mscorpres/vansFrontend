@@ -240,7 +240,7 @@ const AddPO: React.FC<Props> = ({
       attachment: attachmentFile,
     };
     dispatch(minTransaction(payload)).then((res) => {
-      if (res?.payload?.code == 200) {
+      if (res?.payload?.success) {
         toast({
           title: res.payload?.message,
           className: "bg-green-600 text-white items-center",
@@ -253,7 +253,7 @@ const AddPO: React.FC<Props> = ({
         setResetSure(true);
       } else {
         toast({
-          title: res.payload.message.msg,
+          title: res.payload.message,
           className: "bg-red-600 text-white items-center",
         });
         setShowConfirmation(false);
@@ -389,7 +389,7 @@ const AddPO: React.FC<Props> = ({
     dispatch(
       rejectPo({ poid: params?.id?.replaceAll("_", "/"), remark: rejectText })
     ).then((response: any) => {
-      if (response.payload.success == "200") {
+      if (response.payload.success) {
         setShowRejectConfirm(true);
       }
     });
@@ -410,7 +410,7 @@ const AddPO: React.FC<Props> = ({
       "/transaction/upload-invoice",
       formData
     );
-    if (response.data.code == 200) {
+    if (response.data.success) {
       // toast
       toast({
         title: "Doc Uploaded successfully",
@@ -419,6 +419,7 @@ const AddPO: React.FC<Props> = ({
       setCallLoading(false);
       setSheetOpen(false);
       setAttachmentFile(response.data.data);
+      setFiles([]);
     }
     setCallLoading(false);
   };

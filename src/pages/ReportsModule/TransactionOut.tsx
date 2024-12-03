@@ -25,6 +25,7 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { rangePresets } from "@/General";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -60,7 +61,7 @@ const TransactionOut = () => {
       "fetch"
     );
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -224,6 +225,7 @@ const TransactionOut = () => {
                           )
                         }
                         format={"DD/MM/YYYY"}
+                        presets={rangePresets}
                       />
                     </Space>
                   </FormControl>
