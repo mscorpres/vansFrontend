@@ -21,6 +21,7 @@ import { toast } from "@/components/ui/use-toast";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -43,9 +44,12 @@ const PendingStock = () => {
   const { RangePicker } = DatePicker;
   const dispatch = useDispatch<AppDispatch>();
   const dateFormat = "YYYY/MM/DD";
+  const [confirmReject, setConfirmReject] = useState([]);
+  const [confirmApprove, setConfirmApprove] = useState(false);
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    dispatch(pendingPhysical()).then((r) => {if (r.payload.success) {
+    dispatch(pendingPhysical()).then((r) => {
+      if (r.payload.success) {
         let arr = r.payload.data.map((r, index) => {
           return {
             id: index + 1,
@@ -67,11 +71,14 @@ const PendingStock = () => {
     });
   };
   const rejectItem = async (e) => {
+    setConfirmReject(false);
+
     // return;
     let payload = {
       data: e.data.ID,
     };
-    dispatch(rejectStockItem(payload)).then((res) => {if (res.payload.success) {
+    dispatch(rejectStockItem(payload)).then((res) => {
+      if (res.payload.success) {
         toast({
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
@@ -87,6 +94,8 @@ const PendingStock = () => {
     });
   };
   const aproveItem = async (e) => {
+    setConfirmApprove(false);
+
     // return;
     let payload = {
       data: e.data.ID,
@@ -113,19 +122,20 @@ const PendingStock = () => {
       field: "action",
       headerName: "Action",
       width: 120,
-      cellRenderer: (e) => {
+      cellRenderer: (params) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
             {/* <Button className=" bg-green-700 hover:bg-green-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
             <FaCheckCircle
               className="h-[15px] w-[15px] text-green-700"
-              onClick={() => aproveItem(e)}
+              onClick={(e) => setConfirmApprove(params)}
             />
             {/* </Button>{" "} */}
             {/* <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600"> */}
             <FaTimesCircle
-              className="h-[15px] w-[15px] text-red-700   "
-              onClick={() => rejectItem(e)}
+              className="h-[15px] w-[15px] text-red-700 pointer-cursor  "
+              // onClick={() => console.log(params)}
+              onClick={(e) => setConfirmReject(params)}
             />
             {/* </Button>{" "} */}
           </div>
@@ -174,12 +184,12 @@ const PendingStock = () => {
       cellRenderer: CopyCellRenderer,
       width: 150,
     },
-    {
-      headerName: "ClosingStock",
-      field: "closing_stock_time",
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
+    // {
+    //   headerName: "ClosingStock",
+    //   field: "closing_stock_time",
+    //   filter: "agTextColumnFilter",
+    //   width: 150,
+    // },
     {
       headerName: "Cost Center",
       field: "cost_center_name",
@@ -199,12 +209,12 @@ const PendingStock = () => {
       filter: "agTextColumnFilter",
       width: 180,
     },
-    {
-      headerName: "Remark",
-      field: "remark",
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
+    // {
+    //   headerName: "Remark",
+    //   field: "remark",
+    //   filter: "agTextColumnFilter",
+    //   width: 150,
+    // },
   ];
   const handleDownloadExcel = () => {
     downloadCSV(rowData, columnDefs, "Pending Stock");
@@ -213,6 +223,7 @@ const PendingStock = () => {
   useEffect(() => {
     fetchQueryResults();
   }, []);
+  console.log("confirmApprove", confirmApprove);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-1">
@@ -244,7 +255,23 @@ const PendingStock = () => {
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
-      </div>
+      </div>{" "}
+      <ConfirmationModal
+        open={confirmReject.data}
+        onClose={() => setConfirmReject(false)}
+        onOkay={() => rejectItem(confirmReject)}
+        title="Confirm Submit!"
+        description="Are you sure to Reject this Pending Stock?"
+        submitText="Reject"
+      />
+      <ConfirmationModal
+        open={confirmApprove.data}
+        onClose={() => setConfirmApprove(false)}
+        onOkay={() => aproveItem(confirmApprove)}
+        title="Confirm Submit!"
+        description="Are you sure to Approve this Pending Stock?"
+        submitText="Approve"
+      />
     </Wrapper>
   );
 };

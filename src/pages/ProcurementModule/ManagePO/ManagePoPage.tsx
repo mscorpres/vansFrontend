@@ -1,7 +1,7 @@
 import { ColDef } from "@ag-grid-community/core";
-import { AgGridReact } from "@ag-grid-community/react";
+import { AgGridReact } from "ag-grid-react";
 import { Filter } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
@@ -30,6 +30,7 @@ import MINPO from "./MINPO";
 import { useNavigate } from "react-router-dom";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { IoCloudUpload } from "react-icons/io5";
 import {
   FileInput,
@@ -44,6 +45,8 @@ import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { rangePresets } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { uploadAttachmentForPO } from "@/components/shared/Api/masterApi";
+import useApi from "@/hooks/useApi";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -136,6 +139,8 @@ const ManagePoPage: React.FC = () => {
   const selectedwise = Form.useWatch("wise", form);
   const dateFormat = "DD/MM/YYYY";
 
+  const { execFun, loading: loading1 } = useApi();
+  const gridRef = useRef<AgGridReact<RowData>>(null);
   const [columnDefs] = useState<ColDef[]>([
     {
       field: "action",
@@ -226,7 +231,6 @@ const ManagePoPage: React.FC = () => {
     };
 
     dispatch(printPO({ poid: row?.po_transaction })).then((res: any) => {
-
       if (res.payload.success) {
         let { data } = res.payload;
         downloadFunction(data.buffer.data, data.filename);
@@ -269,14 +273,13 @@ const ManagePoPage: React.FC = () => {
       formData.append("doc_name", captions);
       formData.append("po_id", sheetOpen?.po_transaction);
     });
-    // setLoadingPage(true);
-    const response = await spigenAxios.post(
-      "/purchaseOrder/uploadAttachment",
-      formData
+    setLoadingPage(true);
+    const response = await execFun(
+      () => uploadAttachmentForPO(formData),
+      "fetch"
     );
 
-    if (response.data.success) {
-      setLoadingPage(true);
+    if (response?.success || response.data?.success) {
       // toast
       toast({
         title: "Doc Uploaded successfully",
@@ -287,8 +290,13 @@ const ManagePoPage: React.FC = () => {
       setFiles([]);
       setCaptions("");
       setLoadingPage(false);
+    } else {
+      toast({
+        title: response.message,
+        className: "bg-red-600 text-white items-center",
+      });
     }
-    // setLoadingPage(false);
+    setLoadingPage(false);
   };
   const defaultColDef = useMemo(() => {
     return {
@@ -419,6 +427,7 @@ const ManagePoPage: React.FC = () => {
           paginationPageSizeSelector={[10, 25, 50]}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          // gridOptions={commonAgGridConfig}
         />
       </div>{" "}
       <ViewCompoents
@@ -453,9 +462,9 @@ const ManagePoPage: React.FC = () => {
           {/* {loading == true && <FullPageLoading />} */}
           <SheetHeader className={modelFixHeaderStyle}>
             <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
-          </SheetHeader>{" "}
+          </SheetHeader>
+          {(loading1("fetch") || loadingPage) && <FullPageLoading />}
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-            {(loading || loadingPage) && <FullPageLoading />}
             <FileUploader
               value={files}
               onValueChange={handleFileChange}

@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import { DatePicker } from "antd";
 import useApi from "@/hooks/useApi";
-import { fetchR4 } from "@/components/shared/Api/masterApi";
+import { fetchCloseStock, fetchR4 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { IoIosRefresh } from "react-icons/io";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -31,6 +32,7 @@ const R4 = () => {
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
+  const [isAnimating, setIsAnimating] = useState(false);
   //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
 
@@ -54,6 +56,34 @@ const R4 = () => {
         className: "bg-red-700 text-white",
       });
     }
+  };
+  const handleClick = async (id, params) => {
+    setIsAnimating(id);
+
+    // Reset the animation after 500ms (or the duration of the animation)
+    setTimeout(() => {
+      setIsAnimating(null);
+    }, 500);
+
+    const response = await execFun(
+      () => fetchCloseStock(params.data.component_key),
+      "fetch"
+    );
+    if (response.data.success) {
+      setRowData((prevData) =>
+        prevData.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                navsStock: response.data.data.navsStock,
+                stock: response.data.data.stock,
+                closing_stock_time: response.data.data.closing_stock_time,
+              }
+            : item
+        )
+      );
+    }
+    // Perform the action
   };
 
   const columnDefs: ColDef<rowData>[] = [
@@ -90,10 +120,39 @@ const R4 = () => {
       filter: "agTextColumnFilter",
       width: 150,
     },
+    {
+      headerName: "Refresh Stock",
+      field: "Refresh",
+      filter: "agTextColumnFilter",
+      width: 150,
+      cellRenderer: (params) => {
+        // Assume you have a unique row id like params.data.id or params.rowIndex
+        const uniqueId = params.data.id || params.rowIndex;
+
+        return (
+          <div>
+            <IoIosRefresh
+              color="#3b82f6"
+              onClick={() => handleClick(uniqueId, params)}
+              className={`transition-transform duration-100 ${
+                isAnimating === uniqueId ? "rotate-180" : ""
+              }`}
+              style={{ cursor: "pointer" }}
+            />{" "}
+          </div>
+        );
+      },
+    },
 
     {
       headerName: "Navs Stock",
       field: "navStock",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
+      headerName: "Vans Stock",
+      field: "vansStock",
       filter: "agTextColumnFilter",
       width: 150,
     },
@@ -112,6 +171,12 @@ const R4 = () => {
     {
       headerName: "SOQ",
       field: "soq",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
+      headerName: "MOQ",
+      field: "moq",
       filter: "agTextColumnFilter",
       width: 150,
     },

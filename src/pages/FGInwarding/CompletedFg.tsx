@@ -33,6 +33,8 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { rangePresets } from "@/General";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -65,14 +67,14 @@ const CompeletedFg = () => {
     } else if (wise === "skuwise" && datainp) {
       datas = datainp;
     }
-
+    setRowData([]);
     const response = await execFun(
       () => fetchListOfCompletedFg(wise, datas),
       "fetch"
     );
 
     let { data } = response;
-    if (data?.code === 200) {
+    if (data?.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -82,7 +84,7 @@ const CompeletedFg = () => {
       setRowData(arr);
     } else {
       toast({
-        title: response.message,
+        title: data.message,
         className: "bg-red-700 text-center text-white",
       });
     }
@@ -114,51 +116,41 @@ const CompeletedFg = () => {
       headerName: "Req Id",
       field: "mfg_transaction",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 120,
     },
     {
       headerName: "Type",
-      field: "typeOfPPR",
+      field: "ppr_type",
       filter: "agTextColumnFilter",
       width: 100,
     },
     {
       headerName: "Req Date/Time",
-      field: "mfg_full_date",
+      field: "mfg_date",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
       headerName: "SKU",
-      field: "mfg_sku",
+      field: "ppr_sku",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 110,
     },
     {
       headerName: "Product",
-      field: "p_name",
+      field: "sku_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "MFG /Stin Qty",
-      field: "mfg_prod_planing_qty",
+      field: "completed_qty",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
-    },
-
-    {
-      headerName: "Actions",
-      cellRendererFramework: "ActionCellRenderer",
-      width: 100,
-      suppressMenu: true, // Optionally, hide the menu icon in this column
-      cellRenderer: () => {
-        return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
-            <Checkbox onClick={(e) => rowData(e.target.checked)} />
-          </div>
-        );
-      },
     },
   ];
   const handleDownloadExcel = () => {
@@ -272,7 +264,6 @@ const CompeletedFg = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
@@ -283,6 +274,7 @@ const CompeletedFg = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

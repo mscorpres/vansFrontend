@@ -60,6 +60,7 @@ import DatePickerCellRenderer from "@/config/agGrid/DatePickerCellRenderer";
 import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const dateFormat = "YYYY/MM/DD";
 const FormSchema = z.object({
   wise: z.string().optional(),
@@ -144,6 +145,7 @@ const FgOutCreate = () => {
   ];
 
   const handleSubmit = async () => {
+    setShowConfirmation(false);
     const values = await form.validateFields();
     let payload = {
       fg_out_type: "SL001",
@@ -163,7 +165,7 @@ const FgOutCreate = () => {
         setRowData([]);
       } else {
         toast({
-          title: res.payload.message.msg,
+          title: res.payload.message,
           className: "bg-red-600 text-white items-center",
         });
       }
@@ -315,7 +317,7 @@ const FgOutCreate = () => {
           </Button>{" "}
         </div>
         <div className="ag-theme-quartz h-[calc(100vh-220px)] w-full">
-          {loading && <FullPageLoading />}
+          {(loading || loading1("fetch")) && <FullPageLoading />}
           <AgGridReact
             ref={gridRef}
             rowData={rowData}
@@ -329,6 +331,7 @@ const FgOutCreate = () => {
             gridOptions={commonAgGridConfig}
             suppressRowClickSelection={false}
             suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
         </div>{" "}
         <ConfirmationModal
@@ -340,12 +343,6 @@ const FgOutCreate = () => {
           description={`Are you sure to submit details of this entry?`}
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-          <Button
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-            // onClick={() => setTab("create")}
-          >
-            Back
-          </Button>{" "}
           <Button
             className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={() => setRowData([])}

@@ -162,6 +162,16 @@ const ViewMin: React.FC = () => {
       cellRenderer: CopyCellRenderer,
       flex: 1,
     },
+    {
+      field: "c_center",
+      headerName: "Cost Center",
+      flex: 1,
+    },
+    {
+      field: "inby",
+      headerName: "In By",
+      flex: 1,
+    },
   ]);
   const type = [
     {
@@ -314,7 +324,7 @@ const ViewMin: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}

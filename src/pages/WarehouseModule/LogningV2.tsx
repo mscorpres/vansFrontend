@@ -49,7 +49,8 @@ const LogningV2: React.FC = () => {
   const loading = data.loading === "loading";
   function onSubmit(data: z.infer<typeof formSchema>) {
     dispatch(loginUserAsync(data)).then((response: any) => {
-      if (response.payload.status === 200) {
+
+      if (response.payload.data.success) {
         toast({
           title: "Welcome to Vans IMS Portal",
           description: "Now you can start your work",

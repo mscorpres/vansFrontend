@@ -18,13 +18,12 @@ const RejectModal: React.FC<Props> = ({
   onOkay,
   setRejectText,
 }) => {
-
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-slate-600">
-            Are you sure you want to reject this order?
+            Are you sure you want to reject this entry?
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-[20px] mt-[20px]">

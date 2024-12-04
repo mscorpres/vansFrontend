@@ -24,6 +24,7 @@ import moment from "moment";
 import {
   transformCurrencyData,
   transformOptionData,
+  transformOptionData2,
   transformOptionDataphy,
 } from "@/helper/transform";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
@@ -280,10 +281,18 @@ const TextInputCellRenderer = (props: any) => {
       };
 
       dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
-        if (res?.payload.code == 500) {
+        props.setCompKey(payload);
+        // if (res?.payload.code == 500) {
+        //   toast({
+        //     title: "Out Boxes not available!",
+        //     // title: res.payload.message.msg,
+        //     className: "bg-red-700 text-white text-center",
+        //   });
+        // }
+
+        if (res.payload?.success == false) {
           toast({
-            title: "Out Boxes not available!",
-            // title: res.payload.message.msg,
+            title: res.payload?.message,
             className: "bg-red-700 text-white text-center",
           });
         }
@@ -296,8 +305,10 @@ const TextInputCellRenderer = (props: any) => {
     if (colDef.field === "boxName") {
       dispatch(getPhysicalStockfromBox({ boxno: data["boxName"] })).then(
         (r) => {
-          if (r.payload?.code == 200) {
+
+          if (r.payload?.success) {
             data["boxPartName"] = r?.payload.data;
+            console.log("data");
           }
         }
       );
@@ -306,10 +317,16 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "boxPartName") {
+
       dispatch(
         closingStock({ boxno: data["boxName"], partNo: data["boxPartName"] })
       ).then((r) => {
-        if (r.payload?.code == 200) {
+
+        if (r.payload?.data?.success == false) {
+          toast({
+            title: r.payload?.data?.message,
+            className: "bg-red-700 text-white text-center",
+          });
           //  data["boxPartName"] = r?.payload.data;
         }
       });
@@ -432,6 +449,8 @@ const TextInputCellRenderer = (props: any) => {
       }
     }
 
+    if (props.sheetOpen) {
+    }
     // Update the cell data and re-render
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     api.applyTransaction({ update: [data] });
@@ -760,7 +779,7 @@ const TextInputCellRenderer = (props: any) => {
         return (
           <Select
             onPopupScroll={(e) => e.preventDefault()}
-            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
+            className="w-[100%] data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
             // className="w-full"
             labelInValue
             filterOption={false}
@@ -788,7 +807,7 @@ const TextInputCellRenderer = (props: any) => {
         return (
           <Select
             onPopupScroll={(e) => e.preventDefault()}
-            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
+            className="w-[100%] data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
             // className="w-full"
             labelInValue
             filterOption={false}
@@ -810,7 +829,7 @@ const TextInputCellRenderer = (props: any) => {
         return (
           <Select
             onPopupScroll={(e) => e.preventDefault()}
-            className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
+            className="w-[100%] data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white flex items-center gap-[10px] overflow-y-auto"
             // className="w-full"
             labelInValue
             filterOption={false}
@@ -991,8 +1010,9 @@ const TextInputCellRenderer = (props: any) => {
             onClick={() => {
               props?.openDrawer();
             }}
+            onChange={handleInputChange}
             placeholder={colDef.headerName}
-            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+            className="w-[100%] max-w-[50px] overflow-y-auto height-auto text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );
       case "bomStatus":
@@ -1163,7 +1183,7 @@ const TextInputCellRenderer = (props: any) => {
                 props.onSearch(e, data.type);
               }
             }}
-            options={transformOptionData(boxData || [])}
+            options={transformOptionData2(boxData || [])}
             onChange={(e) => handleChange(e.value)}
             value={typeof value === "string" ? { value } : value?.text}
             style={{ pointerEvents: "auto" }}

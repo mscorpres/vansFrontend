@@ -66,6 +66,9 @@ const PickSlip = () => {
   const [totalQty, setTotalQty] = useState(0);
   const [finalrows, setFinalRows] = useState([]);
   const [boxName, setBoxName] = useState([]);
+  const [boxQty, setBoxQty] = useState([]);
+  const [selectedBox, setSelectedBox] = useState("");
+  const [compKey, setCompKey] = useState("");
 
   const [selectedRows, setSelectedRows] = useState([]);
   const dispatch = useDispatch<AppDispatch>();
@@ -76,12 +79,18 @@ const PickSlip = () => {
   const { loading, availableStockBoxes } = useSelector(
     (state: RootState) => state.store
   );
-
+  const rowSelection = useMemo<
+    RowSelectionOptions | "single" | "multiple"
+  >(() => {
+    return {
+      mode: "multiRow",
+    };
+  }, []);
   const { execFun, loading: loading1 } = useApi();
   const addNewRow = () => {
     const newRow = {
       asinNumber: "B01N1SE4EP",
-
+      id: rowData.length + 1,
       gstRate: 18,
       pickmaterial: "",
       outQty: "",
@@ -161,6 +170,8 @@ const PickSlip = () => {
           boxName={boxName}
           openDrawer={openDrawer}
           totalQty={selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
+          selectedBox={selectedRows.map((item) => item?.box_name).join(",")}
+          setCompKey={setCompKey}
         />
       ),
     }),
@@ -193,8 +204,9 @@ const PickSlip = () => {
     }
   }, [isValue]);
   useEffect(() => {
-    if (availableStockBoxes?.length > 0) {
-      let a = availableStockBoxes?.map((r) => {
+
+    if (availableStockBoxes?.data?.length > 0) {
+      let a = availableStockBoxes?.data?.map((r) => {
         return {
           ...r,
           qty: r.stock,
@@ -207,19 +219,20 @@ const PickSlip = () => {
   }, [availableStockBoxes]);
 
   const handleSubmit = async () => {
+    setShowConfirmation(false);
     const value = form.getFieldsValue();
     const values = await form.validateFields();
     let payload = {
       customer: values.customerName?.value,
       component: rowData.map((r) => r.pickmaterial),
       qty: rowData.map((r) => r.outQty),
-      box: finalrows.map((r) => r.box_name),
+      box: rowData.map((r) => r.selectOutBoxes),
       remark: rowData.map((r) => r.remark),
       costcenter: values.costCenter.value,
-      boxqty: finalrows.map((r) => r.qty),
+      boxqty: rowData.map((r) => r.boxqty),
     };
     dispatch(stockOut(payload)).then((res: any) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         toast({
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
@@ -228,7 +241,7 @@ const PickSlip = () => {
         setShowConfirmation(false);
       } else {
         toast({
-          title: res.payload.message.msg,
+          title: res.payload.message,
           className: "bg-red-600 text-white items-center",
         });
       }
@@ -237,7 +250,9 @@ const PickSlip = () => {
   };
   useEffect(() => {
     const boxNames = finalrows.map((item) => item?.box_name);
+    const boxQty = finalrows.map((item) => item?.qty);
 
+    setBoxQty(boxQty);
     setBoxName(boxNames);
   }, [finalrows]);
 
@@ -278,9 +293,23 @@ const PickSlip = () => {
       headerName: "Out Box(es)",
       field: "selectOutBoxes",
       editable: false,
-      flex: 1,
+
       cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
+      minWidth: 150,
+      width: 80,
+      cellRenderer: (params: any) => {
+        // console.log("params", params);
+
+        return (
+          <div
+            className="p-2 border border-gray-300 rounded-md w-[135px] cursor-pointer word-break-all  height-auto"
+            onClick={() => openDrawer(params)}
+          >
+            {params.value ? params.value : "Select Out Box(es)"}
+          </div>
+        );
+      },
+      autoHeight: true,
     },
 
     {
@@ -345,11 +374,43 @@ const PickSlip = () => {
   const closeDrawer = () => {
     setSheetOpen(false);
     setFinalRows(selectedRows);
+    let boxName = selectedRows.map((item) => item?.box_name);
+    let boxQty = selectedRows.map((item) => item?.qty);
+
+    setSelectedBox(boxName.join(","));
+    // onSelectionChanged();
+    setRowData((prevData) =>
+      prevData.map((item) =>
+        item.pickmaterial === compKey.component
+          ? {
+              ...item,
+              selectOutBoxes: boxName.join(","),
+              boxqty: boxQty.join(","),
+            }
+          : item
+      )
+    );
   };
 
-  const openDrawer = () => {
+
+  const openDrawer = (params) => {
+    // dispatch(fetchAvailableStockBoxes({ search: params.data.pickmaterial }));
     setSheetOpen(true);
     // setFinalRows(selectedRows);
+  };
+  const onCellValueChanged = (event: any) => {
+    // When a cell value changes (e.g., stock quantity), we need to update the selected rows and recalculate the sum
+    const updatedRow = event.data;
+    const updatedRows = [...selectedRows];
+    const rowIndex = updatedRows.findIndex(
+      (row) => row.box_name === updatedRow.box_name
+    );
+
+    if (rowIndex >= 0) {
+      updatedRows[rowIndex] = updatedRow; // Update the modified row
+    }
+
+    setSelectedRows(updatedRows); // Update the selectedRows state with the new value
   };
 
   return (
@@ -436,13 +497,12 @@ const PickSlip = () => {
             components={components}
             pagination={true}
             paginationPageSize={10}
-            animateRows={true}
-            gridOptions={commonAgGridConfig}
-            suppressCellFocus={false}
-            suppressRowClickSelection={false}
-            rowSelection="multiple"
+            suppressCellFocus={true}
+            rowSelection={rowSelection}
             checkboxSelection={true}
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
+            onSelectionChanged={onSelectionChanged} // Listen for row selection change
+            onCellValueChanged={onCellValueChanged} // Listen for cell value change
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
@@ -476,7 +536,7 @@ const PickSlip = () => {
 "
       />
       <Sheet
-        open={sheetOpen == true && availableStockBoxes?.length > 0}
+        open={sheetOpen == true && availableStockBoxes?.data?.length > 0}
         onOpenChange={setSheetOpen}
       >
         <SheetContent
@@ -505,7 +565,7 @@ const PickSlip = () => {
               //   suppressCellFocus={false}
               suppressRowClickSelection={false}
               rowSelection="multiple"
-              checkboxSelection={true}
+              // checkboxSelection={true}
               onSelectionChanged={onSelectionChanged}
             />
           </div>{" "}

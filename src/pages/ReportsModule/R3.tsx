@@ -35,6 +35,7 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import { rangePresets } from "@/General";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -126,12 +127,14 @@ const R3 = () => {
       headerName: "Part Code",
       field: "part_code",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
-      headerName: "Part Name",
+      headerName: "Component",
       field: "part_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 220,
     },
 
@@ -170,6 +173,7 @@ const R3 = () => {
     {
       headerName: "Opening",
       field: "opening",
+      cellRenderer: CopyCellRenderer,
       filter: "agTextColumnFilter",
       width: 220,
     },
@@ -178,18 +182,21 @@ const R3 = () => {
       headerName: "Inward",
       field: "inward",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Outward",
       field: "outward",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Closing",
       field: "closing",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {

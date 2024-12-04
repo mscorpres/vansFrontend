@@ -220,7 +220,7 @@ const CompletedPOPage: React.FC = () => {
         <div className="p-[10px]"></div>
         <Form
           form={form}
-          className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+          className="space-y-6 overflow-hidden p-[10px] h-[470px]"
         >
           {/* <form
             onSubmit={form.handleSubmit(fetchManageList)}

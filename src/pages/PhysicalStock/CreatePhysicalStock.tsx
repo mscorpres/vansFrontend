@@ -145,7 +145,8 @@ const CreatePhysicalStock = () => {
       remark: rowData.map((r) => r.remark),
     };
 
-    dispatch(insertPhysical(payload)).then((res: any) => { if (res.payload.success) {
+    dispatch(insertPhysical(payload)).then((res: any) => {
+      if (res.payload.success) {
         toast({
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
@@ -298,6 +299,7 @@ const CreatePhysicalStock = () => {
             <Button
               className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setCallReset(true)}
+              disabled={rowData.length == 0}
             >
               Reset
             </Button>

@@ -171,7 +171,7 @@ const PrintPickSlip: React.FC = () => {
     // return;
     dispatch(printPickSetelement({ pickSlip_no: row?.transaction })).then(
       (res: any) => {
-        if (res.payload.code == 200) {
+        if (res.payload.success) {
           let { data } = res.payload;
           printFunction(data.buffer.data);
           // downloadFunction(data.buffer, data.filename);
@@ -192,7 +192,8 @@ const PrintPickSlip: React.FC = () => {
     }
     let payload = { data: date, wise: values.wise.value };
     dispatch(fetchPrintPickSetelement(payload)).then((res: any) => {
-      if (res.payload.code == 200) {
+
+      if (res.payload.success) {
         let a = res.payload.response.data;
         let arr = a.map((r) => {
           return {

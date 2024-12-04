@@ -68,6 +68,7 @@ const RejectedStock = () => {
         let arr = r.payload.data.data.map((r, index) => {
           return {
             id: index + 1,
+            // cost: r.cost == null ? "--" : r.cost,
             ...r,
           };
         });
@@ -92,6 +93,7 @@ const RejectedStock = () => {
       componentname: sheetOpenView.data.part_name,
       auditKey: sheetOpenView.data.ID,
     };
+    // return;
     dispatch(updateRejectphysical(payload)).then((r) => {
       if (r.payload?.data?.success) {
         toast({
@@ -100,6 +102,7 @@ const RejectedStock = () => {
         });
 
         setSheetOpenView(false);
+        fetchQueryResults();
       } else {
         toast({
           title: r.payload?.message,
@@ -191,12 +194,12 @@ const RejectedStock = () => {
       filter: "agTextColumnFilter",
       width: 150,
     },
-    {
-      headerName: "Remark",
-      field: "remark",
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
+    // {
+    //   headerName: "Remark",
+    //   field: "remark",
+    //   filter: "agTextColumnFilter",
+    //   width: 150,
+    // },
   ];
   const type = [
     {
@@ -315,7 +318,7 @@ const RejectedStock = () => {
                   <div className="col col-span-1 flex justify-between">
                     <Typography.Title level={5}>Updated Qty:</Typography.Title>
                     <Form.Item name="qty">
-                      <Input defaultValue={sheetOpenView.data?.log_count} />
+                      <Input value={sheetOpenView.data?.log_count} />
                     </Form.Item>
                   </div>
                 </div>

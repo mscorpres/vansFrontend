@@ -282,11 +282,13 @@ export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
   "/backend/fetchAvailableStockBoxes",
   async (payload) => {
     try {
-      const response = await spigenAxios.get(
-        `backend/fetchAvailableStockBoxes?component=${payload?.component}`
-      );
+      if (payload?.component?.length > 3) {
+        const response = await spigenAxios.get(
+          `backend/fetchAvailableStockBoxes?component=${payload?.component}`
+        );
 
-      return response?.data;
+        return response?.data;
+      }
     } catch (error) {
       return error;
     }
@@ -298,7 +300,7 @@ export const stockOut = createAsyncThunk<settleTransferPayload>(
     try {
       const response = await spigenAxios.post("/backend/stockOut", payload);
 
-      return response.data;
+      return response;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -415,7 +417,7 @@ export const qrPrint = createAsyncThunk<ResponseData, FormData>(
   }
 );
 export const printsticker2 = createAsyncThunk<ResponseData, FormData>(
-  "//qrPrint/printsticker", // Action type
+  "/qrPrint/printsticker", // Action type
   async (payload: FormData) => {
     try {
       // Make sure your axios instance is correctly set up
@@ -566,11 +568,11 @@ export const closingStock = createAsyncThunk<ResponseData>(
     try {
       // Make sure your axios instance is correctly set up
       const response = await spigenAxios.get(
-        // `/physicalStock/closingStock?boxno=${payload?.boxno}/p`,
-        payload
+        `/physicalStock/closingStock?boxno=${payload?.boxno}&partNo=${payload.partNo}`
+        // payload
       );
 
-      return response.data.data; // Return the response data to Redux
+      return response; // Return the response data to Redux
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message); // Throw an error if any occurs

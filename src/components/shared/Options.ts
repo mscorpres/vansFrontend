@@ -54,7 +54,7 @@ export const vendorTypeOptions = [
     label: "j01",
   },
   {
-    value: "Customer Return",
+    value: "CustomerReturn",
     label: "Customer Return",
   },
 ];

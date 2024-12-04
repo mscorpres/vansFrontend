@@ -329,6 +329,13 @@ export const fetchListOfProjectId = async (search: any) => {
   });
   return response;
 };
+export const uploadAttachmentForPO = async (formData: any) => {
+  const response = await spigenAxios.post(
+    "/purchaseOrder/uploadAttachment",
+    formData
+  );
+  return response;
+};
 //////////////////////query
 
 export const fetchListOfQ1 = async (payload: any) => {
@@ -358,7 +365,6 @@ export const fetchCustomerComponentsByPart = async (payload: any) => {
   return response;
 };
 export const fetchListOfQ3 = async (payload: any) => {
-
   const response = await spigenAxios.get(
     `/skuQueryA/fetchSKU_logs?sku_code=${payload.sku_code}`
     // payload
@@ -398,6 +404,12 @@ export const fetchR4 = async (payload: any) => {
     "/report4/allItemClosingStock",
     payload
   );
+  return response;
+};
+export const fetchCloseStock = async (payload: any) => {
+  const response = await spigenAxios.post(`report/fetchCloseStock`, {
+    component_key: payload,
+  });
   return response;
 };
 export const fetchR6 = async (payload: any) => {

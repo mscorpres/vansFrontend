@@ -197,6 +197,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     },
   ];
   const handleSubmit = async () => {
+    setShowConfirmation(false);
     let arr = rowData;
 
     let payload = {
