@@ -159,7 +159,7 @@ const Q2 = () => {
       setViewData(arr);
     } else {
       toast({
-        title: response?.data?.message,
+        title: response?.message,
         className: "bg-red-700 text-center text-white",
         autoDismiss: true,
       });

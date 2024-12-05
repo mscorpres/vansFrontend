@@ -348,12 +348,12 @@ const TransferBox = () => {
             >
               Reset
             </Button>
-            <Button
+            {/* <Button
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
               //   onClick={() => setTab("create")}
             >
               Back
-            </Button>
+            </Button> */}
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}

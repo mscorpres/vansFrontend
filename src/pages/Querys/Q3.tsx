@@ -99,6 +99,7 @@ const Q3 = () => {
       headerName: "Date & Time",
       field: "date",
       filter: "agTextColumnFilter",
+      flex: 1,
       width: 250,
     },
     {
@@ -111,6 +112,7 @@ const Q3 = () => {
       headerName: "Qty",
       field: "qty",
       filter: "agTextColumnFilter",
+      flex: 1,
       width: 150,
     },
     {
@@ -122,6 +124,7 @@ const Q3 = () => {
     {
       headerName: "Created/Approved By",
       field: "doneby",
+      flex: 1,
       filter: "agTextColumnFilter",
       width: 250,
     },

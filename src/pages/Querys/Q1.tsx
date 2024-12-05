@@ -57,6 +57,7 @@ const Q1 = () => {
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     let { date } = formData;
     let dataString = "";
+    setRowData([]);
     if (date) {
       dataString = exportDateRangespace(date);
     }

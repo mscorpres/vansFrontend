@@ -163,6 +163,12 @@ const ViewMin: React.FC = () => {
       flex: 1,
     },
     {
+      field: "inqty",
+      headerName: "In Qty",
+      cellRenderer: CopyCellRenderer,
+      flex: 1,
+    },
+    {
       field: "c_center",
       headerName: "Cost Center",
       flex: 1,

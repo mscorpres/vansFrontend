@@ -63,6 +63,7 @@ const R3 = () => {
 
   const thebranch = form.watch("part");
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
+    setRowData([]);
     let { date } = formData;
     let dataString = exportDateRangespace(date);
 

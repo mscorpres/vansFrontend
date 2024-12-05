@@ -40,6 +40,7 @@ const R4 = () => {
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     const response = await execFun(() => fetchR4(), "fetch");
+    setRowData([]);
     let { data } = response;
     if (data.success) {
       let arr = data.data.map((r, index) => {

@@ -172,6 +172,7 @@ const CompletedPOPage: React.FC = () => {
   const fetchManageList = async () => {
     const values = await form.validateFields();
     let datas;
+    setRowData([]);
     if (values.wise.value === "datewise") {
       datas = exportDateRangespace(values.data);
     } else if (values.wise.value === "vendorwise") {

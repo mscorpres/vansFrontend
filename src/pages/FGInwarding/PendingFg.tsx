@@ -145,6 +145,7 @@ const PendingFg = () => {
       field: "p_name",
       filter: "agTextColumnFilter",
       width: 190,
+      flex: 1,
     },
     {
       headerName: "MFG /Stin Qty",

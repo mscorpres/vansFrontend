@@ -243,6 +243,7 @@ const ManagePoPage: React.FC = () => {
     const values = await form.validateFields();
     let date;
     let payload;
+    setRowData([]);
     if (selectedwise?.value === "datewise") {
       date = exportDateRange(values.data);
       payload = { data: date, wise: values.wise.value };

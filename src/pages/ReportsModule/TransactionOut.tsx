@@ -47,6 +47,7 @@ const TransactionOut = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
+    setRowData([]);
     let { date } = formData;
     let dataString = "";
     if (date) {

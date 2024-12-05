@@ -67,6 +67,7 @@ const R6 = () => {
       searchValues: theWise,
       searchData: dataString || selectedCustomer?.value,
     };
+    setRowData([]);
 
     const response = await execFun(() => fetchR6(payload), "fetch");
     let { data } = response;
@@ -175,7 +176,7 @@ const R6 = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[500px_1fr]">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
