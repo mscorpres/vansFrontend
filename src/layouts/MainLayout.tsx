@@ -256,7 +256,7 @@ function MainLayout(props: { children: React.ReactNode }) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider> */}
-            <TooltipProvider>
+            {/* <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
                   <FaLightbulb
@@ -268,7 +268,7 @@ function MainLayout(props: { children: React.ReactNode }) {
                   <p>Explore All Features</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
 
             <TooltipProvider>
               <Tooltip>
