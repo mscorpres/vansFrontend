@@ -157,19 +157,22 @@ const Locations = () => {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
-      width: 90,
+      width: 70,
+      // flex: 1,
     },
     {
       headerName: "Locations Name",
       field: "name",
       filter: "agTextColumnFilter",
       width: 320,
+      flex: 2,
     },
     {
       headerName: "Parent Location",
       field: "parentLocation",
       filter: "agTextColumnFilter",
       width: 320,
+      flex: 2,
     },
   ];
   const locType = [

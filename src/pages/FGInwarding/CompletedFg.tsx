@@ -143,6 +143,7 @@ const CompeletedFg = () => {
       field: "sku_name",
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
+      flex: 1,
       width: 190,
     },
     {

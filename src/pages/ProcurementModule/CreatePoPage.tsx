@@ -1176,7 +1176,7 @@ const CreatePoPage: React.FC<Props> = ({
                   variant={"outline"}
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
-                    setSheetOpenBranch(false);
+                    setSheetOpenCC(false);
                     e.preventDefault();
                   }}
                 >

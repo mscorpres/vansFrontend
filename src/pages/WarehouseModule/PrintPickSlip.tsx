@@ -183,7 +183,7 @@ const PrintPickSlip: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const fetchManageList = async () => {
     const values = await form.validateFields();
-
+    setRowData([]);
     let date;
     if (values.wise.value === "datewise") {
       date = exportDateRangespace(values.data);
@@ -192,7 +192,6 @@ const PrintPickSlip: React.FC = () => {
     }
     let payload = { data: date, wise: values.wise.value };
     dispatch(fetchPrintPickSetelement(payload)).then((res: any) => {
-
       if (res.payload.success) {
         let a = res.payload.response.data;
         let arr = a.map((r) => {
