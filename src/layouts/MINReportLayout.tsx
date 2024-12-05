@@ -24,7 +24,7 @@ const MINReportLayout = (props: { children: React.ReactNode }) => {
                 `${navLinkStyle} ${isActive && navlinkActiveStyle}`
               }
             >
-              Trasaction Out
+              Transaction Out
             </NavLink>
           </li>
         </ul>

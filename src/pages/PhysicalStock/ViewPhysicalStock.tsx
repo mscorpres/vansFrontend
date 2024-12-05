@@ -15,6 +15,8 @@ import { AppDispatch } from "@/store";
 import { Button } from "@/components/ui/button";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { min } from "lodash";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -43,7 +45,7 @@ const ViewPhysicalStock = () => {
     let payload = { date: dataString };
 
     dispatch(allphysical(payload)).then((r) => {
-      if (r.payload.code == 200) {
+      if (r.payload.success) {
         let arr = r.payload.data.map((r, index) => {
           return {
             id: index + 1,
@@ -75,35 +77,46 @@ const ViewPhysicalStock = () => {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 90,
     },
     {
       headerName: "Box Number",
       field: "box_no",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      minWidth: 180,
       flex: 1,
     },
     {
       headerName: "Part Code",
       field: "part_name",
       filter: "agTextColumnFilter",
+      minWidth: 180,
+      cellRenderer: CopyCellRenderer,
       flex: 1,
     },
     {
       headerName: "Part Name",
       field: "c_name",
+      minWidth: 180,
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       flex: 1,
     },
     {
       headerName: "IMS Stock",
       field: "ims_closing_stock",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      minWidth: 180,
       flex: 1,
     },
     {
       headerName: "Physical Stock",
+      cellRenderer: CopyCellRenderer,
       field: "physical_stock",
+      minWidth: 180,
       filter: "agTextColumnFilter",
       flex: 1,
     },
@@ -111,6 +124,29 @@ const ViewPhysicalStock = () => {
       headerName: "Cost Center",
       field: "cost_center_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      minWidth: 180,
+      flex: 1,
+    },
+    {
+      headerName: "Verified By",
+      field: "user_name",
+      filter: "agTextColumnFilter",
+      minWidth: 180,
+      flex: 1,
+    },
+    {
+      headerName: "Date & Time",
+      field: "approved_dt",
+      filter: "agTextColumnFilter",
+      minWidth: 180,
+      flex: 1,
+    },
+    {
+      headerName: "Remark",
+      field: "remark",
+      filter: "agTextColumnFilter",
+      minWidth: 180,
       flex: 1,
     },
   ];

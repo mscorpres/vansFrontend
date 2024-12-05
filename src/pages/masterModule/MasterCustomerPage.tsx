@@ -286,7 +286,7 @@ const MasterCustomerPage: React.FC = () => {
       //   });
     }
   };
-  const fetchList = async (formData: z.infer<typeof FormSchema>) => {
+  const fetchList = async () => {
     // return;
     const response = await execFun(() => getListOFViewCustomers(), "fetch");
     // return;
@@ -351,6 +351,7 @@ const MasterCustomerPage: React.FC = () => {
       //     autoDismiss: true,
       //   });
     }
+    fetchList();
   };
   const createNewBranch = async () => {
     const value = await form.validateFields();
@@ -931,7 +932,7 @@ const MasterCustomerPage: React.FC = () => {
                   variant={"outline"}
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
-                    setOpen(true);
+                    setAddBranch(false);
                     e.preventDefault();
                   }}
                 >
@@ -1341,7 +1342,7 @@ const MasterCustomerPage: React.FC = () => {
                   variant={"outline"}
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
-                    setOpen(true);
+                    setOpenView(false);
                     e.preventDefault();
                   }}
                 >

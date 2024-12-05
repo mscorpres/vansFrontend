@@ -201,7 +201,7 @@ const PendingMr: React.FC = () => {
     };
 
     dispatch(printPO({ poid: row?.po_transaction })).then((res: any) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         let { data } = res.payload;
         downloadFunction(data.buffer, data.filename);
       }
@@ -216,10 +216,10 @@ const PendingMr: React.FC = () => {
     // let date = exportDateRange(values.data);
     let payload = { status: values.wise.value };
     dispatch(fetchTransactionForApproval(payload)).then((res: any) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
       } else {
         toast({
-          title: res.payload?.message?.msg,
+          title: res.payload?.message,
           className: "text-white bg-red-700",
         });
       }

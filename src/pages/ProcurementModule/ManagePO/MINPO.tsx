@@ -37,6 +37,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [files, setFiles] = useState<File[] | null>(null);
   const [taxDetails, setTaxDetails] = useState([]);
   const [attachmentFile, setAttachmentFile] = useState([]);
+  const [showLoading, setShowLoading] = useState(false);
   const [vendorDetails, setVendorDetails] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
@@ -196,6 +197,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     },
   ];
   const handleSubmit = async () => {
+    setShowConfirmation(false);
     let arr = rowData;
 
     let payload = {
@@ -221,7 +223,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     // return;
     try {
       dispatch(poMIN(payload)).then((resp: any) => {
-        if (resp.payload.code == 200) {
+        if (resp.payload.success) {
           toast({
             title: resp.payload.message,
             className: "bg-green-700 text-white",
@@ -248,6 +250,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     setFiles(newFiles);
   };
   const uploadDocs = async () => {
+    setShowLoading(true);
     const formData = new FormData();
 
     files.map((comp) => {
@@ -257,7 +260,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       "/transaction/upload-invoice",
       formData
     );
-    if (response.data.code == 200) {
+    if (response.data.success) {
+      setShowLoading(false);
       // toast
       toast({
         title: "Doc Uploaded successfully",
@@ -266,8 +270,9 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       // setLoading(false);
       setSheetOpen(false);
       setAttachmentFile(response.data.data);
+      setFiles([]);
     }
-    // setLoading(false);
+    setShowLoading(false);
   };
   useEffect(() => {
     const calculateTaxDetails = () => {
@@ -342,7 +347,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const calltheApi = async () => {
     dispatch(fetchDataPOforMIN({ poid: viewMinPo.po_transaction })).then(
       (response: any) => {
-        if (response.payload.status == "success") {
+        if (response.payload.success) {
           let data = response?.payload?.data;
           let arr = data?.materials?.map((r, id) => {
             return {
@@ -583,7 +588,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
             e.preventDefault();
           }}
         >
-          {loading && <FullPageLoading />}
+          {(loading || showLoading) && <FullPageLoading />}
           <SheetHeader className={modelFixHeaderStyle}>
             <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
           </SheetHeader>{" "}

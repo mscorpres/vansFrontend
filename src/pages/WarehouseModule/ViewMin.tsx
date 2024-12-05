@@ -112,7 +112,6 @@ const ViewMin: React.FC = () => {
       field: "datetime",
       headerName: "MIN Date Time ",
       flex: 1,
-      cellRenderer: CopyCellRenderer,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -123,6 +122,7 @@ const ViewMin: React.FC = () => {
     {
       field: "transaction",
       headerName: "MIN Id",
+      cellRenderer: CopyCellRenderer,
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -148,6 +148,7 @@ const ViewMin: React.FC = () => {
       headerName: "Vendor Name",
       flex: 2,
       filter: "agDateColumnFilter",
+      cellRenderer: CopyCellRenderer,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -158,6 +159,17 @@ const ViewMin: React.FC = () => {
     {
       field: "partcode",
       headerName: "Part Code",
+      cellRenderer: CopyCellRenderer,
+      flex: 1,
+    },
+    {
+      field: "c_center",
+      headerName: "Cost Center",
+      flex: 1,
+    },
+    {
+      field: "inby",
+      headerName: "In By",
       flex: 1,
     },
   ]);
@@ -178,7 +190,7 @@ const ViewMin: React.FC = () => {
 
     dispatch(printSingleMin({ transaction: row?.transaction })).then(
       (res: any) => {
-        if (res.payload.code == 200) {
+        if (res.payload.status) {
           let { data } = res.payload;
           downloadFunction(data.buffer.data, data.filename);
         }
@@ -199,7 +211,7 @@ const ViewMin: React.FC = () => {
     }
     let payload = { data: date, wise: values.wise.value };
     dispatch(getMinTransactionByDate(payload)).then((res: any) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         let arr = res.payload.data;
         let newRow = arr.data.map((r) => {
           return { ...r };
@@ -232,7 +244,7 @@ const ViewMin: React.FC = () => {
   }, [selectedwise]);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[300px_1fr]">
       {" "}
       <div className="bg-[#fff]">
         {" "}
@@ -312,7 +324,7 @@ const ViewMin: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-120px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}

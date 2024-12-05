@@ -33,6 +33,7 @@ import { ColDef } from "ag-grid-community";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 
 const Product = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -144,12 +145,14 @@ const Product = () => {
       headerName: "Product Name",
       field: "p_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 220,
     },
     {
       headerName: "SKU",
       field: "p_sku",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 150,
     },
     {
@@ -162,6 +165,7 @@ const Product = () => {
       headerName: "Customer Code",
       field: "p_customer",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -275,9 +279,12 @@ const Product = () => {
             <Row justify="space-between">
               {" "}
               <Button
-                type="reset"
+                // type="reset"
                 className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
-                onClick={() => setResetModel(true)}
+                onClick={(e: any) => {
+                  setResetModel(true);
+                  e.preventDefault();
+                }}
               >
                 Reset
               </Button>

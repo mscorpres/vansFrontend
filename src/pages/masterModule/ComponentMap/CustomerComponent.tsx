@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const CustomerComponent = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
@@ -163,7 +164,7 @@ const CustomerComponent = () => {
           </div>
           <Row justify="space-between">
             <Button
-              type="reset"
+              // type="reset"
               className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
               onClick={() => setResetModel(true)}
             >
@@ -206,15 +207,13 @@ const CustomerComponent = () => {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
-              onClick={() => {
-                form.resetFields();
-              }}
+              onClick={() => form.resetFields()}
             >
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>{" "}
+      </AlertDialog>
       <ConfirmationModal
         open={open}
         onClose={setOpen}
@@ -224,7 +223,7 @@ const CustomerComponent = () => {
         loading={loading1("fetch")}
         title="Confirm Submit!"
         description="Are you sure to submit the entry?"
-      />{" "}
+      />
     </Wrapper>
   );
 };
@@ -242,18 +241,21 @@ const columnDefs: ColDef<RowData>[] = [
     headerName: "Part Code",
     field: "part_no",
     filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
     width: 120,
   },
   {
     headerName: "Part Name",
     field: "name",
     filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
     width: 250,
   },
   {
     headerName: "Code",
     field: "cust",
     filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
     width: 150,
   },
   {
@@ -266,12 +268,14 @@ const columnDefs: ColDef<RowData>[] = [
     headerName: "Customer Part Code",
     field: "cust_comp",
     filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
     width: 250,
   },
   {
     headerName: "Customer Part Number",
     field: "cust_part_no",
     filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
     width: 250,
   },
   {

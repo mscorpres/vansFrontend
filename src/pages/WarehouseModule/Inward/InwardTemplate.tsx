@@ -58,86 +58,86 @@ const InwardTemplate = () => {
       setRoeIs(exchangingRate);
     }
   }, [exchangingRate]);
-  useEffect(() => {
-    const currentUrl = window.location.href;
-    let urlParts = currentUrl.split("/");
-    const secondLastItem = [urlParts.length - 2];
-    if (urlParts[secondLastItem] == "approve") {
-      setIsApprove("approve");
-    } else if (urlParts[secondLastItem] == "edit") {
-      setIsApprove("edit");
-    } else {
-      setIsApprove(false);
-    }
-    if (params) {
-      setParamVal(params.id?.replaceAll("_", "/"));
-      dispatch(fetchDataPOEdit({ pono: params.id?.replaceAll("_", "/") })).then(
-        (res) => {
-          if (res.payload.status == "success") {
-            let arr = res.payload.data;
-            let billinid = {
-              label: arr.bill[0]?.addrbillname,
-              value: arr.bill[0]?.addrbillid,
-            };
-            let shippingid = {
-              label: arr.ship?.addrshipname,
-              value: arr.ship?.addrshipid,
-            };
-            //vendor
-            // form.setFieldValue("poType", "New");
-            form.setFieldValue("vendorType", {
-              label: arr.vendor[0]?.vendortype_label,
-              value: arr.vendor[0]?.vendortype_value,
-            });
-            form.setFieldValue("vendorName", arr.vendor[0]?.vendorcode);
-            form.setFieldValue("branch", arr.vendor[0]?.vendorbranch);
-            form.setFieldValue("vendorGst", arr.vendor[0]?.vendorgst);
-            form.setFieldValue("address", arr.vendor[0]?.vendoraddress);
-            form.setFieldValue("costCenter", arr.vendor[0]?.costcenter);
-            form.setFieldValue("quotation", arr.vendor[0]?.termsofquotation);
-            form.setFieldValue("terms", arr.vendor[0]?.termsofcondition);
-            form.setFieldValue("paymentTerms", arr.vendor[0]?.paymentterms);
-            form.setFieldValue("project", arr.vendor[0]?.project);
-            form.setFieldValue("comment", arr.vendor[0]?.pocomment);
-            //billing
-            form.setFieldValue("billingId", billinid),
-              form.setFieldValue("pan", arr.bill?.billpanno);
-            form.setFieldValue("billgst", arr.bill?.billgstid);
-            form.setFieldValue("billAddress", arr.bill?.billaddress);
-            //shipping
-            form.setFieldValue("shipId", shippingid);
-            form.setFieldValue("shippan", arr.ship?.shippanno);
-            form.setFieldValue("shipgst", arr.ship?.shipgstid);
-            form.setFieldValue("shipAddress", arr.ship?.shipaddress);
-          }
-          let materials = res.payload.data?.materials;
-          let matLst = materials?.map((r) => {
-            return {
-              isNew: true,
-              procurementMaterial: r?.selectedComponent[0]?.text,
+  // useEffect(() => {
+  //   const currentUrl = window.location.href;
+  //   let urlParts = currentUrl.split("/");
+  //   const secondLastItem = [urlParts.length - 2];
+  //   if (urlParts[secondLastItem] == "approve") {
+  //     setIsApprove("approve");
+  //   } else if (urlParts[secondLastItem] == "edit") {
+  //     setIsApprove("edit");
+  //   } else {
+  //     setIsApprove(false);
+  //   }
+  //   if (params) {
+  //     setParamVal(params.id?.replaceAll("_", "/"));
+  //     dispatch(fetchDataPOEdit({ pono: params.id?.replaceAll("_", "/") })).then(
+  //       (res) => {
+  //         if (res.payload.success) {
+  //           let arr = res.payload.data;
+  //           let billinid = {
+  //             label: arr.bill[0]?.addrbillname,
+  //             value: arr.bill[0]?.addrbillid,
+  //           };
+  //           let shippingid = {
+  //             label: arr.ship?.addrshipname,
+  //             value: arr.ship?.addrshipid,
+  //           };
+  //           //vendor
+  //           // form.setFieldValue("poType", "New");
+  //           form.setFieldValue("vendorType", {
+  //             label: arr.vendor[0]?.vendortype_label,
+  //             value: arr.vendor[0]?.vendortype_value,
+  //           });
+  //           form.setFieldValue("vendorName", arr.vendor[0]?.vendorcode);
+  //           form.setFieldValue("branch", arr.vendor[0]?.vendorbranch);
+  //           form.setFieldValue("vendorGst", arr.vendor[0]?.vendorgst);
+  //           form.setFieldValue("address", arr.vendor[0]?.vendoraddress);
+  //           form.setFieldValue("costCenter", arr.vendor[0]?.costcenter);
+  //           form.setFieldValue("quotation", arr.vendor[0]?.termsofquotation);
+  //           form.setFieldValue("terms", arr.vendor[0]?.termsofcondition);
+  //           form.setFieldValue("paymentTerms", arr.vendor[0]?.paymentterms);
+  //           form.setFieldValue("project", arr.vendor[0]?.project);
+  //           form.setFieldValue("comment", arr.vendor[0]?.pocomment);
+  //           //billing
+  //           form.setFieldValue("billingId", billinid),
+  //             form.setFieldValue("pan", arr.bill?.billpanno);
+  //           form.setFieldValue("billgst", arr.bill?.billgstid);
+  //           form.setFieldValue("billAddress", arr.bill?.billaddress);
+  //           //shipping
+  //           form.setFieldValue("shipId", shippingid);
+  //           form.setFieldValue("shippan", arr.ship?.shippanno);
+  //           form.setFieldValue("shipgst", arr.ship?.shipgstid);
+  //           form.setFieldValue("shipAddress", arr.ship?.shipaddress);
+  //         }
+  //         let materials = res.payload.data?.materials;
+  //         let matLst = materials?.map((r) => {
+  //           return {
+  //             isNew: true,
+  //             procurementMaterial: r?.selectedComponent[0]?.text,
 
-              vendorName: r.make,
-              orderQty: r.orderqty,
-              rate: r.rate,
-              gstRate: r.gstrate,
-              gstType: { value: r.gsttype[0].id, label: r.gsttype[0].text },
-              materialDescription: r.remark,
-              hsnCode: r.hsncode,
-              dueDate: r.duedate,
-              localValue: r.taxablevalue,
-              foreignValue: r.exchangetaxablevalue,
-              igst: r.igst,
-              sgst: r.sgst,
-              cgst: r.cgst,
-            };
-          });
+  //             vendorName: r.make,
+  //             orderQty: r.orderqty,
+  //             rate: r.rate,
+  //             gstRate: r.gstrate,
+  //             gstType: { value: r.gsttype[0].id, label: r.gsttype[0].text },
+  //             materialDescription: r.remark,
+  //             hsnCode: r.hsncode,
+  //             dueDate: r.duedate,
+  //             localValue: r.taxablevalue,
+  //             foreignValue: r.exchangetaxablevalue,
+  //             igst: r.igst,
+  //             sgst: r.sgst,
+  //             cgst: r.cgst,
+  //           };
+  //         });
 
-          setRowData(matLst);
-          // setPayloadData(res.payload);
-        }
-      );
-    }
-  }, [params]);
+  //         setRowData(matLst);
+  //         // setPayloadData(res.payload);
+  //       }
+  //     );
+  //   }
+  // }, [params]);
 
   return (
     <div>

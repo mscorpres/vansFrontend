@@ -221,7 +221,6 @@ export const fetchMaterialDocsFiles = async (payload: any) => {
   return response;
 };
 export const fetchImageProduct = async (payload: any) => {
-
   const response = await spigenAxios.get(
     `/products/fetchImageProduct/${payload?.product}`
     // payload
@@ -296,6 +295,13 @@ export const fetchListOfVendor = async (search: any) => {
   });
   return response;
 };
+export const uploadAttachmentPurchaseOrder = async (formData: any) => {
+  const response = await spigenAxios.get(
+    "/purchaseOrder/uploadAttachment",
+    formData
+  );
+  return response;
+};
 export const fetchListOfPendingFg = async () => {
   const response = await spigenAxios.get("/fgIN/pending");
   return response;
@@ -323,6 +329,13 @@ export const fetchListOfProjectId = async (search: any) => {
   });
   return response;
 };
+export const uploadAttachmentForPO = async (formData: any) => {
+  const response = await spigenAxios.post(
+    "/purchaseOrder/uploadAttachment",
+    formData
+  );
+  return response;
+};
 //////////////////////query
 
 export const fetchListOfQ1 = async (payload: any) => {
@@ -338,7 +351,10 @@ export const fetchListOfQ2 = async (payload: any) => {
   return response;
 };
 export const itemQueryL = async (payload: any) => {
-  const response = await spigenAxios.post("/itemQueryL", payload);
+  const response = await spigenAxios.get(
+    `/itemQueryL?component=${payload.component}`,
+    payload
+  );
   return response;
 };
 export const fetchCustomerComponentsByPart = async (payload: any) => {
@@ -349,7 +365,10 @@ export const fetchCustomerComponentsByPart = async (payload: any) => {
   return response;
 };
 export const fetchListOfQ3 = async (payload: any) => {
-  const response = await spigenAxios.post("/skuQueryA/fetchSKU_logs", payload);
+  const response = await spigenAxios.get(
+    `/skuQueryA/fetchSKU_logs?sku_code=${payload.sku_code}`
+    // payload
+  );
   return response;
 };
 ///////////////////
@@ -385,6 +404,12 @@ export const fetchR4 = async (payload: any) => {
     "/report4/allItemClosingStock",
     payload
   );
+  return response;
+};
+export const fetchCloseStock = async (payload: any) => {
+  const response = await spigenAxios.post(`report/fetchCloseStock`, {
+    component_key: payload,
+  });
   return response;
 };
 export const fetchR6 = async (payload: any) => {
@@ -532,9 +557,20 @@ export const addVendorBranch = async (payload: any) => {
   const response = await spigenAxios.post("/vendor/addVendorBranch", payload);
   return response;
 };
-export const vendoradd = async (payload: any) => {
-  const response = await spigenAxios.post("/vendor/addVendor", payload);
+export const costCenterCreate = async (payload: any) => {
+  const response = await spigenAxios.post(
+    "purchaseOrder/createCostCenter",
+    payload
+  );
   return response;
+};
+export const vendoradd = async (payload: any) => {
+  try {
+    const response = await spigenAxios.post("/vendor/addVendor", payload);
+    return response;
+  } catch (error) {
+    return error;
+  }
 };
 export const addClient = async (payload: any) => {
   const response = await spigenAxios.post("/client/createclient", payload);

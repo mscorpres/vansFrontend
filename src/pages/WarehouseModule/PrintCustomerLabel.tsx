@@ -3,7 +3,7 @@ import { Filter } from "lucide-react";
 import styled from "styled-components";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformOptionData } from "@/helper/transform";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { useDispatch, useSelector } from "react-redux";
 import { cutomerLable } from "@/features/client/storeSlice";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
@@ -22,7 +22,7 @@ function PrintMinLabel() {
       pickSlip_no: values.min.value,
     };
     dispatch(cutomerLable(payload)).then((res) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         downloadFunction(
           res.payload.data.buffer.data,
           res.payload.data.filename
@@ -49,7 +49,7 @@ function PrintMinLabel() {
                 <ReusableAsyncSelect
                   // placeholder="Customer Name"
                   endpoint="/backend/getOutTransaction"
-                  transform={transformOptionData}
+                  transform={transformOptionData2}
                   // onChange={(e) => form.setValue("customerName", e)}
                   // value={selectedCustomer}
                   fetchOptionWith="query2"

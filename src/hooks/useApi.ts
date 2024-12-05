@@ -89,10 +89,11 @@ export const useApi = () => {
         message = error;
       } else if (error instanceof Error) {
         message = error.message;
-      } else {
+      } else if (error?.message) {
         message = error?.message;
       }
       console.log("Some error occured in the api", error);
+
       toast.error(message);
 
       return {

@@ -170,6 +170,7 @@ const AddPO: React.FC<Props> = ({
   }, []);
 
   const handleSubmit = async () => {
+    setShowConfirmation(false);
     let arr = rowData;
 
     let payload = {
@@ -250,10 +251,10 @@ const AddPO: React.FC<Props> = ({
           updaterow: arr.map((r: any) => r.updateingId),
         };
         dispatch(updatePo(payload2)).then((response: any) => {
-          if (response?.payload.data.code == 200) {
+          if (response?.payload.success) {
             setShowConfirmation(false);
             toast({
-              title: response.payload.data.message,
+              title: response.payload.message,
               className: "bg-green-700 text-white",
             });
             resetTheValues();
@@ -263,9 +264,7 @@ const AddPO: React.FC<Props> = ({
             // navigate("/manage-po");
           } else {
             toast({
-              title:
-                response.payload.data.message.msg ||
-                response.payload.data.message,
+              title: response.payload.message,
               className: "bg-red-700 text-white",
             });
           }
@@ -275,7 +274,8 @@ const AddPO: React.FC<Props> = ({
           poid: params.id?.replaceAll("_", "/"),
         };
         dispatch(poApprove(a)).then((response: any) => {
-          if (response?.payload.code == 200) {
+   
+          if (response?.payload.success) {
             setShowConfirmation(false);
             toast({
               title: response.payload.message,
@@ -287,14 +287,15 @@ const AddPO: React.FC<Props> = ({
             // setIsApprove(false);
           } else {
             toast({
-              title: response.payload.message.msg,
+              title: response.payload.data.message,
               className: "bg-red-700 text-white",
             });
           }
         });
       } else {
         dispatch(createSellRequest(payload)).then((response: any) => {
-          if (response?.payload.code == 200) {
+
+          if (response?.payload.success) {
             setShowConfirmation(false);
             toast({
               title: response.payload.message,
@@ -315,7 +316,7 @@ const AddPO: React.FC<Props> = ({
             // navigate("/manage-po");
           } else {
             toast({
-              title: response.payload.message.msg,
+              title: response.payload.message,
               className: "bg-red-700 text-white",
             });
           }
@@ -471,7 +472,7 @@ const AddPO: React.FC<Props> = ({
     dispatch(
       rejectPo({ poid: params?.id?.replaceAll("_", "/"), remark: rejectText })
     ).then((response: any) => {
-      if (response?.payload.code == "200") {
+      if (response?.payload.success) {
         setShowRejectConfirm(false);
         toast({
           title: response.payload.message,

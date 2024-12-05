@@ -381,7 +381,7 @@ const VendorList = () => {
       form.resetField();
     } else {
       toast({
-        title: response.data.message,
+        title: response?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -407,6 +407,7 @@ const VendorList = () => {
     };
 
     const response = await execFun(() => vendoradd(p), "fetch");
+
     // let { data } = response;
     if (response.data?.success) {
       toast({
@@ -417,7 +418,7 @@ const VendorList = () => {
       setSheetOpen(false);
     } else {
       toast({
-        title: response?.data?.message,
+        title: response?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -456,7 +457,7 @@ const VendorList = () => {
     }
   };
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "Manage Vendor");
+    downloadCSV(rowData, columnDefs, "Vendor List");
   };
   useEffect(() => {
     if (sheetOpenView) {
@@ -655,7 +656,7 @@ const VendorList = () => {
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Staste</FormLabel>
+                            <FormLabel className={LableStyle}>State</FormLabel>
                             <FormControl>
                               <Select
                                 styles={customStyles}
@@ -818,7 +819,7 @@ const VendorList = () => {
                       variant={"outline"}
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
-                        setOpen(true);
+                        setSheetOpen(false);
                         e.preventDefault();
                       }}
                     >
@@ -1147,7 +1148,7 @@ const VendorList = () => {
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
-                                placeholder="Branch"
+                                placeholder="State"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}

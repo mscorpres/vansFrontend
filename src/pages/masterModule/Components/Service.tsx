@@ -18,9 +18,18 @@ import {
   saveService,
   serviceList,
 } from "@/components/shared/Api/masterApi";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import EditService from "./EditService";
-import { Form } from "antd";
+import { Form, Row } from "antd";
 import { useToast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
@@ -29,6 +38,7 @@ const Service = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
+  const [resetModel, setResetModel] = useState(false);
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
@@ -241,17 +251,25 @@ const Service = () => {
                 />
               </Form.Item>
             </div>
-
-            <Button
-              type="submit"
-              onClick={(e: any) => {
-                setOpen(true);
-                e.preventDefault();
-              }}
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-            >
-              Submit
-            </Button>
+            <Row justify="space-between">
+              <Button
+                // type="reset"
+                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                onClick={() => setResetModel(true)}
+              >
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                onClick={(e: any) => {
+                  setOpen(true);
+                  e.preventDefault();
+                }}
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              >
+                Submit
+              </Button>
+            </Row>
           </form>
         </Form>
         {sheetOpenEdit?.length > 0 && (
@@ -283,7 +301,26 @@ const Service = () => {
         loading={loading1("fetch")}
         title="Confirm Submit!"
         description="Are you sure to submit the entry?"
-      />
+      />{" "}
+      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-600">
+              Are you absolutely sure you want to reset the form?
+            </AlertDialogTitle>
+            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
+              onClick={() => form.resetFields()}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Wrapper>
   );
 };

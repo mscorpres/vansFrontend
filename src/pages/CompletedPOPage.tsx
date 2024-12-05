@@ -20,7 +20,7 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformOptionData } from "@/helper/transform";
+import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -161,7 +161,7 @@ const CompletedPOPage: React.FC = () => {
     dispatch(
       printPO({ poid: row?.po_transaction ?? row?.po_transaction_code })
     ).then((res: any) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         let { data } = res.payload;
         downloadFunction(data.buffer.data, data.filename);
       }
@@ -183,7 +183,7 @@ const CompletedPOPage: React.FC = () => {
     let payload = { data: datas, wise: values.wise.value };
     //setLoading(true);
     dispatch(fetchCompletedPo(payload)).then((res: any) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         let arr = res.payload.data;
 
         let list = arr.data.map((r: any) => {
@@ -220,7 +220,7 @@ const CompletedPOPage: React.FC = () => {
         <div className="p-[10px]"></div>
         <Form
           form={form}
-          className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+          className="space-y-6 overflow-hidden p-[10px] h-[470px]"
         >
           {/* <form
             onSubmit={form.handleSubmit(fetchManageList)}
@@ -273,7 +273,7 @@ const CompletedPOPage: React.FC = () => {
               <ReusableAsyncSelect
                 placeholder="Vendor Name"
                 endpoint="/backend/vendorList"
-                transform={transformOptionData}
+                transform={transformOptionData2}
                 // onChange={(e) => form.setFieldValue("vendorName", e)}
                 // value={selectedCustomer}
                 fetchOptionWith="query2"

@@ -345,7 +345,7 @@ export const cancelFetchedPO = createAsyncThunk<
       { purchase_order: poid, remark: remark }
     );
 
-    return response.data;
+    return response;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -391,9 +391,12 @@ export const printPO = createAsyncThunk<uomPayload, { poid: string }>(
   "/poPrint",
   async ({ poid }) => {
     try {
-      const response = await spigenAxios.post<uomPayload>("/poPrint", {
-        poid: poid,
-      });
+      const response = await spigenAxios.get<uomPayload>(
+        `/poPrint?poid=${poid}`
+        // {
+        //   poid: poid,
+        // }
+      );
 
       return response.data;
     } catch (error) {
@@ -489,7 +492,7 @@ export const updatePo = createAsyncThunk<uomPayload, payload>(
         payload
       );
 
-      return response;
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -765,6 +768,19 @@ const clientSlice = createSlice({
         state.approvePoList = action.payload;
       })
       .addCase(fetchneededApprovalPO.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(updatePo.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updatePo.fulfilled, (state, action) => {
+        state.loading = false;
+        state.approvePoList = action.payload;
+      })
+      .addCase(updatePo.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch Cost Center List";

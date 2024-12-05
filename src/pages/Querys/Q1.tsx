@@ -25,6 +25,8 @@ import { fetchListOfQ1 } from "@/components/shared/Api/masterApi";
 import { exportDateRangespace } from "@/components/shared/Options";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { rangePresets } from "@/General";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -65,7 +67,7 @@ const Q1 = () => {
     };
     const response = await execFun(() => fetchListOfQ1(payload), "fetch");
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.response.data2;
       let a = arr.map((r: any, index: any) => {
         return {
@@ -78,7 +80,7 @@ const Q1 = () => {
       setStockInfo(data.response.data1);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response.data.message,
         className: "bg-red-700 text-center text-white",
       });
     }
@@ -110,12 +112,14 @@ const Q1 = () => {
       headerName: "Qty In",
       field: "qty_in",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Qty Out",
       field: "qty_out",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -131,19 +135,20 @@ const Q1 = () => {
       width: 150,
     },
     {
-      headerName: "Vendorcode In",
+      headerName: "Vendor Code",
       field: "vendorcode",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
-      headerName: "Done By",
+      headerName: "Created/Approved By",
       field: "doneby",
       filter: "agTextColumnFilter",
-      width: 190,
+      minWidth: 280,
+      flex: 1,
     },
   ];
-  console.log("selectedCustomer", selectedCustomer);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -193,6 +198,7 @@ const Q1 = () => {
                           )
                         }
                         format={"DD/MM/YYYY"}
+                        presets={rangePresets}
                       />
                     </Space>
                   </FormControl>
@@ -201,15 +207,17 @@ const Q1 = () => {
               )}
             />
             {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            <div className="flex items-center gap-[10px] justify-end">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>
+            </div>
             <Divider />
             {/* <div className="h-[calc(100vh-10px)] grid grid-cols-[350px_1fr] flex "> */}
             {/* <div className="bg-[#fff] "> */}

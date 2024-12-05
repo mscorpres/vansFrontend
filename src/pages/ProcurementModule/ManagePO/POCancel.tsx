@@ -35,22 +35,25 @@ const POCancel: React.FC<Props> = ({
     (state: RootState) => state.client
   );
   const handleCancelPO = () => {
+    setCancel(false);
     dispatch(
       cancelFetchedPO({
         poid: cancel.po_transaction,
         remark: remarkDescription,
       })
     ).then((response: any) => {
-      if (response?.payload?.code == 200) {
+
+      if (response?.payload?.data?.success) {
         toast({
-          title: response?.payload?.message.msg,
+          title: response?.payload?.data?.message,
           className: "bg-green-600 text-white items-center",
         });
         setCancel(false);
         setShowConfirmation(false);
+        setRemarkDescription(false);
       } else {
         toast({
-          title: response?.payload?.message.msg,
+          title: response?.payload?.data?.message,
           className: "bg-red-600 text-white items-center",
         });
       }

@@ -23,7 +23,7 @@ const CopyCellRenderer = (params: any) => {
     navigator.clipboard.writeText(value).then(() => {
       toast({
         title: "Copied to clipboard: " + value,
-        className: "bg-blue-600 text-white items-center",
+        className: "bg-cyan-700 text-white items-center",
       });
     });
   };
@@ -31,7 +31,12 @@ const CopyCellRenderer = (params: any) => {
   return (
     <CopyCellWrapper>
       <TextWithEllipsis title={params.value}>{params.value}</TextWithEllipsis>
-      <Tooltip title={params.value} placement="top" mouseEnterDelay={0.5} mouseLeaveDelay={0.5}>
+      <Tooltip
+        title={params.value}
+        placement="top"
+        mouseEnterDelay={0.5}
+        mouseLeaveDelay={0.5}
+      >
         <CopyIcon
           onClick={() => copyToClipboard(params.value)}
           style={{

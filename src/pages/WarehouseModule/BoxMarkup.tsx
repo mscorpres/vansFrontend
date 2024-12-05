@@ -45,14 +45,14 @@ const FormSchema = z.object({
 
 const BoxMarkup = () => {
   const [rowData, setRowData] = useState<RowData[]>([
-    {
-      orderQty: "",
-      c_specification: "",
-      part_code: "",
-      part_name: "",
-      moveQty: "",
-      isNew: true,
-    },
+    // {
+    //   orderQty: "",
+    //   c_specification: "",
+    //   part_code: "",
+    //   part_name: "",
+    //   moveQty: "",
+    //   isNew: true,
+    // },
   ]);
   const [rowDataBoxes, setRowDataBoxes] = useState<RowData[]>([
     {
@@ -166,7 +166,7 @@ const BoxMarkup = () => {
       dispatch(
         getComponentsFromTransaction({ transaction: selMin?.value })
       ).then((res) => {
-        if (res.payload.code == 200) {
+        if (res.payload.success) {
           let arr = res.payload.data.map((r, index) => {
             return {
               ...r,
@@ -270,7 +270,7 @@ const BoxMarkup = () => {
     if (sheetOpen) {
       let markup;
       dispatch(getMarkupID()).then((res) => {
-        if (res.payload.code == 200) {
+        if (res.payload.success) {
           setMarkupID(res.payload.data.markupCode);
         }
       });
@@ -317,6 +317,7 @@ const BoxMarkup = () => {
     }
   }, [sheetOpen]);
   const submitMarkedBoxes = async () => {
+    setShowConfirmation(false);
     let payload = {
       min_no: sheetOpen?.data?.min_no,
       min_qty: sheetOpen?.data?.qty,
@@ -325,7 +326,7 @@ const BoxMarkup = () => {
       item_qty: rowDataBoxes.map((rowData) => rowData.items),
     };
     dispatch(saveSettle(payload)).then((res) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         toast({
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
@@ -335,7 +336,7 @@ const BoxMarkup = () => {
         form.resetFields();
       } else {
         toast({
-          title: res.payload.message.msg,
+          title: res.payload.message,
 
           className: "bg-red-600 text-white items-center",
         });
@@ -348,7 +349,7 @@ const BoxMarkup = () => {
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[250px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
         {" "}
-        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+        <div className="h-[49px]  flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
@@ -400,7 +401,7 @@ const BoxMarkup = () => {
           />
         )}
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full ml-[10px]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
         <AgGridReact
           ref={gridRef}
           rowData={rowData}

@@ -60,7 +60,7 @@ const VendorPrice = () => {
       formData.append("file", comp);
     });
     const response = await execFun(() => uplaodPriceList(formData), "fetch");
-   
+
     let { data } = response;
     if (data?.success) {
       let arr = response.data.data.map((r: any, index: any) => {
@@ -235,7 +235,7 @@ const VendorPrice = () => {
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
           <Button
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+            className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={() => setRowData([])}
           >
             Reset

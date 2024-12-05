@@ -1,15 +1,12 @@
-
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 
-import {
-  InputStyle,
-} from "@/constants/themeContants";
+import { InputStyle } from "@/constants/themeContants";
 
 import styled from "styled-components";
-import {  Row, Form } from "antd";
+import { Row, Form } from "antd";
 import { Input } from "@/components/ui/input";
 
 import { useToast } from "@/components/ui/use-toast";
@@ -28,7 +25,6 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { Filter } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-
 
 const Groups = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -49,9 +45,7 @@ const Groups = () => {
         };
       });
       setRowData(arr);
-      
     } else {
-      
     }
   };
   const createEntry = async () => {
@@ -127,9 +121,7 @@ const Groups = () => {
           Add
         </div>
         <Form form={form} layout="vertical">
-          <form
-            className="space-y-6 overflow-hidden p-[10px]"
-          >
+          <form className="space-y-6 overflow-hidden p-[10px]">
             {" "}
             <Form.Item
               name="groupName"
@@ -145,9 +137,12 @@ const Groups = () => {
             <Row justify="space-between">
               {" "}
               <Button
-                type="reset"
+                // type="reset"
                 className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
-                onClick={() => setResetModel(true)}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  setResetModel(true);
+                }}
               >
                 Reset
               </Button>

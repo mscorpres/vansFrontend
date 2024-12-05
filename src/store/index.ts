@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
+import favoritesReducer from "../features/auth/FavoriteSlice";
 import selectReducer from "../features/reactSelect/RectSelectSlice";
 import gridReducer from "../features/agGrid/aggridSlice";
 import createSalesOrderReducer from "../features/salesmodule/createSalesOrderSlice";
 import productSlice from "@/features/product/productSlice";
-import productfg from "@/features/masterModule/ProductFg&Sfg"
+import productfg from "@/features/masterModule/ProductFg&Sfg";
 import billingAdressSlice from "@/features/billingAddress/billingAdressSlice";
 import shippingAdressSlice from "@/features/shippingAddress/shippingAdressSlice";
 import clientSlice from "@/features/client/clientSlice";
@@ -34,6 +35,7 @@ export const store = configureStore({
     sellInvoice: salesInvoiceSlice,
     invoice: salesTransactionSlice,
     sop: sopRedeucer,
+    favorites: favoritesReducer,
   },
 });
 export type RootState = ReturnType<typeof store.getState>;

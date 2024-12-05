@@ -361,9 +361,12 @@ const CreatingBoxRecipe = () => {
             <Row justify="space-between">
               {" "}
               <Button
-                type="reset"
+                // type="reset"
                 className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
-                onClick={() => setResetModel(true)}
+                onClick={(e: any) => {
+                  setResetModel(true);
+                  e.preventDefault();
+                }}
               >
                 Reset
               </Button>

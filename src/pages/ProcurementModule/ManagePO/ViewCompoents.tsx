@@ -27,7 +27,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
   const [columnDefs] = useState<ColDef[]>([
     {
       field: "id",
-      headerName: "id",
+      headerName: "Id",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -48,8 +48,8 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       },
     },
     {
-      field: "po_components",
-      headerName: "Component Name",
+      field: "po_component",
+      headerName: "Component Name/Part No.",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -59,7 +59,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       },
     },
     {
-      field: "vendor_part_code",
+      field: "vendor_part_codes",
       headerName: "	Vendor Component Name / Part No.",
       flex: 2,
       filterParams: {
@@ -69,18 +69,18 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
         },
       },
     },
-    {
-      field: "c_brand",
-      headerName: "Make (Brand)",
-      flex: 1,
-      filter: "agDateColumnFilter",
-      filterParams: {
-        floatingFilterComponentParams: {
-          suppressFilterButton: true,
-          placeholder: "Filter PO Reg. Date...",
-        },
-      },
-    },
+    // {
+    //   field: "c_brand",
+    //   headerName: "Make (Brand)",
+    //   flex: 1,
+    //   filter: "agDateColumnFilter",
+    //   filterParams: {
+    //     floatingFilterComponentParams: {
+    //       suppressFilterButton: true,
+    //       placeholder: "Filter PO Reg. Date...",
+    //     },
+    //   },
+    // },
     {
       field: "ordered_qty",
       headerName: "Ordered Qty",
@@ -119,8 +119,8 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       },
     },
     {
-      field: "cost_center",
-      headerName: "Component Name",
+      field: "po_component",
+      headerName: "Component Name/Part No.",
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -130,7 +130,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       },
     },
     {
-      field: "po_components",
+      field: "vendor_part_codes",
       headerName: "	Vendor Component Name / Part No.",
       flex: 2,
       filterParams: {
@@ -182,6 +182,8 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     // if (managePoViewComponentList) {
     //   setRowData(managePoViewComponentList);
     // }
+
+    setLoading(true);
     let response = await execFun(
       () =>
         fetchViewComponentsOfManage(
@@ -189,16 +191,18 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
         ),
       "fetch"
     );
-    setLoading(true);
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
+
       let arr = data?.data.data.map((r, id) => {
         return {
           id: id + 1,
-          vendor_part_code: r.vendor_part_code + "-" + r.vendor_part_desc,
+          vendor_part_codes: r.vendor_part_code + "/" + r.vendor_part_desc,
+          po_component: r.po_components + "/" + r.componentPartID,
           ...r,
         };
       });
+
       setRowData(arr);
       setLoading(false);
     }
@@ -216,13 +220,13 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       onOpenChange={setView}
     >
       {" "}
-      {loading == true && <FullPageLoading />}
       <SheetContent className="min-w-[100%] p-0">
         <SheetHeader className={modelFixHeaderStyle}>
           <SheetTitle className="text-slate-600">
             View Components {view.po_transaction || view.po_transaction_code}
           </SheetTitle>
         </SheetHeader>{" "}
+        {loading && <FullPageLoading />}
         <div className="ag-theme-quartz h-[calc(100vh-100px)] px-[10px]">
           <AgGridReact
             //   loadingCellRenderer={loadingCellRenderer}

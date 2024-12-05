@@ -24,6 +24,8 @@ import {
 } from "@/components/shared/Api/masterApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { IoMdDownload } from "react-icons/io";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -57,8 +59,9 @@ const Q3 = () => {
       sku_code: selectedCustomer?.value,
     };
     const response = await execFun(() => fetchListOfQ3(payload), "fetch");
+
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.response.data2;
       let a = arr.map((r, index) => {
         return {
@@ -70,7 +73,7 @@ const Q3 = () => {
       setRowData(arr);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response.data.message,
         className: "bg-red-700 text-center text-white",
         autoDismiss: true,
       });
@@ -82,7 +85,9 @@ const Q3 = () => {
   useEffect(() => {
     // fetchComponentList();
   }, []);
-
+  const handleDownloadExcel = () => {
+    downloadCSV(rowData, columnDefs, "SKU Query Report");
+  };
   const columnDefs: ColDef<rowData>[] = [
     {
       headerName: "ID",
@@ -91,7 +96,7 @@ const Q3 = () => {
       width: 90,
     },
     {
-      headerName: "Date",
+      headerName: "Date & Time",
       field: "date",
       filter: "agTextColumnFilter",
       width: 250,
@@ -116,7 +121,7 @@ const Q3 = () => {
     },
     {
       headerName: "Created/Approved By",
-      field: "date",
+      field: "doneby",
       filter: "agTextColumnFilter",
       width: 250,
     },
@@ -155,16 +160,30 @@ const Q3 = () => {
                 </FormItem>
               )}
             />{" "}
-            {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            {/* )} */}{" "}
+            <div className="flex items-center gap-[10px] justify-end">
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>{" "}
+              <Button
+                // type="submit"
+                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey "
+                // onClick={() => {}}
+                disabled={rowData.length === 0}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  handleDownloadExcel();
+                }}
+              >
+                <IoMdDownload size={20} />
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

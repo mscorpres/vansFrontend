@@ -39,6 +39,7 @@ import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -120,7 +121,7 @@ const Q2 = () => {
     };
     const response = await execFun(() => fetchListOfQ2(payload), "fetch");
     let { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.response.data2;
       let a = arr.map((r: any, index: any) => {
         return {
@@ -146,7 +147,7 @@ const Q2 = () => {
       () => fetchCustomerComponentsByPart(payload),
       "fetch"
     );
-    if (response.data.code == 200) {
+    if (response?.data?.success) {
       let { data } = response;
       let arr = data.data.map((r, index) => {
         return {
@@ -158,7 +159,7 @@ const Q2 = () => {
       setViewData(arr);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response?.data?.message,
         className: "bg-red-700 text-center text-white",
         autoDismiss: true,
       });
@@ -169,7 +170,7 @@ const Q2 = () => {
       component: selectedCustomer?.value,
     };
     const response = await execFun(() => itemQueryL(payload), "fetch");
-    if (response.data.code == 200) {
+    if (response.data?.success) {
       let { data } = response;
       let arr = data.data.map((r, index) => {
         return {
@@ -180,7 +181,7 @@ const Q2 = () => {
       setBoxData(arr);
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response.data?.message,
         className: "bg-red-700 text-center text-white",
         autoDismiss: true,
       });
@@ -205,7 +206,7 @@ const Q2 = () => {
       width: 90,
     },
     {
-      headerName: "Date",
+      headerName: "Date & Time",
       field: "date",
       filter: "agTextColumnFilter",
       width: 220,
@@ -220,12 +221,14 @@ const Q2 = () => {
       headerName: "Qty In",
       field: "qty_in",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Qty Out",
       field: "qty_out",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -241,22 +244,25 @@ const Q2 = () => {
       width: 190,
     },
     {
-      headerName: "cost_center",
-      field: "cost_center",
+      headerName: "Doc Type",
+      field: "vendortype",
       filter: "agTextColumnFilter",
       width: 190,
     },
+
     {
       headerName: "Vendor Name",
       field: "vendorname",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
-      headerName: "Doc Type",
+      headerName: "Created/Approved By",
       field: "doneby",
       filter: "agTextColumnFilter",
-      width: 190,
+      minWidth: 280,
+      flex: 1,
     },
   ];
   const componentCol: ColDef<rowData>[] = [
@@ -270,6 +276,7 @@ const Q2 = () => {
       headerName: "Customer",
       field: "name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 220,
     },
     {
@@ -282,6 +289,7 @@ const Q2 = () => {
       headerName: "Part Number",
       field: "part_no",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
   ];
@@ -336,7 +344,7 @@ const Q2 = () => {
     },
 
     {
-      headerName: "Box Qty",
+      headerName: "Balance Qty",
       field: "CLOSING_QUANTITY",
       filter: "agTextColumnFilter",
       width: 190,
@@ -366,7 +374,18 @@ const Q2 = () => {
       filter: "agTextColumnFilter",
       width: 190,
     },
-
+    {
+      headerName: "Physical Stock",
+      field: "PHYSICAL_STOCK",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Last Physical date",
+      field: "INSERT_DATE",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
     {
       headerName: "Remark",
       field: "REMARK",
@@ -471,7 +490,7 @@ const Q2 = () => {
       <Sheet open={openView == true} onOpenChange={setSheetOpenView}>
         <SheetTrigger></SheetTrigger>
         <SheetContent
-          className="min-w-[50%] p-0"
+          className="min-w-[45%] p-0"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}

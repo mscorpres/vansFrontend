@@ -210,9 +210,9 @@ export const fetchTransactionForApproval = createAsyncThunk<any>(
   "/storeApproval/fetchTransactionForApproval",
   async (payload) => {
     try {
-      const response = await spigenAxios.post<any>(
-        "/storeApproval/fetchTransactionForApproval",
-        payload
+      const response = await spigenAxios.get<any>(
+        `/storeApproval/fetchTransactionForApproval`
+        // payload
       );
 
       return response.data;
@@ -282,16 +282,15 @@ export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
   "/backend/fetchAvailableStockBoxes",
   async (payload) => {
     try {
-      const response = await spigenAxios.get(
-        `backend/fetchAvailableStockBoxes?component=${payload?.component}`
-      );
+      if (payload?.component?.length > 3) {
+        const response = await spigenAxios.get(
+          `backend/fetchAvailableStockBoxes?component=${payload?.component}`
+        );
 
-      return response?.data?.data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
+        return response?.data;
       }
-      throw new Error("An unknown error occurred");
+    } catch (error) {
+      return error;
     }
   }
 );
@@ -301,7 +300,7 @@ export const stockOut = createAsyncThunk<settleTransferPayload>(
     try {
       const response = await spigenAxios.post("/backend/stockOut", payload);
 
-      return response.data;
+      return response;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);
@@ -333,9 +332,9 @@ export const getComponentsFromTransaction =
     "/minSettle/getComponents",
     async (payload) => {
       try {
-        const response = await spigenAxios.post(
-          "/minSettle/getComponents",
-          payload
+        const response = await spigenAxios.get(
+          `/minSettle/getComponents?transaction=${payload?.transaction}`
+          // payload
         );
 
         return response.data;
@@ -418,7 +417,7 @@ export const qrPrint = createAsyncThunk<ResponseData, FormData>(
   }
 );
 export const printsticker2 = createAsyncThunk<ResponseData, FormData>(
-  "//qrPrint/printsticker", // Action type
+  "/qrPrint/printsticker", // Action type
   async (payload: FormData) => {
     try {
       // Make sure your axios instance is correctly set up
@@ -530,9 +529,9 @@ export const getAllBox = createAsyncThunk<ResponseData>(
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
-        "/physicalStock/getAllBox",
-        payload
+      const response = await spigenAxios.get(
+        `/physicalStock/getAllBox?search=${payload.search}`
+        // payload
       );
 
       return response.data; // Return the response data to Redux
@@ -549,8 +548,8 @@ export const getPhysicalStockfromBox = createAsyncThunk<ResponseData>(
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
-        "/physicalStock/getPhysical_stock",
+      const response = await spigenAxios.get(
+        `/physicalStock/getPhysical_stock?boxno=${payload?.boxno}`,
         payload
       );
 
@@ -568,12 +567,12 @@ export const closingStock = createAsyncThunk<ResponseData>(
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
-        "/physicalStock/closingStock",
-        payload
+      const response = await spigenAxios.get(
+        `/physicalStock/closingStock?boxno=${payload?.boxno}&partNo=${payload.partNo}`
+        // payload
       );
 
-      return response.data.data; // Return the response data to Redux
+      return response; // Return the response data to Redux
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message); // Throw an error if any occurs
@@ -628,7 +627,7 @@ export const rejectedPhysical = createAsyncThunk<ResponseData>(
         "/physicalStock/rejectphysical_stockList"
       );
 
-      return response.data; // Return the response data to Redux
+      return response; // Return the response data to Redux
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message); // Throw an error if any occurs
@@ -639,19 +638,17 @@ export const rejectedPhysical = createAsyncThunk<ResponseData>(
 );
 export const updateRejectphysical = createAsyncThunk<ResponseData>(
   "/physicalStock/updateRejectphysical_stock", // Action type
-  async () => {
+  async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.get(
-        "/physicalStock/updateRejectphysical_stock"
+      const response = await spigenAxios.put(
+        "/physicalStock/updateRejectphysical_stock",
+        payload
       );
 
-      return response.data; // Return the response data to Redux
+      return response; // Return the response data to Redux
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message); // Throw an error if any occurs
-      }
-      throw new Error("An unknown error occurred");
+      return error; // Return the response data to Redux
     }
   }
 );
@@ -678,7 +675,7 @@ export const rejectStockItem = createAsyncThunk<ResponseData>(
   async (payload) => {
     try {
       // Make sure your axios instance is correctly set up
-      const response = await spigenAxios.post(
+      const response = await spigenAxios.put(
         "/physicalStock/rejectphysical_stock",
         payload
       );
@@ -1006,6 +1003,18 @@ const storeSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       })
+      .addCase(updateRejectphysical.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateRejectphysical.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allStock = action.payload;
+      })
+      .addCase(updateRejectphysical.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
       .addCase(rejectStockItem.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -1063,6 +1072,18 @@ const storeSlice = createSlice({
         state.aproveStock = action.payload;
       })
       .addCase(cutomerLable.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(printSingleMin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(printSingleMin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(printSingleMin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       });

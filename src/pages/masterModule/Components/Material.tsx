@@ -33,6 +33,7 @@ import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { AppDispatch, RootState } from "@/store";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 
 const Material = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -228,12 +229,14 @@ const Material = () => {
       headerName: "Part Code",
       field: "c_part_no",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 150,
     },
     {
       headerName: "Component",
       field: "c_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 200,
     },
     {

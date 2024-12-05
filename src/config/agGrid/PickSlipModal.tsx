@@ -14,6 +14,7 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import BoxesListSheet from "@/config/agGrid/shipmentModule/BoxesListSheet";
 import { RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   fetchAvailableStock,
   stockOut,
@@ -42,14 +43,16 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [rowItem,setRowItem] = useState<string>('');
+  const [rowItem, setRowItem] = useState<string>("");
   const [selectedBoxes, setSelectedBoxes] = useState<{ [rowId: string]: any }>(
     {}
   ); // Changed to store selected boxes per row
   const [box, setBox] = useState<string[]>([]);
   const [qty, setQty] = useState<string[]>([]);
   const dispatch = useDispatch();
-  const { availableStock } = useSelector((state: RootState) => state.sellShipment);
+  const { availableStock } = useSelector(
+    (state: RootState) => state.sellShipment
+  );
 
   // Function to handle when a row's "Select Box" field is clicked
   const handleBoxesClick = (params: any) => {
@@ -96,22 +99,18 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     },
     {
       headerName: "OUT BOX(es)",
-      field: "outBoxQty",
-      cellRenderer: (params: any) => {
-        const rowId = params.data?.item;
-        const selectedForRow = selectedBoxes[rowId];
+      field: "selectOutBoxes",
+      cellRenderer: (params) => {
         return (
           <div
-            className="p-2 border border-gray-300 rounded-md"
-            onClick={() => handleBoxesClick(params)}
+            className="p-2 border border-gray-300 rounded-md w-[200px] cursor-pointer word-break-all"
+            onClick={() => console.log("Clicked:", params)}
           >
-            {selectedForRow && selectedForRow?.boxes?.length > 0
-              ? selectedForRow.boxes.join(", ")
-              : "Select Out Box(es)"}
+            {params.value ? params.value : "Select Out Box(es)"}
           </div>
         );
       },
-      autoHeight: true,
+      autoHeight: true, // This will automatically adjust row height based on cell content
     },
     { headerName: "Item Part Number", field: "itemPartNo" },
     { headerName: "Qty", field: "qty" },
@@ -119,7 +118,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       headerName: "Remark",
       field: "remark",
       cellRenderer: (params: any) => {
-        const { value, colDef, data, api, column } = params;    
+        const { value, colDef, data, api, column } = params;
         const onRemarkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const newValue = e.target.value;
           data[colDef.field] = newValue;
@@ -132,21 +131,24 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
         return (
           <input
             type="text"
-            value={value || ''}
+            value={value || ""}
             onChange={onRemarkChange}
             className="p-2 border border-gray-300 rounded-md"
           />
         );
       },
-    }
+    },
   ];
 
   // Table data, mapping the available stock to rows
-  const tableData = useMemo(() => availableStock?.map((item) => ({ ...item })) || [], [availableStock]);
+  const tableData = useMemo(
+    () => availableStock?.map((item) => ({ ...item })) || [],
+    [availableStock]
+  );
   const tableData2 = useMemo(
     () =>
       Array.isArray(sellRequestDetails?.items)
-        ? sellRequestDetails?.items?.map((item:any) => ({ ...item }))
+        ? sellRequestDetails?.items?.map((item: any) => ({ ...item }))
         : [],
     [sellRequestDetails?.items]
   );
@@ -187,10 +189,22 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     setQty((prevQty) => [...prevQty, newQtys.join(",")]);
     setSheetOpen(false);
   };
+  const getRowHeight = (params) => {
+    if (params.data && params.data.selectOutBoxes) {
+      // Adjust row height based on content size
+      const textLength = params.data.selectOutBoxes.length;
+      return textLength > 100 ? 100 : 50; // Adjust based on content length
+    }
+    return 50; // Default row height if empty
+  };
+
   return (
     <Sheet open={visible} onOpenChange={onClose}>
       <SheetHeader></SheetHeader>
-      <SheetContent side={"bottom"} onInteractOutside={(e: any) => e.preventDefault()}>
+      <SheetContent
+        side={"bottom"}
+        onInteractOutside={(e: any) => e.preventDefault()}
+      >
         <div className="flex justify-between items-center mb-2">
           <div>
             <SheetTitle>{`Material Out of ${sellRequestDetails?.header?.shipment_id}`}</SheetTitle>
@@ -214,8 +228,18 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
         </div>
 
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-          <Button className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]" onClick={onClose}>Back</Button>
-          <Button className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]" onClick={onSubmit}>Pick Slip & Material Out</Button>
+          <Button
+            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+            onClick={onClose}
+          >
+            Back
+          </Button>
+          <Button
+            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+            onClick={onSubmit}
+          >
+            Pick Slip & Material Out
+          </Button>
         </div>
 
         <BoxesListSheet
@@ -226,7 +250,6 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
           onSelect={(selectedData: any) => {
             handleSelectedBoxes(selectedData, rowItem);
             updateBoxAndQty(selectedData);
-            
           }}
         />
       </SheetContent>

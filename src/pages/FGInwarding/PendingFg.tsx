@@ -63,6 +63,7 @@ import { saveFGs } from "@/features/client/storeSlice";
 import { IoMdDownload, IoMdPrint } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 
 const PendingFg = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -81,7 +82,7 @@ const PendingFg = () => {
       "fetch"
     );
     let { data } = response;
-    if (data.code === 200) {
+    if (data.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -90,6 +91,10 @@ const PendingFg = () => {
       });
       setRowData(arr);
     } else {
+      toast({
+        title: response?.data.message,
+        className: "bg-red-700 text-white",
+      });
     }
   };
 
@@ -100,7 +105,6 @@ const PendingFg = () => {
     },
     ,
   ];
-
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -178,7 +182,7 @@ const PendingFg = () => {
     };
     const response = await execFun(() => getListFgIn(payload), "fetch");
     let { data } = response;
-    if (response.status == 200) {
+    if (response.success || data.success) {
       let val = {
         pprName: data.data.pprName,
         pprSku: data.data.pprSku,
@@ -207,7 +211,7 @@ const PendingFg = () => {
     };
 
     dispatch(saveFGs(payload)).then((res: any) => {
-      if (res.payload.code == 200) {
+      if (res.payload.success) {
         toast({
           title: res.payload?.message,
           className: "bg-green-600 text-white items-center",
@@ -390,7 +394,7 @@ const PendingFg = () => {
         </Sheet>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {loading1("fetch") && <FullPageLoading />}
+        {(loading || loading1("fetch")) && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
@@ -399,6 +403,7 @@ const PendingFg = () => {
           pagination={true}
           paginationPageSize={10}
           paginationAutoPageSize={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
         />
       </div>

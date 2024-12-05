@@ -14,6 +14,8 @@ import { IoMdDownload } from "react-icons/io";
 import { Button } from "@/components/ui/button";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { useSelector } from "react-redux";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -37,14 +39,14 @@ const ViewFgOut = () => {
 
     // return;
     let payload = { date: dataString, method: "O" };
-
+    setRowData([]);
     const response = await execFun(
       () => fetchListOfCompletedFgOut(payload),
       "fetch"
     );
     // return;
     let { data } = response;
-    if (data.code === 200) {
+    if (data.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
@@ -52,7 +54,6 @@ const ViewFgOut = () => {
         };
       });
       setRowData(arr);
-    
     } else {
       toast({
         title: response.data.message,
@@ -88,12 +89,14 @@ const ViewFgOut = () => {
       headerName: "SKU",
       field: "sku",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       flex: 1,
     },
     {
       headerName: "Product",
       field: "name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       flex: 1,
     },
     {
@@ -164,7 +167,7 @@ const ViewFgOut = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {loading && <FullPageLoading />}
+        {(loading || loading1("fetch")) && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
@@ -174,6 +177,7 @@ const ViewFgOut = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           suppressCellFocus={true}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

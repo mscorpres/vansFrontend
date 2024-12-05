@@ -55,7 +55,8 @@ function PrintMinLabel() {
       `qrPrint/getminBox?type=MIN&min_no=${min.value}`,
       formData
     );
-    if (response.data.code == 200) {
+
+    if (response.data.success) {
       let { data } = response;
       let arr = data.data.map((r) => {
         return {
@@ -87,25 +88,29 @@ function PrintMinLabel() {
       // return;
 
       dispatch(printsticker2(payload)).then((res) => {
-        if (res.payload.code == 200) {
-          downloadFunction(
-            res.payload.data.buffer.data,
-            res.payload.data.filename
-          );
-        }
-      });
-    } else {
-      dispatch(qrPrint(payload)).then((res) => {
-        console.log("res", res);
-
-        if (res.payload.code == 200) {
+        if (res.payload.success) {
           downloadFunction(
             res.payload.data.buffer.data,
             res.payload.data.filename
           );
         } else {
           toast({
-            title: res.payload.message.msg,
+            title: res.payload.message,
+            className: "bg-red-600 text-white items-center",
+          });
+        }
+      });
+    } else {
+      dispatch(qrPrint(payload)).then((res) => {
+
+        if (res.payload.success) {
+          downloadFunction(
+            res.payload.data.buffer.data,
+            res.payload.data.filename
+          );
+        } else {
+          toast({
+            title: res.payload.message,
             className: "bg-red-600 text-white items-center",
           });
         }

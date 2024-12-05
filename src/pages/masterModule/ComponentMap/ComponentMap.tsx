@@ -30,6 +30,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const ComponentMap = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [resetModel, setResetModel] = useState(false);
@@ -47,7 +48,6 @@ const ComponentMap = () => {
         };
       });
       setRowData(arr);
-     
     } else {
       toast({
         title: data.data.message,
@@ -134,7 +134,7 @@ const ComponentMap = () => {
           </div>
           <Row justify="space-between">
             <Button
-              type="reset"
+              // type="reset"
               className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
               onClick={() => setResetModel(true)}
             >
@@ -153,7 +153,6 @@ const ComponentMap = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz">
-      
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
@@ -219,12 +218,14 @@ const columnDefs: ColDef<rowData>[] = [
     headerName: "Part Name",
     field: "name",
     filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
     width: 250,
   },
   {
     headerName: "Vendor Code",
     field: "vendor",
     filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
     width: 150,
   },
   {
@@ -237,6 +238,7 @@ const columnDefs: ColDef<rowData>[] = [
     headerName: "Vendor Part Name",
     field: "vendor_comp",
     filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
     width: 250,
   },
 ];
