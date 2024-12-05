@@ -84,7 +84,6 @@ const RejectedStock = () => {
   const handleSubmit = async () => {
     setShowConfirmation(false);
     let values = await fgForm.validateFields();
-    console.log("values", values);
 
     const payload = {
       boxname: sheetOpenView.data.box_no,
@@ -222,7 +221,6 @@ const RejectedStock = () => {
   useEffect(() => {
     fetchQueryResults();
   }, []);
-  console.log("sheetOpenView", sheetOpenView);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-1">

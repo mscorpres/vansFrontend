@@ -149,7 +149,6 @@ const Q1 = () => {
       flex: 1,
     },
   ];
-  console.log("selectedCustomer", selectedCustomer);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">

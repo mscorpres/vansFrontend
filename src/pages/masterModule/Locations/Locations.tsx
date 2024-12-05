@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { InputStyle } from "@/constants/themeContants";
-import {  Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
 import { Input } from "@/components/ui/input";
 
@@ -89,7 +89,6 @@ const Locations = () => {
         return { id: id + 1, ...r };
       });
       setRowData(arr);
-     
     } else {
       toast({
         title: data.message,
@@ -102,7 +101,6 @@ const Locations = () => {
     let { data } = response;
 
     if (data.success) {
-
       //   let arr = convertSelectOptions(data);
       //
       let arr = data?.data?.map((r: any) => {
@@ -176,7 +174,7 @@ const Locations = () => {
   ];
   const locType = [
     {
-      label: "Loaction Type",
+      label: "Location Type",
       value: "yes",
     },
     {
@@ -301,9 +299,12 @@ const Locations = () => {
             </div>{" "}
             <Row justify="space-between">
               <Button
-                type="reset"
+                // type="reset"
                 className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
-                onClick={() => setResetModel(true)}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  setResetModel(true);
+                }}
               >
                 Reset
               </Button>

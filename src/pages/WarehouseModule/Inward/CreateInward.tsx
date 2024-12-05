@@ -11,6 +11,7 @@ import {
   transformCurrencyData,
   transformOptionData,
   transformOptionData2,
+  transformStateOptions,
 } from "@/helper/transform";
 import { Button, Form } from "antd";
 import { primartButtonStyle, InputStyle } from "@/constants/themeContants";
@@ -38,11 +39,13 @@ import {
 import { Divider } from "antd";
 import useApi from "@/hooks/useApi";
 import {
+  addVendorBranch,
   fetchState,
   vendoradd,
   vendorUpdateSave,
 } from "@/components/shared/Api/masterApi";
 import { toast } from "@/components/ui/use-toast";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 
 interface Props {
   setTab: string;
@@ -72,6 +75,9 @@ const CreateInward: React.FC<Props> = ({
   );
   const [forms] = Form.useForm();
   const selBranch = Form.useWatch("branch", form);
+  const selven = Form.useWatch("vendorType", form);
+  const selvenName = Form.useWatch("vendorName", form);
+
   const params = useParams();
   const { execFun, loading: loading1 } = useApi();
   const getStateList = async () => {
@@ -102,7 +108,7 @@ const CreateInward: React.FC<Props> = ({
       branch: {
         branch: values.label,
         address: values.address,
-        state: values.state,
+        state: values.state.value,
         city: values.city,
         pincode: values.pin,
         fax: values.fax,
@@ -111,32 +117,36 @@ const CreateInward: React.FC<Props> = ({
         gstin: values.gstin,
       },
     };
+
     // return;
 
     const response = await execFun(() => vendoradd(p), "fetch");
-    if (response.data.code == 200) {
+
+    if (response.data.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
       });
-      setSheetOpenView(false);
+      setSheetOpen(false);
+      forms.resetFields();
     } else {
       toast({
-        title: response.data.message.msg,
+        title: response.data.message,
         className: "bg-red-600 text-white items-center",
       });
     }
   };
   const createNewBranch = async (data) => {
     const values = forms.getFieldsValue();
+
     let p = {
       vendor: {
-        vendorname: sheetOpenBranch,
+        vendorname: selvenName.value,
       },
       branch: {
         branch: values.label,
         address: values.address,
-        state: values.state,
+        state: values.state.value ?? values.state,
         city: values.city,
         pincode: values.pin,
         fax: values.fax,
@@ -146,13 +156,17 @@ const CreateInward: React.FC<Props> = ({
       },
     };
 
-    const response = await execFun(() => vendorUpdateSave(p), "fetch");
-    if (response.data.code == 200) {
+    // const response = await execFun(() => vendorUpdateSave(p), "fetch");
+
+    const response = await execFun(() => addVendorBranch(p), "fetch");
+    if (response.data.success) {
       toast({
         title: response.data.message,
         className: "bg-green-600 text-white items-center",
       });
-      setSheetOpenView(false);
+      forms.resetFields();
+
+      setSheetOpenBranch(false);
     } else {
       toast({
         title: response.data.message.msg,
@@ -243,12 +257,13 @@ const CreateInward: React.FC<Props> = ({
                   </Form.Item>
                   {/* <div> */}
                   {/* <p>error message</p> */}
+                  {/* {} */}
                   <Form.Item
                     name="vendorName"
                     label={
                       <div
                         style={{
-                          fontSize: window.innerWidth < 1600 && "0.7rem",
+                          fontSize: window.innerWidth < 1600 && "0.9rem",
                           display: "flex",
                           justifyContent: "space-between",
                           width: 350,
@@ -260,13 +275,18 @@ const CreateInward: React.FC<Props> = ({
                           style={{
                             color: "#1890FF",
                             cursor: "pointer",
+                            fontSize: window.innerWidth < 1600 && "0.8rem",
                           }}
                         >
                           Add Vendor
                         </span>
                       </div>
                     }
-                    rules={rules.vendorName}
+                    rules={
+                      selven == "c01" || selven?.value == "c01"
+                        ? []
+                        : rules.vendorName
+                    }
                   >
                     <ReusableAsyncSelect
                       placeholder="Vendor Name"
@@ -282,7 +302,7 @@ const CreateInward: React.FC<Props> = ({
                     label={
                       <div
                         style={{
-                          fontSize: window.innerWidth < 1600 && "0.7rem",
+                          fontSize: window.innerWidth < 1600 && "0.9rem",
                           display: "flex",
                           justifyContent: "space-between",
                           width: 350,
@@ -294,13 +314,18 @@ const CreateInward: React.FC<Props> = ({
                           style={{
                             color: "#1890FF",
                             cursor: "pointer",
+                            fontSize: window.innerWidth < 1600 && "0.8rem",
                           }}
                         >
                           Add branch
                         </span>
                       </div>
                     }
-                    rules={rules.branch}
+                    rules={
+                      selven == "c01" || selven?.value == "c01"
+                        ? []
+                        : rules.branch
+                    }
                   >
                     <Select
                       styles={customStyles}
@@ -392,7 +417,11 @@ const CreateInward: React.FC<Props> = ({
                     name="address"
                     label="Address"
                     className=""
-                    rules={rules.address}
+                    rules={
+                      selven == "c01" || selven?.value == "c01"
+                        ? []
+                        : rules.address
+                    }
                   >
                     <Textarea
                       className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
@@ -427,6 +456,7 @@ const CreateInward: React.FC<Props> = ({
             <SheetTitle className="text-slate-600">Add Vendor</SheetTitle>
           </SheetHeader>
           <div>
+            {loading1("fetch") && <FullPageLoading />}
             <Form form={forms} layout="vertical">
               {/* <form onSubmit={forms.handleSubmit(addVendor)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
@@ -478,29 +508,24 @@ const CreateInward: React.FC<Props> = ({
                   </Form.Item>
                   <Form.Item
                     name="state"
-                    label="state"
+                    label="State"
                     className=""
                     rules={rules.vendorGst}
                   >
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
-                      placeholder="Branch"
+                      placeholder="State"
                       className="border-0 basic-single"
                       classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
+                      isDisabled={false} // Disable the select dropdown so it cannot be changed
+                      isClearable={false} // Prevent clearing the value
+                      isSearchable={false} // Disable search if not needed
+                      name="state" // Ensure this name aligns with the form field
                       options={stateList}
-                      // onChange={(e) => console.log(e)}
-                      // value={
-                      //   data.clientDetails
-                      //     ? {
-                      //         label: data.clientDetails.city.name,
-                      //         value: data.clientDetails.city.name,
-                      //       }
-                      //     : null
-                      // }
+                      onChange={(e: any) =>
+                        form.setFieldValue("state", e?.value)
+                      }
                     />
                   </Form.Item>
                   <Form.Item
@@ -567,7 +592,7 @@ const CreateInward: React.FC<Props> = ({
                   variant={"outline"}
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
-                    setOpen(true);
+                    setSheetOpen(false);
                     e.preventDefault();
                   }}
                 >
@@ -576,7 +601,7 @@ const CreateInward: React.FC<Props> = ({
                 <Button
                   type="submit"
                   onClick={addVendor}
-                  className="bg-cyan-700 hover:bg-cyan-600"
+                  className="bg-cyan-700 hover:bg-cyan-600 text-white"
                 >
                   Register
                 </Button>
@@ -599,6 +624,7 @@ const CreateInward: React.FC<Props> = ({
             <SheetTitle className="text-slate-600">{` Add Branch `}</SheetTitle>
           </SheetHeader>
           <div>
+            {loading1("fetch") && <FullPageLoading />}
             <Form form={forms} layout="vertical">
               {/* <form onSubmit={form.handleSubmit(createNewBranch)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
@@ -630,29 +656,24 @@ const CreateInward: React.FC<Props> = ({
                       /> */}{" "}
                   <Form.Item
                     name="state"
-                    label="state"
+                    label="State"
                     className=""
                     rules={rules.vendorGst}
                   >
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
-                      placeholder="Branch"
+                      placeholder="State"
                       className="border-0 basic-single"
                       classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
+                      isDisabled={false} // Disable the select dropdown so it cannot be changed
+                      isClearable={false} // Prevent clearing the value
+                      isSearchable={false} // Disable search if not needed
+                      name="state" // Ensure this name aligns with the form field
                       options={stateList}
-                      // onChange={(e) => console.log(e)}
-                      // value={
-                      //   data.clientDetails
-                      //     ? {
-                      //         label: data.clientDetails.city.name,
-                      //         value: data.clientDetails.city.name,
-                      //       }
-                      //     : null
-                      // }
+                      onChange={(e: any) =>
+                        form.setFieldValue("state", e?.value)
+                      }
                     />
                   </Form.Item>
                   <Form.Item
@@ -720,7 +741,7 @@ const CreateInward: React.FC<Props> = ({
                   variant={"outline"}
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
-                    setOpen(true);
+                    setSheetOpenBranch(false);
                     e.preventDefault();
                   }}
                 >
@@ -729,7 +750,7 @@ const CreateInward: React.FC<Props> = ({
                 <Button
                   type="submit"
                   onClick={createNewBranch}
-                  className="bg-cyan-700 hover:bg-cyan-600"
+                  className="bg-cyan-700 hover:bg-cyan-600 text-white"
                 >
                   Register
                 </Button>

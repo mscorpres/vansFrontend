@@ -46,15 +46,15 @@ export const gstRateList = [
 
 export const vendorTypeOptions = [
   {
-    value: "Vendor",
+    value: "v01",
     label: "Vendor",
   },
   {
-    value: "JWI",
-    label: "j01",
+    value: "j01",
+    label: "JWI",
   },
   {
-    value: "CustomerReturn",
+    value: "c01",
     label: "Customer Return",
   },
 ];

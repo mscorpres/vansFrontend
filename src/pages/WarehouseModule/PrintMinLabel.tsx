@@ -102,7 +102,6 @@ function PrintMinLabel() {
       });
     } else {
       dispatch(qrPrint(payload)).then((res) => {
-        console.log("res", res);
 
         if (res.payload.success) {
           downloadFunction(

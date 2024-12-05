@@ -204,7 +204,6 @@ const PickSlip = () => {
     }
   }, [isValue]);
   useEffect(() => {
-
     if (availableStockBoxes?.data?.length > 0) {
       let a = availableStockBoxes?.data?.map((r) => {
         return {
@@ -295,14 +294,15 @@ const PickSlip = () => {
       editable: false,
 
       cellRenderer: "textInputCellRenderer",
-      minWidth: 150,
-      width: 80,
+      minWidth: 300,
+      width: 300,
       cellRenderer: (params: any) => {
         // console.log("params", params);
 
         return (
           <div
-            className="p-2 border border-gray-300 rounded-md w-[135px] cursor-pointer word-break-all  height-auto"
+            className="p-2 border border-gray-300 rounded-md w-[300px] cursor-pointer break-words"
+            // style={{ minHeight: "auto" }}
             onClick={() => openDrawer(params)}
           >
             {params.value ? params.value : "Select Out Box(es)"}
@@ -391,7 +391,6 @@ const PickSlip = () => {
       )
     );
   };
-
 
   const openDrawer = (params) => {
     // dispatch(fetchAvailableStockBoxes({ search: params.data.pickmaterial }));
@@ -511,12 +510,12 @@ const PickSlip = () => {
             >
               Reset
             </Button>
-            <Button
+            {/* <Button
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
               //   onClick={() => setTab("create")}
             >
-              Back
-            </Button>
+              Back */}
+            {/* </Button> */}
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}

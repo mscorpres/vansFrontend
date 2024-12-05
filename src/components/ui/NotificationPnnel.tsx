@@ -38,7 +38,6 @@ const NotificationPnnel: React.FC = () => {
   };
   const fetchNotification = async () => {
     dispatch(getNotification()).then((response) => {
-      
       if (response.payload.success == true) {
         toast({
           title: response.payload.message,
@@ -48,7 +47,6 @@ const NotificationPnnel: React.FC = () => {
       }
     });
   };
-
 
   useEffect(() => {
     if (anchorEl) {
@@ -111,11 +109,11 @@ const NotificationPnnel: React.FC = () => {
             border: "none", // Remove border
             borderTopRightRadius: 0, // Remove border radius
             boxShadow: 2,
-            maxHeight: "500px",
+            maxHeight: "550px",
           },
         }}
       >
-        <div className="w-[300px] max-w-[290px] bg-neutral-200 p-[10px]">
+        <div className="w-[250px] max-w-[250px] bg-neutral-200 p-[10px]">
           <div className="min-h-[20px] ">
             <Typography sx={{ p: 2 }}>Notification</Typography>
           </div>

@@ -4,7 +4,11 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { DatePickerStyle, primartButtonStyle } from "@/constants/themeContants";
+import {
+  DatePickerStyle,
+  primartButtonStyle,
+  InputStyle,
+} from "@/constants/themeContants";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
@@ -13,7 +17,7 @@ import {
   transformOptionData,
   transformOptionData2,
 } from "@/helper/transform";
-import { Button, DatePicker, Form } from "antd";
+import { Button, DatePicker, Divider, Form } from "antd";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,10 +30,29 @@ import {
   listOfCostCenter,
   listOfVendorBranchList,
 } from "@/features/client/clientSlice";
+import {
+  modelFixFooterStyle,
+  modelFixHeaderStyle,
+} from "@/constants/themeContants";
 import { useEffect, useState } from "react";
 import moment from "moment";
 import dayjs, { Dayjs } from "dayjs";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import useApi from "@/hooks/useApi";
+import {
+  addVendorBranch,
+  costCenterCreate,
+  fetchState,
+  vendoradd,
+} from "@/components/shared/Api/masterApi";
+import { toast } from "@/components/ui/use-toast";
 interface Props {
   setTab: string;
   setPayloadData: string;
@@ -50,6 +73,10 @@ const CreatePoPage: React.FC<Props> = ({
   resetSure,
 }) => {
   const [searchData, setSearchData] = useState("");
+  const [sheetOpen, setSheetOpen] = useState<boolean>(false);
+  const [sheetOpenBranch, setSheetOpenBranch] = useState<boolean>(false);
+  const [sheetOpenCC, setSheetOpenCC] = useState<boolean>(false);
+  const [stateList, setStateList] = useState([]);
   const dispatch = useDispatch();
   const {
     vendorBranchlist,
@@ -83,8 +110,26 @@ const CreatePoPage: React.FC<Props> = ({
   const selShipping = Form.useWatch("shipId", form);
   const selBilling = Form.useWatch("billingId", form);
   const selPoType = Form.useWatch("poType", form);
+  const selvenName = Form.useWatch("vendorName", form);
 
+  const [forms] = Form.useForm();
+  const { execFun, loading: loading1 } = useApi();
   const params = useParams();
+  const getStateList = async () => {
+    // return;
+    const response = await execFun(() => fetchState(), "fetch");
+    // return;
+    let { data } = response;
+    if (response.status === 200) {
+      let arr = data.data.map((r, index) => {
+        return {
+          label: r.name,
+          value: r.code,
+        };
+      });
+      setStateList(arr);
+    }
+  };
 
   //
   const getValues = async () => {
@@ -98,6 +143,110 @@ const CreatePoPage: React.FC<Props> = ({
     const formattedDate = value ? moment(value).format("DD-MM-YYYY") : "";
     setFieldValue("duedate", formattedDate); // Set value of 'duedate' in form state
   };
+  const addVendor = async (data) => {
+    const values = forms.getFieldsValue();
+
+    let p = {
+      vendor: {
+        vendorname: values.label,
+        panno: values.pan,
+        cinno: values.cin,
+      },
+      branch: {
+        branch: values.label,
+        address: values.address,
+        state: values.state.value,
+        city: values.city,
+        pincode: values.pin,
+        fax: values.fax,
+        mobile: values.mobile,
+        email: values.email,
+        gstin: values.gstin,
+      },
+    };
+
+    // return;
+
+    const response = await execFun(() => vendoradd(p), "fetch");
+
+    if (response.data.success) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      setSheetOpen(false);
+      forms.resetFields();
+    } else {
+      toast({
+        title: response.data.message,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  const createNewBranch = async (data) => {
+    const values = forms.getFieldsValue();
+
+    let p = {
+      vendor: {
+        vendorname: selvenName.value,
+      },
+      branch: {
+        branch: values.label,
+        address: values.address,
+        state: values.state.value ?? values.state,
+        city: values.city,
+        pincode: values.pin,
+        fax: values.fax,
+        mobile: values.mobile,
+        email: values.email,
+        gstin: values.gstin,
+      },
+    };
+
+    // const response = await execFun(() => vendorUpdateSave(p), "fetch");
+
+    const response = await execFun(() => addVendorBranch(p), "fetch");
+    if (response.data.success) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      forms.resetFields();
+
+      setSheetOpenBranch(false);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  const createCostCenter = async (data) => {
+    const values = forms.getFieldsValue();
+    let p = {
+      cost_center_id: values.costId,
+      cost_center_name: values.name,
+    };
+
+    // const response = await execFun(() => vendorUpdateSave(p), "fetch");
+
+    const response = await execFun(() => costCenterCreate(p), "fetch");
+    if (response.data.success) {
+      toast({
+        title: response.data.message,
+        className: "bg-green-600 text-white items-center",
+      });
+      forms.resetFields();
+
+      setSheetOpenBranch(false);
+    } else {
+      toast({
+        title: response.data.message.msg,
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+  //
   useEffect(() => {
     dispatch(fetchShippingAddressForPO());
 
@@ -135,9 +284,8 @@ const CreatePoPage: React.FC<Props> = ({
     }
   }, [selShipping]);
   useEffect(() => {
-    if (params) {
-    }
-  }, [params]);
+    getStateList();
+  }, []);
   ///setting details from the shipping details
   useEffect(() => {
     if (shippingPODetails && resetSure == false) {
@@ -184,10 +332,10 @@ const CreatePoPage: React.FC<Props> = ({
   }, [vendorBillingDetails]);
 
   return (
-    <div className="h-[calc(100vh-150px)]">
+    <div className="h-[calc(100vh-100px)]">
       {loading && <FullPageLoading />}
       <Form form={form} layout="vertical">
-        <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
+        <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-180px)] overflow-y-auto">
           <div className="grid grid-cols-2 gap-[30px]">
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -260,7 +408,28 @@ const CreatePoPage: React.FC<Props> = ({
                 <Form.Item
                   name="vendorName"
                   label="Vendor Name"
-                  rules={rules.vendorName}
+                  label={
+                    <div
+                      style={{
+                        fontSize: window.innerWidth < 1600 && "0.9rem",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: 350,
+                      }}
+                    >
+                      Vendor Name
+                      <span
+                        onClick={() => setSheetOpen(true)}
+                        style={{
+                          color: "#1890FF",
+                          cursor: "pointer",
+                          fontSize: window.innerWidth < 1600 && "0.8rem",
+                        }}
+                      >
+                        Add Vendor
+                      </span>
+                    </div>
+                  }
                 >
                   <ReusableAsyncSelect
                     placeholder="Vendor Name"
@@ -272,7 +441,32 @@ const CreatePoPage: React.FC<Props> = ({
                   />
                 </Form.Item>
                 <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
-                  <Form.Item name="branch" label="Branch" rules={rules.branch}>
+                  <Form.Item
+                    name="branch"
+                    label={
+                      <div
+                        style={{
+                          fontSize: window.innerWidth < 1600 && "0.9rem",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: 350,
+                        }}
+                      >
+                        Branch Name
+                        <span
+                          onClick={() => setSheetOpenBranch(true)}
+                          style={{
+                            color: "#1890FF",
+                            cursor: "pointer",
+                            fontSize: window.innerWidth < 1600 && "0.8rem",
+                          }}
+                        >
+                          Add branch
+                        </span>
+                      </div>
+                    }
+                    rules={rules.branch}
+                  >
                     <Select
                       styles={customStyles}
                       placeholder="Branch"
@@ -357,7 +551,29 @@ const CreatePoPage: React.FC<Props> = ({
                   </Form.Item>
                   <Form.Item
                     name="costCenter"
-                    label="Cost Center"
+                    // label="Cost Center"
+                    label={
+                      <div
+                        style={{
+                          fontSize: window.innerWidth < 1600 && "0.9rem",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: 350,
+                        }}
+                      >
+                        Cost Center
+                        <span
+                          onClick={() => setSheetOpenCC(true)}
+                          style={{
+                            color: "#1890FF",
+                            cursor: "pointer",
+                            fontSize: window.innerWidth < 1600 && "0.8rem",
+                          }}
+                        >
+                          Add Cost Center
+                        </span>
+                      </div>
+                    }
                     rules={rules.costCenter}
                   >
                     <ReusableAsyncSelect
@@ -609,6 +825,376 @@ const CreatePoPage: React.FC<Props> = ({
           </Button>
         </div>
       </Form>
+      {/* ///add Branch */}
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetTrigger></SheetTrigger>
+        <SheetContent
+          className="min-w-[50%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">Add Vendor</SheetTitle>
+          </SheetHeader>
+          <div>
+            {loading1("fetch") && <FullPageLoading />}
+            <Form form={forms} layout="vertical">
+              {/* <form onSubmit={forms.handleSubmit(addVendor)} className=""> */}
+              <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-[20px]">
+                  <Form.Item name="label" label=" Address label">
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      placeholder="GSTIN / UIN"
+                    />
+                  </Form.Item>{" "}
+                  <Form.Item
+                    name="pan"
+                    label="Pan No."
+                    className=""
+                    // rules={rules.vendorGst}
+                  >
+                    <Input
+                      className={InputStyle}
+                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // placeholder="GSTIN / UIN"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="cin"
+                    label="CIN"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input
+                      className={InputStyle}
+                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // placeholder="GSTIN / UIN"
+                    />
+                  </Form.Item>
+                </div>
+                <Divider />
+                <div className="grid grid-cols-2 gap-[20px]">
+                  {" "}
+                  <Form.Item
+                    name="company"
+                    label="Company Name"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input
+                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // placeholder="GSTIN / UIN"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="state"
+                    label="state"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="State"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false} // Disable the select dropdown so it cannot be changed
+                      isClearable={false} // Prevent clearing the value
+                      isSearchable={false} // Disable search if not needed
+                      name="state" // Ensure this name aligns with the form field
+                      options={stateList}
+                      onChange={(e: any) =>
+                        form.setFieldValue("state", e?.value)
+                      }
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="city"
+                    label="City"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter City" />
+                  </Form.Item>
+                  <Form.Item
+                    name="gstin"
+                    label="GSTIN"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter City" />
+                  </Form.Item>
+                  <Form.Item
+                    name="pin"
+                    label="Pin No."
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter City" />
+                  </Form.Item>
+                  <Form.Item
+                    name="email"
+                    label="Email"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter Email" />
+                  </Form.Item>
+                  <Form.Item
+                    name="mobile"
+                    label="Mobile"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter mobile" />
+                  </Form.Item>
+                  <Form.Item
+                    name="fax"
+                    label="Fax"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter fax" />
+                  </Form.Item>
+                </div>{" "}
+                <div className="grid grid-cols-2 gap-[20px]"></div>
+                <Form.Item
+                  name="address"
+                  label="Address"
+                  className=""
+                  rules={rules.vendorGst}
+                >
+                  <Input className={InputStyle} placeholder="Enter address" />
+                </Form.Item>
+              </div>
+              <div className={modelFixFooterStyle}>
+                <Button
+                  variant={"outline"}
+                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                  onClick={(e: any) => {
+                    setSheetOpen(false);
+                    e.preventDefault();
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  onClick={addVendor}
+                  className="bg-cyan-700 hover:bg-cyan-600 text-white"
+                >
+                  Register
+                </Button>
+              </div>
+              {/* </form> */}
+            </Form>
+          </div>
+        </SheetContent>
+      </Sheet>{" "}
+      {/* ---//////////////Branch */}
+      <Sheet open={sheetOpenBranch} onOpenChange={setSheetOpenBranch}>
+        <SheetTrigger></SheetTrigger>
+        <SheetContent
+          className="min-w-[50%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">{` Add Branch `}</SheetTitle>
+          </SheetHeader>
+          <div>
+            {loading1("fetch") && <FullPageLoading />}
+            <Form form={forms} layout="vertical">
+              {/* <form onSubmit={form.handleSubmit(createNewBranch)} className=""> */}
+              <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
+                <Form.Item name="label" label=" Address label" className="">
+                  <Input
+                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                    placeholder="GSTIN / UIN"
+                  />
+                </Form.Item>{" "}
+                <div className="grid grid-cols-2 gap-[20px]">
+                  {/* <FormField
+                        control={form.control}
+                        name="company"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Company Name
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Enter Company Name"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      /> */}{" "}
+                  <Form.Item
+                    name="state"
+                    label="state"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Select
+                      styles={customStyles}
+                      components={{ DropdownIndicator }}
+                      placeholder="State"
+                      className="border-0 basic-single"
+                      classNamePrefix="select border-0"
+                      isDisabled={false} // Disable the select dropdown so it cannot be changed
+                      isClearable={false} // Prevent clearing the value
+                      isSearchable={false} // Disable search if not needed
+                      name="state" // Ensure this name aligns with the form field
+                      options={stateList}
+                      onChange={(e: any) =>
+                        form.setFieldValue("state", e?.value)
+                      }
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="city"
+                    label="City"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter City" />
+                  </Form.Item>
+                  <Form.Item
+                    name="gstin"
+                    label="GSTIN"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter City" />
+                  </Form.Item>
+                  <Form.Item
+                    name="pin"
+                    label="Pin No."
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter City" />
+                  </Form.Item>
+                  <Form.Item
+                    name="email"
+                    label="Email"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter Email" />
+                  </Form.Item>
+                  <Form.Item
+                    name="mobile"
+                    label="Mobile"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter mobile" />
+                  </Form.Item>
+                </div>
+                <Form.Item
+                  name="address"
+                  label="Address"
+                  className=""
+                  rules={rules.vendorGst}
+                >
+                  <Input className={InputStyle} placeholder="Enter address" />
+                </Form.Item>
+                <div className="grid grid-cols-2 gap-[20px]">
+                  <Form.Item
+                    name="fax"
+                    label="Fax"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Enter fax" />
+                  </Form.Item>
+                </div>
+              </div>
+              <div className={modelFixFooterStyle}>
+                <Button
+                  variant={"outline"}
+                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                  onClick={(e: any) => {
+                    setSheetOpenBranch(false);
+                    e.preventDefault();
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  onClick={createNewBranch}
+                  className="bg-cyan-700 hover:bg-cyan-600 text-white"
+                >
+                  Register
+                </Button>
+              </div>
+              {/* </form> */}
+            </Form>
+          </div>
+        </SheetContent>
+      </Sheet>
+      <Sheet open={sheetOpenCC} onOpenChange={setSheetOpenCC}>
+        <SheetTrigger></SheetTrigger>
+        <SheetContent
+          className="min-w-[50%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">{` Add Cost Center `}</SheetTitle>
+          </SheetHeader>
+          <div>
+            {loading1("fetch") && <FullPageLoading />}
+            <Form form={forms} layout="vertical">
+              {/* <form onSubmit={form.handleSubmit(createNewBranch)} className=""> */}
+              <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
+                <Form.Item name="costId" label="Cost Center Id" className="">
+                  <Input
+                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                    placeholder="Cost Center Id"
+                  />
+                </Form.Item>{" "}
+                <Form.Item name="name" label="Cost Center Namel" className="">
+                  <Input
+                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                    placeholder="Cost Center Name"
+                  />
+                </Form.Item>{" "}
+              </div>
+              <div className={modelFixFooterStyle}>
+                <Button
+                  variant={"outline"}
+                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                  onClick={(e: any) => {
+                    setSheetOpenBranch(false);
+                    e.preventDefault();
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  onClick={createCostCenter}
+                  className="bg-cyan-700 hover:bg-cyan-600 text-white"
+                >
+                  Add
+                </Button>
+              </div>
+              {/* </form> */}
+            </Form>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

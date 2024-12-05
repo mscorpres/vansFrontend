@@ -59,7 +59,6 @@ const Q3 = () => {
       sku_code: selectedCustomer?.value,
     };
     const response = await execFun(() => fetchListOfQ3(payload), "fetch");
-    console.log("response", response);
 
     let { data } = response;
     if (data.success) {

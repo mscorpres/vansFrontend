@@ -21,13 +21,41 @@ import {
 // import { PiGridNineFill } from "react-icons/pi";
 // import { FaClipboardList } from "react-icons/fa6";
 import { Separator } from "@/components/ui/separator";
-import React from "react";
+import React, { useState } from "react";
 import { Props } from "@/types/MainLayout";
 import { CgArrowTopRight } from "react-icons/cg";
 import CustomTooltip from "./CustomTooltip";
 import { materialmenu, printMenu, useFullLinks } from "@/data/SidebarMenuData";
 import { IoIosPrint } from "react-icons/io";
+import { FaStar } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleFavorite } from "@/features/auth/FavoriteSlice";
 const renderMenu = (menu: any, setSidemenu: any) => {
+  // const [favoriteItems, setFavoriteItems] = useState<any>([]); // Track the selected item for favorites
+  const favoriteItems = useSelector(
+    (state: any) => state.favorites.favoriteItems
+  );
+
+  const dispatch = useDispatch();
+
+  const handleToggleFavorite = (item: any) => {
+    dispatch(toggleFavorite(item)); // Dispatch the action to toggle favorite
+  };
+
+  // const toggleFavorite = (item: any) => {
+  //   // Check if the item is already in the list of favorites
+  //   const isFavorited = favoriteItems.some((fav) => fav.name === item.name);
+  //   console.log("isFavorited", isFavorited);
+
+  //   if (isFavorited) {
+  //     // Remove the item from the favorites list if it's already there
+  //     setFavoriteItems(favoriteItems.filter((fav) => fav.name !== item.name));
+  //   } else {
+  //     // Add the item to the favorites list
+  //     setFavoriteItems([...favoriteItems, item]);
+  //   }
+  // };
+
   return (
     <Accordion type="single" collapsible>
       <ul className="flex flex-col gap-[10px]">
@@ -57,9 +85,23 @@ const renderMenu = (menu: any, setSidemenu: any) => {
                   {item.name}{" "}
                   <CgArrowTopRight className="h-[20px] w-[20px] font-[600]" />
                 </Link>
+
                 <CustomTooltip message="Add to favorite" side="right">
-                  <div className="h-[30px] min-w-[30px] flex justify-center items-center  hover:bg-white hover:text-cyan-600 transition-all cursor-pointer rounded-md">
-                    <Star className="h-[16px] w-[16px]" />
+                  <div className="h-[30px] min-w-[30px] flex justify-center items-center hover:bg-white hover:text-cyan-600 transition-all cursor-pointer rounded-md">
+                    
+                    {favoriteItems.some((fav) => fav.name === item.name) ? (
+                      <FaStar
+                        className="h-[16px] w-[16px]"
+                        // onClick={() => toggleFavorite(item)}
+                        onClick={() => handleToggleFavorite(item)}
+                      />
+                    ) : (
+                      <Star
+                        className="h-[16px] w-[16px]"
+                   
+                        onClick={() => handleToggleFavorite(item)}
+                      />
+                    )}
                   </div>
                 </CustomTooltip>
               </div>

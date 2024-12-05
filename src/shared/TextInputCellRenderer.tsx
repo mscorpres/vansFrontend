@@ -305,10 +305,8 @@ const TextInputCellRenderer = (props: any) => {
     if (colDef.field === "boxName") {
       dispatch(getPhysicalStockfromBox({ boxno: data["boxName"] })).then(
         (r) => {
-
           if (r.payload?.success) {
             data["boxPartName"] = r?.payload.data;
-            console.log("data");
           }
         }
       );
@@ -317,11 +315,9 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "boxPartName") {
-
       dispatch(
         closingStock({ boxno: data["boxName"], partNo: data["boxPartName"] })
       ).then((r) => {
-
         if (r.payload?.data?.success == false) {
           toast({
             title: r.payload?.data?.message,
@@ -1012,7 +1008,7 @@ const TextInputCellRenderer = (props: any) => {
             }}
             onChange={handleInputChange}
             placeholder={colDef.headerName}
-            className="w-[100%] max-w-[50px] overflow-y-auto height-auto text-slate-600  border-slate-400 shadow-none mt-[2px]"
+            className="w-[100%] height-auto text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );
       case "bomStatus":

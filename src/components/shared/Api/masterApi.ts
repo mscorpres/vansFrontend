@@ -557,9 +557,20 @@ export const addVendorBranch = async (payload: any) => {
   const response = await spigenAxios.post("/vendor/addVendorBranch", payload);
   return response;
 };
-export const vendoradd = async (payload: any) => {
-  const response = await spigenAxios.post("/vendor/addVendor", payload);
+export const costCenterCreate = async (payload: any) => {
+  const response = await spigenAxios.post(
+    "purchaseOrder/createCostCenter",
+    payload
+  );
   return response;
+};
+export const vendoradd = async (payload: any) => {
+  try {
+    const response = await spigenAxios.post("/vendor/addVendor", payload);
+    return response;
+  } catch (error) {
+    return error;
+  }
 };
 export const addClient = async (payload: any) => {
   const response = await spigenAxios.post("/client/createclient", payload);

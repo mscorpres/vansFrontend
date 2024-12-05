@@ -218,7 +218,6 @@ const EditBom = () => {
       sku: form.getFieldValue("sku"),
     };
     dispatch(updateBomComponent(payload)).then((response: any) => {
-
       if (response?.payload.data.success) {
         toast({
           title: response.payload.data.message,
@@ -285,13 +284,13 @@ const EditBom = () => {
       width: 50,
       cellRenderer: (params: any) => {
         return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
+          <div className="flex gap-[5px] items-center justify-center h-full cursor-pointer">
             {stage1 == "1" ? (
               <div className="flex gap-[120px] items-center justify-center h-full">
                 <div className="flex gap-[5px] items-center justify-center h-full">
                   {/* <Button className=" bg-green-700 hover:bg-green-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
                   <FaCheckCircle
-                    className="h-[15px] w-[15px] text-green-700"
+                    className="h-[15px] w-[15px] text-green-700 cursor-pointer"
                     onClick={() => callAPi(params)}
                     //   onClick={() => setSheetOpenEdit(e?.data?.product_key)}
                   />
@@ -408,7 +407,6 @@ const EditBom = () => {
     // handleNext();
   };
   const deleteSelected = async (params: any) => {
-
     let payload = {
       child_component: params.data.child_component,
       refid: params.data.refid,

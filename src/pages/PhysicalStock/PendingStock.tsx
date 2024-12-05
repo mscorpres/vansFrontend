@@ -223,7 +223,6 @@ const PendingStock = () => {
   useEffect(() => {
     fetchQueryResults();
   }, []);
-  console.log("confirmApprove", confirmApprove);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-1">

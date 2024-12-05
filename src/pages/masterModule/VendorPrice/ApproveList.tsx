@@ -100,6 +100,7 @@ const ApproveList: React.FC = () => {
 
   const fetchList = async () => {
     // setLoading(true);
+
     const values = await form.validateFields();
     let payload = {
       data: exportDateRangespaceComma(values.data),
@@ -139,11 +140,14 @@ const ApproveList: React.FC = () => {
       setShowConfirmation(false);
     } else {
       toast({
-        title: response.data.message,
+        title: response.message,
         className: "bg-red-700 text-white items-center",
       });
       setShowConfirmation(false);
+      setSelectedRows([]);
     }
+    setSelectedRows([]);
+    fetchList();
   };
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">

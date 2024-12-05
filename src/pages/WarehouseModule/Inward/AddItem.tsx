@@ -215,6 +215,7 @@ const AddPO: React.FC<Props> = ({
   }, []);
 
   const handleSubmit = async () => {
+    setShowConfirmation(false);
     // return;
     let arr = rowData;
 
