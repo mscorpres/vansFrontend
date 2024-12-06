@@ -58,7 +58,7 @@ const Hsn = () => {
   const getTheListHSN = async (value: any) => {
     const response = await execFun(() => fetchHSN(value), "fetch");
     const { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,

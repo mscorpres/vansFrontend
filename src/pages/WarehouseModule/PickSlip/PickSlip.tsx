@@ -106,6 +106,7 @@ const PickSlip = () => {
   const isValue = Form.useWatch("partName", form);
   const selectedCC = Form.useWatch("costCenter", form);
   const selectedCustomer = Form.useWatch("customerName", form);
+  console.log("isValue", isValue);
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const typeOption = [
@@ -132,7 +133,7 @@ const PickSlip = () => {
   const getTheListHSN = async (value) => {
     const response = await execFun(() => fetchHSN(value), "fetch");
     const { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,
