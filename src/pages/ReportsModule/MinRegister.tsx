@@ -181,7 +181,7 @@ const MinRegister = () => {
       field: "VENDOR_NAME",
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
-      width: 250,
+      width: 300,
     },
     {
       headerName: "Vendor Branch",
@@ -194,7 +194,7 @@ const MinRegister = () => {
       field: "INVOIVENUMBER",
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
-      width: 190,
+      width: 220,
     },
     {
       headerName: "TXT ID",
@@ -208,7 +208,7 @@ const MinRegister = () => {
       field: "PONUMBER",
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
-      width: 190,
+      width: 220,
     },
     {
       headerName: "PO Date",
@@ -227,6 +227,13 @@ const MinRegister = () => {
       field: "ISSUEBY",
       filter: "agTextColumnFilter",
       width: 190,
+    },
+    {
+      headerName: "Description",
+      field: "COMMENT",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 250,
     },
   ];
   const type = [
