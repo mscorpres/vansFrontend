@@ -29,6 +29,7 @@ import { spigenAxios } from "@/axiosIntercepter";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { removeHtmlTags } from "@/components/shared/Options";
 const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [rowData, setRowData] = useState([]);
   const [search, setSearch] = useState("");
@@ -74,7 +75,14 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-
+    {
+      headerName: "ITEM DESCRIPTION",
+      field: "remark",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
     {
       headerName: "Order Qty",
       field: "orderQty",
@@ -86,6 +94,30 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Rate",
       field: "rate",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      headerName: "Invoice Id",
+      field: "invoice",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      headerName: "Invoice Date",
+      field: "dueDate",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      headerName: "HSN Code",
+      field: "hsnCode",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -109,7 +141,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     },
     {
       headerName: "GST Type",
-      field: "gstType",
+      field: "gstTypeForPO",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -163,38 +195,6 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-    {
-      headerName: "Invoice Id",
-      field: "invoice",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "Invoice Date",
-      field: "dueDate",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "HSN Code",
-      field: "hsnCode",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "ITEM DESCRIPTION",
-      field: "remark",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
   ];
   const handleSubmit = async () => {
     setShowConfirmation(false);
@@ -212,7 +212,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       invoice: arr.map((r: any) => r.invoice),
       invoices: attachmentFile,
       hsncode: arr.map((r: any) => r.hsnCode),
-      gsttype: arr.map((r: any) => r.gstType),
+      gsttype: arr.map((r: any) => r.gstTypeForPO),
       gstrate: arr.map((r: any) => r.gstRate),
       cgst: arr.map((r: any) => r.cgst),
       sgst: arr.map((r: any) => r.sgst),
@@ -344,6 +344,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     // Clear interval on component unmount
     return () => clearInterval(intervalId);
   }, [rowData]);
+
   const calltheApi = async () => {
     dispatch(fetchDataPOforMIN({ poid: viewMinPo.po_transaction })).then(
       (response: any) => {
@@ -357,7 +358,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
               orderQty: r.orderqty,
               rate: r.orderrate,
               gstRate: r.gstrate,
-              gstType: r.gsttype,
+              gstType: r.gstTypeForPO,
               localValue: r.usdValue,
               value: r.totalValue,
               remark: r.description,
@@ -373,7 +374,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
             vendorcode: arr2?.vendorcode,
             vendortype: arr2?.vendortype,
             gstin: arr2?.gstin,
-            vendoraddress: arr2?.vendoraddress,
+            vendoraddress: removeHtmlTags(arr2?.vendoraddress),
           };
           setVendorDetails(obj);
           toast({

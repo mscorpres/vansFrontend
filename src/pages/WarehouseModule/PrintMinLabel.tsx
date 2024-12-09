@@ -102,7 +102,6 @@ function PrintMinLabel() {
       });
     } else {
       dispatch(qrPrint(payload)).then((res) => {
-
         if (res.payload.success) {
           downloadFunction(
             res.payload.data.buffer.data,
@@ -138,6 +137,7 @@ function PrintMinLabel() {
       }
     }
   }, [selMin]);
+
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white ">
       <div className="bg-[#fff]">
@@ -171,8 +171,8 @@ function PrintMinLabel() {
               </Form.Item>
               {selType == "Transfer" ||
               selType?.value == "Transfer" ||
-              selType == "min" ||
-              selType?.value == "min" ? (
+              selType == "MIN" ||
+              selType?.value == "MIN" ? (
                 <Form.Item
                   name="min"
                   label="  MIN"

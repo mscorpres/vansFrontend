@@ -58,6 +58,10 @@ export const vendorTypeOptions = [
     label: "Customer Return",
   },
 ];
+export function removeHtmlTags(text) {
+  return text.replace(/<[^>]*>/g, "");
+}
+
 export const exportDateRange = (dateRange: any) => {
   const startDate = moment(dateRange[0]).format("DD-MM-YYYY");
   const endDate = moment(dateRange[1]).format("DD-MM-YYYY");

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
 import { toast } from "@/components/ui/use-toast";
 import dayjs from "dayjs";
+import { removeHtmlTags } from "@/components/shared/Options";
 const PoCreateTemplate = () => {
   const [tabvalue, setTabvalue] = useState<string>("create");
   const [payloadData, setPayloadData] = useState<any>(null);
@@ -94,7 +95,10 @@ const PoCreateTemplate = () => {
             form.setFieldValue("vendorName", arr.vendor[0]?.vendorcode);
             form.setFieldValue("branch", arr.vendor[0]?.vendorbranch);
             form.setFieldValue("vendorGst", arr.vendor[0]?.vendorgst);
-            form.setFieldValue("address", arr.vendor[0]?.vendoraddress);
+            form.setFieldValue(
+              "address",
+              removeHtmlTags(arr.vendor[0]?.vendoraddress)
+            );
             form.setFieldValue("costCenter", arr.vendor[0]?.costcenter);
             form.setFieldValue("quotation", arr.vendor[0]?.termsofquotation);
             form.setFieldValue("terms", arr.vendor[0]?.termsofcondition);
