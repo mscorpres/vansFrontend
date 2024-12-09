@@ -350,6 +350,13 @@ const Q2 = () => {
       width: 190,
     },
     {
+      headerName: "Physical Stock",
+      field: "PHYSICAL_STOCK",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+
+    {
       headerName: "Amount (FXC)",
       field: "AMOUNT_FC",
       filter: "agTextColumnFilter",

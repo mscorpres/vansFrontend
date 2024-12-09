@@ -72,7 +72,7 @@ const TransferBox = () => {
   const getTheListHSN = async (value) => {
     const response = await execFun(() => fetchHSN(value), "fetch");
     const { data } = response;
-    if (data.code == 200) {
+    if (data.success) {
       let arr = data.data.map((r, index) => {
         return {
           id: index + 1,

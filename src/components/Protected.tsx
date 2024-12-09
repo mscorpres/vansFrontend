@@ -14,7 +14,7 @@ const Protected: React.FC<ProtectedProps> = ({
   authentication = true,
 }) => {
   const { token, setToken } = useToken();
-  const authStatus: boolean = token ? true : false; // This should ideally come from your auth logic/state
+  const authStatus: boolean = token ? true : false;
   const navigate = useNavigate();
 
   useEffect(() => {

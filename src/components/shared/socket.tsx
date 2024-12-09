@@ -1,4 +1,4 @@
-import io from "socket.io-client";
+import {io} from "socket.io-client";
 import { socketLink } from "../../axiosIntercepter";
 
 const userToken = JSON.parse(localStorage.getItem("loggedInUser"))?.token;

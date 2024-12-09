@@ -12,6 +12,7 @@ import { RootState } from "@/store";
 import {
   transformCurrencyData,
   transformOptionData,
+  transformOptionData2,
   transformOptions,
   transformOptionsData,
   transformStateOptions,
@@ -1056,7 +1057,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 isSearchable={true}
                                 options={
                                   data && data?.billingAddressList
-                                    ? transformOptionData(
+                                    ? transformOptionData2(
                                         data?.billingAddressList
                                       )
                                     : []
