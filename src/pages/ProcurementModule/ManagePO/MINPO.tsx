@@ -358,7 +358,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
               orderQty: r.orderqty,
               rate: r.orderrate,
               gstRate: r.gstrate,
-              gstType: r.gstTypeForPO,
+              gstTypeForPO: r.gsttype,
               localValue: r.usdValue,
               value: r.totalValue,
               remark: r.description,
