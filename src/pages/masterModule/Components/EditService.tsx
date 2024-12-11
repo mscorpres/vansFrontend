@@ -17,7 +17,6 @@ import { InputStyle } from "@/constants/themeContants";
 import Select from "react-select";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { Button } from "@/components/ui/button";
 import {
   getComponentDetailsForServices,
   listOfUom,
@@ -26,7 +25,10 @@ import {
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button, Card, CardContent, CardHeader } from "@mui/material";
+import { MuiDrawer } from "@/components/ui/MuiDrawer";
+import MuiInput from "@/components/ui/MuiInput";
+import MuiSelect from "@/components/ui/MuiSelect";
 const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
@@ -169,197 +171,171 @@ const EditService = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]">
       {loading1("fetch") && <FullPageLoading />}
-      <Sheet open={sheetOpenEdit} onOpenChange={setSheetOpenEdit}>
-        <SheetTrigger></SheetTrigger>
-        <SheetContent
-          className="min-w-[80%] p-0"
-          onInteractOutside={(e: any) => {
-            e.preventDefault();
-          }}
-        >
-          <SheetHeader className={modelFixHeaderStyle}>
-            <SheetTitle className="text-slate-600">{`Update Services: ${form.getFieldValue(
-              "serviceName"
-            )}`}</SheetTitle>
-          </SheetHeader>
-          <div>
-            <Form form={form} layout="vertical">
-              <form
-                //   onSubmit={form.handleSubmit(onSubmit)}
-                className=""
-              >
-                {loading1("fetch") && <FullPageLoading />}
-                <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
-                  <div className="grid grid-cols-1 gap-[30px]">
-                    <Card className="rounded shadow bg-[#fff]">
-                      <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                        <h3 className="text-[17px] font-[600] text-slate-600">
-                          Basic Details :
-                        </h3>
-                        <p className="text-slate-600 text-[13px]">
-                          {/* Type Name or Code of the Client */}
-                        </p>
-                      </CardHeader>
-                      <CardContent className="mt-[30px]">
-                        {" "}
-                        <div className="grid grid-cols-3 gap-[20px]">
-                          <Form.Item name="serviceCode" label="Service Code">
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Service Code"
-                            />
-                          </Form.Item>
-                          <Form.Item name="serviceName" label="Service Name">
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Service Name"
-                            />
-                          </Form.Item>
-                          <Form.Item name="uom" label="UOM">
-                            <Select
-                              styles={customStyles}
-                              components={{ DropdownIndicator }}
-                              placeholder="Select UOM"
-                              className="border-0 basic-single "
-                              classNamePrefix="select border-0"
-                              isDisabled={false}
-                              isClearable={true}
-                              isSearchable={true}
-                              options={asyncOptions}
-                            />
-                          </Form.Item>
-                          <Form.Item
+      <MuiDrawer
+        open={sheetOpenEdit}
+        setOpen={setSheetOpenEdit}
+        title={`Update Services:  ${form.getFieldValue("serviceName")}`}
+        content={
+          <Form form={form} layout="vertical">
+            <form
+              //   onSubmit={form.handleSubmit(onSubmit)}
+              className=""
+            >
+              {loading1("fetch") && <FullPageLoading />}
+              <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
+                <div className="grid grid-cols-1 gap-[30px]">
+                  <Card className="rounded shadow bg-[#fff]">
+                    <div className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                      <h3 className="text-[17px] font-[600] text-slate-600">
+                        Basic Details :
+                      </h3>
+                      <p className="text-slate-600 text-[13px]">
+                        {/* Type Name or Code of the Client */}
+                      </p>
+                    </div>
+                    <CardContent className="mt-[30px]">
+                      <div className="grid grid-cols-3 gap-[20px]">
+                        <Form.Item name="serviceCode">
+                          <MuiInput
+                            form={form}
+                            name="serviceCode"
+                            label="Service Code"
+                            placeholder="Enter Service Code"
+                          />
+                        </Form.Item>
+                        <Form.Item name="serviceName">
+                          <MuiInput
+                            form={form}
+                            name="serviceName"
+                            label="Service Name"
+                            placeholder="Enter Service Name"
+                          />
+                        </Form.Item>
+                        <Form.Item name="uom">
+                          <MuiSelect
+                            options={asyncOptions}
+                            label={"UOM"}
+                            name="uom"
+                            form={form}
+                          />
+                        </Form.Item>
+                        <Form.Item name="serviceCategory">
+                          <MuiInput
+                            form={form}
                             name="serviceCategory"
                             label="Service Category"
-                          >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Service Category"
-                            />
-                          </Form.Item>
-                          <Form.Item
-                            className="w-full"
+                            placeholder="Enter Service Category"
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          className="w-full"
+                          name="enabled"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please enter Enabled!",
+                            },
+                          ]}
+                        >
+                          <MuiSelect
+                            options={isEnabledOptions}
+                            label={"Enabled"}
                             name="enabled"
-                            label="Enabled"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please enter Enabled!",
-                              },
-                            ]}
-                          >
-                            <Select
-                              styles={customStyles}
-                              components={{ DropdownIndicator }}
-                              placeholder="Select Enabled"
-                              className="border-0 basic-single"
-                              classNamePrefix="select border-0"
-                              isDisabled={false}
-                              isClearable={true}
-                              isSearchable={true}
-                              options={isEnabledOptions}
-                            />
-                          </Form.Item>
-                          <Form.Item name="description" label="Description">
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Component Description"
-                            />
-                          </Form.Item>
-                        </div>{" "}
-                      </CardContent>
-                    </Card>
-                    <Card className="rounded shadow bg-[#fff]">
-                      <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                        <h3 className="text-[17px] font-[600] text-slate-600">
-                          Tax Details :
-                        </h3>
-                        <p className="text-slate-600 text-[13px]">
-                          {/* Type Name or Code of the Client */}
-                        </p>
-                      </CardHeader>
-                      <CardContent className="mt-[30px]">
-                        {" "}
-                        <div className="grid grid-cols-3 gap-[20px]">
-                          <Form.Item label="Tax Type" name="taxType">
-                            <Select
-                              styles={customStyles}
-                              components={{ DropdownIndicator }}
-                              placeholder="Select Tax Type"
-                              className="border-0 basic-single"
-                              classNamePrefix="select border-0"
-                              isDisabled={false}
-                              isClearable={true}
-                              isSearchable={true}
-                              options={gstType}
-                              // labelInvalue={true}
-                            />
-                          </Form.Item>
+                            form={form}
+                          />
+                        </Form.Item>
+                        <Form.Item name="description">
+                          <MuiInput
+                            form={form}
+                            name="description"
+                            label="Description"
+                            placeholder="Enter Component Description"
+                          />
+                        </Form.Item>
+                      </div>{" "}
+                    </CardContent>
+                  </Card>
+                  <Card className="rounded shadow bg-[#fff]">
+                    <div className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                      <h3 className="text-[17px] font-[600] text-slate-600">
+                        Tax Details :
+                      </h3>
+                      <p className="text-slate-600 text-[13px]">
+                        {/* Type Name or Code of the Client */}
+                      </p>
+                    </div>
+                    <CardContent className="mt-[30px]">
+                      {" "}
+                      <div className="grid grid-cols-3 gap-[20px]">
+                        <Form.Item name="taxType">
+                          <MuiSelect
+                            options={gstType}
+                            label={"Tax Type"}
+                            name="taxType"
+                            form={form}
+                          />
+                        </Form.Item>
 
-                          <Form.Item
-                            label="GST Tax Rate"
+                        <Form.Item
+                          name="gstTaxRate"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please enter GST Tax Rate!",
+                            },
+                          ]}
+                        >
+                          <MuiSelect
+                            options={gstRateList}
+                            label={"GST Tax Rate"}
                             name="gstTaxRate"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please enter GST Tax Rate!",
-                              },
-                            ]}
-                          >
-                            <Select
-                              styles={customStyles}
-                              components={{ DropdownIndicator }}
-                              placeholder="Select GST Tax Rate"
-                              className="border-0 basic-single"
-                              classNamePrefix="select border-0"
-                              isDisabled={false}
-                              isClearable={true}
-                              isSearchable={true}
-                              options={gstRateList}
-                              menuPlacement="top"
-                            />
-                          </Form.Item>
+                            form={form}
+                          />
+                        </Form.Item>
 
-                          <Form.Item label="SAC Code" name="sacCode">
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter SAC"
-                            />
-                          </Form.Item>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                        <Form.Item name="sacCode">
+                          <MuiInput
+                            form={form}
+                            name="sacCode"
+                            label="SAC Code"
+                            placeholder="Enter SAC Code"
+                          />
+                        </Form.Item>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
-                  <div className="grid grid-cols-4 gap-[20px]"></div>
-                </div>
-                <div className={modelFixFooterStyle}>
-                  <Button
-                    variant={"outline"}
-                    className="shadow-slate-300 mr-[10px] border-slate-400 border"
-                    onClick={(e: any) => {
-                      setSheetOpenEdit(false);
-                      e.preventDefault();
-                    }}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="bg-cyan-700 hover:bg-cyan-600"
-                    onClick={(e: any) => {
-                      saveEdit();
-                      e.preventDefault();
-                    }}
-                  >
-                    Update
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </SheetContent>
-      </Sheet>
+                <div className="grid grid-cols-4 gap-[20px]"></div>
+              </div>
+              <div className={modelFixFooterStyle}>
+                <Button
+                  variant="outlined"
+                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                  onClick={(e: any) => {
+                    setSheetOpenEdit(false);
+                    e.preventDefault();
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  style={{ margin: "10px" }}
+                  variant="contained"
+                  // type="submit"
+                  // className="bg-cyan-700 hover:bg-cyan-600"
+                  onClick={(e: any) => {
+                    saveEdit();
+                    e.preventDefault();
+                  }}
+                >
+                  Update
+                </Button>
+              </div>
+            </form>
+          </Form>
+        }
+      />
     </Wrapper>
   );
 };

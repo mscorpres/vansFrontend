@@ -100,7 +100,7 @@ export const useApi = () => {
         data: null,
         error: true,
         success: false,
-        message: error.message,
+        message: error?.message,
       };
     } finally {
       setLoading(loadingLabel, false);

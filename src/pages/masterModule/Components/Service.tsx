@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { InputStyle } from "@/constants/themeContants";
@@ -33,6 +32,14 @@ import { Form, Row } from "antd";
 import { useToast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
+import DataTable from "@/components/ui/DataTable";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { Button, OutlinedInput } from "@mui/material";
+import ResetModal from "@/components/ui/ResetModal";
+import { Refresh, Send } from "@mui/icons-material";
+import ConfirmModal from "@/components/ui/ConfirmModal";
+import MuiSelect from "@/components/ui/MuiSelect";
+import MuiInput from "@/components/ui/MuiInput";
 
 const Service = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -92,21 +99,22 @@ const Service = () => {
   const columnDefs: ColDef<rowData>[] = [
     {
       field: "action",
-      headerName: "ACTION",
+      headerName: "Action",
       flex: 1,
-      cellRenderer: (e) => {
+      minWidght: 150,
+      renderCell: (e) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
             <Edit2
               className="h-[20px] w-[20px] text-cyan-700 "
-              onClick={() => setSheetOpenEdit(e?.data?.component_key)}
+              onClick={() => setSheetOpenEdit(e?.row?.component_key)}
             />
           </div>
         );
       },
     },
     {
-      headerName: "ID",
+      headerName: "Id",
       field: "id",
       filter: "agNumberColumnFilter",
       width: 90,
@@ -115,12 +123,14 @@ const Service = () => {
       headerName: "Part Code",
       field: "c_part_no",
       filter: "agTextColumnFilter",
+      renderCell: CopyCellRenderer,
       width: 200,
     },
     {
       headerName: "Component",
       field: "c_name",
       filter: "agTextColumnFilter",
+      renderCell: CopyCellRenderer,
       width: 250,
     },
 
@@ -162,7 +172,7 @@ const Service = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr] overflow-hidden">
       {" "}
-      {loading1("fetch") && <FullPageLoading />}
+      {/* {loading1("fetch") && <FullPageLoading />} */}
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -179,43 +189,24 @@ const Service = () => {
               <div className="">
                 <Form.Item
                   name="partCode"
-                  label="Part Code"
+                  // label="Part Code"
                   rules={[
                     { required: true, message: "Please enter Part Code!" },
                   ]}
                 >
-                  <Input
-                    className={InputStyle}
-                    placeholder="Part Code"
-                    // {...field}
-                  />
+                  <MuiInput name="partCode" form={form} label="Part Code" />
                 </Form.Item>
               </div>
               <div className="">
                 <Form.Item
                   name="uom"
-                  label="UOM"
                   rules={[{ required: true, message: "Please enter UOM!" }]}
                 >
-                  <Select
-                    styles={customStyles}
-                    components={{ DropdownIndicator }}
-                    placeholder="UoM"
-                    className="border-0 basic-single"
-                    classNamePrefix="select border-0"
-                    isDisabled={false}
-                    isClearable={true}
-                    isSearchable={true}
+                  <MuiSelect
+                    name="uom"
+                    form={form}
                     options={asyncOptions}
-                    //   onChange={(e) => console.log(e)}
-                    //   value={
-                    //     data.clientDetails
-                    //       ? {
-                    //           label: data.clientDetails.city.name,
-                    //           value: data.clientDetails.city.name,
-                    //         }
-                    //       : null
-                    //   }
+                    label={"UOM"}
                   />
                 </Form.Item>
               </div>
@@ -223,52 +214,50 @@ const Service = () => {
             <div className="">
               <Form.Item
                 name="compName"
-                label="Component Name"
                 rules={[
                   { required: true, message: "Please enter Component Name!" },
                 ]}
               >
-                <Input
-                  className={InputStyle}
-                  placeholder="Component Name"
-                  // {...field}
-                />
+                <MuiInput name="compName" form={form} label="Component Name" />
               </Form.Item>
             </div>
 
             <div className="">
               <Form.Item
                 name="specifiction"
-                label="Specifiction"
                 rules={[
                   { required: true, message: "Please enter Specifiction!" },
                 ]}
               >
-                <Input
-                  className={InputStyle}
-                  placeholder="Specifiction"
-                  // {...field}
+                <MuiInput
+                  name="specifiction"
+                  form={form}
+                  label="Specifiction"
                 />
               </Form.Item>
             </div>
-            <Row justify="space-between">
+            <Row justify="end">
               <Button
                 // type="reset"
-                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                className="shadow shadow-slate-500"
                 onClick={(e: any) => {
                   setResetModel(true);
                   e.preventDefault();
                 }}
+                startIcon={<Refresh />}
               >
                 Reset
               </Button>
               <Button
+                startIcon={<Send />}
+                style={{ marginLeft: "10px" }}
+                variant="contained"
                 type="submit"
                 onClick={(e: any) => {
                   setOpen(true);
                   e.preventDefault();
                 }}
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                className="shadowshadow-slate-500"
               >
                 Submit
               </Button>
@@ -283,47 +272,20 @@ const Service = () => {
         )}
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        <AgGridReact
-          //   loadingCellRenderer={loadingCellRenderer}
-          rowData={rowData}
-          columnDefs={columnDefs}
-          defaultColDef={{ filter: true, sortable: true }}
-          pagination={true}
-          paginationPageSize={10}
-          paginationAutoPageSize={true}
-          suppressCellFocus={true}
-          overlayNoRowsTemplate={OverlayNoRowsTemplate}
+        <DataTable
+          columns={columnDefs}
+          rows={rowData}
+          checkboxSelection={false}
+          loading={loading1("fetch")}
         />
       </div>
-      <ConfirmationModal
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
+      <ConfirmModal
         open={open}
-        onClose={setOpen}
-        onOkay={() => {
-          onSubmit();
-        }}
-        loading={loading1("fetch")}
-        title="Confirm Submit!"
-        description="Are you sure to submit the entry?"
-      />{" "}
-      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-600">
-              Are you absolutely sure you want to reset the form?
-            </AlertDialogTitle>
-            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
-              onClick={() => form.resetFields()}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        setOpen={setOpen}
+        form={form}
+        submit={onSubmit}
+      />
     </Wrapper>
   );
 };

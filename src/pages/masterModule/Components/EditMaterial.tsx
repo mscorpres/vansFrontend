@@ -6,7 +6,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Form, Switch } from "antd";
+import { Form, Switch, Typography } from "antd";
 
 import {
   fetchMaterialDocsFiles,
@@ -28,7 +28,6 @@ import {
   FileUploaderContent,
   FileUploaderItem,
 } from "@/components/shared/FileUpload";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Input } from "@/components/ui/input";
@@ -42,6 +41,18 @@ import { IoCloudUpload } from "react-icons/io5";
 import { AgGridReact } from "ag-grid-react";
 import { Download } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import {
+  Box,
+  Card,
+  CardContent,
+  Drawer,
+  IconButton,
+  TextField,
+} from "@mui/material";
+import MuiInput from "@/components/ui/MuiInput";
+import MuiSelect from "@/components/ui/MuiSelect";
+import { ChevronLeftIcon } from "@radix-ui/react-icons";
+import { MuiDrawer } from "@/components/ui/MuiDrawer";
 const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const { execFun, loading: loading1 } = useApi();
   const [editForm] = Form.useForm();
@@ -88,6 +99,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         compCode: arr.partcode,
         componentName: arr.name,
         uom: { label: arr.uomname, value: arr.uomid },
+        // uom: arr.uomid,
         soqqty: arr.soqqty,
         sUom: { label: arr.soqname, value: arr.soqid },
         taxTypes: arr.tax_type,
@@ -117,7 +129,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         purchaseCost: arr.pocost,
         OtherCost: arr.othercost,
       };
-
       editForm.setFieldsValue(a);
     } else {
       toast({
@@ -166,10 +177,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       //doubtfull param
       //   alert: values.taxType,category: values.moqQty,
     };
-    // }
 
-    // return;
-    // return;
     setLoading(true);
     const response = await execFun(
       () => updateComponentofMaterial(payload),
@@ -184,6 +192,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       editForm.resetFields();
       setLoading(false);
       setSheetOpenEdit(false);
+      setCaptions("");
     } else {
       // setSheetOpenEdit(false);
 
@@ -194,6 +203,8 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     }
     setLoading(false);
   };
+  console.log("caption", captions);
+
   const listSUom = async () => {
     // const response = await execFun(() => listOfUom(), "submit");
     const response = await spigenAxios.get("/suom");
@@ -218,7 +229,9 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       "fetch"
     );
     let { data } = response;
-    if (data.success) {
+    console.log("response", response);
+
+    if (response?.data?.success) {
       // toast
       let arr = response.data.data.map((r: any) => {
         return {
@@ -226,6 +239,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         };
       });
       setDocList(arr);
+      setCaptions("");
       toast({
         title: "Docs fetched successfully",
         className: "bg-green-600 text-white items-center",
@@ -360,357 +374,242 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
       {(loading1("fetch") || loading == true) && <FullPageLoading />}
-      <Sheet
+      <MuiDrawer
         open={sheetOpenEdit}
-        onOpenChange={() => setSheetOpenEdit(setSheetOpenEdit)}
-      >
-        <SheetTrigger></SheetTrigger>
-        <SheetContent
-          className="min-w-[85%] p-0"
-          onInteractOutside={(e: any) => {
-            e.preventDefault();
-          }}
-        >
-          <SheetHeader className={modelFixHeaderStyle}>
-            <SheetTitle className="text-slate-600">{`Update Component: ${sheetOpenEdit?.c_name}`}</SheetTitle>
-          </SheetHeader>
+        setOpen={setSheetOpenEdit}
+        title={`Update Component: ${sheetOpenEdit?.c_name}`}
+        content={
           <Form form={editForm} layout="vertical">
             <div>
               <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
-                {" "}
-                {(loading1("fetch") || loading == true) && (
-                  <FullPageLoading />
-                )}{" "}
+                {(loading1("fetch") || loading == true) && <FullPageLoading />}
                 <div className="grid grid-cols-2 gap-[30px]">
                   <Card className="rounded shadow bg-[#fff]">
-                    <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                    <div className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
                       <h3 className="text-[17px] font-[600] text-slate-600">
                         Basic Details
                       </h3>
                       <p className="text-slate-600 text-[13px]"></p>
-                    </CardHeader>
+                    </div>
                     <CardContent className="mt-[30px]">
-                      {" "}
                       <Form.Item
                         name="componentName"
-                        label="Component Name"
                         rules={rules.componentName}
                       >
-                        <Input
+                        <MuiInput
+                          form={editForm}
+                          name="componentName"
+                          label="Component Name"
                           placeholder="Enter Component Code"
-                          className={InputStyle}
                         />
                       </Form.Item>
                       <div className="grid grid-cols-2 gap-[20px]">
-                        <Form.Item
-                          name="compCode"
-                          label="Component Code"
-                          rules={rules.compCode}
-                        >
-                          <Input
+                        <Form.Item name="compCode" rules={rules.compCode}>
+                          <MuiInput
+                            form={editForm}
+                            name="compCode"
+                            label="Component Code"
                             placeholder="Enter Component Code"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item name="uom" label="UOM" rules={rules.uom}>
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
+                        </Form.Item>
+                        <Form.Item name="uom" rules={rules.uom}>
+                          <MuiSelect
                             options={asyncOptions}
+                            label={"UoM"}
+                            name="uom"
+                            form={editForm}
                           />
                         </Form.Item>
-                        <Form.Item name="sUom" label="S UOM" rules={rules.suom}>
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            //   placeholder="UOM"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
+                        <Form.Item name="sUom" rules={rules.suom}>
+                          <MuiSelect
+                            name="sUom"
                             options={suomOtions}
+                            label={"S UoM"}
+                            form={editForm}
                           />
                         </Form.Item>
-                        <Form.Item name="soqqty" label="SOQ">
-                          <Input
+                        <Form.Item name="soqqty">
+                          <MuiInput
+                            form={editForm}
+                            name="soqqty"
+                            label="SOQ"
                             placeholder="Enter SOQ"
                             className={InputStyle}
                           />
                         </Form.Item>
-                        <Form.Item name="moqQty" label="MOQ" rules={rules.moq}>
-                          <Input
+                        <Form.Item name="moqQty" rules={rules.moq}>
+                          <MuiInput
+                            form={editForm}
+                            label="MOQ"
+                            name="moqQty"
                             placeholder="Enter MOQ"
                             className={InputStyle}
                           />
                         </Form.Item>
-                        <Form.Item
-                          name="componentMake"
-                          label="Component Make"
-                          rules={rules.maker}
-                        >
-                          <Input
-                            // placeholder="Enter Component Code"
+                        <Form.Item name="componentMake" rules={rules.maker}>
+                          <MuiInput
+                            form={editForm}
+                            name="componentMake"
+                            label="Component Make"
                             className={InputStyle}
                           />
                         </Form.Item>
-                        <Form.Item name="hsn" label="HSN " rules={rules.hsn}>
-                          <Input
+                        <Form.Item name="hsn" rules={rules.hsn}>
+                          <MuiInput
+                            form={editForm}
+                            label="HSN "
+                            name="hsn"
                             placeholder="Enter HSN"
                             className={InputStyle}
                           />
                         </Form.Item>
-                        <Form.Item name="mrp" label="MRP" rules={rules.mrp}>
-                          <Input
-                            // placeholder="Enter Component Code"
+                        <Form.Item name="mrp" rules={rules.mrp}>
+                          <MuiInput
+                            name="mrp"
+                            form={editForm}
+                            label="MRP"
+                            placeholder="Enter MRP"
                             className={InputStyle}
                           />
                         </Form.Item>
-                        <Form.Item
-                          name="group"
-                          label="Group"
-                          rules={rules.group}
-                        >
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            //   placeholder="UOM"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
+                        <Form.Item name="group" rules={rules.group}>
+                          <MuiSelect
                             options={grpOtions}
+                            label={"Group"}
+                            form={editForm}
+                            name="group"
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="enabled"
-                          label="Enabled"
-                          rules={rules.enabled}
-                        >
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            //   placeholder="UOM"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
+                        </Form.Item>
+                        <Form.Item name="enabled" rules={rules.enabled}>
+                          <MuiSelect
                             options={isEnabledOptions}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
+                            name="enabled"
+                            form={editForm}
+                            label={"Enabled"}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="jobWork"
-                          label="Job Work"
-                          rules={rules.jobWork}
-                        >
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="jobWork" rules={rules.jobWork}>
+                          <MuiInput
+                            form={editForm}
+                            name="jobWork"
+                            label="Job Work"
                             placeholder="Enter Job Work"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item name="qcStatus" label="QC Status">
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            //   placeholder="UOM"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
+                        </Form.Item>
+                        <Form.Item name="qcStatus">
+                          <MuiSelect
                             options={isqcOptions}
-                            //   options={asyncOptions}
-                            //   onChange={(e) => console.log(e)}
-                            //   value={
-                            //     data.clientDetails
-                            //       ? {
-                            //           label: data.clientDetails.city.name,
-                            //           value: data.clientDetails.city.name,
-                            //         }
-                            //       : null
-                            //   }
+                            name="qcStatus"
+                            form={editForm}
+                            label={"QC Status"}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="description"
-                          label="Description"
-                          rules={rules.description}
-                        >
-                          <Input
-                            // placeholder="Enter Component Code"
+                        </Form.Item>
+                        <Form.Item name="description" rules={rules.description}>
+                          <MuiInput
+                            name="description"
+                            form={editForm}
+                            label="Description"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        {/* <Form.Item name="" label="Available Qty">
-                          <Input
-                            // placeholder="Enter Component Code"
-                            className={InputStyle}
-                          />
-                        </Form.Item>{" "} */}
-                        {/* <Form.Item
-                          name="customer"
-                          label="Customer"
-                          // rules={rules.customer}
-                        >
-                          <Input
-                            // placeholder="Enter Component Code"
-                            className={InputStyle}
-                          />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="customercode"
-                          label="Customer Part"
-                          // rules={rules.customercode}
-                        >
-                          <Input
-                            // placeholder="Enter Component Code"
-                            className={InputStyle}
-                          />
-                        </Form.Item>{" "} */}
+                        </Form.Item>
                       </div>
-                      {/* <Form.Item
-                        name="custDes"
-                        label="Customer. Desc."
-                        // rules={rules.custDes}
-                      >
-                        <Input
-                          // placeholder="Enter Component Code"
-                          className={InputStyle}
-                        />
-                      </Form.Item>{" "} */}
                     </CardContent>
                   </Card>
                   <Card className="rounded shadow bg-[#fff]">
-                    <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                    <div className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
                       <h3 className="text-[17px] font-[600] text-slate-600">
-                        Tax Details
+                        Tax Detail
                       </h3>
                       <p className="text-slate-600 text-[13px]">
                         {/* Type Name or Code of the Client */}
                       </p>
-                    </CardHeader>
+                    </div>
                     <CardContent className="mt-[30px]">
                       <div className="grid grid-cols-2 gap-[20px]">
-                        <Form.Item
-                          name="taxTypes"
-                          label="Tax Type"
-                          // rules={rules.taxTypes}
-                        >
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            //   placeholder="UOM"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
+                        <Form.Item name="taxTypes" rules={rules.smt}>
+                          <MuiSelect
+                            name="taxTypes"
+                            form={editForm}
                             options={taxType}
+                            label={"Tax Type"}
                           />
                         </Form.Item>
-                        <Form.Item
-                          name="gstTaxRate"
-                          label="GST Tax Rate"
-                          rules={rules.gstTaxRate}
-                        >
-                          <Select
-                            styles={customStyles}
-                            components={{ DropdownIndicator }}
-                            //   placeholder="UOM"
-                            className="border-0 basic-single"
-                            classNamePrefix="select border-0"
-                            isDisabled={false}
-                            isClearable={true}
-                            isSearchable={true}
+                        <Form.Item name="gstTaxRate" rules={rules.gstTaxRate}>
+                          <MuiSelect
+                            name="gstTaxRate"
+                            form={editForm}
                             options={gstRateList}
+                            label={"GST Tax Rate"}
                           />
                         </Form.Item>
                       </div>
                     </CardContent>
                   </Card>
                   <Card className="rounded shadow bg-[#fff]">
-                    <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                    <div className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
                       <h3 className="text-[17px] font-[600] text-slate-600">
                         Advance Details :
                       </h3>
-                      <p className="text-slate-600 text-[13px]">
-                        {/* Type Name or Code of the Client */}
-                      </p>
-                    </CardHeader>
+                      <p className="text-slate-600 text-[13px]"></p>
+                    </div>
                     <CardContent className="mt-[30px]">
                       <div className="grid grid-cols-2 gap-[20px]">
-                        <Form.Item
-                          name="brand"
-                          label="Brand"
-                          rules={rules.brand}
-                        >
-                          <Input
+                        <Form.Item name="brand" rules={rules.brand}>
+                          <MuiInput
+                            form={editForm}
+                            name="brand"
+                            label="Brand"
                             placeholder="Enter Brand"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item name="ean" label="EAN" rules={rules.ean}>
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="ean" rules={rules.ean}>
+                          <MuiInput
+                            form={editForm}
+                            label="EAN"
+                            name="ean"
                             placeholder="Enter EAN"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="weight"
-                          label="Weight (gms)"
-                          rules={rules.weight}
-                        >
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="weight" rules={rules.weight}>
+                          <MuiInput
+                            form={editForm}
+                            name="weight"
+                            label="Weight (gms)"
                             placeholder="Enter Weight (gms)"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="volWeight"
-                          label="Volumetric Weight (gms)"
-                          rules={rules.volWeight}
-                        >
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="volWeight" rules={rules.volWeight}>
+                          <MuiInput
+                            name="volWeight"
+                            form={editForm}
+                            label="Volumetric Weight (gms)"
                             placeholder="Enter Volumetric Weight (gms)"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="height"
-                          label="Height (mm)"
-                          rules={rules.height}
-                        >
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="height" rules={rules.height}>
+                          <MuiInput
+                            name="height"
+                            form={editForm}
+                            label="Height (mm)"
                             placeholder="Enter Height (mm)"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="width"
-                          label="Width (mm)"
-                          rules={rules.width}
-                        >
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="width" rules={rules.width}>
+                          <MuiInput
+                            form={editForm}
+                            name="width"
+                            label="Width (mm)"
                             placeholder="Enter Width (mm)"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
+                        </Form.Item>
                       </div>
                       <div className="grid w-full max-w-sm items-center gap-1.5">
                         <Button onClick={() => setSheetOpen(true)}>
@@ -720,89 +619,75 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                     </CardContent>
                   </Card>
                   <Card className="rounded shadow bg-[#fff]">
-                    <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
+                    <div className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
                       <h3 className="text-[17px] font-[600] text-slate-600">
                         Production Plan :
                       </h3>
                       <p className="text-slate-600 text-[13px]"></p>
-                    </CardHeader>
+                    </div>
                     <CardContent className="mt-[30px]">
                       <div className="grid grid-cols-2 gap-[20px]">
-                        {" "}
-                        <Form.Item
-                          name="minStock"
-                          label="MIN Stock"
-                          rules={rules.minStock}
-                        >
-                          <Input
+                        <Form.Item name="minStock" rules={rules.minStock}>
+                          <MuiInput
+                            name="minStock"
+                            form={editForm}
+                            label="MIN Stock"
                             placeholder="Enter MIN Stock"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="MaxStock"
-                          label="Max Stock"
-                          rules={rules.maxStock}
-                        >
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="MaxStock" rules={rules.maxStock}>
+                          <MuiInput
+                            name="MaxStock"
+                            form={editForm}
+                            label="Max Stock"
                             placeholder="Enter Max Stock"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="MinOrder"
-                          label="MIN Order"
-                          rules={rules.minOrder}
-                        >
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="MinOrder" rules={rules.minOrder}>
+                          <MuiInput
+                            form={editForm}
+                            name="MinOrder"
+                            label="MIN Order"
                             placeholder="Enter MIN Order"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="LeadTime"
-                          label="Lead Time ( in days)"
-                          rules={rules.LeadTime}
-                        >
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="LeadTime" rules={rules.LeadTime}>
+                          <MuiInput
+                            name="LeadTime"
+                            form={editForm}
+                            label="Lead Time ( in days)"
                             placeholder="Enter Lead Time ( in days)"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
+                        </Form.Item>
                         <Form.Item
                           name="purchaseCost"
-                          label="Purchase Cost"
                           rules={rules.purchaseCost}
                         >
-                          <Input
+                          <MuiInput
+                            form={editForm}
+                            label="Purchase Cost"
+                            name="purchaseCost"
                             placeholder="Enter Purchase Cost"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                        <Form.Item
-                          name="OtherCost"
-                          label="Other Cost"
-                          rules={rules.otherCost}
-                        >
-                          <Input
+                        </Form.Item>
+                        <Form.Item name="OtherCost" rules={rules.otherCost}>
+                          <MuiInput
+                            form={editForm}
+                            name="OtherCost"
+                            label="Other Cost"
                             placeholder="Enter Other Cost"
                             className={InputStyle}
                           />
-                        </Form.Item>{" "}
-                      </div>{" "}
-                      <Form.Item
-                        name="alert"
-                        label="Enable Alerts"
-                        // rules={rules.alert}
-                      >
-                        <Switch
-
-                        // style={{
-                        //   backgroundColor: "#E0f",
-                        //   borderColor: "#4CAF50",
-                        // }} // Custom color
-                        />
-                      </Form.Item>{" "}
+                        </Form.Item>
+                      </div>
+                      <Form.Item name="alert" label="Enable Alerts">
+                        <Switch />
+                      </Form.Item>
                     </CardContent>
                   </Card>
                 </div>
@@ -829,106 +714,111 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
               </div>
             </div>
           </Form>
-        </SheetContent>
-      </Sheet>
-      <Sheet open={sheetOpen == true} onOpenChange={setSheetOpen}>
-        <SheetContent
-          className="min-w-[55%] p-0"
-          onInteractOutside={(e: any) => {
-            e.preventDefault();
-          }}
-        >
-          {/* {loading == true && <FullPageLoading />} */}
-          <SheetHeader className={modelFixHeaderStyle}>
-            <SheetTitle className="text-slate-600">
-              Upload Image here
-            </SheetTitle>
-          </SheetHeader>{" "}
-          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-            {loading1("fetch") && <FullPageLoading />}
-            <FileUploader
-              value={files}
-              onValueChange={handleFileChange}
-              dropzoneOptions={{
-                accept: {
-                  "image/*": [".jpg", ".jpeg", ".png", ".gif"],
-                },
-                maxFiles: 1,
-                maxSize: 4 * 1024 * 1024, // 4 MB
-                multiple: true,
-              }}
-            >
-              <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
-                <h2 className="text-xl font-semibold text-center mb-4">
-                  <div className=" text-center w-full justify-center flex">
-                    {" "}
-                    <div>Upload Your Files</div>
-                    <div>
-                      {" "}
-                      <IoCloudUpload
-                        className="text-cyan-700 ml-5 h-[20]"
-                        size={"1.5rem"}
-                      />
+        }
+      />
+      <MuiDrawer
+        open={sheetOpen == true}
+        setOpen={setSheetOpen}
+        title={" Upload Image here"}
+        width={600}
+        content={
+          <>
+            <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+              {loading1("fetch") && <FullPageLoading />}
+              <FileUploader
+                value={files}
+                onValueChange={handleFileChange}
+                dropzoneOptions={{
+                  accept: {
+                    "image/*": [".jpg", ".jpeg", ".png", ".gif"],
+                  },
+                  maxFiles: 1,
+                  maxSize: 4 * 1024 * 1024, // 4 MB
+                  multiple: true,
+                }}
+              >
+                <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
+                  <h2 className="text-xl font-semibold text-center mb-4">
+                    <div className=" text-center w-full justify-center flex">
+                      <div>Upload Your Files</div>
+                      <div>
+                        <IoCloudUpload
+                          className="text-cyan-700 ml-5 h-[20]"
+                          size={"1.5rem"}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </h2>
-                <FileInput>
-                  <span className="text-slate-500 text-sm text-center w-full justify-center flex">
-                    Drag and drop files here, or click to select files
-                  </span>
-                </FileInput>{" "}
-              </div>{" "}
-              <div className=" m-[20px]">
-                <FileUploaderContent>
-                  {files?.map((file, index) => (
-                    <FileUploaderItem key={index} index={index}>
-                      <span>{file.name}</span>
-                    </FileUploaderItem>
-                  ))}
-                </FileUploaderContent>
+                  </h2>
+                  <FileInput>
+                    <span className="text-slate-500 text-sm text-center w-full justify-center flex">
+                      Drag and drop files here, or click to select files
+                    </span>
+                  </FileInput>
+                </div>
+                <div className=" m-[20px]">
+                  <FileUploaderContent>
+                    {files?.map((file, index) => (
+                      <FileUploaderItem key={index} index={index}>
+                        <span>{file.name}</span>
+                      </FileUploaderItem>
+                    ))}
+                  </FileUploaderContent>
+                </div>
+              </FileUploader>
+              <div className="w-full flex justify-center">
+                <div className="w-[80%] flex justify-center">
+                  <TextField
+                    //   id="filled-basic"
+                    //   color="grey"
+                    //   sx={{ height: "30px" }}
+                    variant="outlined"
+                    label="Image Captions"
+                    placeholder="Enter Image Captions"
+                    fullWidth={true}
+                    // label={label}
+                    value={captions}
+                    onChange={(e) => setCaptions(e.target.value)}
+                    //   error={form}
+                    //   helperText={"geee"}
+                    //   onChange={()=>{form.setFieldsValue({})}}
+                  />
+                </div>
               </div>
-            </FileUploader>{" "}
-            <div className="w-full flex justify-center">
-              <div className="w-[80%] flex justify-center">
-                <Input
-                  placeholder="Enter Image Captions"
-                  className={InputStyle}
-                  onChange={(e) => setCaptions(e.target.value)}
+              <div className="ag-theme-quartz h-[calc(100vh-400px)] mt-2">
+                <AgGridReact
+                  //   loadingCellRenderer={loadingCellRenderer}
+                  rowData={docList}
+                  columnDefs={columnDefsDoc}
+                  defaultColDef={{ filter: true, sortable: true }}
+                  pagination={true}
+                  paginationPageSize={10}
+                  paginationAutoPageSize={true}
+                  suppressCellFocus={true}
+                  overlayNoRowsTemplate={OverlayNoRowsTemplate}
                 />
               </div>
             </div>
-            <div className="ag-theme-quartz h-[calc(100vh-400px)] mt-5">
-              <AgGridReact
-                //   loadingCellRenderer={loadingCellRenderer}
-                rowData={docList}
-                columnDefs={columnDefsDoc}
-                defaultColDef={{ filter: true, sortable: true }}
-                pagination={true}
-                paginationPageSize={10}
-                paginationAutoPageSize={true}
-                suppressCellFocus={true}
-                overlayNoRowsTemplate={OverlayNoRowsTemplate}
-              />
-            </div>
-          </div>{" "}
-          <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Button
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={() => setSheetOpen(false)}
-            >
-              Back
-            </Button>{" "}
-            <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={uploadDocs}
-              // loading={laoding}
-            >
-              {/* {isApprove ? "Approve" : "Submit"} */}
-              Upload
-            </Button>
-          </div>{" "}
-        </SheetContent>
-      </Sheet>{" "}
+            <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+              <Button
+                className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+                onClick={() => setSheetOpen(false)}
+              >
+                Back
+              </Button>
+              <Button
+                className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+                onClick={uploadDocs}
+                // loading={laoding}
+              >
+                {/* {isApprove ? "Approve" : "Submit"} */}
+                Upload
+              </Button>
+            </div>{" "}
+          </>
+        }
+      />
+
+  
     </Wrapper>
   );
 };

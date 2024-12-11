@@ -8,6 +8,8 @@ import "@ag-grid-community/styles/ag-theme-quartz.css";
 import "./font.css";
 import { moduleregistri } from "./config/agGrid/ModuleRegistry.ts";
 import { ToastProvider } from "./components/ui/toast.tsx";
+import { ThemeProvider } from "@mui/material";
+import theme from "./theme/index.ts";
 
 moduleregistri();
 
@@ -17,8 +19,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     // components={{ Toast: Snack }}
     placement="top-center"
   >
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </ThemeProvider>
   </ToastProvider>
 );

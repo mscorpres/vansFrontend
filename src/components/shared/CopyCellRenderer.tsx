@@ -32,7 +32,7 @@ const CopyCellRenderer = (params: any) => {
     <CopyCellWrapper>
       <TextWithEllipsis title={params.value}>{params.value}</TextWithEllipsis>
       <Tooltip
-        title={params.value}
+        title={`Copy: ${params.value}`}
         placement="top"
         mouseEnterDelay={0.5}
         mouseLeaveDelay={0.5}
@@ -41,7 +41,7 @@ const CopyCellRenderer = (params: any) => {
           onClick={() => copyToClipboard(params.value)}
           style={{
             cursor: "pointer",
-            marginLeft: "10px",
+            marginLeft: "auto", // Pushes the icon to the right end
             width: "20px",
             height: "20px",
           }}

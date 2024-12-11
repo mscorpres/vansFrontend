@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { InputStyle } from "@/constants/themeContants";
@@ -34,6 +33,11 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { AppDispatch, RootState } from "@/store";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import DataTable from "@/components/ui/DataTable";
+import { Autocomplete, Button, OutlinedInput } from "@mui/material";
+import MuiInput from "@/components/ui/MuiInput";
+import MuiSelect from "@/components/ui/MuiSelect";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 const Material = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -204,15 +208,15 @@ const Material = () => {
   const columnDefs: ColDef<rowData>[] = [
     {
       field: "action",
-      headerName: "ACTION",
+      headerName: "Action",
       flex: 1,
-      cellRenderer: (param: any) => {
+      renderCell: (param: any) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
             {/* <Button className="bg-green-700 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
             <Edit2
               className="h-[20px] w-[20px] text-cyan-700 "
-              onClick={() => setSheetOpenEdit(param?.data)}
+              onClick={() => setSheetOpenEdit(param?.row)}
             />
             {/* </Button> */}
           </div>
@@ -229,14 +233,14 @@ const Material = () => {
       headerName: "Part Code",
       field: "c_part_no",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      renderCell: CopyCellRenderer,
       width: 150,
     },
     {
       headerName: "Component",
       field: "c_name",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      renderCell: CopyCellRenderer,
       width: 200,
     },
     {
@@ -381,6 +385,7 @@ const Material = () => {
   ];
   const addHsn = async () => {
     values = await form.validateFields();
+
     setFixedVal(values);
     setSheetOpenHSN(true);
   };
@@ -388,7 +393,6 @@ const Material = () => {
     <>
       <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[630px_1fr] overflow-hidden">
         <div className="bg-[#fff]">
-          {" "}
           <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
             <Filter className="h-[20px] w-[20px]" />
             Add
@@ -398,160 +402,126 @@ const Material = () => {
               <>
                 <div className="grid grid-cols-3 gap-[40px] ">
                   <div className="">
-                    <Form.Item
-                      name="partCode"
-                      label="Part Code"
-                      rules={rules.partCode}
-                    >
-                      <Input
-                        className={InputStyle}
+                    <Form.Item name="partCode" rules={rules.partCode}>
+                      <MuiInput
+                        form={form}
+                        name="partCode"
                         placeholder="Part Code"
+                        label={"Part Code"}
+                        // onChange={(e: any) => {
+                        //   form.setFieldValue("partCode", e.target.value);
+                        // }}
                         // {...field}
                       />
                     </Form.Item>
                   </div>
                   <div className="">
-                    {" "}
-                    <Form.Item name="uom" label="UOM" rules={rules.uom}>
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="UoM"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
+                    <Form.Item name="uom" rules={rules.uom}>
+                      <MuiSelect
                         options={asyncOptions}
+                        label={"UoM"}
+                        form={form}
+                        name="uom"
                       />
                     </Form.Item>
                   </div>
                   <div className="">
-                    {" "}
-                    <Form.Item name="suom" label="S UoM" rules={rules.suom}>
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="S UoM"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
+                    <Form.Item name="suom" rules={rules.suom}>
+                      <MuiSelect
+                        name="suom"
+                        form={form}
                         options={suomOtions}
+                        label={"S UoM"}
                       />
                     </Form.Item>
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-[40px]  py-[-10px]">
                   <div className="col-span-2">
-                    {" "}
-                    <Form.Item
-                      name="compName"
-                      label="Component Name"
-                      rules={rules.compName}
-                    >
-                      <Input
-                        className={InputStyle}
-                        placeholder="Component Name"
-                        // {...field}
+                    <Form.Item name="compName" rules={rules.compName}>
+                      <MuiInput
+                        name="compName"
+                        form={form}
+                        label={"Component Name"}
                       />
                     </Form.Item>
                   </div>
 
                   <div className="">
-                    <Form.Item name="soq" label="SOQ Qty" rules={rules.soq}>
-                      <Input
-                        className={InputStyle}
-                        // type="number"
+                    <Form.Item name="soq" rules={rules.soq}>
+                      <MuiInput
+                        form={form}
                         placeholder="SOQ Qty"
-                        // {...field}
+                        label="SOQ Qty"
+                        name="soq"
                       />
                     </Form.Item>
                   </div>
                   <div className="">
-                    <Form.Item name="moq" label="MOQ Qty" rules={rules.moq}>
-                      <Input
-                        className={InputStyle}
+                    <Form.Item name="moq" rules={rules.moq}>
+                      <MuiInput
+                        form={form}
                         type="number"
                         placeholder="MOQ Qty"
-                        // {...field}
-                      />
-                    </Form.Item>
-                  </div>
-                </div>{" "}
-                <div className="grid grid-cols-3 gap-[40px] py-[-10px]">
-                  <div className="">
-                    {" "}
-                    <Form.Item name="group" label="Group" rules={rules.group}>
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Group"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        options={grpOtions}
-                      />
-                    </Form.Item>
-                  </div>
-
-                  <div className="">
-                    {" "}
-                    <Form.Item name="type" label="Type" rules={rules.type}>
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="Type"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        options={typeOption}
-                      />
-                    </Form.Item>
-                  </div>
-                  <div className="">
-                    {" "}
-                    <Form.Item name="smt" label="SMT" rules={rules.smt}>
-                      <Select
-                        styles={customStyles}
-                        components={{ DropdownIndicator }}
-                        placeholder="SMT"
-                        className="border-0 basic-single"
-                        classNamePrefix="select border-0"
-                        isDisabled={false}
-                        isClearable={true}
-                        isSearchable={true}
-                        options={smtOption}
+                        name="moq"
+                        label="MOQ Qty"
                       />
                     </Form.Item>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-[40px] py-[-10px]">
+                <div className="grid grid-cols-3 gap-[40px] py-[-10px]">
                   <div className="">
-                    {" "}
-                    <Form.Item name="maker" label="Maker" rules={rules.maker}>
-                      <Input
-                        className={InputStyle}
-                        placeholder="Maker"
-                        // {...field}
+                    <Form.Item name="group" rules={rules.group}>
+                      <MuiSelect
+                        name="group"
+                        form={form}
+                        options={grpOtions}
+                        label={"Group"}
                       />
                     </Form.Item>
-                  </div>{" "}
+                  </div>
+
                   <div className="">
-                    {" "}
-                    <Form.Item
-                      name="specifiction"
-                      label="Specifiction"
-                      rules={rules.specifiction}
-                    >
-                      <Input
-                        className={InputStyle}
+                    <Form.Item name="type" rules={rules.type}>
+                      <MuiSelect
+                        name="type"
+                        form={form}
+                        options={typeOption}
+                        label={"Type"}
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="">
+                    <Form.Item name="smt" rules={rules.smt}>
+                      <MuiSelect
+                        name="smt"
+                        form={form}
+                        options={smtOption}
+                        label={"SMT"}
+                      />
+                    </Form.Item>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-[40px] py-[25px]">
+                  <div className="">
+                    <Form.Item name="maker" rules={rules.maker}>
+                      <MuiInput
+                        name="maker"
+                        form={form}
+                        placeholder="Maker"
+                        fullWidth={true}
+                        label="Maker"
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="">
+                    <Form.Item name="specifiction" rules={rules.specifiction}>
+                      <MuiInput
+                        form={form}
+                        name="specifiction"
                         placeholder="Specifiction"
+                        fullWidth={true}
+                        label="Specifiction"
                         // {...field}
                       />
                     </Form.Item>
@@ -560,31 +530,35 @@ const Material = () => {
                 {/* <div className="h-[calc(100vh-400px)]  "> */}
                 <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
                   <Button
+                    variant="contained"
                     onClick={(e: any) => {
                       e.preventDefault();
                       addHsn();
                     }}
-                    className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+                  
+                    className="rounded-md shadow 
+                
+                    shadow-slate-500 max-w-max"
                   >
                     <Plus className="font-[600]" /> Add HSN
-                  </Button>{" "}
+                  </Button>
                 </div>
               </>
             ) : (
               <>
                 <div className="h-[calc(100vh-250px)]">
-                  {" "}
                   <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
                     <Button
                       onClick={(e: any) => {
                         e.preventDefault();
                         addNewRow();
                       }}
-                      className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+                      className="rounded-md shadow shadow-slate-500 max-w-max"
+                      startIcon={<Plus />}
                     >
-                      <Plus className="font-[600]" /> Add Item
-                    </Button>{" "}
-                  </div>{" "}
+                      Add Item
+                    </Button>
+                  </div>
                   {/* {data.loading && <FullPageLoading />} */}
                   <div className="ag-theme-quartz h-[400px] w-full">
                     <AgGridReact
@@ -607,7 +581,8 @@ const Material = () => {
                   </div>
                   <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
                     <Button
-                      className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+                      className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
+                    
                       onClick={() => setSheetOpenHSN(false)}
                     >
                       Back
@@ -615,7 +590,9 @@ const Material = () => {
 
                     <Button
                       type="submit"
-                      className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                      variant="contained"
+                      className="shadow shadow-slate-500"
+                     
                       // onClick={(e) => e.preventDefault()}
                       onClick={(e: any) => {
                         setOpen(true);
@@ -625,41 +602,31 @@ const Material = () => {
                       Submit
                     </Button>
                   </div>
-                </div>{" "}
+                </div>
                 <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between"></div>
               </>
             )}
 
-            {/* </div>{" "} */}
-            {/* </form> */}
-          </Form>{" "}
+     
+          </Form>
         </div>
         <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-          {" "}
-          {loading1("fetch") && <FullPageLoading />}
-          <AgGridReact
-            loadingCellRenderer={loadingCellRenderer}
-            rowData={rowData}
-            columnDefs={columnDefs}
-            defaultColDef={{ filter: true, sortable: true }}
-            pagination={true}
-            paginationPageSize={10}
-            paginationAutoPageSize={true}
-            suppressCellFocus={true}
-            overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          {/* {loading1("fetch") && <FullPageLoading />} */}
+          <DataTable
+            columns={columnDefs}
+            rows={rowData}
+            checkboxSelection={false}
+            loading={loading1("fetch")}
           />
         </div>{" "}
-        <ConfirmationModal
+        <ConfirmModal
           open={open}
-          onClose={setOpen}
-          onOkay={() => {
-            onSubmit();
-          }}
-          loading={loading1("fetch")}
-          title="Confirm Submit!"
-          description="Are you sure to submit the entry?"
-        />{" "}
-      </Wrapper>{" "}
+          setOpen={setOpen}
+          form={form}
+          submit={onSubmit}
+        />
+       
+      </Wrapper>
       {sheetOpenEdit?.c_part_no && (
         <EditMaterial
           sheetOpenEdit={sheetOpenEdit}
