@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 
 import { InputStyle } from "@/constants/themeContants";
 
@@ -25,6 +24,10 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { Filter } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import MuiInput from "@/components/ui/MuiInput";
+import { Button } from "@mui/material";
+import ResetModal from "@/components/ui/ResetModal";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 const Groups = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -108,14 +111,6 @@ const Groups = () => {
       {" "}
       {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
-        {" "}
-        <ConfirmationModal
-          open={open}
-          onClose={setOpen}
-          onOkay={createEntry}
-          title="Confirm Submit!"
-          description="Are you sure to submit the entry?"
-        />{" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Add
@@ -125,20 +120,19 @@ const Groups = () => {
             {" "}
             <Form.Item
               name="groupName"
-              label="Group Name"
               rules={[{ required: true, message: "Group Name is required" }]}
             >
-              <Input
-                className={InputStyle}
-                placeholder="Enter Group Name"
-                // {...field}
+              <MuiInput
+                name="groupName"
+                form={form}
+                placeholder="Group Name"
+                fullWidth={true}
+                label="Group Name"
               />
-            </Form.Item>
-            <Row justify="space-between">
-              {" "}
+            </Form.Item>{" "}
+            <div className="bg-whiteh-[50px] flex items-center justify-end gap-[20px]">
               <Button
-                // type="reset"
-                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                className="rounded-md shadow  shadow-slate-500 max-w-max "
                 onClick={(e: any) => {
                   e.preventDefault();
                   setResetModel(true);
@@ -146,16 +140,20 @@ const Groups = () => {
               >
                 Reset
               </Button>
+
               <Button
+                type="submit"
+                variant="contained"
+                className="shadow shadow-slate-500"
+                // onClick={(e) => e.preventDefault()}
                 onClick={(e: any) => {
                   setOpen(true);
                   e.preventDefault();
                 }}
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               >
                 Submit
               </Button>
-            </Row>
+            </div>
           </form>
         </Form>
       </div>
@@ -172,25 +170,13 @@ const Groups = () => {
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
-      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-600">
-              Are you absolutely sure you want to reset the form?
-            </AlertDialogTitle>
-            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
-              onClick={() => form.resetFields()}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
+      <ConfirmModal
+        open={open}
+        setOpen={setOpen}
+        form={form}
+        submit={createEntry}
+      />
     </Wrapper>
   );
 };

@@ -137,28 +137,38 @@ const ReusableAsyncSelect = <T,>({
     // Optionally handle any other actions on select change
   };
   return (
-    <AsyncSelect
-      styles={customStyles}
-      components={{ DropdownIndicator }}
-      cacheOptions
-      loadOptions={loadOptions}
-      defaultOptions={transform(options)}
-      isLoading={loading}
-      onMenuOpen={handleMenuOpen}
-      onMenuClose={handleMenuClose}
-      onChange={handleChange}
-      value={value}
-      placeholder={placeholder}
-      loadingMessage={() => (
-        <div className="flex flex-col gap-[10px]">
-          <Skeleton className="h-[20px] w-full" />
-          <Skeleton className="h-[20px] w-full" />
-          <Skeleton className="h-[20px] w-full" />
-          <Skeleton className="h-[20px] w-full" />
-          <Skeleton className="h-[20px] w-full" />
-        </div>
-      )}
-    />
+    <div>
+      {/* Label for the AsyncSelect */}
+      <label
+        htmlFor="async-select"
+        style={{ fontSize: "12px", marginBottom: "8px", color: "#475569" }}
+      >
+        {placeholder}
+      </label>
+      <AsyncSelect
+        className="absolute z-[2]"
+        styles={customStyles}
+        components={{ DropdownIndicator }}
+        cacheOptions
+        loadOptions={loadOptions}
+        defaultOptions={transform(options)}
+        isLoading={loading}
+        onMenuOpen={handleMenuOpen}
+        onMenuClose={handleMenuClose}
+        onChange={handleChange}
+        value={value}
+        placeholder={placeholder}
+        loadingMessage={() => (
+          <div className="flex flex-col gap-[10px]">
+            <Skeleton className="h-[20px] w-full" />
+            <Skeleton className="h-[20px] w-full" />
+            <Skeleton className="h-[20px] w-full" />
+            <Skeleton className="h-[20px] w-full" />
+            <Skeleton className="h-[20px] w-full" />
+          </div>
+        )}
+      />
+    </div>
   );
 };
 

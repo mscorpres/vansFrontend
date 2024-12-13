@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { InputStyle, LableStyle } from "@/constants/themeContants";
@@ -18,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Download, Filter } from "lucide-react";
+import { Download, Filter, Plus } from "lucide-react";
 import styled from "styled-components";
 import { Divider, Dropdown, Menu } from "antd";
 import { Input } from "@/components/ui/input";
@@ -56,6 +55,8 @@ import { ColDef } from "ag-grid-community";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { transformStateOptions } from "@/helper/transform";
+import { Button } from "@mui/material";
+import MuiInput2 from "@/components/ui/MuiInput2";
 const FormSchema = z.object({
   wise: z.string().optional(),
   branch: z.string().optional(),
@@ -513,7 +514,7 @@ const VendorList = () => {
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[250px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
+        {loading1("fetch") && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -525,10 +526,12 @@ const VendorList = () => {
             className="space-y-6 overflow-hidden p-[10px] h-[170px]"
           >
             {/* )} */}
-            <div className="grid grid-cols-2 gap-[20px]">
+            <div className=" flex gap-[20px]">
               <Button
+                variant="contained"
+                startIcon={<Plus />}
                 type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                className="shadow  shadow-slate-500"
                 onClick={(e) => {
                   e.preventDefault();
                   setSheetOpen(true);
@@ -550,7 +553,7 @@ const VendorList = () => {
                 onClick={() => {
                   setSheetOpen(true);
                 }}
-                className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
+                className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-c  items-c  shadow-slate-500"
               >
                 <Plus className="h-[20px] w-[20px]" />
               </Button>
@@ -579,17 +582,16 @@ const VendorList = () => {
                         name="label"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Address label
-                            </FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="label"
+                                label="Address Label"
+                                placeholder="Address Label"
                                 className={InputStyle}
-                                placeholder="Enter Address Label"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />{" "}
@@ -598,17 +600,16 @@ const VendorList = () => {
                         name="pan"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pan No.
-                            </FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="pan"
+                                label="PAN Number"
+                                placeholder="PAN Number"
                                 className={InputStyle}
-                                placeholder="Enter pan Number"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -617,15 +618,16 @@ const VendorList = () => {
                         name="cin"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>CIN</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="cin"
+                                label="CIN Number"
+                                placeholder="CIN Number"
                                 className={InputStyle}
-                                placeholder="Enter CIN"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -637,17 +639,16 @@ const VendorList = () => {
                         name="company"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Company Name
-                            </FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="company"
+                                label="Company Name"
+                                placeholder="Company Name"
                                 className={InputStyle}
-                                placeholder="Enter Company Name"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -656,13 +657,13 @@ const VendorList = () => {
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
+                            {/* <FormLabel className={LableStyle}>State</FormLabel> */}
                             <FormControl>
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
                                 placeholder="State"
-                                className="border-0 basic-single"
+                                className="border-0 basic-single z-20"
                                 classNamePrefix="select border-0"
                                 isDisabled={false} // Disable the select dropdown so it cannot be changed
                                 isClearable={false} // Prevent clearing the value
@@ -684,7 +685,6 @@ const VendorList = () => {
                                 }
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -693,15 +693,16 @@ const VendorList = () => {
                         name="city"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>City</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="city"
+                                label="City"
+                                placeholder="City"
                                 className={InputStyle}
-                                placeholder="Enter City"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />{" "}
@@ -710,15 +711,16 @@ const VendorList = () => {
                         name="gstin"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>GSTIN</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="gstin"
+                                label="GSTIN Number"
+                                placeholder="GSTIN Number"
                                 className={InputStyle}
-                                placeholder="Enter GSTIN Number"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -727,18 +729,17 @@ const VendorList = () => {
                         name="pin"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pin No.
-                            </FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="pin"
+                                label="Pin Number"
+                                placeholder="Pin Number"
                                 className={InputStyle}
-                                placeholder="Enter Pin Number"
-                                {...field}
+                                control={form.control}
                                 type="Number"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -747,15 +748,16 @@ const VendorList = () => {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Email</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="email"
+                                label="Email"
+                                placeholder="Email"
                                 className={InputStyle}
-                                placeholder="Enter Email"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -764,16 +766,17 @@ const VendorList = () => {
                         name="mobile"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Mobile</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="mobile"
+                                label="Mobile"
+                                placeholder="Mobile"
                                 className={InputStyle}
-                                placeholder="Enter Mobile"
-                                {...field}
                                 type="Number"
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -782,41 +785,44 @@ const VendorList = () => {
                         name="fax"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Fax</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="fax"
+                                label="Fax"
+                                placeholder="Fax"
                                 className={InputStyle}
-                                placeholder="Enter Fax"
-                                {...field}
+                                type="Number"
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
-                    </div>{" "}
+                    </div>
                     <div className="grid grid-cols-2 gap-[20px]"></div>
                     <FormField
                       control={form.control}
                       name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>Address</FormLabel>
                           <FormControl>
-                            <Textarea
+                            <MuiInput2
+                              form={form}
+                              name="address"
+                              label="Complete Address"
+                              placeholder="Complete Address"
                               className={InputStyle}
-                              placeholder="Enter Complete Address"
-                              {...field}
+                              control={form.control}
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />{" "}
                   </div>
                   <div className={modelFixFooterStyle}>
                     <Button
-                      variant={"outline"}
+                      variant={"outlined"}
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
                         setSheetOpen(false);
@@ -826,6 +832,8 @@ const VendorList = () => {
                       Back
                     </Button>
                     <Button
+                      sx={{ marginLeft: "10px" }}
+                      variant="contained"
                       type="submit"
                       className="bg-cyan-700 hover:bg-cyan-600"
                     >
@@ -841,7 +849,7 @@ const VendorList = () => {
         <Sheet open={sheetOpenView} onOpenChange={setSheetOpenView}>
           <SheetTrigger></SheetTrigger>
           <SheetContent
-            className="min-w-[50%] p-0"
+            className="min-w-[50%] p-0 zIndex-[-1]"
             onInteractOutside={(e: any) => {
               e.preventDefault();
             }}
@@ -866,15 +874,12 @@ const VendorList = () => {
                       name="branch"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>
-                            Address Branch
-                          </FormLabel>
                           <FormControl>
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
                               placeholder="Branch"
-                              className="border-0 basic-single"
+                              className="border-0 basic-single z-20 relative"
                               classNamePrefix="select border-0"
                               isDisabled={false}
                               isClearable={true}
@@ -885,7 +890,6 @@ const VendorList = () => {
                               }
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -895,17 +899,16 @@ const VendorList = () => {
                         name="label"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Address label
-                            </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Address Label"
-                                {...field}
+                              <MuiInput2
+                                name="label"
+                                form={form}
+                                placeholder="Label"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Label"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -914,15 +917,15 @@ const VendorList = () => {
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
+                            {/* <FormLabel className={LableStyle}>State</FormLabel> */}
                             <FormControl>
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
                                 placeholder="State"
-                                className="border-0 basic-single"
+                                className="border-0 basic-single z-10 relative"
                                 classNamePrefix="select border-0"
-                                isDisabled={true} // Disable the select dropdown so it cannot be changed
+                                isDisabled={false} // Disable the select dropdown so it cannot be changed
                                 isClearable={false} // Prevent clearing the value
                                 isSearchable={false} // Disable search if not needed
                                 name="state" // Ensure this name aligns with the form field
@@ -942,7 +945,6 @@ const VendorList = () => {
                                 }
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -951,15 +953,17 @@ const VendorList = () => {
                         name="city"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>City</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter City"
-                                {...field}
+                              <MuiInput2
+                                editable={true}
+                                name="city"
+                                form={form}
+                                placeholder="  City"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="  City"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />{" "}
@@ -968,15 +972,16 @@ const VendorList = () => {
                         name="gstin"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>GSTIN</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter GSTIN Number"
-                                {...field}
+                              <MuiInput2
+                                name="gstin"
+                                form={form}
+                                placeholder="  GSTIN Number"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="  GSTIN Number"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -985,18 +990,17 @@ const VendorList = () => {
                         name="pin"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pin No.
-                            </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Pin Number"
-                                {...field}
+                              <MuiInput2
+                                name="pin"
+                                form={form}
+                                placeholder="  PIN Number"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="  PIN Number"
                                 type="Number"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1005,15 +1009,16 @@ const VendorList = () => {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Email</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Email"
-                                {...field}
+                              <MuiInput2
+                                name="email"
+                                form={form}
+                                placeholder="  Email"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="  Email"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1022,16 +1027,17 @@ const VendorList = () => {
                         name="mobile"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Mobile</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Mobile"
+                              <MuiInput2
+                                name="mobile"
+                                form={form}
+                                placeholder="  Mobile"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="  Mobile"
                                 type="Number"
-                                {...field}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />{" "}
@@ -1040,15 +1046,16 @@ const VendorList = () => {
                         name="fax"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Fax</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Fax"
-                                {...field}
+                              <MuiInput2
+                                name="fax"
+                                form={form}
+                                placeholder="  Fax"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="  Fax"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1058,15 +1065,16 @@ const VendorList = () => {
                       name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>Address</FormLabel>
                           <FormControl>
-                            <Textarea
-                              className={InputStyle}
-                              placeholder="Enter Complete Address"
-                              {...field}
+                            <MuiInput2
+                              name="address"
+                              form={form}
+                              placeholder="  Complete Address"
+                              fullWidth={true}
+                              control={form.control} // Pass control here
+                              label="  Complete Address"
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />{" "}
@@ -1074,7 +1082,7 @@ const VendorList = () => {
                   </div>
                   <div className={modelFixFooterStyle}>
                     <Button
-                      variant={"outline"}
+                      variant="outlined"
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
                         setSheetOpenView(false);
@@ -1084,6 +1092,9 @@ const VendorList = () => {
                       Back
                     </Button>
                     <Button
+                      sx={{ marginLeft: "10px" }}
+                      variant="contained"
+                      type="submit"
                       // onClick={() => updateViewBranch()}
                       className="bg-cyan-700 hover:bg-cyan-600"
                     >
@@ -1117,39 +1128,37 @@ const VendorList = () => {
                   onSubmit={form.handleSubmit(createNewBranch)}
                   className=""
                 >
-                  <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
+                  <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto  ">
                     <FormField
                       control={form.control}
                       name="label"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>
-                            Address label
-                          </FormLabel>
                           <FormControl>
-                            <Input
+                            <MuiInput2
+                              form={form}
+                              name="label"
+                              label=" Address Label"
+                              placeholder=" Address Label"
                               className={InputStyle}
-                              placeholder="Enter Address Label"
-                              {...field}
+                              control={form.control}
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="grid grid-cols-2 gap-[20px]">
+                    <div className="grid grid-cols-2 gap-[20px] zIndex-[50] relative">
                       <FormField
                         control={form.control}
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
                             <FormControl>
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
                                 placeholder="State"
-                                className="border-0 basic-single"
+                                className="border-0 basic-single z-20 relative"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}
                                 isClearable={true}
@@ -1170,7 +1179,6 @@ const VendorList = () => {
                                 }
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1179,32 +1187,34 @@ const VendorList = () => {
                         name="city"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>City</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="city"
+                                label="  City"
+                                placeholder="  City"
                                 className={InputStyle}
-                                placeholder="Enter City"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
-                      />{" "}
+                      />
                       <FormField
                         control={form.control}
                         name="gstin"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>GSTIN</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="gstin"
+                                label="  GSTIN Number"
+                                placeholder="  GSTIN Number"
                                 className={InputStyle}
-                                placeholder="Enter GSTIN Number"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1213,18 +1223,17 @@ const VendorList = () => {
                         name="pin"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pin No.
-                            </FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="pin"
+                                label="  Pin Number"
+                                placeholder="  Pin Number"
                                 className={InputStyle}
-                                placeholder="Enter Pin Number"
-                                {...field}
+                                control={form.control}
                                 type="Number"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1233,15 +1242,16 @@ const VendorList = () => {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Email</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="email"
+                                label="  Email Number"
+                                placeholder="  Email Number"
                                 className={InputStyle}
-                                placeholder="Enter Email"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1250,16 +1260,17 @@ const VendorList = () => {
                         name="mobile"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Mobile</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Mobile"
-                                {...field}
+                              <MuiInput2
+                                form={form}
+                                name="mobile"
+                                label="  Mobile Number"
+                                placeholder="  Mobile Number"
                                 type="Number"
+                                className={InputStyle}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1269,15 +1280,16 @@ const VendorList = () => {
                       name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>Address</FormLabel>
                           <FormControl>
-                            <Textarea
+                            <MuiInput2
+                              form={form}
+                              name="address"
+                              label="  Complete Address"
+                              placeholder="  Complete Address"
                               className={InputStyle}
-                              placeholder="Enter Complete Address"
-                              {...field}
+                              control={form.control}
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />{" "}
@@ -1287,15 +1299,16 @@ const VendorList = () => {
                         name="fax"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Fax</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                form={form}
+                                name="fax"
+                                label="  Fax"
+                                placeholder="  Fax "
                                 className={InputStyle}
-                                placeholder="Enter Fax"
-                                {...field}
+                                control={form.control}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1303,7 +1316,7 @@ const VendorList = () => {
                   </div>
                   <div className={modelFixFooterStyle}>
                     <Button
-                      variant={"outline"}
+                      variant="outlined"
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
                         setSheetOpenBranch(false);
@@ -1313,6 +1326,8 @@ const VendorList = () => {
                       Back
                     </Button>
                     <Button
+                      sx={{ marginLeft: "10px" }}
+                      variant="contained"
                       type="submit"
                       className="bg-cyan-700 hover:bg-cyan-600"
                     >
@@ -1350,17 +1365,16 @@ const VendorList = () => {
                       name="vendorName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>
-                            Vendor's Name
-                          </FormLabel>
                           <FormControl>
-                            <Input
+                            <MuiInput2
+                              form={form}
+                              name="vendorName"
+                              label="Vendor's Name"
+                              placeholder="  Namet"
                               className={InputStyle}
-                              placeholder="Enter Name"
-                              {...field}
+                              control={form.control}
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -1370,15 +1384,16 @@ const VendorList = () => {
                       name="pan"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>Pan No.</FormLabel>
                           <FormControl>
-                            <Input
+                            <MuiInput2
+                              form={form}
+                              name="pan"
+                              label="Pan Number"
+                              placeholder="Pan Number"
                               className={InputStyle}
-                              placeholder="Enter pan Number"
-                              {...field}
+                              control={form.control}
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -1387,15 +1402,16 @@ const VendorList = () => {
                       name="cin"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>CIN</FormLabel>
                           <FormControl>
-                            <Input
+                            <MuiInput2
+                              form={form}
+                              name="cin"
+                              label="CIN Number"
+                              placeholder="CIN Number"
                               className={InputStyle}
-                              placeholder="Enter CIN"
-                              {...field}
+                              control={form.control}
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -1403,7 +1419,7 @@ const VendorList = () => {
                   </div>
                   <div className={modelFixFooterStyle}>
                     <Button
-                      variant={"outline"}
+                      variant="outlined"
                       className="shadow-slate-300 mr-[10px] border-slate-400 border"
                       onClick={(e: any) => {
                         setSheetOpenEdit(false);
@@ -1413,6 +1429,8 @@ const VendorList = () => {
                       Back
                     </Button>
                     <Button
+                      sx={{ marginLeft: "10px" }}
+                      variant="contained"
                       type="submit"
                       className="bg-cyan-700 hover:bg-cyan-600"
                     >

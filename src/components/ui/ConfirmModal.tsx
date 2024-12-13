@@ -30,7 +30,6 @@ export default function ConfirmModal({ open, setOpen, form, submit }) {
 
   return (
     <div>
-      <Button onClick={handleOpen}>Open modal</Button>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -51,7 +50,10 @@ export default function ConfirmModal({ open, setOpen, form, submit }) {
             <Typography id="transition-modal-title" variant="h6" component="h2">
               Confirm Submit!
             </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+            <Typography
+              id="transition-modal-description"
+              sx={{ mt: 2, color: "text.secondary" }}
+            >
               Are you sure to submit the entry?
             </Typography>
             <div
@@ -61,7 +63,9 @@ export default function ConfirmModal({ open, setOpen, form, submit }) {
                 marginTop: "20px",
               }}
             >
-              <Button onClick={handleClose}>Cancel</Button>
+              <Button variant="outlined" onClick={handleClose}>
+                Cancel
+              </Button>
               <Button
                 style={{
                   marginLeft: "10px",

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { InputStyle } from "@/constants/themeContants";
 
 import styled from "styled-components";
@@ -31,6 +30,11 @@ import {
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import MuiInput from "@/components/ui/MuiInput";
+import { Refresh, Send } from "@mui/icons-material";
+import ResetModal from "@/components/ui/ResetModal";
+import ConfirmModal from "@/components/ui/ConfirmModal";
+import { Button } from "@mui/material";
 const CustomerComponent = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
@@ -106,15 +110,15 @@ const CustomerComponent = () => {
         <Form
           form={form}
           layout="vertical"
-          className="space-y-6 overflow-hidden p-[10px] h-[500px]"
+          className="space-y-6 overflow-hidden  p-[15px] h-[500px]"
         >
           {/* <form
             onSubmit={form.handleSubmit(createEntry)}
             className="space-y-6 overflow-hidden p-[10px] h-[500px]"
           > */}
-          <div className="grid grid-cols-2 gap-[40px] ">
+          <div className="grid grid-cols-2 gap-[20px] mb-[-25px] ">
             <div className="">
-              <Form.Item name="partName" label="Part Name">
+              <Form.Item name="partName">
                 <ReusableAsyncSelect
                   placeholder="Part Name"
                   endpoint="/backend/getComponentByNameAndNo"
@@ -126,7 +130,7 @@ const CustomerComponent = () => {
               </Form.Item>
             </div>
 
-            <Form.Item name="vendorName" label="Customer Name">
+            <Form.Item name="vendorName">
               <ReusableAsyncSelect
                 placeholder="Customer Name"
                 endpoint="/others/customerList"
@@ -137,54 +141,60 @@ const CustomerComponent = () => {
               />
             </Form.Item>
           </div>
-          <div className="">
-            <Form.Item name="vendorPartCode" label="Customer Part Code">
-              <Input
-                className={InputStyle}
-                placeholder="Enter Customer Part Code"
-                // {...field}
-              />
-            </Form.Item>
-          </div>
-          <div className="">
-            <Form.Item name="vendorPartName" label="Customer Part Name">
-              <Input
-                className={InputStyle}
-                placeholder="Enter Customer Part Name"
-                // {...field}
-              />
-            </Form.Item>
-            <Form.Item name="desc" label="Description">
-              <Input
-                className={InputStyle}
-                placeholder="Enter Description"
-                // {...field}
-              />
-            </Form.Item>
-          </div>
-          <Row justify="space-between">
+          {/* <div className=""> */}
+          <Form.Item name="vendorPartCode">
+            <MuiInput
+              form={form}
+              name="vendorPartCode"
+              placeholder="Enter Customer Part Code"
+              label={"Customer Part Code"}
+            />
+          </Form.Item>
+          {/* </div>
+          <div className=""> */}
+          <Form.Item name="vendorPartName">
+            <MuiInput
+              form={form}
+              name="vendorPartName"
+              placeholder="Enter Customer Part Name"
+              label={"Customer Part Name"}
+            />
+          </Form.Item>
+          <Form.Item name="desc">
+            <MuiInput
+              form={form}
+              name="desc"
+              placeholder="Enter Description"
+              label={"Description"}
+            />
+          </Form.Item>
+          <div className="bg-white h-[50px] flex items-center justify-end gap-[20px]">
             <Button
               // type="reset"
-              className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+              className="shadow shadow-slate-500 mr-[10px]"
               onClick={(e: any) => {
                 setResetModel(true);
                 e.preventDefault();
               }}
+              startIcon={<Refresh />}
             >
               Reset
             </Button>
             <Button
               type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              variant="contained"
               onClick={() => setOpen(true)}
+              startIcon={<Send />}
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 ml-[20px]"
             >
               Submit
-            </Button>{" "}
-          </Row>
+            </Button>
+          </div>
+
           {/* </form> */}
         </Form>
       </div>
-      <div className="ag-theme-quartz">
+      <div className="ag-theme-quartz  h-[calc(100vh-100px)]">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
@@ -198,34 +208,13 @@ const CustomerComponent = () => {
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
-      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-600">
-              Are you absolutely sure you want to reset the form?
-            </AlertDialogTitle>
-            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
-              onClick={() => form.resetFields()}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <ConfirmationModal
+
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form}  />
+      <ConfirmModal
         open={open}
-        onClose={setOpen}
-        onOkay={() => {
-          createEntry();
-        }}
-        loading={loading1("fetch")}
-        title="Confirm Submit!"
-        description="Are you sure to submit the entry?"
+        setOpen={setOpen}
+        form={form}
+        submit={createEntry}
       />
     </Wrapper>
   );

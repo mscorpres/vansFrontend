@@ -1,3 +1,4 @@
+import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Autocomplete, TextField } from "@mui/material";
 import React from "react";
 
@@ -14,7 +15,19 @@ export const MuiSelect = ({ options, label, name, form }) => {
   return (
     <div>
       <Autocomplete
-        sx={{ height: "30px" }}
+        // styles={customStyles}
+        // sx={{ height: "30px" }}
+        sx={{
+          height: "30px",
+          "& .MuiInputBase-root": {
+            backgroundColor: value?.value ? "#FFFBEB" : "transparent", // Set background color to yellow if a value is selected
+            borderColor: value?.value ?? " .5px #FFB300",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: value?.value ?? "#a8a29e", // Change border color on hover
+            },
+          },
+  
+        }}
         options={option}
         onChange={(_, newValue) => {
           form.setFieldValue(name, newValue); // Update the form's field value with the object

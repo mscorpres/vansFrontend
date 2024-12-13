@@ -1,5 +1,4 @@
 import CustomTooltip from "@/components/shared/CustomTooltip";
-import { Button } from "@/components/ui/button";
 import { columnDefs } from "@/config/agGrid/mastermodule/ShippingAddressTable";
 
 import {
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { Textarea } from "@/components/ui/textarea";
 
 import { z } from "zod";
@@ -31,8 +31,6 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { createShippingAddress } from "@/features/shippingAddress/shippingAdressSlice";
 import {
-  InputStyle,
-  LableStyle,
   modelFixFooterStyle,
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
@@ -46,6 +44,10 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
 import { fetchShippingAddress } from "@/components/shared/Api/masterApi";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
+import MuiInput2 from "@/components/ui/MuiInput2";
+import { Send } from "@mui/icons-material";
+import { Row } from "antd";
 
 const schema = z.object({
   label: z.string().min(2, {
@@ -76,6 +78,7 @@ const schema = z.object({
 
 const MasterShippingAddressPage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
+  // const
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -167,6 +170,20 @@ const MasterShippingAddressPage: React.FC = () => {
   const handleDownloadExcel = () => {
     downloadCSV(rowData, columnDefs, "Master Shipping Address");
   };
+  const resethandle = () => {
+    console.log("reset");
+
+    form.reset({
+      label: "",
+      company: "",
+      pan: "",
+      state: "",
+      gstin: "",
+      address: "",
+      addressLine1: "",
+      addressLine2: "",
+    });
+  };
   useEffect(() => {
     getList();
   }, []);
@@ -175,8 +192,10 @@ const MasterShippingAddressPage: React.FC = () => {
       <GoBackConfermationModel
         open={open}
         setOpen={setOpen}
-        goBack={setSheetOpen}
+        form={form}
+        reset={resethandle}
       />
+  
       <div className="h-[calc(100vh-100px)]">
         <div className="h-[50px] flex items-center justify-end px-[10px] bg-white gap-[10px]">
           <CustomTooltip
@@ -185,7 +204,8 @@ const MasterShippingAddressPage: React.FC = () => {
             className="bg-cyan-700"
           >
             <Button
-              className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
+              variant="outline"
+              className=" p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
               onClick={handleDownloadExcel}
             >
               <Download className="h-[20px] w-[20px]" />
@@ -198,7 +218,10 @@ const MasterShippingAddressPage: React.FC = () => {
                 side="top"
                 className="bg-cyan-700"
               >
-                <Button className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500">
+                <Button
+                  variant="contained"
+                  className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
+                >
                   <Plus className="h-[20px] w-[20px]" />
                 </Button>
               </CustomTooltip>
@@ -226,17 +249,17 @@ const MasterShippingAddressPage: React.FC = () => {
                           name="label"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>
-                                Address label
-                              </FormLabel>
+                           
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Enter Address label"
-                                  {...field}
+                                <MuiInput2
+                                  name="label"
+                                  form={form}
+                                  placeholder="Label"
+                                  fullWidth={true}
+                                  control={form.control} // Pass control here
+                                  label="Label"
                                 />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -245,18 +268,17 @@ const MasterShippingAddressPage: React.FC = () => {
                           name="company"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>
-                                Company Name
-                              </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Enter Company Name"
-                                  {...field}
+                                <MuiInput2
+                                  name="company"
+                                  form={form}
+                                  placeholder="Company Name"
+                                  fullWidth={true}
+                                  control={form.control} // Pass control here
+                                  label="Company Name"
                                 />
                               </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                              </FormItem>
                           )}
                         />
 
@@ -265,17 +287,16 @@ const MasterShippingAddressPage: React.FC = () => {
                           name="pan"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>
-                                Pan No.
-                              </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Enter Pan Number"
-                                  {...field}
+                                <MuiInput2
+                                  name="pan"
+                                  form={form}
+                                  placeholder="Pan Number"
+                                  fullWidth={true}
+                                  control={form.control} // Pass control here
+                                  label="Pan Number"
                                 />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -284,17 +305,16 @@ const MasterShippingAddressPage: React.FC = () => {
                           name="gstin"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>
-                                GSTIN
-                              </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Enter GSTIN Number"
-                                  {...field}
+                                <MuiInput2
+                                  name="gstin"
+                                  form={form}
+                                  placeholder="GSTIN Number"
+                                  fullWidth={true}
+                                  control={form.control} // Pass control here
+                                  label="GSTIN Number"
                                 />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -303,12 +323,9 @@ const MasterShippingAddressPage: React.FC = () => {
                           name="state"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>
-                                State
-                              </FormLabel>
                               <FormControl>
                                 <ReusableAsyncSelect
-                                  placeholder="State"
+                                  // placeholder="State"
                                   endpoint="/others/states"
                                   transform={transformPlaceData}
                                   fetchOptionWith="query"
@@ -317,7 +334,6 @@ const MasterShippingAddressPage: React.FC = () => {
                                   }
                                 />
                               </FormControl>
-                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -327,17 +343,16 @@ const MasterShippingAddressPage: React.FC = () => {
                         name="address"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Address
-                            </FormLabel>
                             <FormControl>
-                              <Textarea
-                                className={InputStyle}
-                                placeholder="Enter Complete Address"
-                                {...field}
+                              <MuiInput2
+                                name="address"
+                                form={form}
+                                placeholder="Address"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Address"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -346,17 +361,16 @@ const MasterShippingAddressPage: React.FC = () => {
                         name="addressLine1"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Address Line 1
-                            </FormLabel>
                             <FormControl>
-                              <Textarea
-                                className={InputStyle}
-                                placeholder="Enter Complete Address"
-                                {...field}
+                              <MuiInput2
+                                name="addressLine1"
+                                form={form}
+                                placeholder="Address"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Address Line 1"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -366,38 +380,44 @@ const MasterShippingAddressPage: React.FC = () => {
                         name="addressLine2"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Address Line 2
-                            </FormLabel>
                             <FormControl>
-                              <Textarea
-                                className={InputStyle}
-                                placeholder="Enter Complete Address"
-                                {...field}
+                              <MuiInput2
+                                name="addressLine2"
+                                form={form}
+                                placeholder="Address"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Address Line 2"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className={modelFixFooterStyle}>
-                      <Button
-                        variant={"outline"}
-                        className="shadow-slate-300 mr-[10px] border-slate-400 border"
-                        onClick={(e: any) => {
-                          setOpen(true);
-                          e.preventDefault();
-                        }}
-                      >
-                        Back
-                      </Button>
-                      <Button
-                        type="submit"
-                        className="bg-cyan-700 hover:bg-cyan-600"
-                      >
-                        Submit
-                      </Button>
+                      {" "}
+                      <Row className="w-full justify-end">
+                        <Button
+                          startIcon={<KeyboardBackspaceIcon />}
+                          variant="outlined"
+                          className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                          onClick={(e: any) => {
+                            setOpen(true);
+                            e.preventDefault();
+                          }}
+                        >
+                          Back
+                        </Button>
+                        <Button
+                          startIcon={<Send />}
+                          variant="contained"
+                          sx={{ marginLeft: 2 }}
+                          type="submit"
+                          className="bg-cyan-700 hover:bg-cyan-600"
+                        >
+                          Submit
+                        </Button>
+                      </Row>
                     </div>
                   </form>
                 </Form>

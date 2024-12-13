@@ -19,7 +19,7 @@ const style = {
   p: 4,
 };
 
-export default function ResetModal({ open, setOpen, form }) {
+export default function ResetModal({ open, setOpen, form, message, reset }) {
   //   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -30,7 +30,6 @@ export default function ResetModal({ open, setOpen, form }) {
 
   return (
     <div>
-      <Button onClick={handleOpen}>Open modal</Button>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -51,7 +50,10 @@ export default function ResetModal({ open, setOpen, form }) {
             <Typography id="transition-modal-title" variant="h6" component="h2">
               Reset Field
             </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+            <Typography
+              id="transition-modal-description"
+              sx={{ mt: 2, color: "text.secondary" }}
+            >
               Are you absolutely sure you want to reset the form?
             </Typography>
             <div
@@ -70,7 +72,7 @@ export default function ResetModal({ open, setOpen, form }) {
                 }}
                 variant="contained"
                 className=" shadow hover:#e53935 shadow-slate-500"
-                onClick={handleReset}
+                onClick={message == "row" ? reset : handleReset}
                 startIcon={<Refresh />}
               >
                 Reset

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { transformOptionData } from "@/helper/transform";
@@ -34,6 +33,12 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import MuiInput from "@/components/ui/MuiInput";
+import MuiSelect from "@/components/ui/MuiSelect";
+import { Refresh, Send } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import ResetModal from "@/components/ui/ResetModal";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 const Product = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -187,12 +192,11 @@ const Product = () => {
         <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 overflow-hidden p-[10px] h-[1000px]"
+            className="space-y-6 overflow-hidden p-[15px] h-[1000px]"
           >
-            <div className="grid grid-cols-2 gap-[40px] ">
+            <div className="grid grid-cols-2 gap-[10px]  mb-[-20px]">
               <Form.Item
                 name="sku"
-                label="SKU"
                 rules={[
                   {
                     required: true,
@@ -200,16 +204,16 @@ const Product = () => {
                   },
                 ]}
               >
-                <Input
-                  className={InputStyle}
+                <MuiInput
+                  form={form}
+                  name="sku"
                   placeholder="Enter SKU"
-                  // {...field}
+                  label={"SKU"}
                 />
               </Form.Item>
 
               <Form.Item
                 name="uom"
-                label="UOM"
                 rules={[
                   {
                     required: true,
@@ -217,48 +221,33 @@ const Product = () => {
                   },
                 ]}
               >
-                <Select
-                  styles={customStyles}
-                  components={{ DropdownIndicator }}
-                  placeholder=" Enter UOM"
-                  className="border-0 basic-single"
-                  classNamePrefix="select border-0"
-                  isDisabled={false}
-                  isClearable={true}
-                  isSearchable={true}
+                <MuiSelect
                   options={asyncOptions}
-                  //   onChange={(e) => console.log(e)}
-                  //   value={
-                  //     data.clientDetails
-                  //       ? {
-                  //           label: data.clientDetails.city.name,
-                  //           value: data.clientDetails.city.name,
-                  //         }
-                  //       : null
-                  //   }
+                  label={"UoM"}
+                  form={form}
+                  name="uom"
                 />
               </Form.Item>
             </div>
-            <Form.Item
-              name="product"
-              label="Product"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter Product!",
-                },
-              ]}
-            >
-              <Input
-                className={InputStyle}
-                placeholder="Enter Product"
-                // {...field}
-              />
-            </Form.Item>
-            <div className="">
+            <div className="mt-[-10px]">
+              <Form.Item
+                name="product"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter Product!",
+                  },
+                ]}
+              >
+                <MuiInput
+                  form={form}
+                  name="product"
+                  placeholder="Enter Product"
+                  label={"Product"}
+                />
+              </Form.Item>
               <Form.Item
                 name="customerName"
-                label="  Customer Name/Code"
                 rules={[
                   {
                     required: true,
@@ -275,30 +264,32 @@ const Product = () => {
                   fetchOptionWith="search"
                 />
               </Form.Item>
-            </div>{" "}
-            <Row justify="space-between">
-              {" "}
+            </div>
+            <div className="bg-white h-[50px] flex items-center justify-end gap-[20px]">
               <Button
                 // type="reset"
-                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                className="shadow shadow-slate-500 mr-[10px]"
                 onClick={(e: any) => {
                   setResetModel(true);
                   e.preventDefault();
                 }}
+                startIcon={<Refresh />}
               >
                 Reset
               </Button>
               <Button
                 type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                variant="contained"
                 onClick={(e: any) => {
                   e.preventDefault();
                   setOpen(true);
                 }}
+                startIcon={<Send />}
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 ml-[20px]"
               >
                 Submit
               </Button>
-            </Row>
+            </div>
           </form>
         </Form>{" "}
         {sheetOpenEdit?.length > 0 && (
@@ -322,34 +313,14 @@ const Product = () => {
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
-      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-600">
-              Are you absolutely sure you want to reset the form?
-            </AlertDialogTitle>
-            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
-              onClick={() => form.resetFields()}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <ConfirmationModal
+
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
+      <ConfirmModal
         open={open}
-        onClose={setOpen}
-        onOkay={() => {
-          onsubmit();
-        }}
-        title="Confirm Submit!"
-        description="Are you sure to submit the entry?"
-      />{" "}
+        setOpen={setOpen}
+        form={form}
+        submit={onsubmit}
+      />
     </Wrapper>
   );
 };

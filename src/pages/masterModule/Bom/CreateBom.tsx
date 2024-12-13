@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { MoreOutlined } from "@ant-design/icons";
@@ -17,6 +16,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
 
 const CreateBom = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -157,16 +157,19 @@ const CreateBom = () => {
               />
             </Form.Item>
 
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={(e) => {
-                e.preventDefault();
-                fetchBOMList();
-              }}
-            >
-              Search
-            </Button>
+            <div className="flex items-center justify-end">
+              <Button
+                variant="contained"
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                onClick={(e) => {
+                  e.preventDefault();
+                  fetchBOMList();
+                }}
+              >
+                Search
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

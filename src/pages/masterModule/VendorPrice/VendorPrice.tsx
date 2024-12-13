@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import { Divider, Form, Typography } from "antd";
 import { useToast } from "@/components/ui/use-toast";
@@ -23,6 +22,7 @@ import { IoCloudUpload } from "react-icons/io5";
 import { downloadCSVCustomColumns } from "@/components/shared/ExportToCSV";
 import { Filter } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -199,7 +199,7 @@ const VendorPrice = () => {
             </div>
           </FileUploader>
           <Divider />
-          <div className="flex items-center justify-between p-[10px]">
+          <div className="flex items-center justify-between p-[10px] cursor-pointer">
             <a
               onClick={() =>
                 downloadCSVCustomColumns(sampleData, "POVENDORPRICNG")
@@ -211,6 +211,7 @@ const VendorPrice = () => {
               </Typography>
             </a>
             <Button
+              variant="contained"
               type="submit"
               className="bg-cyan-700 hover:bg-cyan-600"
               onClick={() => sendFileForParse()}
@@ -235,13 +236,14 @@ const VendorPrice = () => {
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
           <Button
-            className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+            className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
             onClick={() => setRowData([])}
           >
             Reset
           </Button>{" "}
           <Button
-            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+            variant="contained"
+            className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px] "
             onClick={onsubmit}
             // loading={laoding}
             disabled={rowData.length === 0}

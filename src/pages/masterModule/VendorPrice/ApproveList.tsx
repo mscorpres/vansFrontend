@@ -3,7 +3,6 @@ import { AgGridReact } from "@ag-grid-community/react";
 import { Filter } from "lucide-react";
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Button } from "@/components/ui/button";
 import { DatePicker, Divider, Form, Space } from "antd";
 import { RootState } from "@/store";
 import {
@@ -19,6 +18,8 @@ import useApi from "@/hooks/useApi";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { useSelector } from "react-redux";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 const { RangePicker } = DatePicker;
 const ApproveList: React.FC = () => {
@@ -150,9 +151,8 @@ const ApproveList: React.FC = () => {
     fetchList();
   };
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -161,9 +161,19 @@ const ApproveList: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          className="space-y-6 overflow-hidden p-[10px] h-[370px]  "
+          className="space-y-6 overflow-hidden p-[10px] h-[500px]  "
         >
-          <Form.Item className="w-full" name="data" label="Date Range">
+          <Form.Item
+            className="w-full"
+            name="data"
+            label="Date Range"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Date Range!",
+              },
+            ]}
+          >
             <Space direction="vertical" size={12} className="w-full">
               <RangePicker
                 className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
@@ -182,20 +192,21 @@ const ApproveList: React.FC = () => {
           <div className="w-full flex justify-end">
             <Button
               type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
+              variant="contained"
+              className="shadow  shadow-slate-500  flex justify-right items-right w-20"
               onClick={fetchList}
             >
               Search
-            </Button>{" "}
-          </div>{" "}
+            </Button>
+          </div>
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-160px)]">
-        <div className="flex items-center gap-[20px] justify-end bg-white ">
+      <div className="ag-theme-quartz h-[calc(100vh-150px)]  bg-white relative">
+        <div className="flex items-center gap-[20px] justify-end bg-white my-[8px] mr-[10px]">
           <Button
             onClick={() => setShowConfirmation(true)}
-            className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md m-[10px]"
+            className="  flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md m-[10px] my-[10px]  "
             disabled={!selectedRows.length}
           >
             Approve
@@ -217,14 +228,20 @@ const ApproveList: React.FC = () => {
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
-      </div>{" "}
-      <ConfirmationModal
+      </div>
+      {/* <ConfirmationModal
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}
         onOkay={approveTheSelected}
         title="Confirm Submit!"
         description="Are you sure you want to approve the selected Items?"
-      />{" "}
+      />{" "} */}
+      <ConfirmModal
+        open={showConfirmation}
+        setOpen={setShowConfirmation}
+        form={form}
+        submit={approveTheSelected}
+      />
     </Wrapper>
   );
 };

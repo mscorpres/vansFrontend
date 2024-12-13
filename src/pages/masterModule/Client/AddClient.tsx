@@ -45,6 +45,8 @@ import {
 import useApi from "@/hooks/useApi";
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import MuiInput2 from "@/components/ui/MuiInput2";
+import MuiSelect2 from "@/components/ui/MuiSelect2";
 
 interface OptionType {
   value: string;
@@ -243,6 +245,7 @@ const AddClient: React.FC<Props> = ({
       email: data.email,
       website: data.website,
     };
+
     const response = await execFun(() => addClient(payload), "fetch");
 
     if (response?.data?.success) {
@@ -294,24 +297,23 @@ const AddClient: React.FC<Props> = ({
                   </p>
                 </CardHeader>
                 <CardContent className="mt-[30px]">
-                  <div className="grid grid-cols-4 gap-[40px] mt-[30px]">
+                  <div className="grid grid-cols-4 gap-[10px] mt-[30px]">
                     <div>
                       <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Your Name
-                            </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Name"
-                                {...field}
+                              <MuiInput2
+                                name="name"
+                                form={form}
+                                placeholder="Name"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Name"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -322,15 +324,16 @@ const AddClient: React.FC<Props> = ({
                         name="gst"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>GST</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter GST Number"
-                                {...field}
+                              <MuiInput2
+                                name="gst"
+                                form={form}
+                                placeholder="GST Number"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="GST Number"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -341,17 +344,16 @@ const AddClient: React.FC<Props> = ({
                         name="salesPerson"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Sales Person
-                            </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Sales Person"
-                                {...field}
+                              <MuiInput2
+                                name="salesPerson"
+                                form={form}
+                                placeholder="Sales Person"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Sales Person"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -362,38 +364,38 @@ const AddClient: React.FC<Props> = ({
                         name="pan"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>PAN</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter PAN Number"
-                                {...field}
+                              <MuiInput2
+                                name="pan"
+                                form={form}
+                                placeholder=" PAN Number"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label=" PAN Number"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                   </div>{" "}
-                  {/* <div className="grid grid-cols-4 gap-[40px] mt-[30px]"> */}
-                  <div className="mt-[40px]">
+                  {/* <div className="grid grid-cols-4 gap-[10px] mt-[30px]"> */}
+                  <div className="mt-[40px] grid grid-cols-2">
                     <FormField
                       control={form.control}
                       name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LableStyle}>
-                            Enter Address
-                          </FormLabel>
                           <FormControl>
-                            <Textarea
-                              className={InputStyle}
-                              placeholder="Enter Address"
-                              {...field}
+                            <MuiInput2
+                              name="address"
+                              form={form}
+                              placeholder="Address"
+                              fullWidth={true}
+                              control={form.control} // Pass control here
+                              label="Address"
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -401,16 +403,16 @@ const AddClient: React.FC<Props> = ({
                     {/* <p>error message</p> */}
                   </div>
                   {/* </div> */}
-                  <div className="grid grid-cols-4 gap-[40px] mt-[30px]">
+                  <div className="grid grid-cols-4 gap-[10px] mt-[30px]">
                     <div>
                       <FormField
                         control={form.control}
                         name="country"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
+                            {/* <FormLabel className={LableStyle}>
                               Country
-                            </FormLabel>
+                            </FormLabel> */}
                             <FormControl>
                               <Select
                                 styles={customStyles}
@@ -438,12 +440,12 @@ const AddClient: React.FC<Props> = ({
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>State</FormLabel>
+                            {/* <FormLabel className={LableStyle}>State</FormLabel> */}
                             <FormControl>
                               <Select
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
-                                placeholder="state"
+                                placeholder="State"
                                 className="border-0 basic-single"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}
@@ -463,6 +465,7 @@ const AddClient: React.FC<Props> = ({
                                 // }
                               />
                             </FormControl>
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -474,15 +477,16 @@ const AddClient: React.FC<Props> = ({
                         name="city"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>City</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter City"
-                                {...field}
+                              <MuiInput2
+                                name="city"
+                                form={form}
+                                placeholder="City"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="City"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -493,40 +497,40 @@ const AddClient: React.FC<Props> = ({
                         name="zip"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>ZIP</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                name="zip"
+                                form={form}
+                                placeholder="ZIP Number"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="ZIP Number"
                                 type="number"
-                                className={InputStyle}
-                                placeholder="Enter ZIP Number"
-                                {...field}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-4 gap-[40px] mt-[30px]">
+                  <div className="grid grid-cols-4 gap-[10px] mt-[30px]">
                     <div className="mt-[40px]">
                       <FormField
                         control={form.control}
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Phone Number
-                            </FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                name="phone"
+                                form={form}
+                                placeholder="Phone Number"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Phone Number"
                                 type="number"
-                                className={InputStyle}
-                                placeholder="Enter Phone Number"
-                                {...field}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -539,16 +543,17 @@ const AddClient: React.FC<Props> = ({
                         name="mobile"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Mobile</FormLabel>
                             <FormControl>
-                              <Input
+                              <MuiInput2
+                                name="mobile"
+                                form={form}
+                                placeholder="Mobile Number"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Mobile Number"
                                 type="number"
-                                className={InputStyle}
-                                placeholder="Enter Mobile Number"
-                                {...field}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />{" "}
@@ -560,15 +565,16 @@ const AddClient: React.FC<Props> = ({
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>Email</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Email ID"
-                                {...field}
+                              <MuiInput2
+                                name="email"
+                                form={form}
+                                placeholder="Email"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Email"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />{" "}
@@ -580,17 +586,16 @@ const AddClient: React.FC<Props> = ({
                         name="website"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Website
-                            </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Website"
-                                {...field}
+                              <MuiInput2
+                                name="website"
+                                form={form}
+                                placeholder="Website"
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Website"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />

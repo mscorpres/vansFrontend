@@ -8,6 +8,7 @@ export const MuiInput = ({ fullWidth, label, form, name }) => {
       //   id="filled-basic"
       //   color="grey"
       //   sx={{ height: "30px" }}
+      className="z-0"
       variant="outlined"
       fullWidth={true}
       label={label}

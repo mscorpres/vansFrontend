@@ -9,7 +9,6 @@ import {
 import { InputStyle, modelFixHeaderStyle } from "@/constants/themeContants";
 import { Form, Input, Menu, Select } from "antd";
 
-import { Button } from "@/components/ui/button";
 import { Download, Filter, Plus, Trash2, Upload } from "lucide-react";
 import { AgGridReact } from "ag-grid-react";
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
@@ -44,12 +43,14 @@ import { useParams } from "react-router-dom";
 import { RowData } from "@/data";
 import { toast } from "@/components/ui/use-toast";
 import { FaCheckCircle } from "react-icons/fa";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { IoCloudUpload } from "react-icons/io5";
 import { spigenAxios } from "@/axiosIntercepter";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { ColDef, StatusPanelDef } from "@ag-grid-community/core";
+import { Button } from "@mui/material";
 const EditBom = () => {
   const [form] = Form.useForm();
   const gridRef = useRef<AgGridReact<RowData>>(null);
@@ -673,15 +674,16 @@ const EditBom = () => {
                   onClick={() => {
                     addNewRow();
                   }}
-                  className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+                  className="rounded-md shadow shadow-slate-500 max-w-max"
                 >
                   <Plus className="font-[600]" /> Add Item
                 </Button>
               )}
 
               <Button
+                sx={{ backgroundColor: "#2fa062", color: "#fff" }}
                 onClick={() => setSheetOpen(true)}
-                className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
+                className="bg-[#217346] text-white hover:bg-[#48a672] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
               >
                 <Upload className="text-white w-[20px] h-[20px]" /> Upload Docs
                 Here
@@ -727,7 +729,9 @@ const EditBom = () => {
                 </Button> */}
                 {stage1 === "1" && (
                   <Button
-                    className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+                    variant="contained"
+                    startIcon={<NavigateNextIcon />}
+                    className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
                     onClick={handleNext}
                   >
                     Next

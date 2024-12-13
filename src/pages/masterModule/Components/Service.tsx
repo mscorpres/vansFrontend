@@ -183,9 +183,9 @@ const Service = () => {
         <Form form={form} layout="vertical" {...form}>
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 h-[500px] overflow-hidden p-[10px]"
+            className="space-y-6 h-[500px] overflow-hidden  p-[15px]"
           >
-            <div className="grid grid-cols-2 gap-[40px]  ">
+            <div className="grid grid-cols-2 gap-[10px] mb-[-20px]  ">
               <div className="">
                 <Form.Item
                   name="partCode"
@@ -279,7 +279,7 @@ const Service = () => {
           loading={loading1("fetch")}
         />
       </div>
-      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form}  />
       <ConfirmModal
         open={open}
         setOpen={setOpen}

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { MoreOutlined } from "@ant-design/icons";
@@ -9,7 +8,7 @@ import { InputStyle } from "@/constants/themeContants";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { Filter, Plus } from "lucide-react";
 import styled from "styled-components";
-import { Dropdown, Menu, Form, Row } from "antd";
+import { Dropdown, Menu, Form, Row, Divider } from "antd";
 import { Input } from "@/components/ui/input";
 
 import Select from "react-select";
@@ -39,6 +38,12 @@ import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSli
 import { useDispatch } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import MuiInput from "@/components/ui/MuiInput";
+import MuiSelect from "@/components/ui/MuiSelect";
+import { Refresh, Send } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import ResetModal from "@/components/ui/ResetModal";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 const FormSchema = z.object({
   wise: z.string(),
 });
@@ -52,6 +57,7 @@ const CreatingBoxRecipe = () => {
     },
   ]);
   const [openView, setSheetOpenView] = useState<any>([]);
+  const [open, setOpen] = useState(false);
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const [sheetOpenEdit, setSheetOpenEdit] = useState([]);
   const [search, setSearch] = useState("");
@@ -112,6 +118,7 @@ const CreatingBoxRecipe = () => {
     }
   };
   const createBOM = async () => {
+    setOpen(false);
     const values = await form.validateFields();
     let payload = {
       bom_subject: values.bom,
@@ -287,70 +294,69 @@ const CreatingBoxRecipe = () => {
         <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 overflow-hidden p-[10px] h-[500px]"
+            className="space-y-6 overflow-hidden p-[20px] h-[500px]"
           >
             {" "}
             <div className="">
-              <Form.Item name="bom" label="BOM">
-                <Input
-                  className={InputStyle}
+              <Form.Item name="bom">
+                <MuiInput
+                  form={form}
+                  name="bom"
                   placeholder="Enter BOM"
-                  // {...field}
+                  label={"BOM"}
                 />
               </Form.Item>
             </div>
-            <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+            <div className="grid grid-cols-2 gap-[20px] mt-[30px]">
               <div className="">
-                <Form.Item name="sku" label="SKU">
-                  <Input
-                    className={InputStyle}
+                <Form.Item name="sku">
+                  <MuiInput
+                    form={form}
+                    name="sku"
                     placeholder="Enter SKU"
-                    // {...field}
+                    label={"SKU"}
                   />
                 </Form.Item>
                 {/* )}
                 /> */}
               </div>
               <div className="">
-                <Form.Item name="product" label="Product">
-                  <Select
-                    styles={customStyles}
-                    components={{ DropdownIndicator }}
-                    placeholder=" Enter SKU"
-                    className="border-0 basic-single"
-                    classNamePrefix="select border-0"
-                    isDisabled={false}
-                    isClearable={true}
-                    isSearchable={true}
+                <Form.Item name="product">
+                  <MuiSelect
                     options={sfgType}
+                    label={"Product"}
+                    form={form}
+                    name="product"
                   />
                 </Form.Item>
                 {/* )}
                 /> */}
-              </div>{" "}
-            </div>{" "}
-            <Form.Item name="productName" label="Product Name">
-              <Input
-                className={InputStyle}
-                placeholder="Enter Product"
-                disabled
-                // {...field}
+              </div>
+            </div>
+            <Divider />
+            <Form.Item name="productName">
+              <MuiInput
+                form={form}
+                name="productName"
+                placeholder="Enter Product Name"
+                label={"Product Name"}
               />
             </Form.Item>
             <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-              <Form.Item name="partCode" label="Part Code">
-                <Input
-                  className={InputStyle}
+              <Form.Item name="partCode">
+                <MuiInput
+                  form={form}
+                  name="partCode"
                   placeholder="Enter Part Code"
-                  // {...field}
+                  label={"Part Code"}
                 />
               </Form.Item>
-              <Form.Item name="partName" label="Part Name">
-                <Input
-                  className={InputStyle}
+              <Form.Item name="partName">
+                <MuiInput
+                  form={form}
+                  name="partName"
                   placeholder="Enter Part Name"
-                  disabled
-                  // {...field}
+                  label={"Part Name"}
                 />
               </Form.Item>
             </div>
@@ -358,39 +364,42 @@ const CreatingBoxRecipe = () => {
               {/* )}
                 /> */}
             </div>
-            <Row justify="space-between">
-              {" "}
+            <div className="bg-white h-[50px] flex items-center justify-end gap-[20px]">
               <Button
                 // type="reset"
-                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                className="shadow shadow-slate-500 mr-[10px]"
                 onClick={(e: any) => {
                   setResetModel(true);
                   e.preventDefault();
                 }}
+                startIcon={<Refresh />}
               >
                 Reset
               </Button>
               <Button
                 type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                variant="contained"
                 onClick={(e) => {
                   e.preventDefault();
-                  createBOM();
+                  setOpen(true);
                 }}
+                startIcon={<Send />}
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 ml-[20px]"
               >
                 Submit
-              </Button>{" "}
-            </Row>
+              </Button>
+            </div>
           </form>
         </Form>
       </div>{" "}
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <div className="flex items-center w-full gap-[20px] h-[60px] px-[10px] justify-between bg-white">
           <Button
+            variant="outlined"
             onClick={() => {
               addNewRow();
             }}
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+            className="rounded-md shadow shadow-slate-500 max-w-max"
           >
             <Plus className="font-[600]" /> Add Item
           </Button>{" "}
@@ -416,25 +425,13 @@ const CreatingBoxRecipe = () => {
       {openView && (
         <ViewBom openView={openView} setSheetOpenView={setSheetOpenView} />
       )}
-      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-600">
-              Are you absolutely sure you want to reset the form?
-            </AlertDialogTitle>
-            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
-              onClick={() => form.resetFields()}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
+      <ConfirmModal
+        open={open}
+        setOpen={setOpen}
+        form={form}
+        submit={createBOM}
+      />
     </Wrapper>
   );
 };

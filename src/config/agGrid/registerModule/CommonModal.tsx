@@ -1,4 +1,3 @@
-import { Button } from "antd";
 import {
   Dialog,
   DialogContent,
@@ -6,6 +5,10 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Refresh } from "@mui/icons-material";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { Button, Typography } from "@mui/material";
+import DoneSharpIcon from "@mui/icons-material/DoneSharp";
 
 interface CommonModalProps {
   isDialogVisible: boolean;
@@ -25,25 +28,35 @@ export function CommonModal({
   return (
     <Dialog open={isDialogVisible} onOpenChange={handleCancel}>
       <DialogContent
-        className="min-w-[600px]"
+        className="min-w-[500px]"
         onInteractOutside={(e) => e.preventDefault()}
       >
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
-        <div className="p-4">
-          <p>{description}</p>
-        </div>
+        <Typography variant="h6">Remove Entry</Typography>
+        <Typography>{description}</Typography>
+
         <DialogFooter>
-          <Button type="default" onClick={handleCancel} className="mr-2">
-            Cancel
+          <Button
+            variant="outlined"
+            type="default"
+            onClick={handleCancel}
+            className="mr-2"
+            startIcon={<KeyboardBackspaceIcon />}
+          >
+            Back
           </Button>
           <Button
+            variant="contained"
             type="primary"
             onClick={handleOk}
-            className="bg-teal-500 hover:bg-teal-600"
+            style={{
+              marginLeft: "10px",
+              backgroundColor: "#d32f2f ",
+              hover: "#e53935",
+            }}
+            // className="bg-teal-500 hover:bg-teal-600"
+            startIcon={<DoneSharpIcon />}
           >
-            Confirm
+            Remove
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -397,10 +397,10 @@ const Material = () => {
             <Filter className="h-[20px] w-[20px]" />
             Add
           </div>
-          <Form form={form} layout="vertical" className="p-[10px]">
+          <Form form={form} layout="vertical" className=" p-[15px]">
             {sheetOpenHSN == false ? (
               <>
-                <div className="grid grid-cols-3 gap-[40px] ">
+                <div className="grid grid-cols-3 gap-[10px] ">
                   <div className="">
                     <Form.Item name="partCode" rules={rules.partCode}>
                       <MuiInput
@@ -408,10 +408,6 @@ const Material = () => {
                         name="partCode"
                         placeholder="Part Code"
                         label={"Part Code"}
-                        // onChange={(e: any) => {
-                        //   form.setFieldValue("partCode", e.target.value);
-                        // }}
-                        // {...field}
                       />
                     </Form.Item>
                   </div>
@@ -436,7 +432,7 @@ const Material = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="grid grid-cols-4 gap-[40px]  py-[-10px]">
+                <div className="grid grid-cols-4 gap-[10px]  py-[-10px]">
                   <div className="col-span-2">
                     <Form.Item name="compName" rules={rules.compName}>
                       <MuiInput
@@ -469,7 +465,7 @@ const Material = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-[40px] py-[-10px]">
+                <div className="grid grid-cols-3 gap-[10px] py-[-10px]">
                   <div className="">
                     <Form.Item name="group" rules={rules.group}>
                       <MuiSelect
@@ -502,7 +498,7 @@ const Material = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-[40px] py-[25px]">
+                <div className="grid grid-cols-2 gap-[10px] py-[25px]">
                   <div className="">
                     <Form.Item name="maker" rules={rules.maker}>
                       <MuiInput
@@ -535,7 +531,6 @@ const Material = () => {
                       e.preventDefault();
                       addHsn();
                     }}
-                  
                     className="rounded-md shadow 
                 
                     shadow-slate-500 max-w-max"
@@ -582,7 +577,6 @@ const Material = () => {
                   <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
                     <Button
                       className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
-                    
                       onClick={() => setSheetOpenHSN(false)}
                     >
                       Back
@@ -592,7 +586,6 @@ const Material = () => {
                       type="submit"
                       variant="contained"
                       className="shadow shadow-slate-500"
-                     
                       // onClick={(e) => e.preventDefault()}
                       onClick={(e: any) => {
                         setOpen(true);
@@ -606,8 +599,6 @@ const Material = () => {
                 <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between"></div>
               </>
             )}
-
-     
           </Form>
         </div>
         <div className="ag-theme-quartz h-[calc(100vh-100px)]">
@@ -625,7 +616,6 @@ const Material = () => {
           form={form}
           submit={onSubmit}
         />
-       
       </Wrapper>
       {sheetOpenEdit?.c_part_no && (
         <EditMaterial

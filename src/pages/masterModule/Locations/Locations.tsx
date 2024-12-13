@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { InputStyle } from "@/constants/themeContants";
@@ -31,6 +30,12 @@ import { toast } from "@/components/ui/use-toast";
 import { RowData } from "@/data";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import MuiInput from "@/components/ui/MuiInput";
+import MuiSelect from "@/components/ui/MuiSelect";
+import ResetModal from "@/components/ui/ResetModal";
+import ConfirmModal from "@/components/ui/ConfirmModal";
+import { Refresh, Send } from "@mui/icons-material";
+import { Button } from "@mui/material";
 const Locations = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
@@ -201,13 +206,12 @@ const Locations = () => {
         <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onsubmit)}
-            className="space-y-6 overflow-hidden p-[10px] h-[550px]"
+            className="space-y-6 overflow-hidden p-[20px] h-[550px]"
           >
             {" "}
             <div className="">
               <Form.Item
                 name="location"
-                label="Location Name"
                 rules={[
                   {
                     required: true,
@@ -215,17 +219,19 @@ const Locations = () => {
                   },
                 ]}
               >
-                <Input
-                  className={InputStyle}
-                  placeholder="Enter Locations Name"
+                <MuiInput
+                  form={form}
+                  name="location"
+                  placeholder="Location Name"
+                  label={"Location Name"}
                 />
               </Form.Item>
             </div>{" "}
-            <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
+            <div className="grid grid-cols-2 gap-[40px] mt-[30px] mb-[-30px]">
               <div className="">
                 <Form.Item
                   name="locationUnder"
-                  label="Parent Location"
+                  // label="Parent Location"
                   rules={[
                     {
                       required: true,
@@ -233,31 +239,16 @@ const Locations = () => {
                     },
                   ]}
                 >
-                  <Select
-                    styles={customStyles}
-                    components={{ DropdownIndicator }}
-                    placeholder=" Enter Location"
-                    className="border-0 basic-single"
-                    classNamePrefix="select border-0"
-                    isDisabled={false}
-                    isClearable={true}
-                    isSearchable={true}
+                  <MuiSelect
                     options={asyncOptions}
-                    //   onChange={(e) => console.log(e)}
-                    //   value={
-                    //     data.clientDetails
-                    //       ? {
-                    //           label: data.clientDetails.city.name,
-                    //           value: data.clientDetails.city.name,
-                    //         }
-                    //       : null
-                    //   }
+                    label={"Parent Location"}
+                    form={form}
+                    name="locationUnder"
                   />
                 </Form.Item>
               </div>
               <div className="">
                 <Form.Item
-                  label="Location Type"
                   name="locationType"
                   rules={[
                     {
@@ -266,16 +257,11 @@ const Locations = () => {
                     },
                   ]}
                 >
-                  <Select
-                    styles={customStyles}
-                    components={{ DropdownIndicator }}
-                    placeholder=" Enter Type"
-                    className="border-0 basic-single"
-                    classNamePrefix="select border-0"
-                    isDisabled={false}
-                    isClearable={true}
-                    isSearchable={true}
+                  <MuiSelect
                     options={locType}
+                    label={"Location Type"}
+                    form={form}
+                    name="locationType"
                   />
                 </Form.Item>
                 {/* )}
@@ -285,7 +271,6 @@ const Locations = () => {
             <div className="">
               <Form.Item
                 name="address"
-                label="Address"
                 rules={[
                   {
                     required: true,
@@ -293,35 +278,39 @@ const Locations = () => {
                   },
                 ]}
               >
-                <Input
-                  className={InputStyle}
-                  placeholder="Enter Address"
-                  // {...field}
+                <MuiInput
+                  form={form}
+                  name="address"
+                  placeholder="Address"
+                  label={"Address"}
                 />
               </Form.Item>
-            </div>{" "}
-            <Row justify="space-between">
+            </div>
+            <div className="bg-white h-[50px] flex items-center justify-end gap-[20px]">
               <Button
                 // type="reset"
-                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                className="shadow shadow-slate-500 mr-[10px]"
                 onClick={(e: any) => {
                   e.preventDefault();
                   setResetModel(true);
                 }}
+                startIcon={<Refresh />}
               >
                 Reset
               </Button>
               <Button
                 type="submit"
+                variant="contained"
                 onClick={(e) => {
                   e.preventDefault();
                   setShowConfirmation(true);
                 }}
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                startIcon={<Send />}
+                className="shadow shadow-slate-500 ml-[20px]"
               >
                 Submit
               </Button>
-            </Row>
+            </div>
           </form>
         </Form>
       </div>
@@ -338,33 +327,15 @@ const Locations = () => {
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
-      </div>{" "}
-      <ConfirmationModal
+      </div>
+
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
+      <ConfirmModal
         open={showConfirmation}
-        onClose={setShowConfirmation}
-        onOkay={handleSubmit}
-        title="Confirm Submit!"
-        description="Are you sure to submit the entry?"
-      />{" "}
-      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-600">
-              Are you absolutely sure you want to reset the form?
-            </AlertDialogTitle>
-            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
-              onClick={() => form.resetFields()}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        setOpen={setShowConfirmation}
+        form={form}
+        submit={handleSubmit}
+      />
     </Wrapper>
   );
 };

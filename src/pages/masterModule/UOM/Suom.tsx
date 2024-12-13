@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 
 import { InputStyle } from "@/constants/themeContants";
 
@@ -27,8 +26,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-import { Filter } from "lucide-react";
+import { Filter, Send } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import MuiInput from "@/components/ui/MuiInput";
+import { Refresh } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import ResetModal from "@/components/ui/ResetModal";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 const Suom = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -123,14 +127,6 @@ const Suom = () => {
       {" "}
       {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
-        {" "}
-        <ConfirmationModal
-          open={open}
-          onClose={setOpen}
-          onOkay={createEntry}
-          title="Confirm Submit!"
-          description="Are you sure to submit the entry?"
-        />
         {loading1("fetch") && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
@@ -139,66 +135,61 @@ const Suom = () => {
         <Form form={form} layout="vertical">
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 overflow-hidden p-[10px]"
+            className="space-y-6 overflow-hidden p-[15px] mt-[10px]"
           >
             {" "}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mb-[-20px]">
               <Form.Item
                 name="groupName"
-                label="Unit Name"
+                // label="Unit Name"
                 rules={[{ required: true, message: "Unit Name is required" }]}
               >
-                <Input
-                  className={InputStyle}
-                  placeholder="Enter Unit Name"
-                  // {...field}
-                />
+                <MuiInput name="groupName" form={form} label="Unit Name" />
               </Form.Item>
               <Form.Item
                 name="code"
-                label="Short Code"
+                // label="Short Code"
                 rules={[{ required: true, message: "Short Code is required" }]}
               >
-                <Input
-                  className={InputStyle}
-                  placeholder="Enter Short Code"
-                  // {...field}
-                />
+                <MuiInput name="code" form={form} label="Short Code" />
               </Form.Item>
             </div>
             <Form.Item
               name="description"
-              label="Secondary Descrption"
+              // label="Secondary Descrption"
               rules={[{ required: true, message: "Descrption is required" }]}
             >
-              <Input
-                className={InputStyle}
-                placeholder="Enter Descrption"
-                // {...field}
+              <MuiInput
+                name="description"
+                form={form}
+                label="Secondary Descrption"
               />
             </Form.Item>
-            <Row justify="space-between">
-              {" "}
+            <div className="bg-white h-[50px] flex items-center justify-end gap-[20px]">
               <Button
                 // type="reset"
-                className="shadow bg-red-700 hover:bg-red-600 shadow-slate-500"
+                className="shadow shadow-slate-500 mr-[10px]"
                 onClick={(e: any) => {
                   setResetModel(true);
                   e.preventDefault();
                 }}
+                startIcon={<Refresh />}
               >
                 Reset
               </Button>
               <Button
+                type="submit"
+                variant="contained"
                 onClick={(e: any) => {
                   setOpen(true);
                   e.preventDefault();
                 }}
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                startIcon={<Send />}
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 ml-[20px]"
               >
                 Submit
               </Button>
-            </Row>
+            </div>
           </form>
         </Form>
       </div>
@@ -214,26 +205,14 @@ const Suom = () => {
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
-      </div>{" "}
-      <AlertDialog open={resetModel} onOpenChange={setResetModel}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-600">
-              Are you absolutely sure you want to reset the form?
-            </AlertDialogTitle>
-            {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
-              onClick={() => form.resetFields()}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      </div>
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form}  />
+      <ConfirmModal
+        open={open}
+        setOpen={setOpen}
+        form={form}
+        submit={createEntry}
+      />
     </Wrapper>
   );
 };

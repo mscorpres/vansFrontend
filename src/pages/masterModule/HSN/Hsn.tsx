@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import { transformOptionData } from "@/helper/transform";
@@ -28,6 +27,10 @@ import { RowData } from "@/data";
 import { AppDispatch, RootState } from "@/store";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
+import { Refresh, Save, Send } from "@mui/icons-material";
+import ResetModal from "@/components/ui/ResetModal";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 const Hsn = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -195,7 +198,7 @@ const Hsn = () => {
         >
           <div className="grid grid-cols-3 gap-[40px] ">
             <div className="col-span-3 ">
-              <Form.Item name="partName" label="Part Name">
+              <Form.Item name="partName">
                 <ReusableAsyncSelect
                   placeholder="Part Name"
                   endpoint="/backend/getComponentByNameAndNo"
@@ -209,30 +212,11 @@ const Hsn = () => {
           </div>
         </Form>
       </div>
-      {callreset == true && (
-        <AlertDialog open={callreset} onOpenChange={setCallReset}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-slate-600">
-                Are you absolutely sure you want to reset the form?
-              </AlertDialogTitle>
-              {/* <AlertDialogDescription>Are you sure want to logout.</AlertDialogDescription> */}
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                className="bg-red-700 shadow hover:bg-red-600 shadow-slate-500"
-                onClick={() => handleReset()}
-              >
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
+
       <div className="h-[calc(100vh-80px)] bg-white ">
         <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
           <Button
+            variant="contained"
             onClick={() => {
               addNewRow();
             }}
@@ -260,7 +244,8 @@ const Hsn = () => {
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
-              className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+              startIcon={<Refresh />}
+              className="rounded-md shadow  max-w-max px-[30px]"
               onClick={() => setCallReset(true)}
             >
               Reset
@@ -272,21 +257,29 @@ const Hsn = () => {
               Back
             </Button> */}
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              startIcon={<Send />}
+              variant="contained"
+              className="rounded-md  max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}
               disabled={rowData.length === 0}
             >
               Submit
             </Button>
           </div>
-        </div>{" "}
-      </div>{" "}
-      <ConfirmationModal
+        </div>
+      </div>
+      <ResetModal
+        open={callreset}
+        setOpen={setCallReset}
+        form={form}
+        message={"row"}
+        reset={handleReset}
+      />
+      <ConfirmModal
         open={showConfirmation}
-        onClose={setShowConfirmation}
-        onOkay={handleSubmit}
-        title="Confirm Submit!"
-        description="Are you sure to submit the entry?"
+        setOpen={setShowConfirmation}
+        form={form}
+        submit={handleSubmit}
       />
     </Wrapper>
   );

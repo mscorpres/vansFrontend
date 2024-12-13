@@ -41,6 +41,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import CustomTooltip from "@/components/shared/CustomTooltip";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import MuiInput from "@/components/ui/MuiInput";
 const MasterCustomerPage: React.FC = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [addBranch, setAddBranch] = useState(false);
@@ -355,31 +356,33 @@ const MasterCustomerPage: React.FC = () => {
   };
   const createNewBranch = async () => {
     const value = await form.validateFields();
-
+    // if (value) {
     let payload = {
       client: addBranch?.code,
-      billToLabel: value.billlabel,
-      billToCountry: value.billcountry.value,
-      billToState: value.billstate.value,
-      billToPincode: value.billpincode,
-      billToPhone: value.billphone,
-      billToGst: value.billgst,
-      billToAddresLine1: value.billaddress1,
-      billToAddresLine2: value.billaddress2,
+      billToLabel: value?.billlabel,
+      billToCountry: value?.billcountry?.value,
+      billToState: value?.billstate?.value,
+      billToPincode: value?.billpincode,
+      billToPhone: value?.billphone,
+      billToGst: value?.billgst,
+      billToAddresLine1: value?.billaddress1,
+      billToAddresLine2: value?.billaddress2,
       ////////////
-      shipToLabel: value.shipLabel,
-      shipToCompany: value.shipCompany,
-      shipToCountry: value.shipCountry.value,
-      shipToState: value.shipState.value,
-      shipToPincode: value.shipPincode,
-      shipToGst: value.shipGst,
-      shipToPan: value.shipPan,
-      shipToAddress1: value.shipAddress2,
-      shipToAddress2: value.shipAddress1,
+      shipToLabel: value?.shipLabel,
+      shipToCompany: value?.shipCompany,
+      shipToCountry: value?.shipCountry?.value,
+      shipToState: value?.shipState?.value,
+      shipToPincode: value?.shipPincode,
+      shipToGst: value?.shipGst,
+      shipToPan: value?.shipPan,
+      shipToAddress1: value?.shipAddress2,
+      shipToAddress2: value?.shipAddress1,
       same_shipping_addres: samebilling,
     };
+    // }
 
     const response = await execFun(() => addbranchToClient(payload), "fetch");
+    console.log("Response", response);
 
     if (response?.data?.success) {
       toast({
@@ -391,7 +394,7 @@ const MasterCustomerPage: React.FC = () => {
       setSameBilling(false);
     } else {
       toast({
-        title: response?.data?.message,
+        title: response?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -402,9 +405,9 @@ const MasterCustomerPage: React.FC = () => {
     let payload = {
       addressID: editVal,
       client: value.addBranch?.code,
-      billToLabel: value.billlabel,
-      billToCountry: value.billcountry.value,
-      billToState: value.billstate.value,
+      billToLabel: value?.billlabel,
+      billToCountry: value.billcountry?.value,
+      billToState: value.billstate?.value,
       billToPincode: value.billpincode,
       billToPhone: value.billphone,
       billToGst: value.billgst,
@@ -413,8 +416,8 @@ const MasterCustomerPage: React.FC = () => {
       ////////////
       shipToLabel: value.shipLabel,
       shipToCompany: value.shipCompany,
-      shipToCountry: value.shipCountry.value,
-      shipToState: value.shipState.value,
+      shipToCountry: value.shipCountry?.value,
+      shipToState: value.shipState?.value,
       shipToPincode: value.shipPincode,
       shipToGst: value.shipGst,
       shipToPan: value.shipPan,
@@ -491,7 +494,6 @@ const MasterCustomerPage: React.FC = () => {
 
   return (
     <Wrapper>
-      {" "}
       {loading1("fetch") && <FullPageLoading />}
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <Sheet open={addBranch} onOpenChange={setAddBranch}>
@@ -504,13 +506,11 @@ const MasterCustomerPage: React.FC = () => {
           >
             <SheetHeader className={modelFixHeaderStyle}>
               <SheetTitle className="text-slate-600">{`Add New Branch to ${addBranch?.name}`}</SheetTitle>
-            </SheetHeader>{" "}
+            </SheetHeader>
             {loading1("fetch") && <FullPageLoading />}
             <div className="h-[calc(100vh-150px)]">
-              {" "}
               <div className="rounded p-[20px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
                 <Form form={form} layout="vertical">
-                  {" "}
                   <div className="grid grid-cols-2 gap-[40px] ">
                     <Card className="rounded shadow bg-[#fff]">
                       <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -525,7 +525,6 @@ const MasterCustomerPage: React.FC = () => {
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
                           <Form.Item
                             name="billlabel"
-                            label="Label"
                             rules={[
                               {
                                 required: true,
@@ -533,14 +532,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Label"
+                            <MuiInput
+                              form={form}
+                              name="billlabel"
+                              placeholder="Label"
+                              label={"Label"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="billcountry"
-                            label="Country"
                             rules={[
                               {
                                 required: true,
@@ -573,7 +573,6 @@ const MasterCustomerPage: React.FC = () => {
                           </Form.Item>
                           <Form.Item
                             name="billstate"
-                            label="State"
                             rules={[
                               {
                                 required: true,
@@ -606,7 +605,6 @@ const MasterCustomerPage: React.FC = () => {
                           </Form.Item>
                           <Form.Item
                             name="billpincode"
-                            label="Pincode"
                             rules={[
                               {
                                 required: true,
@@ -619,15 +617,16 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
+                            <MuiInput
+                              form={form}
+                              name="billpincode"
+                              placeholder="Pincode"
+                              label={"Pincode"}
                               type="number"
-                              placeholder="Enter Pincode"
                             />
                           </Form.Item>
                           <Form.Item
                             name="billphone"
-                            label="Phone Number"
                             rules={[
                               {
                                 required: true,
@@ -635,15 +634,16 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Phone Number"
+                            <MuiInput
+                              form={form}
+                              name="billphone"
+                              placeholder="Phone Number"
+                              label={"Phone Number"}
                               type="number"
                             />
                           </Form.Item>
                           <Form.Item
                             name="billgst"
-                            label="GST Number"
                             rules={[
                               {
                                 required: true,
@@ -656,14 +656,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter GST Number"
+                            <MuiInput
+                              form={form}
+                              name="billgst"
+                              placeholder="GST Number"
+                              label={"GST Number"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="billaddress1"
-                            label="Address Line 1"
                             rules={[
                               {
                                 required: true,
@@ -676,14 +677,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Address Line 1"
+                            <MuiInput
+                              form={form}
+                              name="billaddress1"
+                              placeholder="Address Line 1"
+                              label={"Address Line 1"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="billaddress2"
-                            label="Address Line 2"
                             rules={[
                               {
                                 required: true,
@@ -696,9 +698,11 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Address Line 2"
+                            <MuiInput
+                              form={form}
+                              name="billaddress2"
+                              placeholder="Address Line 2"
+                              label={"Address Line 2"}
                             />
                           </Form.Item>
                         </div>
@@ -729,7 +733,6 @@ const MasterCustomerPage: React.FC = () => {
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
                           <Form.Item
                             name="shipLabel"
-                            label="Label"
                             rules={[
                               {
                                 required: true,
@@ -737,14 +740,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Label"
+                            <MuiInput
+                              form={form}
+                              name="shipLabel"
+                              placeholder="Label"
+                              label={"Label"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="shipCompany"
-                            label="Company"
                             rules={[
                               {
                                 required: true,
@@ -752,14 +756,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Label"
+                            <MuiInput
+                              form={form}
+                              name="shipCompany"
+                              placeholder="Company"
+                              label={"Company"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="shipCountry"
-                            label="Country"
                             rules={[
                               {
                                 required: true,
@@ -771,7 +776,7 @@ const MasterCustomerPage: React.FC = () => {
                               styles={customStyles}
                               components={{ DropdownIndicator }}
                               placeholder="Country"
-                              className="border-0 basic-single"
+                              className="border-0 basic-single my-[-30px]"
                               classNamePrefix="select border-0"
                               isDisabled={false}
                               isClearable={true}
@@ -792,7 +797,6 @@ const MasterCustomerPage: React.FC = () => {
                           </Form.Item>
                           <Form.Item
                             name="shipState"
-                            label="State"
                             rules={[
                               {
                                 required: true,
@@ -804,7 +808,7 @@ const MasterCustomerPage: React.FC = () => {
                               styles={customStyles}
                               components={{ DropdownIndicator }}
                               placeholder="State"
-                              className="border-0 basic-single"
+                              className="border-0 basic-single my-[-30px]"
                               classNamePrefix="select border-0"
                               isDisabled={false}
                               isClearable={true}
@@ -825,7 +829,6 @@ const MasterCustomerPage: React.FC = () => {
                           </Form.Item>
                           <Form.Item
                             name="shipPincode"
-                            label="Pincode"
                             rules={[
                               {
                                 required: true,
@@ -838,15 +841,16 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Pincode"
+                            <MuiInput
+                              form={form}
+                              name="shipPincode"
+                              placeholder="Pincode"
+                              label={"Pincode"}
                               type="number"
                             />
                           </Form.Item>
                           <Form.Item
                             name="shipPan"
-                            label="Pan Number"
                             rules={[
                               {
                                 required: true,
@@ -854,15 +858,17 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Phone Number"
+                            <MuiInput
+                              form={form}
+                              name="shipPan"
+                              placeholder="Pan Number"
+                              label={"Pan Number"}
+                              type="number"
                             />
                           </Form.Item>
                         </div>
                         <Form.Item
                           name="shipGst"
-                          label="GST Number"
                           rules={[
                             {
                               required: true,
@@ -875,15 +881,16 @@ const MasterCustomerPage: React.FC = () => {
                             },
                           ]}
                         >
-                          <Input
-                            className={InputStyle}
-                            placeholder="Enter GST Number"
+                          <MuiInput
+                            form={form}
+                            name="shipGst"
+                            placeholder="GST Number"
+                            label={"GST Number"}
                           />
                         </Form.Item>
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
                           <Form.Item
                             name="shipAddress1"
-                            label="Address Line 1"
                             rules={[
                               {
                                 required: true,
@@ -896,14 +903,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Address Line 1"
+                            <MuiInput
+                              form={form}
+                              name="shipAddress1"
+                              placeholder="Address Line 1"
+                              label={"Address Line 1"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="shipAddress2"
-                            label="Address Line 2"
                             rules={[
                               {
                                 required: true,
@@ -916,9 +924,11 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Address Line 2"
+                            <MuiInput
+                              form={form}
+                              name="shipAddress2"
+                              placeholder="Address Line 2"
+                              label={"Address Line 2"}
                             />
                           </Form.Item>
                         </div>
@@ -959,13 +969,11 @@ const MasterCustomerPage: React.FC = () => {
           >
             <SheetHeader className={modelFixHeaderStyle}>
               <SheetTitle className="text-slate-600">{`Edit Branch `}</SheetTitle>
-            </SheetHeader>{" "}
+            </SheetHeader>
             {loading1("fetch") && <FullPageLoading />}
             <div className="h-[calc(100vh-150px)]">
-              {" "}
               <div className="rounded p-[20px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
                 <Form form={form} layout="vertical">
-                  {" "}
                   <div className="grid grid-cols-2 gap-[40px] ">
                     <Card className="rounded shadow bg-[#fff]">
                       <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -980,7 +988,6 @@ const MasterCustomerPage: React.FC = () => {
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
                           <Form.Item
                             name="billlabel"
-                            label="Label"
                             rules={[
                               {
                                 required: true,
@@ -988,14 +995,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Label"
+                            <MuiInput
+                              form={form}
+                              name="billlabel"
+                              placeholder="Label"
+                              label={"Label"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="billcountry"
-                            label="Country"
                             rules={[
                               {
                                 required: true,
@@ -1028,7 +1036,6 @@ const MasterCustomerPage: React.FC = () => {
                           </Form.Item>
                           <Form.Item
                             name="billstate"
-                            label="State"
                             rules={[
                               {
                                 required: true,
@@ -1061,7 +1068,6 @@ const MasterCustomerPage: React.FC = () => {
                           </Form.Item>
                           <Form.Item
                             name="billpincode"
-                            label="Pincode"
                             rules={[
                               {
                                 required: true,
@@ -1074,15 +1080,16 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
+                            <MuiInput
+                              form={form}
+                              name="billpincode"
+                              placeholder="Pincode"
                               type="number"
-                              placeholder="Enter Pincode"
+                              label={"Pincode"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="billphone"
-                            label="Phone Number"
                             rules={[
                               {
                                 required: true,
@@ -1090,15 +1097,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Phone Number"
-                              type="number"
+                            <MuiInput
+                              form={form}
+                              name="billphone"
+                              placeholder="Phone Number"
+                              label={"Phone Number"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="billgst"
-                            label="GST Number"
                             rules={[
                               {
                                 required: true,
@@ -1111,14 +1118,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter GST Number"
+                            <MuiInput
+                              form={form}
+                              name="billgst"
+                              placeholder="GST Number"
+                              label={"GST Number"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="billaddress1"
-                            label="Address Line 1"
                             rules={[
                               {
                                 required: true,
@@ -1131,14 +1139,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Address Line 1"
+                            <MuiInput
+                              form={form}
+                              name="billaddress1"
+                              placeholder="Address Line 1"
+                              label={"Address Line 1"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="billaddress2"
-                            label="Address Line 2"
                             rules={[
                               {
                                 required: true,
@@ -1151,9 +1160,11 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Address Line 2"
+                            <MuiInput
+                              form={form}
+                              name="billaddress2"
+                              placeholder="Address Line 2"
+                              label={"Address Line 2"}
                             />
                           </Form.Item>
                         </div>
@@ -1182,19 +1193,23 @@ const MasterCustomerPage: React.FC = () => {
                       </CardHeader>
                       <CardContent className="mt-[30px]">
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                          <Form.Item name="shipLabel" label="Label">
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Label"
+                          <Form.Item name="shipLabel">
+                            <MuiInput
+                              form={form}
+                              name="shipLabel"
+                              placeholder="Label"
+                              label={"Label"}
                             />
                           </Form.Item>
-                          <Form.Item name="shipCompany" label="Company">
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Company"
+                          <Form.Item name="shipCompany">
+                            <MuiInput
+                              form={form}
+                              name="shipCompany"
+                              placeholder="Company"
+                              label={"Company"}
                             />
                           </Form.Item>
-                          <Form.Item name="shipCountry" label="Country">
+                          <Form.Item name="shipCountry">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -1218,7 +1233,7 @@ const MasterCustomerPage: React.FC = () => {
                               // }
                             />
                           </Form.Item>
-                          <Form.Item name="shipState" label="State">
+                          <Form.Item name="shipState">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -1244,7 +1259,6 @@ const MasterCustomerPage: React.FC = () => {
                           </Form.Item>
                           <Form.Item
                             name="shipPincode"
-                            label="Pincode"
                             rules={[
                               {
                                 required: true,
@@ -1257,22 +1271,25 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Pincode"
+                            <MuiInput
+                              form={form}
+                              name="shipPincode"
+                              placeholder="Pincode"
+                              label={"Pincode"}
                               type="number"
                             />
                           </Form.Item>
-                          <Form.Item name="shipPan" label="Pan Number">
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Pan Number"
+                          <Form.Item name="shipPan">
+                            <MuiInput
+                              form={form}
+                              name="shipPan"
+                              placeholder="Pan Number"
+                              label={"Pan Number"}
                             />
-                          </Form.Item>{" "}
+                          </Form.Item>
                         </div>
                         <Form.Item
                           name="shipGst"
-                          label="GST Number"
                           rules={[
                             {
                               required: true,
@@ -1285,15 +1302,16 @@ const MasterCustomerPage: React.FC = () => {
                             },
                           ]}
                         >
-                          <Input
-                            className={InputStyle}
-                            placeholder="Enter GST Number"
+                          <MuiInput
+                            form={form}
+                            name="shipGst"
+                            placeholder="GST Number"
+                            label={"GST Number"}
                           />
-                        </Form.Item>{" "}
+                        </Form.Item>
                         <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
                           <Form.Item
                             name="shipAddress1"
-                            label="Address Line 1"
                             rules={[
                               {
                                 required: true,
@@ -1306,14 +1324,15 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Address Line 1"
+                            <MuiInput
+                              form={form}
+                              name="shipAddress1"
+                              placeholder="Address Line 1"
+                              label={"Address Line 1"}
                             />
                           </Form.Item>
                           <Form.Item
                             name="shipAddress2"
-                            label="Address Line 2"
                             rules={[
                               {
                                 required: true,
@@ -1326,11 +1345,13 @@ const MasterCustomerPage: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input
-                              className={InputStyle}
-                              placeholder="Enter Address Line 2"
+                            <MuiInput
+                              form={form}
+                              name="shipAddress2"
+                              placeholder="Address Line 2"
+                              label={"Address Line 2"}
                             />
-                          </Form.Item>{" "}
+                          </Form.Item>
                         </div>
                       </CardContent>
                     </Card>
