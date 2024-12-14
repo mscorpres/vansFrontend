@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import { transformOptionData, transformOptionData2 } from "@/helper/transform";
-import { Filter, Plus } from "lucide-react";
+import { Filter, Plus, Save } from "lucide-react";
 import styled from "styled-components";
 import { Form, Typography } from "antd";
 import { toast } from "@/components/ui/use-toast";
@@ -32,6 +31,8 @@ import {
 } from "@/components/ui/sheet";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
+import { Refresh } from "@mui/icons-material";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -416,7 +417,7 @@ const PickSlip = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
       <div className="bg-[#fff]">
-        {loading && <FullPageLoading />}{" "}
+        {loading && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -427,9 +428,13 @@ const PickSlip = () => {
           layout="vertical"
           className="space-y-6 overflow-hidden p-[10px] h-[550px]"
         >
-          <div className="grid grid-cols-3 gap-[40px] ">
+          <div className="grid grid-cols-3 gap-[40px]  ">
             <div className="col-span-3 ">
-              <Form.Item name="costCenter" label="Cost Center">
+              <Form.Item
+                name="costCenter"
+                className="z-20 relative"
+                // label="Cost Center"
+              >
                 <ReusableAsyncSelect
                   placeholder="Cost Center"
                   endpoint="/backend/costCenter"
@@ -439,7 +444,11 @@ const PickSlip = () => {
                   fetchOptionWith="query2"
                 />
               </Form.Item>
-              <Form.Item name="customerName" label="Customer Name">
+              <Form.Item
+                name="customerName"
+                className="z-10 relative"
+                // label="Customer Name"
+              >
                 <ReusableAsyncSelect
                   placeholder="Customer Name"
                   endpoint="/backend/customer"
@@ -477,10 +486,11 @@ const PickSlip = () => {
       <div className="h-[calc(100vh-80px)]  ">
         <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
           <Button
+            variant="outlined"
             onClick={() => {
               addNewRow();
             }}
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+            className="rounded-md shadow shadow-slate-500 max-w-max"
           >
             <Plus className="font-[600]" /> Add Item
           </Button>{" "}
@@ -506,7 +516,8 @@ const PickSlip = () => {
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
-              className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+              startIcon={<Refresh />}
+              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setCallReset(true)}
             >
               Reset
@@ -518,7 +529,9 @@ const PickSlip = () => {
               Back */}
             {/* </Button> */}
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              startIcon={<Save />}
+              variant="contained"
+              className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}
               disabled={rowData.length == 0}
             >
@@ -574,7 +587,8 @@ const PickSlip = () => {
               Total:{selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
             </Typography.Text>
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              variant="contained"
+              // className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
               onClick={closeDrawer}
             >
               Confirm

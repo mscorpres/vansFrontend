@@ -2,7 +2,7 @@ import { OutlinedInput, TextField } from "@mui/material";
 import { set } from "lodash";
 import React from "react";
 
-export const MuiInput = ({ fullWidth, label, form, name }) => {
+export const MuiInput = ({ fullWidth, label, form, name,type }) => {
   return (
     <TextField
       //   id="filled-basic"
@@ -17,6 +17,7 @@ export const MuiInput = ({ fullWidth, label, form, name }) => {
         form.setFieldValue(name, event.target.value);
       }}
       focused={!!form.getFieldValue(name)}
+      type={type}
       //   error={form}
       //   helperText={"geee"}
       //   onChange={()=>{form.setFieldsValue({})}}

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { StatusPanelDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
@@ -19,6 +18,7 @@ import { createSellRequest } from "@/features/salesmodule/SalesSlice";
 import { Form } from "antd";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import RejectModal from "@/components/shared/RejectModal";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
   fetchCurrency,
   poApprove,
@@ -33,6 +33,9 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { ColGroupDef } from "ag-grid-community";
 import dayjs from "dayjs";
 import { exportDatepace } from "@/components/shared/Options";
+import { Button } from "@mui/material";
+import { Refresh } from "@mui/icons-material";
+import ResetModal from "@/components/ui/ResetModal";
 
 interface Props {
   setTab: string;
@@ -274,7 +277,6 @@ const AddPO: React.FC<Props> = ({
           poid: params.id?.replaceAll("_", "/"),
         };
         dispatch(poApprove(a)).then((response: any) => {
-   
           if (response?.payload.success) {
             setShowConfirmation(false);
             toast({
@@ -294,7 +296,6 @@ const AddPO: React.FC<Props> = ({
         });
       } else {
         dispatch(createSellRequest(payload)).then((response: any) => {
-
           if (response?.payload.success) {
             setShowConfirmation(false);
             toast({
@@ -590,7 +591,6 @@ const AddPO: React.FC<Props> = ({
   return (
     <Wrapper>
       {loading && <FullPageLoading />}
-      <AddPOPopovers uiState={uiState} />
       <div className="h-[calc(100vh-150px)] grid grid-cols-[400px_1fr]">
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
           <Card className="rounded-sm shadow-sm shadow-slate-500">
@@ -684,7 +684,7 @@ const AddPO: React.FC<Props> = ({
               onClick={() => {
                 addNewRow();
               }}
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+              className="rounded-md shadow  shadow-slate-500 max-w-max"
             >
               <Plus className="font-[600]" /> Add Item
             </Button>{" "}
@@ -713,7 +713,7 @@ const AddPO: React.FC<Props> = ({
               </Button>
             </div> */}
           </div>
-          <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
+          <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full relative">
             {loading && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
@@ -763,6 +763,12 @@ const AddPO: React.FC<Props> = ({
             : "Submit"
         } details of all components of this Purchase Order?`}
       />
+      {/* <ConfirmModal
+        open={showConfirmation}
+        setOpen={setShowConfirmation}
+        form={form}
+        submit={handleSubmit}
+      /> */}
       <RejectModal
         open={showRejectConfirm}
         onClose={() => setShowRejectConfirm(false)}
@@ -779,21 +785,26 @@ const AddPO: React.FC<Props> = ({
       />
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
         <Button
-          className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+          startIcon={<KeyboardBackspaceIcon />}
+          className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setTab("create")}
         >
           Back
-        </Button>{" "}
+        </Button>
         <Button
-          className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+          startIcon={<Refresh />}
+          className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
           onClick={() =>
-            isApprove == "approve" ? setShowRejectConfirm(true) : setRowData([])
+            isApprove == "approve"
+              ? setShowRejectConfirm(true)
+              : setResetModel(true)
           }
         >
           {isApprove == "approve" ? "Reject" : "Reset"}
         </Button>
         <Button
-          className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+          variant="contained"
+          className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setShowConfirmation(true)}
         >
           {isApprove == "approve"
@@ -803,6 +814,16 @@ const AddPO: React.FC<Props> = ({
             : "Submit"}
         </Button>
       </div>
+      <ResetModal
+        open={resetModel}
+        setOpen={setResetModel}
+        form={form}
+        message={"row"}
+        reset={() => {
+          setRowData([]);
+          setResetModel(false);
+        }}
+      />
     </Wrapper>
   );
 };

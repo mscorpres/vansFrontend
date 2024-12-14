@@ -5,7 +5,6 @@ import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
@@ -23,6 +22,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { fetchTransactionForApproval } from "@/features/client/storeSlice";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -276,10 +276,11 @@ const PendingMr: React.FC = () => {
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
               onClick={fetchManageList}
+              variant="contained"
             >
               Search
-            </Button>{" "}
-          </div>{" "}
+            </Button>
+          </div>
           {/* <CustomTooltip
               message="Add Address"
               side="top"

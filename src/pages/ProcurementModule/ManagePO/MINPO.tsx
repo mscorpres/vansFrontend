@@ -1,6 +1,6 @@
 import { Props } from "@/types/salesmodule/salesShipmentTypes";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Upload } from "lucide-react";
+import { Save, Upload } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -8,7 +8,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { modelFixHeaderStyle } from "@/constants/themeContants";
-import { Button } from "@/components/ui/button";
 import { IoCloudUpload } from "react-icons/io5";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AgGridReact } from "ag-grid-react";
@@ -30,6 +29,9 @@ import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { removeHtmlTags } from "@/components/shared/Options";
+import { Button } from "@mui/material";
+import { Refresh, UploadFile } from "@mui/icons-material";
+import ResetModal from "@/components/ui/ResetModal";
 const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [rowData, setRowData] = useState([]);
   const [search, setSearch] = useState("");
@@ -39,6 +41,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [taxDetails, setTaxDetails] = useState([]);
   const [attachmentFile, setAttachmentFile] = useState([]);
   const [showLoading, setShowLoading] = useState(false);
+  const [resetModel, setResetModel] = useState(false);
   const [vendorDetails, setVendorDetails] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
@@ -420,7 +423,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
             <SheetTitle className="text-slate-600">
               MIN {viewMinPo.po_transaction}
             </SheetTitle>
-          </SheetHeader>{" "}
+          </SheetHeader>
           <div className="h-[calc(100vh-50px)] grid grid-cols-[400px_1fr]">
             <div className="max-h-[calc(100vh-50px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
               <Card className="rounded-sm shadow-sm shadow-slate-500">
@@ -471,7 +474,6 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                         </div>
                         <div>
                           <p className="text-[14px]">
-                            {" "}
                             {taxDetails[1]?.description}
                           </p>
                         </div>
@@ -514,19 +516,20 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
               </Card>
             </div>
             <div className="max-h-[calc(100vh-50px)] overflow-y-auto bg-white">
-              <div className="flex flex-row items-center justify-between p-[10px]">
-                <div className="flex items-center gap-[20px]">
+              <div className="flex flex-row items-end justify-between p-[10px] justify-end w-full">
+                <div className="flex items-center gap-[20px] ">
                   <Button
+                    sx={{ backgroundColor: "#2fa062", color: "#fff" }}
+                    variant="primary"
+                    startIcon={<Upload />}
                     onClick={() => setSheetOpen(true)}
-                    className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
+                    className=" flex items-center  text-[15px] shadow shadow-slate-600 rounded-md"
                   >
-                    <Upload className="text-white w-[20px] h-[20px]" /> Upload
-                    Docs Here
+                    Upload Docs Here
                   </Button>
                 </div>
               </div>
-              <div className="ag-theme-quartz h-[calc(100vh-180px)] w-full">
-                {" "}
+              <div className="ag-theme-quartz h-[calc(100vh-160px)] w-full">
                 {loading && <FullPageLoading />}
                 <AgGridReact
                   ref={gridRef}
@@ -543,16 +546,19 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                   overlayNoRowsTemplate={OverlayNoRowsTemplate}
                   suppressCellFocus={true}
                 />
-              </div>{" "}
+              </div>
               <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
                 <Button
-                  className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+                  startIcon={<Refresh />}
+                  className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
                   onClick={() => setRowData([])}
                 >
                   Reset
                 </Button>
                 <Button
-                  className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+                  startIcon={<Save />}
+                  variant="contained"
+                  className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
                   onClick={() => setShowConfirmation(true)}
                 >
                   MIN
@@ -560,7 +566,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                 </Button>
               </div>
             </div>
-          </div>{" "}
+          </div>
           <ConfirmationModal
             open={showConfirmation}
             onClose={() => setShowConfirmation(false)}
@@ -568,7 +574,17 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
             submitText={"Submit"}
             title="Confirm Submit!"
             description={`Are you sure to ${"submit"} details of all components of this Purchase Order?`}
-          />{" "}
+          />
+          <ResetModal
+            open={resetModel}
+            setOpen={setResetModel}
+            form={""}
+            message={"row"}
+            reset={() => {
+              setRowData([]);
+              setResetModel(false);
+            }}
+          />
           {/* <div className="ag-theme-quartz h-[calc(100vh-100px)]">
           <AgGridReact
             //   loadingCellRenderer={loadingCellRenderer}
@@ -581,7 +597,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
           />
         </div> */}
         </SheetContent>
-      </Sheet>{" "}
+      </Sheet>
       <Sheet open={sheetOpen == true} onOpenChange={setSheetOpen}>
         <SheetContent
           className="min-w-[35%] p-0"
@@ -592,7 +608,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
           {(loading || showLoading) && <FullPageLoading />}
           <SheetHeader className={modelFixHeaderStyle}>
             <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
-          </SheetHeader>{" "}
+          </SheetHeader>
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
             {/* {loading && <FullPageLoading />} */}
             <FileUploader
@@ -610,10 +626,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
               <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
                 <h2 className="text-xl font-semibold text-center mb-4">
                   <div className=" text-center w-full justify-center flex">
-                    {" "}
                     <div>Upload Your Files</div>
                     <div>
-                      {" "}
                       <IoCloudUpload
                         className="text-cyan-700 ml-5 h-[20]"
                         size={"1.5rem"}
@@ -625,8 +639,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                   <span className="text-slate-500 text-sm text-center w-full justify-center flex">
                     Drag and drop files here, or click to select files
                   </span>
-                </FileInput>{" "}
-              </div>{" "}
+                </FileInput>
+              </div>
               <div className=" m-[20px]">
                 <FileUploaderContent>
                   {files?.map((file, index) => (
@@ -636,26 +650,27 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                   ))}
                 </FileUploaderContent>
               </div>
-            </FileUploader>{" "}
-          </div>{" "}
+            </FileUploader>
+          </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setSheetOpen(false)}
             >
               Back
-            </Button>{" "}
+            </Button>
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              variant="contained"
+              className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
               onClick={uploadDocs}
               // loading={laoding}
             >
               {/* {isApprove ? "Approve" : "Submit"} */}
               Upload
             </Button>
-          </div>{" "}
+          </div>
         </SheetContent>
-      </Sheet>{" "}
+      </Sheet>
     </>
   );
 };

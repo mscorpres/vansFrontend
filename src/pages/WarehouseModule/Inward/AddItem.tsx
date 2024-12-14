@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Upload } from "lucide-react";
+import { Plus, Save, Trash2, Upload } from "lucide-react";
 import { FaFileExcel } from "react-icons/fa";
 import { AgGridReact } from "@ag-grid-community/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -47,6 +46,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { spigenAxios } from "@/axiosIntercepter";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
+import { KeyboardBackspace, Refresh } from "@mui/icons-material";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
 // }
@@ -592,17 +593,19 @@ const AddPO: React.FC<Props> = ({
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto bg-white">
           <div className="flex items-center w-full gap-[20px] h-[60px] px-[10px] justify-between">
             <Button
+              variant="outlined"
               onClick={() => {
                 addNewRow();
               }}
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+              className="rounded-md shadow max-w-max"
             >
               <Plus className="font-[600]" /> Add Item
             </Button>
             <div>
               <Button
+                sx={{ backgroundColor: "#2fa062", color: "#fff" }}
                 onClick={() => setSheetOpen(true)}
-                className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
+                // className="text-white bg-[#2fa062] bg-green-700  hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
               >
                 <Upload className="text-white w-[20px] h-[20px]" /> Upload Docs
               </Button>
@@ -665,13 +668,15 @@ const AddPO: React.FC<Props> = ({
       />
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
         <Button
-          className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+          startIcon={<KeyboardBackspace />}
+          className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setTab("create")}
         >
           Back
         </Button>{" "}
         <Button
-          className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+          startIcon={<Refresh />}
+          className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
           // onClick={() =>
           //   isApprove ? setShowRejectConfirm(true) : setRowData([])
           // }
@@ -681,7 +686,9 @@ const AddPO: React.FC<Props> = ({
           Reset
         </Button>
         <Button
-          className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+          variant="contained"
+          startIcon={<Save />}
+          className="rounded-md shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setShowConfirmation(true)}
         >
           {/* {isApprove ? "Approve" : "Submit"} */}
@@ -753,7 +760,8 @@ const AddPO: React.FC<Props> = ({
               Back
             </Button>{" "}
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              variant="contained"
+              className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
               onClick={uploadDocs}
               // loading={laoding}
             >

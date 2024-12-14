@@ -1,5 +1,5 @@
 import { Props } from "@/types/salesmodule/salesShipmentTypes";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,12 +10,13 @@ import { InputStyle, LableStyle } from "@/constants/themeContants";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { cancelFetchedPO } from "@/features/client/clientSlice";
 import { AppDispatch } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { Button } from "@mui/material";
+
 interface Props {
   cancel: boolean;
   setCancel: (value: boolean) => void;
@@ -34,6 +35,13 @@ const POCancel: React.FC<Props> = ({
   const { managePoList, loading } = useSelector(
     (state: RootState) => state.client
   );
+
+  // Track the value of the cancel confirmation input
+  const [cancelInput, setCancelInput] = useState("");
+
+  // Check if the input value is 'cancel'
+  const isCancelInputValid = cancelInput.trim().toLowerCase() === "cancel";
+
   const handleCancelPO = () => {
     setCancel(false);
     dispatch(
@@ -42,7 +50,6 @@ const POCancel: React.FC<Props> = ({
         remark: remarkDescription,
       })
     ).then((response: any) => {
-
       if (response?.payload?.data?.success) {
         toast({
           title: response?.payload?.data?.message,
@@ -50,7 +57,7 @@ const POCancel: React.FC<Props> = ({
         });
         setCancel(false);
         setShowConfirmation(false);
-        setRemarkDescription(false);
+        setRemarkDescription("");
       } else {
         toast({
           title: response?.payload?.data?.message,
@@ -59,6 +66,7 @@ const POCancel: React.FC<Props> = ({
       }
     });
   };
+
   return (
     <Dialog open={cancel} onOpenChange={setCancel}>
       {loading && <FullPageLoading />}
@@ -74,27 +82,33 @@ const POCancel: React.FC<Props> = ({
               Write <span className="font-[600] text-red-800">cancel</span>{" "}
               inside input box
             </Label>
-            <Input className={InputStyle} />
+            <Input
+              className={InputStyle}
+              value={cancelInput}
+              onChange={(e) => setCancelInput(e.target.value)}
+            />
           </div>
           <div>
             <Label className={LableStyle}>Remark</Label>
             <Textarea
               className={InputStyle}
+              value={remarkDescription}
               onChange={(e) => setRemarkDescription(e.target.value)}
             />
           </div>
         </div>
         <div className="flex items-center gap-[10px] justify-end mt-[10px]">
           <Button
+            variant="outlined"
             onClick={() => setCancel(false)}
-            variant={"outline"}
             className="shadow-slate-300"
           >
             No
           </Button>
           <Button
-            className={"bg-red-700 hover:bg-red-600"}
+            variant="contained"
             onClick={handleCancelPO}
+            disabled={!isCancelInputValid} // Disable the button if the input is not "cancel"
           >
             Yes
           </Button>

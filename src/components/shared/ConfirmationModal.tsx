@@ -6,7 +6,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Button } from "@mui/material";
+import { Send } from "@mui/icons-material";
 
 interface ConfirmationModalProps {
   open: boolean;
@@ -41,10 +42,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center gap-[10px] justify-end mt-[10px]">
-          <Button onClick={() => onClose(false)} variant={"outline"}>
+          <Button variant="outlined" onClick={() => onClose(false)}>
             {cancelText}
           </Button>
           <Button
+            variant="contained"
+            startIcon={<Send />}
             onClick={() => onOkay()}
             className="bg-cyan-700 hover:bg-cyan-600 text-white"
           >

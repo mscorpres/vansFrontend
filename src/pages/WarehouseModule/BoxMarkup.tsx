@@ -372,7 +372,7 @@ const BoxMarkup = () => {
                   isSearchable={true}
                 /> */}
                 <ReusableAsyncSelect
-                  placeholder="Part Name"
+                  // placeholder="Part Name"
                   endpoint="/backend/getMinsTransaction4Markup"
                   transform={transformOptionData}
                   // onChange={(e) => handleChange(e.value)}

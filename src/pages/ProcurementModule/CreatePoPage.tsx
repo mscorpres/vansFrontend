@@ -53,6 +53,7 @@ import {
   vendoradd,
 } from "@/components/shared/Api/masterApi";
 import { toast } from "@/components/ui/use-toast";
+import MuiInput from "@/components/ui/MuiInput";
 interface Props {
   setTab: string;
   setPayloadData: string;
@@ -348,11 +349,11 @@ const CreatePoPage: React.FC<Props> = ({
               </CardHeader>
               <CardContent className="mt-[10px]">
                 <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
-                  <Form.Item name="poType" label="PO Type" rules={rules.poType}>
+                  <Form.Item name="poType" rules={rules.poType}>
                     <Select
                       styles={customStyles}
-                      placeholder="PO type"
-                      className="border-0 basic-single"
+                      // placeholder="PO type"
+                      className="border-0 basic-single z-50 relative"
                       classNamePrefix="select border-0"
                       components={{ DropdownIndicator }}
                       isDisabled={false}
@@ -366,13 +367,9 @@ const CreatePoPage: React.FC<Props> = ({
                     {/* <p>error message</p> */}
                   </Form.Item>
                   {selPoType?.value == "S" && (
-                    <Form.Item
-                      name="originalPO"
-                      label="Original PO"
-                      rules={rules.vendorType}
-                    >
+                    <Form.Item name="originalPO" rules={rules.vendorType}>
                       <ReusableAsyncSelect
-                        placeholder="Original PO"
+                        // placeholder="Original PO"
                         endpoint="/backend/searchPoByPoNo"
                         transform={transformOptionData}
                         onChange={(e) => form.setFieldValue("originalPO", e)}
@@ -383,13 +380,13 @@ const CreatePoPage: React.FC<Props> = ({
                   )}
                   <Form.Item
                     name="vendorType"
-                    label="Vendor Type"
+                    // label="Vendor Type"
                     rules={rules.vendorType}
                   >
                     <Select
                       styles={customStyles}
-                      placeholder="Vendor type"
-                      className="border-0 basic-single"
+                      // placeholder="Vendor type"
+                      className="border-0 basic-single  z-40 relative"
                       classNamePrefix="select border-0"
                       components={{ DropdownIndicator }}
                       isDisabled={false}
@@ -407,7 +404,7 @@ const CreatePoPage: React.FC<Props> = ({
                 </div>
                 <Form.Item
                   name="vendorName"
-                  label="Vendor Name"
+                  // label="Vendor Name"
                   label={
                     <div
                       style={{
@@ -432,7 +429,7 @@ const CreatePoPage: React.FC<Props> = ({
                   }
                 >
                   <ReusableAsyncSelect
-                    placeholder="Vendor Name"
+                    // placeholder="Vendor Name"
                     endpoint="/backend/vendorList"
                     transform={transformOptionData2}
                     onChange={(e) => form.setFieldValue("vendorName", e)}
@@ -484,25 +481,29 @@ const CreatePoPage: React.FC<Props> = ({
                   </Form.Item>
                   <Form.Item
                     name="vendorGst"
-                    label="GSTIN"
-                    className=""
+                    // label="GSTIN"
+                    className="my-[25px]"
                     rules={rules.vendorGst}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="GSTIN / UIN"
+                    <MuiInput
+                      form={form}
+                      name="vendorGst"
+                      placeholder="GSTIN"
+                      label={"GSTIN"}
                     />
                   </Form.Item>
-                </div>{" "}
+                </div>
                 <Form.Item
                   name="address"
-                  label="Address"
-                  className=""
+                  // label="Address"
+                  className="my-[20px]"
                   rules={rules.address}
                 >
-                  <Textarea
-                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
+                  <MuiInput
+                    form={form}
+                    name="address"
                     placeholder="Address"
+                    label={"Address"}
                   />
                 </Form.Item>
               </CardContent>
@@ -519,38 +520,46 @@ const CreatePoPage: React.FC<Props> = ({
                 <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
                   <Form.Item
                     name="terms"
-                    label="Terms & Condition"
+                    // label="Terms & Condition"
                     className=""
                     // rules={rules.terms}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
+                    <MuiInput
+                      form={form}
+                      name="terms"
                       placeholder="Terms & Condition"
+                      label={"Terms & Condition"}
                     />
                   </Form.Item>
                   <Form.Item
                     name="quotation"
-                    label="Quotation"
+                    // label="Quotation"
                     className=""
                     // rules={rules.quotation}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                    <MuiInput
+                      form={form}
+                      name="quotation"
                       placeholder="Quotation"
+                      label={"Quotation"}
                     />
                   </Form.Item>
                   <Form.Item
                     name="paymentTerms"
-                    label="Payment Terms"
-                    className=""
+                    className="my-[-20px]"
+                    // label="Payment Terms"
+                    // className="my-[25px]"
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Payment Terms"
+                    <MuiInput
+                      form={form}
+                      name="paymentTerms"
+                      // placeholder="Payment Terms"
+                      label={"Payment Terms"}
                     />
                   </Form.Item>
                   <Form.Item
                     name="costCenter"
+                    className="my-[-45px]"
                     // label="Cost Center"
                     label={
                       <div
@@ -577,7 +586,7 @@ const CreatePoPage: React.FC<Props> = ({
                     rules={rules.costCenter}
                   >
                     <ReusableAsyncSelect
-                      placeholder="Cost Center"
+                      // placeholder="Cost Center"
                       endpoint="/backend/costCenter"
                       transform={transformOptionData2}
                       fetchOptionWith="query2"
@@ -586,30 +595,34 @@ const CreatePoPage: React.FC<Props> = ({
                   </Form.Item>
                   <Form.Item
                     name="project"
-                    label="Project"
-                    className=""
+                    // label="Project"
+                    className="my-[35px]"
                     // rules={rules.project}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                    <MuiInput
+                      form={form}
+                      name="project"
                       placeholder="Project"
+                      label={"Project"}
                     />
                   </Form.Item>
                   <Form.Item
                     name="comment"
-                    label="Comment"
-                    className=""
+                    // label="Comment"
+                    className="my-[35px]"
                     // rules={rules.comment}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Comment (If any)"
+                    <MuiInput
+                      form={form}
+                      name="comment"
+                      placeholder="Comment"
+                      label={"Comment"}
                     />
                   </Form.Item>
                   <Form.Item
                     name="currency"
-                    label="Currency"
-                    className=""
+                    // label="Currency"
+                    className="my-[-25px]"
                     rules={rules.currency}
                   >
                     <Select
@@ -639,20 +652,21 @@ const CreatePoPage: React.FC<Props> = ({
                   </Form.Item>
                   <Form.Item
                     name="exchange_rate"
-                    label="Exchange Rate"
-                    className=""
+                    // label="Exchange Rate"
+                    className="my-[-25px]"
                     rules={rules.exchange_rate}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                    <MuiInput
+                      form={form}
+                      name="exchange_rate"
                       placeholder="Exchange Rate"
-                      min={1}
+                      label={"Exchange Rate"}
                     />
                   </Form.Item>
 
                   <Form.Item
                     name="duedate"
-                    label="Due Date"
+                    // label="Due Date"
                     className=""
                     rules={rules.duedate}
                   >
@@ -692,13 +706,13 @@ const CreatePoPage: React.FC<Props> = ({
               <CardContent className="mt-[30px]">
                 <Form.Item
                   name="billingId"
-                  label="Billing ID"
+                  // label="Billing ID"
                   rules={rules.billingId}
                 >
                   <Select
                     styles={customStyles}
                     components={{ DropdownIndicator }}
-                    // placeholder="Ship "
+                    placeholder="Billing ID "
                     className="border-0 basic-single"
                     classNamePrefix="select border-0"
                     isDisabled={false}
@@ -712,39 +726,34 @@ const CreatePoPage: React.FC<Props> = ({
                   />
                 </Form.Item>
                 <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                  <Form.Item
-                    name="pan"
-                    label="PAN"
-                    className=""
-                    rules={rules.pan}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
+                  <Form.Item name="pan" className="" rules={rules.pan}>
+                    <MuiInput
+                      form={form}
+                      name="pan"
                       placeholder="Billing PAN"
+                      label={"Billing PAN"}
                     />
                   </Form.Item>
 
-                  <Form.Item
-                    name="billgst"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.billgst}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
+                  <Form.Item name="billgst" rules={rules.billgst}>
+                    <MuiInput
+                      form={form}
+                      name="billgst"
                       placeholder="Billing GSTIN"
+                      label={"Billing GSTIN"}
                     />
                   </Form.Item>
                 </div>
                 <Form.Item
                   name="billAddress"
-                  label="Address"
-                  className="mt-[40px]"
+                  // className="mt-[40px]"
                   rules={rules.billAddress}
                 >
-                  <Textarea
-                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                    placeholder="Billing Address"
+                  <MuiInput
+                    form={form}
+                    name="billAddress"
+                    placeholder="Address"
+                    label={"Address"}
                   />
                 </Form.Item>
               </CardContent>
@@ -757,12 +766,11 @@ const CreatePoPage: React.FC<Props> = ({
                 {/* <p className="text-slate-600 text-[13px]">Ship To -</p> */}
               </CardHeader>
               <CardContent className="mt-[30px]">
-                {" "}
-                <Form.Item name="shipId" label="Ship ID" rules={rules.shipId}>
+                <Form.Item name="shipId" rules={rules.shipId}>
                   <Select
                     styles={customStyles}
                     components={{ DropdownIndicator }}
-                    // placeholder="Ship "
+                    placeholder="Ship ID "
                     className="border-0 basic-single"
                     classNamePrefix="select border-0"
                     isDisabled={false}
@@ -775,39 +783,30 @@ const CreatePoPage: React.FC<Props> = ({
                   />
                 </Form.Item>
                 <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                  <Form.Item
-                    name="shippan"
-                    label="PAN"
-                    className=""
-                    rules={rules.shippan}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                      placeholder="Shipping PAN"
+                  <Form.Item name="shippan" className="" rules={rules.shippan}>
+                    <MuiInput
+                      form={form}
+                      name="shippan"
+                      placeholder="PAN"
+                      label={" PAN"}
                     />
                   </Form.Item>
 
-                  <Form.Item
-                    name="shipgst"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.shipgst}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
+                  <Form.Item name="shipgst" className="" rules={rules.shipgst}>
+                    <MuiInput
+                      form={form}
+                      name="shipgst"
                       placeholder=" Shipping GSTIN"
+                      label={" GSTIN"}
                     />
                   </Form.Item>
                 </div>
-                <Form.Item
-                  rules={rules.shipAddress}
-                  name="shipAddress"
-                  label="Address"
-                  className="mt-[40px]"
-                >
-                  <Textarea
-                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                    placeholder="Shipping Address"
+                <Form.Item rules={rules.shipAddress} name="shipAddress">
+                  <MuiInput
+                    form={form}
+                    name="shipAddress"
+                    placeholder="Address"
+                    label={" Address"}
                   />
                 </Form.Item>
               </CardContent>
@@ -843,57 +842,50 @@ const CreatePoPage: React.FC<Props> = ({
               {/* <form onSubmit={forms.handleSubmit(addVendor)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
                 <div className="grid grid-cols-2 gap-[20px]">
-                  <Form.Item name="label" label=" Address label">
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="GSTIN / UIN"
+                  <Form.Item name="label">
+                    <MuiInput
+                      form={forms}
+                      name="label"
+                      placeholder=" Address label"
+                      label={" Address label"}
                     />
-                  </Form.Item>{" "}
+                  </Form.Item>
                   <Form.Item
                     name="pan"
-                    label="Pan No."
                     className=""
                     // rules={rules.vendorGst}
                   >
-                    <Input
-                      className={InputStyle}
-                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      // placeholder="GSTIN / UIN"
+                    <MuiInput
+                      form={forms}
+                      name="pan"
+                      placeholder="Pan Number"
+                      label={"Pan Number"}
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="cin"
-                    label="CIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input
-                      className={InputStyle}
-                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      // placeholder="GSTIN / UIN"
+                  <Form.Item name="cin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="cin"
+                      placeholder="CIN"
+                      label={"CIN"}
                     />
                   </Form.Item>
                 </div>
-                <Divider />
+                {/* <Divider /> */}
                 <div className="grid grid-cols-2 gap-[20px]">
-                  {" "}
                   <Form.Item
                     name="company"
-                    label="Company Name"
                     className=""
                     rules={rules.vendorGst}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      // placeholder="GSTIN / UIN"
+                    <MuiInput
+                      form={forms}
+                      name="company"
+                      placeholder="Company Name"
+                      label={"Company Name"}
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="state"
-                    label="state"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="state" className="" rules={rules.vendorGst}>
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
@@ -910,63 +902,62 @@ const CreatePoPage: React.FC<Props> = ({
                       }
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="city"
-                    label="City"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="city" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="city"
+                      placeholder="City"
+                      label={"City"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="gstin"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="gstin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="gstin"
+                      placeholder="GSTIN"
+                      label={"GSTIN"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="pin"
-                    label="Pin No."
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="pin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="pin"
+                      placeholder="Pin Number"
+                      label={"Pin Number"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="email"
-                    label="Email"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter Email" />
+                  <Form.Item name="email" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="email"
+                      placeholder="Email"
+                      label={"Email"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="mobile"
-                    label="Mobile"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter mobile" />
+                  <Form.Item name="mobile" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="mobile"
+                      placeholder="Mobile"
+                      label={"Mobile"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="fax"
-                    label="Fax"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter fax" />
+                  <Form.Item name="fax" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="fax"
+                      placeholder="Fax"
+                      label={"Fax"}
+                    />
                   </Form.Item>
-                </div>{" "}
-                <div className="grid grid-cols-2 gap-[20px]"></div>
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  className=""
-                  rules={rules.vendorGst}
-                >
-                  <Input className={InputStyle} placeholder="Enter address" />
+                </div>
+                <Form.Item name="address" rules={rules.vendorGst}>
+                  <MuiInput
+                    form={forms}
+                    name="address"
+                    placeholder="Address"
+                    label={"Address"}
+                  />
                 </Form.Item>
               </div>
               <div className={modelFixFooterStyle}>
@@ -975,6 +966,7 @@ const CreatePoPage: React.FC<Props> = ({
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
                     setSheetOpen(false);
+                    forms.resetFields();
                     e.preventDefault();
                   }}
                 >
@@ -992,7 +984,7 @@ const CreatePoPage: React.FC<Props> = ({
             </Form>
           </div>
         </SheetContent>
-      </Sheet>{" "}
+      </Sheet>
       {/* ---//////////////Branch */}
       <Sheet open={sheetOpenBranch} onOpenChange={setSheetOpenBranch}>
         <SheetTrigger></SheetTrigger>
@@ -1010,38 +1002,16 @@ const CreatePoPage: React.FC<Props> = ({
             <Form form={forms} layout="vertical">
               {/* <form onSubmit={form.handleSubmit(createNewBranch)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
-                <Form.Item name="label" label=" Address label" className="">
-                  <Input
-                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                    placeholder="GSTIN / UIN"
+                <Form.Item name="label" className="">
+                  <MuiInput
+                    form={forms}
+                    name="label"
+                    placeholder=" Address label"
+                    label={" Address label"}
                   />
-                </Form.Item>{" "}
+                </Form.Item>
                 <div className="grid grid-cols-2 gap-[20px]">
-                  {/* <FormField
-                        control={form.control}
-                        name="company"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Company Name
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Company Name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      /> */}{" "}
-                  <Form.Item
-                    name="state"
-                    label="state"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="state" className="" rules={rules.vendorGst}>
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
@@ -1058,63 +1028,65 @@ const CreatePoPage: React.FC<Props> = ({
                       }
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="city"
-                    label="City"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="city" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="city"
+                      placeholder="City"
+                      label={"City"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="gstin"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="gstin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="gstin"
+                      placeholder="GSTIN"
+                      label={"GSTIN"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="pin"
-                    label="Pin No."
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="pin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="pin"
+                      placeholder="Pin Number"
+                      label={"Pin Number"}
+                      type={"number"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="email"
-                    label="Email"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter Email" />
+                  <Form.Item name="email" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="email"
+                      placeholder="Email"
+                      label={"Email"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="mobile"
-                    label="Mobile"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter mobile" />
+                  <Form.Item name="mobile" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="mobile"
+                      placeholder="Mobile"
+                      label={"Mobile"}
+                      type={"number"}
+                    />
                   </Form.Item>
                 </div>
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  className=""
-                  rules={rules.vendorGst}
-                >
-                  <Input className={InputStyle} placeholder="Enter address" />
+                <Form.Item name="address" className="" rules={rules.vendorGst}>
+                  <MuiInput
+                    form={forms}
+                    name="address"
+                    placeholder="Address"
+                    label={"Address"}
+                  />
                 </Form.Item>
                 <div className="grid grid-cols-2 gap-[20px]">
-                  <Form.Item
-                    name="fax"
-                    label="Fax"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter fax" />
+                  <Form.Item name="fax" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="fax"
+                      placeholder="Fax"
+                      label={"Fax"}
+                    />
                   </Form.Item>
                 </div>
               </div>
@@ -1124,6 +1096,7 @@ const CreatePoPage: React.FC<Props> = ({
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
                     setSheetOpenBranch(false);
+                    forms.resetFields();
                     e.preventDefault();
                   }}
                 >
@@ -1158,18 +1131,22 @@ const CreatePoPage: React.FC<Props> = ({
             <Form form={forms} layout="vertical">
               {/* <form onSubmit={form.handleSubmit(createNewBranch)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
-                <Form.Item name="costId" label="Cost Center Id" className="">
-                  <Input
-                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                <Form.Item name="costId" className="">
+                  <MuiInput
+                    form={forms}
+                    name="costId"
                     placeholder="Cost Center Id"
+                    label={"Cost Center Id"}
                   />
-                </Form.Item>{" "}
-                <Form.Item name="name" label="Cost Center Namel" className="">
-                  <Input
-                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                </Form.Item>
+                <Form.Item name="name" className="">
+                  <MuiInput
+                    form={forms}
+                    name="name"
                     placeholder="Cost Center Name"
+                    label={"Cost Center Name"}
                   />
-                </Form.Item>{" "}
+                </Form.Item>
               </div>
               <div className={modelFixFooterStyle}>
                 <Button
@@ -1177,6 +1154,7 @@ const CreatePoPage: React.FC<Props> = ({
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
                     setSheetOpenCC(false);
+                    forms.resetFields();
                     e.preventDefault();
                   }}
                 >

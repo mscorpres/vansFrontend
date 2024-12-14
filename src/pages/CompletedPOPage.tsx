@@ -4,7 +4,6 @@ import { Filter } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
@@ -20,12 +19,14 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformOptionData, transformOptionData2 } from "@/helper/transform";
+import { transformOptionData2 } from "@/helper/transform";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { rangePresets } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
+
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setView,
   row,
@@ -213,7 +214,6 @@ const CompletedPOPage: React.FC = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -288,15 +288,16 @@ const CompletedPOPage: React.FC = () => {
             >
               <Input placeholder="PO number" />
             </Form.Item>
-          )}{" "}
+          )}
           <div className="w-full flex justify-end">
             <Button
+              variant="contained"
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               onClick={fetchManageList}
             >
               Search
-            </Button>{" "}
+            </Button>
           </div>
           {/* <CustomTooltip
               message="Add Address"
@@ -312,7 +313,7 @@ const CompletedPOPage: React.FC = () => {
                 <Plus className="h-[20px] w-[20px]" />
               </Button>
             </CustomTooltip> */}
-          {/* </form>{" "} */}
+          {/* </form>    */}
         </Form>
         <Divider />
       </div>
@@ -330,7 +331,7 @@ const CompletedPOPage: React.FC = () => {
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
         />
-      </div>{" "}
+      </div>
       <ViewCompoents
         view={view}
         setView={setView}
@@ -343,7 +344,7 @@ const CompletedPOPage: React.FC = () => {
         // handleCancelPO={handleCancelPO}
         remarkDescription={remarkDescription}
         setRemarkDescription={setRemarkDescription}
-      />{" "}
+      />
       <MINPO viewMinPo={viewMinPo} setViewMinPo={setViewMinPo} />
       <ConfirmationModal
         open={showConfirmation}

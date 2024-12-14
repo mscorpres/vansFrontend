@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
-import { Plus } from "lucide-react";
+import { Plus, Save } from "lucide-react";
 import styled from "styled-components";
 import { Form, Space } from "antd";
 import { toast } from "@/components/ui/use-toast";
@@ -19,6 +18,8 @@ import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSli
 import { fetchTransferLoc, settleTransfer } from "@/features/client/storeSlice";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
+import { Refresh, Send } from "@mui/icons-material";
 
 const TransferBox = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -318,7 +319,7 @@ const TransferBox = () => {
             onClick={() => {
               addNewRow();
             }}
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+            className="rounded-md shadow shadow-slate-500 max-w-max"
           >
             <Plus className="font-[600]" /> Add Item
           </Button>{" "}
@@ -343,7 +344,8 @@ const TransferBox = () => {
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
-              className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+              startIcon={<Refresh />}
+              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setCallReset(true)}
             >
               Reset
@@ -355,7 +357,9 @@ const TransferBox = () => {
               Back
             </Button> */}
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              variant="contained"
+              startIcon={<Save />}
+              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}
             >
               Submit

@@ -1,5 +1,5 @@
 import { Props } from "@/types/salesmodule/salesShipmentTypes";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,12 @@ const RejectModal: React.FC<Props> = ({
   onOkay,
   setRejectText,
 }) => {
+  // State to track the input value
+  const [rejectInput, setRejectInput] = useState("");
+
+  // Check if the input matches 'reject' (case-insensitive)
+  const isRejectInputValid = rejectInput.trim().toLowerCase() === "reject";
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
@@ -30,9 +36,13 @@ const RejectModal: React.FC<Props> = ({
           <div>
             <Label className={LableStyle}>
               Write <span className="font-[600] text-red-800">reject</span>{" "}
-              iside input box
+              inside input box
             </Label>
-            <Input className={InputStyle} />
+            <Input
+              className={InputStyle}
+              value={rejectInput}
+              onChange={(e) => setRejectInput(e.target.value)}
+            />
           </div>
           <div>
             <Label className={LableStyle}>Remark</Label>
@@ -50,7 +60,11 @@ const RejectModal: React.FC<Props> = ({
           >
             No
           </Button>
-          <Button className={"bg-red-700 hover:bg-red-600"} onClick={onOkay}>
+          <Button
+            className={"bg-red-700 hover:bg-red-600"}
+            onClick={onOkay}
+            disabled={!isRejectInputValid} // Disable the button if input is not "reject"
+          >
             Yes
           </Button>
         </div>

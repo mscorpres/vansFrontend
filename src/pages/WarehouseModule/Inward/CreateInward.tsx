@@ -46,6 +46,7 @@ import {
 } from "@/components/shared/Api/masterApi";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import MuiInput from "@/components/ui/MuiInput";
 
 interface Props {
   setTab: string;
@@ -243,7 +244,7 @@ const CreateInward: React.FC<Props> = ({
                     <Select
                       styles={customStyles}
                       placeholder="Vendor type"
-                      className="border-0 basic-single"
+                      className="border-0 basic-single z-20 relative"
                       classNamePrefix="select border-0"
                       components={{ DropdownIndicator }}
                       isDisabled={false}
@@ -260,6 +261,7 @@ const CreateInward: React.FC<Props> = ({
                   {/* {} */}
                   <Form.Item
                     name="vendorName"
+                    className="z-20 relative"
                     label={
                       <div
                         style={{
@@ -289,7 +291,7 @@ const CreateInward: React.FC<Props> = ({
                     }
                   >
                     <ReusableAsyncSelect
-                      placeholder="Vendor Name"
+                      // placeholder="Vendor Name"
                       endpoint="/backend/vendorList"
                       transform={transformOptionData2}
                       onChange={(e) => form.setFieldValue("vendorName", e)}
@@ -346,14 +348,11 @@ const CreateInward: React.FC<Props> = ({
                 <div className="mt-[30px] grid grid-cols-4 gap-[40px]">
                   <Form.Item
                     name="vendorGst"
-                    label="GSTIN"
-                    className=""
+                    // label="GSTIN"
+                    className="my-[25px]"
                     rules={rules.vendorGst}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="GSTIN / UIN"
-                    />
+                    <MuiInput name="vendorGst" form={form} label="GSTIN" />
                   </Form.Item>
                   <Form.Item
                     name="costCenter"
@@ -361,7 +360,7 @@ const CreateInward: React.FC<Props> = ({
                     rules={rules.costCenter}
                   >
                     <ReusableAsyncSelect
-                      placeholder="Cost Center"
+                      // placeholder="Cost Center"
                       endpoint="/backend/costCenter"
                       transform={transformOptionData2}
                       fetchOptionWith="query2"
@@ -405,17 +404,17 @@ const CreateInward: React.FC<Props> = ({
                     className=""
                     rules={rules.exchange_rate}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Exchange Rate"
-                      min={1}
+                    <MuiInput
+                      name="exchange_rate"
+                      form={form}
+                      label="Exchange Rate"
                     />
                   </Form.Item>
                 </div>{" "}
                 <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
                   <Form.Item
                     name="address"
-                    label="Address"
+                    // label="Address"
                     className=""
                     rules={
                       selven == "c01" || selven?.value == "c01"
@@ -423,10 +422,7 @@ const CreateInward: React.FC<Props> = ({
                         : rules.address
                     }
                   >
-                    <Textarea
-                      className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Address"
-                    />
+                    <MuiInput name="address" form={form} label="Address" />
                   </Form.Item>{" "}
                 </div>
               </CardContent>

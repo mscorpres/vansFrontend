@@ -5,7 +5,6 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
@@ -47,6 +46,7 @@ import { rangePresets } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { uploadAttachmentForPO } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
+import { Button, TextField } from "@mui/material";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -312,7 +312,6 @@ const ManagePoPage: React.FC = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -390,13 +389,14 @@ const ManagePoPage: React.FC = () => {
           )}
           <div className="w-full flex justify-end">
             <Button
+              variant="contained"
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
               onClick={fetchManageList}
             >
               Search
-            </Button>{" "}
-          </div>{" "}
+            </Button>
+          </div>
           {/* <CustomTooltip
               message="Add Address"
               side="top"
@@ -411,7 +411,7 @@ const ManagePoPage: React.FC = () => {
                 <Plus className="h-[20px] w-[20px]" />
               </Button>
             </CustomTooltip> */}
-          {/* </form>{" "} */}
+          {/* </form>    */}
         </Form>
         <Divider />
       </div>
@@ -430,7 +430,7 @@ const ManagePoPage: React.FC = () => {
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           // gridOptions={commonAgGridConfig}
         />
-      </div>{" "}
+      </div>
       <ViewCompoents
         view={view}
         setView={setView}
@@ -444,7 +444,7 @@ const ManagePoPage: React.FC = () => {
         // handleCancelPO={handleCancelPO}
         remarkDescription={remarkDescription}
         setRemarkDescription={setRemarkDescription}
-      />{" "}
+      />
       <MINPO viewMinPo={viewMinPo} setViewMinPo={setViewMinPo} />
       <ConfirmationModal
         open={showConfirmation}
@@ -452,7 +452,7 @@ const ManagePoPage: React.FC = () => {
         // onOkay={handleCancelPO}
         title="Confirm Submit!"
         description="Are you sure to submit details of all components of this Purchase Order?"
-      />{" "}
+      />
       <Sheet open={sheetOpen?.po_transaction} onOpenChange={setSheetOpen}>
         <SheetContent
           className="min-w-[35%] p-0"
@@ -481,10 +481,8 @@ const ManagePoPage: React.FC = () => {
               <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
                 <h2 className="text-xl font-semibold text-center mb-4">
                   <div className=" text-center w-full justify-center flex">
-                    {" "}
                     <div>Upload Your Files</div>
                     <div>
-                      {" "}
                       <IoCloudUpload
                         className="text-cyan-700 ml-5 h-[20]"
                         size={"1.5rem"}
@@ -496,8 +494,8 @@ const ManagePoPage: React.FC = () => {
                   <span className="text-slate-500 text-sm text-center w-full justify-center flex">
                     Drag and drop files here, or click to select files
                   </span>
-                </FileInput>{" "}
-              </div>{" "}
+                </FileInput>
+              </div>
               <div className=" m-[20px]">
                 <FileUploaderContent>
                   {files?.map((file, index) => (
@@ -507,35 +505,51 @@ const ManagePoPage: React.FC = () => {
                   ))}
                 </FileUploaderContent>
               </div>
-            </FileUploader>{" "}
+            </FileUploader>
             <div className="w-full flex justify-center">
               <div className="w-[80%] flex justify-center">
-                <Input
+                {/* <Input
                   placeholder="Enter Image Captions"
                   className={InputStyle}
                   onChange={(e) => setCaptions(e.target.value)}
+                /> */}
+                <TextField
+                  //   id="filled-basic"
+                  //   color="grey"
+                  //   sx={{ height: "30px" }}
+                  variant="outlined"
+                  label="Image Captions"
+                  placeholder="Enter Image Captions"
+                  fullWidth={true}
+                  // label={label}
+                  value={captions}
+                  onChange={(e) => setCaptions(e.target.value)}
+                  //   error={form}
+                  //   helperText={"geee"}
+                  //   onChange={()=>{form.setFieldsValue({})}}
                 />
               </div>
             </div>
-          </div>{" "}
+          </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+              className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setSheetOpen(false)}
             >
               Back
-            </Button>{" "}
+            </Button>
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              variant="contained"
+              className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
               onClick={uploadDocs}
               // loading={laoding}
             >
               {/* {isApprove ? "Approve" : "Submit"} */}
               Upload
             </Button>
-          </div>{" "}
+          </div>
         </SheetContent>
-      </Sheet>{" "}
+      </Sheet>
     </Wrapper>
   );
 };
