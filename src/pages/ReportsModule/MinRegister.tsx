@@ -44,10 +44,11 @@ const MinRegister = () => {
   const fetchQueryResults = async () => {
     let value = await form.validateFields();
     // let { date, search } = formData;
+    console.log("value", value);
 
     let dataString = "";
-    if (value?.date) {
-      dataString = exportDateRangespace(date);
+    if (value?.data) {
+      dataString = exportDateRangespace(value.data);
     } else {
       dataString = value.search;
     }
@@ -55,6 +56,8 @@ const MinRegister = () => {
       min_types: value.types.value,
       data: dataString,
     };
+    console.log("payload", payload);
+
     const response = await execFun(
       () => fetchListOfMINRegister(payload),
       "fetch"
@@ -311,25 +314,18 @@ const MinRegister = () => {
               />
             </Form.Item>
           ) : (
-            //   )}
-            // />
-
-            <Form.Item className="w-full" name="date">
+            <Form.Item className="w-full" name="data">
               <Space direction="vertical" size={12} className="w-full">
                 <RangePicker
                   className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                  // onChange={(value) =>
-                  //   field.onChange(
-                  //     value ? value.map((date) => date!.toDate()) : []
-                  //   )
-                  // }
+                  // onChange={(e: any) => form.setFieldValue("data", e?.value)}
                   onChange={(value) =>
                     form.setFieldValue(
-                      "date",
+                      "data",
                       value ? value.map((date) => date!.toDate()) : []
                     )
                   }
-                  format={"DD/MM/YYYY"}
+                  format={"DD-MM-YYYY"}
                   presets={rangePresets}
                 />
               </Space>
