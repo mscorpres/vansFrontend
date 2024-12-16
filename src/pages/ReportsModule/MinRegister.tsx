@@ -46,8 +46,8 @@ const MinRegister = () => {
     // let { date, search } = formData;
 
     let dataString = "";
-    if (value?.date) {
-      dataString = exportDateRangespace(date);
+    if (value?.data) {
+      dataString = exportDateRangespace(value.data);
     } else {
       dataString = value.search;
     }
@@ -74,7 +74,13 @@ const MinRegister = () => {
     }
   };
   useEffect(() => {
+    // fetchComponentList();
   }, []);
+  // useEffect(() => {
+  //   // fetchComponentList();
+  //   form.setFieldValue("search", "");
+  //   form.setFieldValue("date", "");
+  // }, [theWise]);
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -108,6 +114,13 @@ const MinRegister = () => {
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
       width: 280,
+    },
+    {
+      headerName: "Decription",
+      field: "Decription",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 250,
     },
     {
       headerName: "In Box",
@@ -223,7 +236,7 @@ const MinRegister = () => {
       width: 190,
     },
     {
-      headerName: "Description",
+      headerName: "Remark",
       field: "COMMENT",
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
@@ -304,21 +317,14 @@ const MinRegister = () => {
               />
             </Form.Item>
           ) : (
-            //   )}
-            // />
-
-            <Form.Item className="w-full" name="date">
+            <Form.Item className="w-full" name="data">
               <Space direction="vertical" size={12} className="w-full">
                 <RangePicker
                   className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                  // onChange={(value) =>
-                  //   field.onChange(
-                  //     value ? value.map((date) => date!.toDate()) : []
-                  //   )
-                  // }
+                  // onChange={(e: any) => form.setFieldValue("data", e?.value)}
                   onChange={(value) =>
                     form.setFieldValue(
-                      "date",
+                      "data",
                       value ? value.map((date) => date!.toDate()) : []
                     )
                   }
