@@ -8,7 +8,7 @@ interface OptionType {
 export const customStyles: StylesConfig<OptionType, false> = {
   control: (provided, state) => ({
     ...provided,
-    borderRadius: "0",
+    borderRadius: "5px",
     border: "2px solid #cbd5e1",
     //  border: "none",
     borderBottom: "2px solid #cbd5e1",
@@ -20,7 +20,7 @@ export const customStyles: StylesConfig<OptionType, false> = {
     },
     // background: "#FFFBEB",
     background: state.isFocused ? "#FFFBEB" : "white",
-    fontSize: "15px",
+    fontSize: "13px",
   }),
   option: (provided, state) => ({
     ...provided,
@@ -66,6 +66,6 @@ export const customStyles: StylesConfig<OptionType, false> = {
     gap: "5px", // Space between the items
     borderRadius: "10px", // Rounded corners for the menu list
     position: "relative", // Position relative to adjust stacking context
-    zIndex:10, // Ensure the dropdown list appears above other content
+    zIndex: 10, // Ensure the dropdown list appears above other content
   }),
 };
