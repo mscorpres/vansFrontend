@@ -137,6 +137,7 @@ function PrintMinLabel() {
       }
     }
   }, [selMin]);
+  console.log("selType", selType);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white ">
@@ -169,10 +170,7 @@ function PrintMinLabel() {
                   options={types}
                 />
               </Form.Item>
-              {selType == "Transfer" ||
-              selType?.value == "Transfer" ||
-              selType == "MIN" ||
-              selType?.value == "MIN" ? (
+              {selType?.value == "Transfer" || selType?.value == "MIN" ? (
                 <Form.Item
                   name="min"
                   label="  MIN"
@@ -187,7 +185,7 @@ function PrintMinLabel() {
                     fetchOptionWith="payloadSearchTerm"
                   />
                 </Form.Item>
-              ) : (
+              ) : selType?.value ? (
                 <>
                   <Form.Item
                     name="min"
@@ -222,6 +220,8 @@ function PrintMinLabel() {
                     />
                   </Form.Item>
                 </>
+              ) : (
+                ""
               )}
             </div>
 
