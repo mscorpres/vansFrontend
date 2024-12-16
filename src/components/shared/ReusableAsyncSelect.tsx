@@ -139,13 +139,27 @@ const ReusableAsyncSelect = <T,>({
   return (
     <div>
       {/* Label for the AsyncSelect */}
-      <label
+      {/* <label
         htmlFor="async-select"
-        style={{ fontSize: "12px", marginBottom: "8px", color: "#475569" }}
+        style={{
+          fontSize: "12px",
+          marginBottom: "8px",
+          color: "#475569",
+          borderRadius: "50%",
+        }}
       >
         {placeholder}
-      </label>
+      </label> */}
       <AsyncSelect
+        // styles={{
+        //   ...customStyles, // Keep existing custom styles
+        //   control: (base) => ({
+        //     ...base,
+        //     borderRadius: "12px", // Rounded corners for the control (input box)
+        //     border: "1px solid #ccc", // Light border color (optional)
+        //     boxShadow: "none", // Optional: remove shadow if there is one
+        //   }),
+        // }}
         className="absolute z-[2]"
         styles={customStyles}
         components={{ DropdownIndicator }}

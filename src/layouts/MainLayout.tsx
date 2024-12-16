@@ -85,7 +85,7 @@ function MainLayout(props: { children: React.ReactNode }) {
       {/* alert disalogs start=============== */}
       {/* sidebars=========================== */}
       <div
-        className={`sheetone absolute  h-[100vh] z-10 top-0 w-full transition-all  ${
+        className={`sheetone absolute  h-[100vh] z-30 top-0 w-full transition-all  ${
           sheetOpen || sheet2Open || favoriteSheet
             ? "bg-[#00000081]"
             : "left-[-100%]"

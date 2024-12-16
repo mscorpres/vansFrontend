@@ -54,6 +54,8 @@ import {
 } from "@/components/shared/Api/masterApi";
 import { toast } from "@/components/ui/use-toast";
 import MuiInput from "@/components/ui/MuiInput";
+import { ArrowLeftIcon } from "lucide-react";
+import { Save } from "@mui/icons-material";
 interface Props {
   setTab: string;
   setPayloadData: string;
@@ -353,7 +355,7 @@ const CreatePoPage: React.FC<Props> = ({
                     <Select
                       styles={customStyles}
                       // placeholder="PO type"
-                      className="border-0 basic-single z-50 relative"
+                      className="border-0 basic-single z-10 relative"
                       classNamePrefix="select border-0"
                       components={{ DropdownIndicator }}
                       isDisabled={false}
@@ -369,6 +371,7 @@ const CreatePoPage: React.FC<Props> = ({
                   {selPoType?.value == "S" && (
                     <Form.Item name="originalPO" rules={rules.vendorType}>
                       <ReusableAsyncSelect
+                        classname="z-20 "
                         // placeholder="Original PO"
                         endpoint="/backend/searchPoByPoNo"
                         transform={transformOptionData}
@@ -386,7 +389,7 @@ const CreatePoPage: React.FC<Props> = ({
                     <Select
                       styles={customStyles}
                       // placeholder="Vendor type"
-                      className="border-0 basic-single  z-40 relative"
+                      className="border-0 basic-single  z-10 relative"
                       classNamePrefix="select border-0"
                       components={{ DropdownIndicator }}
                       isDisabled={false}
@@ -414,7 +417,7 @@ const CreatePoPage: React.FC<Props> = ({
                         width: 350,
                       }}
                     >
-                      Vendor Name
+                      {/* Vendor Name */}
                       <span
                         onClick={() => setSheetOpen(true)}
                         style={{
@@ -449,7 +452,7 @@ const CreatePoPage: React.FC<Props> = ({
                           width: 350,
                         }}
                       >
-                        Branch Name
+                        {/* Branch Name */}
                         <span
                           onClick={() => setSheetOpenBranch(true)}
                           style={{
@@ -482,7 +485,7 @@ const CreatePoPage: React.FC<Props> = ({
                   <Form.Item
                     name="vendorGst"
                     // label="GSTIN"
-                    className="my-[25px]"
+                    className="my-[30px]"
                     rules={rules.vendorGst}
                   >
                     <MuiInput
@@ -570,7 +573,7 @@ const CreatePoPage: React.FC<Props> = ({
                           width: 350,
                         }}
                       >
-                        Cost Center
+                        {/* Cost Center */}
                         <span
                           onClick={() => setSheetOpenCC(true)}
                           style={{
@@ -1150,7 +1153,8 @@ const CreatePoPage: React.FC<Props> = ({
               </div>
               <div className={modelFixFooterStyle}>
                 <Button
-                  variant={"outline"}
+                  startIcon={<ArrowLeftIcon />}
+                  variant="outlined"
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
                     setSheetOpenCC(false);
@@ -1161,6 +1165,7 @@ const CreatePoPage: React.FC<Props> = ({
                   Back
                 </Button>
                 <Button
+                  startIcon={<Save />}
                   type="submit"
                   onClick={createCostCenter}
                   className="bg-cyan-700 hover:bg-cyan-600 text-white"

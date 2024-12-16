@@ -1,4 +1,3 @@
-import { Button, Form } from "antd";
 import { Filter } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -8,6 +7,7 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData, transformOptionData2 } from "@/helper/transform";
+import PrintIcon from "@mui/icons-material/Print";
 import { useDispatch, useSelector } from "react-redux";
 import { printsticker2, qrPrint } from "@/features/client/storeSlice";
 import { spigenAxios } from "@/axiosIntercepter";
@@ -16,6 +16,8 @@ import Print from "@/assets/Print.jpg";
 // import p1 from "@/assets/p1.jpeg";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
+import { Button } from "@mui/material";
+import { Form } from "antd";
 function PrintMinLabel() {
   const [form] = Form.useForm();
   const selMin = Form.useWatch("min", form);
@@ -141,7 +143,6 @@ function PrintMinLabel() {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white ">
       <div className="bg-[#fff]">
-        {loading && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -160,8 +161,8 @@ function PrintMinLabel() {
                 <Select
                   styles={customStyles}
                   components={{ DropdownIndicator }}
-                  // placeholder=" Enter UOM"
-                  className="border-0 basic-single"
+                  placeholder="Print Type"
+                  className="border-0 basic-single  mb-[-24px] z-20"
                   classNamePrefix="select border-0"
                   isDisabled={false}
                   isClearable={true}
@@ -180,6 +181,8 @@ function PrintMinLabel() {
                 >
                   <ReusableAsyncSelect
                     // placeholder="Customer Name"
+                    className="z-10"
+                    placeholder="Search Transfer"
                     endpoint="/backend/getTrfMinsTransaction4Label"
                     transform={transformOptionData}
                     // onChange={(e) => form.setValue("customerName", e)}
@@ -195,7 +198,7 @@ function PrintMinLabel() {
                     rules={[{ required: true }]}
                   >
                     <ReusableAsyncSelect
-                      // placeholder="Customer Name"
+                      placeholder="Search MIN"
                       endpoint="/backend/getMinsTransaction4Label"
                       transform={transformOptionData2}
                       // onChange={(e) => form.setValue("customerName", e)}
@@ -206,13 +209,14 @@ function PrintMinLabel() {
                   <Form.Item
                     className="w-full"
                     name="box"
+                    label="Boxes"
                     rules={[{ required: true }]}
                   >
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
                       placeholder="Select Boxes"
-                      className="border-0 basic-single"
+                      className="border-0 basic-single mb-[-24px]"
                       classNamePrefix="select border-0"
                       isDisabled={false}
                       isClearable={true}
@@ -224,37 +228,35 @@ function PrintMinLabel() {
                 </>
               )}
             </div>
-
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 text-white"
-              onClick={(e: any) => {
-                e.preventDefault();
-                onsubmit();
-              }}
-            >
-              Print
-            </Button>
+            <div className="flex justify-end">
+              <Button
+                variant="contained"
+                type="submit"
+                startIcon={<PrintIcon />}
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 text-white"
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  onsubmit();
+                }}
+              >
+                Print
+              </Button>
+            </div>
           </form>
-        </Form>{" "}
+        </Form>
       </div>
       <div
-        className="h-[500px] bg-cover bg-repeat rounded"
+        className="h-[500px] bg-cover bg-repeat rounded relative"
         style={{ backgroundImage: "url('./../assets/images/s1.png')" }}
       >
+        {loading && <FullPageLoading />}
         <div className="flex  items-center mt-[30px] gap-[20px] w-full justify-center h-full">
           <div className="h-[350px] w-[350px] flex flex-col items-center justify-center gap-[3px] opacity-80 pointer-events-none ">
-            {" "}
             <img
               src={Print}
               alt="no access"
               className="border-rounded  rounded-full"
             />
-            {/* <MdLocalPrintshop className="h-[150px] w-[150px] text-cyan-800" /> */}
-            {/* <Link to={"/"} className="flex items-center gap-[5px]">
-              <p className="text-cyan-800 font-[600]">Production</p>
-              <BiLinkExternal className="text-cyan-800" />
-            </Link> */}
           </div>
         </div>
       </div>

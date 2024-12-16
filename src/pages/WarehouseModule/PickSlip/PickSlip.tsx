@@ -174,6 +174,7 @@ const PickSlip = () => {
           totalQty={selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
           selectedBox={selectedRows.map((item) => item?.box_name).join(",")}
           setCompKey={setCompKey}
+          rowData={rowData}
         />
       ),
     }),
@@ -394,6 +395,7 @@ const PickSlip = () => {
     );
   };
 
+  console.log("rowData", rowData);
   const openDrawer = (params) => {
     // dispatch(fetchAvailableStockBoxes({ search: params.data.pickmaterial }));
     setSheetOpen(true);
@@ -417,7 +419,7 @@ const PickSlip = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
       <div className="bg-[#fff]">
-        {loading && <FullPageLoading />}
+       
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -495,7 +497,7 @@ const PickSlip = () => {
             <Plus className="font-[600]" /> Add Item
           </Button>{" "}
         </div>
-        <div className="ag-theme-quartz h-[calc(100vh-200px)] w-full">
+        <div className="ag-theme-quartz h-[calc(100vh-200px)] w-full relative">
           {" "}
           {loading && <FullPageLoading />}
           <AgGridReact

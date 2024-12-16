@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { ICellRendererParams } from "ag-grid-community";
@@ -61,6 +60,9 @@ import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import MuiInput from "@/components/ui/MuiInput";
+import { Button } from "@mui/material";
+import { Refresh, Send } from "@mui/icons-material";
 const dateFormat = "YYYY/MM/DD";
 const FormSchema = z.object({
   wise: z.string().optional(),
@@ -268,6 +270,10 @@ const FgOutCreate = () => {
     }
   };
 
+  const reset = () => {
+    form.resetFields();
+    setRowData([]);
+  };
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
@@ -293,11 +299,12 @@ const FgOutCreate = () => {
               onChange={(e: any) => setWise(e.value)}
             />
           </Form.Item>
-          <Form.Item className="w-full" name="remark" label="Description">
-            <Input
-              // value={value}
-              // type="text"
-              // placeholder={colDef.headerName}
+          <Form.Item className="w-full" name="remark">
+            <MuiInput
+              form={form}
+              name="remark"
+              // placeholder="Enter SKU"
+              label={"Description"}
               className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
             />
           </Form.Item>
@@ -311,12 +318,12 @@ const FgOutCreate = () => {
             onClick={() => {
               addNewRow();
             }}
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+            className="rounded-md shadow  shadow-slate-500 max-w-max"
           >
             <Plus className="font-[600]" /> Add Item
           </Button>{" "}
         </div>
-        <div className="ag-theme-quartz h-[calc(100vh-220px)] w-full">
+        <div className="ag-theme-quartz h-[calc(100vh-220px)] w-full relative">
           {(loading || loading1("fetch")) && <FullPageLoading />}
           <AgGridReact
             ref={gridRef}
@@ -344,8 +351,9 @@ const FgOutCreate = () => {
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
           <Button
-            className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
-            onClick={() => setRowData([])}
+            startIcon={<Refresh />}
+            className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
+            onClick={reset}
             // onClick={() =>
             // isApprove ? setShowRejectConfirm(true) : setRowData([])
             // }
@@ -353,7 +361,9 @@ const FgOutCreate = () => {
             Reset
           </Button>
           <Button
-            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+            startIcon={<Send />}
+            variant="contained"
+            className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
             onClick={() => setShowConfirmation(true)}
             disabled={rowData.length == 0}
           >

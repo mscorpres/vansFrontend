@@ -241,10 +241,8 @@ const PendingMr: React.FC = () => {
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      {" "}
-      {loading && <FullPageLoading />}
       <div className="bg-[#fff]">
-        {" "}
+         
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -295,12 +293,12 @@ const PendingMr: React.FC = () => {
                 <Plus className="h-[20px] w-[20px]" />
               </Button>
             </CustomTooltip> */}
-          {/* </form>{" "} */}
+          {/* </form>  */}
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
+         
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
@@ -314,7 +312,7 @@ const PendingMr: React.FC = () => {
           paginationPageSizeSelector={[10, 25, 50]}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
-      </div>{" "}
+      </div> 
       {/* <ViewCompoents
         view={view}
         setView={setView}
@@ -328,7 +326,7 @@ const PendingMr: React.FC = () => {
         // handleCancelPO={handleCancelPO}
         remarkDescription={remarkDescription}
         setRemarkDescription={setRemarkDescription}
-      />{" "}
+      /> 
       <MINPO viewMinPo={viewMinPo} setViewMinPo={setViewMinPo} /> */}
       <ConfirmationModal
         open={showConfirmation}

@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { ICellRendererParams } from "ag-grid-community";
@@ -64,6 +63,7 @@ import { IoMdDownload, IoMdPrint } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
 
 const PendingFg = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -273,13 +273,14 @@ const PendingFg = () => {
                   e.preventDefault();
                   handleDownloadExcel();
                 }}
+                disabled={rowData.length == 0}
               >
                 <IoMdDownload size={20} />
               </Button>
-
               <Button
+                variant="contained"
                 type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                className="shadow  shadow-slate-500"
                 // onClick={() => {}}
                 onClick={(e: any) => {
                   e.preventDefault();
@@ -394,7 +395,7 @@ const PendingFg = () => {
           />
         </Sheet>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {(loading || loading1("fetch")) && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

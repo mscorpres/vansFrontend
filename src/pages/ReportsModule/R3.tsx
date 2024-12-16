@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import {
@@ -36,6 +35,7 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import { rangePresets } from "@/General";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -233,7 +233,6 @@ const R3 = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -262,13 +261,13 @@ const R3 = () => {
                   <FormMessage />
                 </FormItem>
               )}
-            />{" "}
+            />
             <FormField
               control={form.control}
               name="bom"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={LableStyle}>BOM</FormLabel>
+                  {/* <FormLabel className={LableStyle}>BOM</FormLabel> */}
                   <FormControl>
                     <Select
                       styles={customStyles}
@@ -319,17 +318,8 @@ const R3 = () => {
                 </FormItem>
               )}
             />
-            {/* )} */}{" "}
+            {/* )} */}
             <div className="flex gap-[10px] justify-end  px-[5px]">
-              <Button
-                type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                //   onClick={() => {
-                //     fetchBOMList();
-                //   }}
-              >
-                Search
-              </Button>
               <Button
                 // type="submit"
                 className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
@@ -342,12 +332,21 @@ const R3 = () => {
               >
                 <IoMdDownload size={20} />
               </Button>
+              <Button
+                variant="contained"
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>
             </div>
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

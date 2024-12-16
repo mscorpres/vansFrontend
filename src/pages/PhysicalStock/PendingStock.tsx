@@ -57,10 +57,10 @@ const PendingStock = () => {
             ...r,
           };
         });
-        toast({
-          title: r.payload?.message,
-          className: "bg-green-700 text-white text-center",
-        });
+        // toast({
+        //   title: r.payload?.message,
+        //   className: "bg-green-700 text-white text-center",
+        // });
         setRowData(arr);
       } else {
         toast({
@@ -124,7 +124,7 @@ const PendingStock = () => {
       width: 120,
       cellRenderer: (params) => {
         return (
-          <div className="flex gap-[5px] items-center justify-center h-full">
+          <div className="flex gap-[5px] items-center justify-center h-full cursor-pointer">
             {/* <Button className=" bg-green-700 hover:bg-green-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
             <FaCheckCircle
               className="h-[15px] w-[15px] text-green-700"
@@ -240,7 +240,7 @@ const PendingStock = () => {
           <IoMdDownload size={20} />
         </Button>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-150px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-150px)] relative">
         {" "}
         {loading && <FullPageLoading />}
         <AgGridReact

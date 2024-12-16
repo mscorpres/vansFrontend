@@ -3,11 +3,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import { DatePicker, Divider, Form, Input, Typography } from "antd";
 import useApi from "@/hooks/useApi";
-import { IoMdDownload } from "react-icons/io";
+import { IoMdArrowRoundBack, IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,6 +31,7 @@ import {
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -61,10 +61,10 @@ const RejectedStock = () => {
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     dispatch(rejectedPhysical()).then((r) => {
       if (r.payload?.data.success) {
-        toast({
-          title: r.payload?.data.message,
-          className: "bg-green-700 text-white text-center",
-        });
+        // toast({
+        //   title: r.payload?.data.message,
+        //   className: "bg-green-700 text-white text-center",
+        // });
         let arr = r.payload.data.data.map((r, index) => {
           return {
             id: index + 1,
@@ -224,7 +224,19 @@ const RejectedStock = () => {
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-1">
-      <div className="flex gap-[10px] justify-end  px-[5px] bg-white h-[50px]">
+      <div className="flex gap-[10px] justify-end  px-[5px] bg-white h-[50px] py-[10px]">
+        {/* <Button
+          // type="submit"
+          className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey  w-[10px] h-[30px]"
+          // onClick={() => {}}
+          disabled={rowData.length === 0}
+          onClick={(e: any) => {
+            e.preventDefault();
+            handleDownloadExcel();
+          }}
+        >
+          <IoMdDownload size={20} />
+        </Button>{" "} */}
         <Button
           // type="submit"
           className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey mt-[8px]"
@@ -238,7 +250,7 @@ const RejectedStock = () => {
           <IoMdDownload size={20} />
         </Button>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-150px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-150px)] relative">
         {" "}
         {loading && <FullPageLoading />}
         <AgGridReact
@@ -323,7 +335,8 @@ const RejectedStock = () => {
                 <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto"></div>
                 <div className={modelFixFooterStyle}>
                   <Button
-                    variant={"outline"}
+                    startIcon={<IoMdArrowRoundBack />}
+                    variant="outlined"
                     className="shadow-slate-300 mr-[10px] border-slate-400 border"
                     onClick={(e: any) => {
                       //   setOpen(true);
@@ -333,6 +346,8 @@ const RejectedStock = () => {
                     Back
                   </Button>
                   <Button
+                    variant="contained"
+                    sx={{ margin: "10px" }}
                     type="submit"
                     className="bg-cyan-700 hover:bg-cyan-600"
                     onClick={(e: any) => {

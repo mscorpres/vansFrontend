@@ -112,6 +112,7 @@ const ViewMin: React.FC = () => {
       field: "datetime",
       headerName: "MIN Date Time ",
       flex: 1,
+      minWidth: 200,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -124,6 +125,7 @@ const ViewMin: React.FC = () => {
       headerName: "MIN Id",
       cellRenderer: CopyCellRenderer,
       flex: 1,
+      minWidth: 200,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -136,6 +138,7 @@ const ViewMin: React.FC = () => {
       headerName: "Invoice Id",
       cellRenderer: CopyCellRenderer,
       flex: 1,
+      minWidth: 150,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -147,6 +150,7 @@ const ViewMin: React.FC = () => {
       field: "vendorname",
       headerName: "Vendor Name",
       flex: 2,
+      minWidth: 250,
       filter: "agDateColumnFilter",
       cellRenderer: CopyCellRenderer,
       filterParams: {
@@ -161,20 +165,24 @@ const ViewMin: React.FC = () => {
       headerName: "Part Code",
       cellRenderer: CopyCellRenderer,
       flex: 1,
+      minWidth: 150,
     },
     {
       field: "inqty",
       headerName: "In Qty",
+      minWidth: 150,
       cellRenderer: CopyCellRenderer,
       flex: 1,
     },
     {
       field: "c_center",
+      minWidth: 190,
       headerName: "Cost Center",
       flex: 1,
     },
     {
       field: "inby",
+      minWidth: 150,
       headerName: "In By",
       flex: 1,
     },
@@ -331,7 +339,7 @@ const ViewMin: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)] ">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}

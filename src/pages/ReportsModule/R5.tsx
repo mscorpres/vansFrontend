@@ -1,8 +1,8 @@
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import Print from "@/assets/Print.jpg";
 
 import {
   Form,
@@ -20,6 +20,7 @@ import useApi from "@/hooks/useApi";
 
 import { exportDateRangespace } from "@/components/shared/Options";
 import socket from "@/components/shared/socket";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -153,7 +154,7 @@ const R5 = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] bg-white">
       <div className="bg-[#fff]">
         {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
@@ -166,7 +167,6 @@ const R5 = () => {
             onSubmit={form.handleSubmit(fetchQueryResults)}
             className="space-y-6 overflow-hidden p-[10px] h-[370px]"
           >
-            
             <FormField
               control={form.control}
               name="date"
@@ -189,21 +189,39 @@ const R5 = () => {
                 </FormItem>
               )}
             />
-            {/* )} */}
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              //   onClick={() => {
-              //     fetchBOMList();
-              //   }}
-            >
-              Search
-            </Button>
+            <div className="flex gap-[10px] justify-end">
+              <Button
+                variant="contained"
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-      
+      <div
+        className="h-[500px] bg-cover bg-repeat rounded"
+        style={{ backgroundImage: "url('./../assets/images/s1.png')" }}
+      >
+        <div className="flex  items-center mt-[30px] gap-[20px] w-full justify-center h-full">
+          <div className="h-[350px] w-[350px] flex flex-col items-center justify-center gap-[3px] opacity-80 pointer-events-none ">
+            <img
+              src={Print}
+              alt="no access"
+              className="border-rounded  rounded-full"
+            />
+            {/* <MdLocalPrintshop className="h-[150px] w-[150px] text-cyan-800" /> */}
+            {/* <Link to={"/"} className="flex items-center gap-[5px]">
+              <p className="text-cyan-800 font-[600]">Production</p>
+              <BiLinkExternal className="text-cyan-800" />
+            </Link> */}
+          </div>
+        </div>
       </div>
     </Wrapper>
   );

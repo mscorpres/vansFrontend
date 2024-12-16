@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 
 import {
   Form,
@@ -26,6 +25,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -52,7 +52,10 @@ const Q3 = () => {
   const fetchComponentList = async (e: any) => {
     setSelectedCustomer(e);
 
-    const response = await execFun(() => getProductsByNameAndNo(e), "fetch");
+    // const response = await execFun(
+    //   () => getProductsByNameAndNo(e.value),
+    //   "fetch"
+    // );
   };
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     let payload = {
@@ -133,7 +136,6 @@ const Q3 = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -162,18 +164,19 @@ const Q3 = () => {
                   <FormMessage />
                 </FormItem>
               )}
-            />{" "}
-            {/* )} */}{" "}
+            />
+            {/* )} */}
             <div className="flex items-center gap-[10px] justify-end">
               <Button
                 type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                variant="contained"
+                className="shadow  shadow-slate-500"
                 //   onClick={() => {
                 //     fetchBOMList();
                 //   }}
               >
                 Search
-              </Button>{" "}
+              </Button>
               <Button
                 // type="submit"
                 className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey "
@@ -190,7 +193,7 @@ const Q3 = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import { Plus } from "lucide-react";
@@ -18,6 +17,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllBox, insertPhysical } from "@/features/client/storeSlice";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
+import { Refresh, Send } from "@mui/icons-material";
 
 const CreatePhysicalStock = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -271,12 +272,12 @@ const CreatePhysicalStock = () => {
             onClick={() => {
               addNewRow();
             }}
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+            className="rounded-md shadow  shadow-slate-500 max-w-max"
           >
             <Plus className="font-[600]" /> Add Item
           </Button>{" "}
         </div>
-        <div className="ag-theme-quartz h-[calc(100vh-200px)] w-full">
+        <div className="ag-theme-quartz h-[calc(100vh-200px)] w-full relative">
           {loading && <FullPageLoading />}
           <AgGridReact
             ref={gridRef}
@@ -297,7 +298,9 @@ const CreatePhysicalStock = () => {
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
-              className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+              startIcon={<Refresh />}
+              variant="outlined"
+              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setCallReset(true)}
               disabled={rowData.length == 0}
             >
@@ -310,7 +313,9 @@ const CreatePhysicalStock = () => {
               Back
             </Button> */}
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              startIcon={<Send />}
+              variant="contained"
+              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}
               disabled={rowData.length == 0}
             >

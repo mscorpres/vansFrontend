@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 
@@ -29,6 +28,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { rangePresets } from "@/General";
+import { Button } from "@mui/material";
 
 const MinRegister = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -74,13 +74,7 @@ const MinRegister = () => {
     }
   };
   useEffect(() => {
-    // fetchComponentList();
   }, []);
-  // useEffect(() => {
-  //   // fetchComponentList();
-  //   form.setFieldValue("search", "");
-  //   form.setFieldValue("date", "");
-  // }, [theWise]);
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -267,7 +261,6 @@ const MinRegister = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -287,7 +280,7 @@ const MinRegister = () => {
               styles={customStyles}
               components={{ DropdownIndicator }}
               placeholder=" Enter Type"
-              className="border-0 basic-single"
+              className="border-0 basic-single z-5"
               classNamePrefix="select border-0"
               isDisabled={false}
               isClearable={true}
@@ -338,15 +331,6 @@ const MinRegister = () => {
           {/* )} */}
           <div className="flex gap-[10px] justify-end  px-[5px]">
             <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={() => {
-                fetchQueryResults();
-              }}
-            >
-              Search
-            </Button>{" "}
-            <Button
               // type="submit"
               className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
               // onClick={() => {}}
@@ -358,11 +342,21 @@ const MinRegister = () => {
             >
               <IoMdDownload size={20} />
             </Button>
+            <Button
+              variant="contained"
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={() => {
+                fetchQueryResults();
+              }}
+            >
+              Search
+            </Button>
           </div>
           {/* </form> */}
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

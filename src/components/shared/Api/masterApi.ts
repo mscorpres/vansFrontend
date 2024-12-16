@@ -96,7 +96,7 @@ export const getComponentsByNameAndNo = async (search: any) => {
   return response;
 };
 export const getProductsByNameAndNo = async (search: any) => {
-  const response = await spigenAxios.post(
+  const response = await spigenAxios.get(
     `/backend/getProductByNameAndNo?search=${search}`
   );
   return response;

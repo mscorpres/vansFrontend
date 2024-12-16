@@ -11,11 +11,11 @@ import { fetchListOfCompletedFgOut } from "@/components/shared/Api/masterApi";
 import { exportDatepace } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
-import { Button } from "@/components/ui/button";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { useSelector } from "react-redux";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -157,6 +157,7 @@ const ViewFgOut = () => {
               <IoMdDownload size={20} />
             </Button>
             <Button
+              variant="contained"
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               onClick={fetchFGList}
@@ -166,7 +167,7 @@ const ViewFgOut = () => {
           </div>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {(loading || loading1("fetch")) && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

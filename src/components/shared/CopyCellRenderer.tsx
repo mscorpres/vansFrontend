@@ -41,7 +41,8 @@ const CopyCellRenderer = (params: any) => {
           onClick={() => copyToClipboard(params.value)}
           style={{
             cursor: "pointer",
-            marginLeft: "auto", // Pushes the icon to the right end
+            // marginLeft: "10px",
+            marginRight: "10px",
             width: "20px",
             height: "20px",
           }}

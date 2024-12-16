@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 
@@ -35,6 +34,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { rangePresets } from "@/General";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -181,7 +181,7 @@ const CompeletedFg = () => {
                       styles={customStyles}
                       components={{ DropdownIndicator }}
                       placeholder="Select Type"
-                      className="border-0 basic-single"
+                      className="border-0 basic-single z-10"
                       classNamePrefix="select border-0"
                       isDisabled={false}
                       isClearable={true}
@@ -243,7 +243,7 @@ const CompeletedFg = () => {
               {" "}
               <Button
                 // type="submit"
-                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+                className="shadow shadow-slate-500 text-grey"
                 // onClick={() => {}}
                 onClick={(e: any) => {
                   e.preventDefault();
@@ -254,6 +254,7 @@ const CompeletedFg = () => {
                 <IoMdDownload size={20} />
               </Button>
               <Button
+                variant="contained"
                 type="submit"
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
                 //   onClick={fetchFGList}
@@ -264,7 +265,7 @@ const CompeletedFg = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

@@ -1095,6 +1095,18 @@ const storeSlice = createSlice({
       .addCase(stockOut.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(createFgOut.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createFgOut.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(createFgOut.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
       });
   },
 });

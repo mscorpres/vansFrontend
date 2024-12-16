@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { transformOptionData } from "@/helper/transform";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { modelFixHeaderStyle } from "@/constants/themeContants";
@@ -32,6 +31,7 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -360,7 +360,7 @@ const BoxMarkup = () => {
             className="space-y-6 overflow-hidden p-[10px] h-[1000px]"
           >
             <div className="grid grid-cols-1 gap-[40px] ">
-              <Form.Item name="minTxn" label="MIN Txn ID">
+              <Form.Item name="minTxn">
                 {/* <Select
                   styles={customStyles}
                   components={{ DropdownIndicator }}
@@ -372,7 +372,7 @@ const BoxMarkup = () => {
                   isSearchable={true}
                 /> */}
                 <ReusableAsyncSelect
-                  // placeholder="Part Name"
+                  placeholder="MIN Txn ID"
                   endpoint="/backend/getMinsTransaction4Markup"
                   transform={transformOptionData}
                   // onChange={(e) => handleChange(e.value)}
@@ -459,7 +459,8 @@ const BoxMarkup = () => {
               {/* Total:{selectedRows.reduce((a, b) => a + Number(b?.qty), 0)} */}
             </Typography.Text>
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              variant="contained"
+              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setShowConfirmation(true)}
             >
               Markup

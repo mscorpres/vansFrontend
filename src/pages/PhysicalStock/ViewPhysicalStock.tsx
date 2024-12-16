@@ -12,11 +12,11 @@ import { IoMdDownload } from "react-icons/io";
 import { allphysical } from "@/features/client/storeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store";
-import { Button } from "@/components/ui/button";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { min } from "lodash";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -180,10 +180,22 @@ const ViewPhysicalStock = () => {
           </Form.Item>
 
           <div className="flex gap-[10px] justify-end  px-[5px]">
-            {" "}
+            {/* {" "}
             <Button
               // type="submit"
-              className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+              className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey  w-[10px]"
+              // onClick={() => {}}
+              disabled={rowData.length === 0}
+              onClick={(e: any) => {
+                e.preventDefault();
+                handleDownloadExcel();
+              }}
+            >
+              <IoMdDownload size={20} />
+            </Button>{" "} */}
+            <Button
+              // type="submit"
+              className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey mt-[8px]"
               // onClick={() => {}}
               disabled={rowData.length === 0}
               onClick={(e: any) => {
@@ -194,6 +206,7 @@ const ViewPhysicalStock = () => {
               <IoMdDownload size={20} />
             </Button>
             <Button
+              variant="contained"
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               onClick={fetchFGList}
@@ -203,7 +216,7 @@ const ViewPhysicalStock = () => {
           </div>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

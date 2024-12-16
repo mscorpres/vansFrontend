@@ -20,7 +20,7 @@ const FavoriteSidebar: React.FC<Props> = ({ uiState }) => {
   return (
     <div
       ref={favoriteref}
-      className={`absolute  h-[100vh] w-[300px] z-[30] top-0 bg-cyan-950 transition-all duration-500 ${
+      className={`absolute  h-[100vh] w-[300px] z-100 top-0 bg-cyan-950 transition-all duration-500 ${
         favoriteSheet ? "left-[60px]" : "left-[-300px]"
       }`}
     >

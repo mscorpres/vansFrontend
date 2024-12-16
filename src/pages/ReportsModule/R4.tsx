@@ -220,7 +220,7 @@ const R4 = () => {
           <IoMdDownload size={20} />
         </Button>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-150px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-150px)] relative">
         {" "}
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact

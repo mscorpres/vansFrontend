@@ -196,6 +196,7 @@ const TextInputCellRenderer = (props: any) => {
 
   const handleConfirmDelete = () => {
     if (selectedRowIndex !== null) {
+
       setRowData((prevData: any) =>
         prevData.filter((_: any, index: any) => index !== selectedRowIndex)
       );
@@ -213,6 +214,9 @@ const TextInputCellRenderer = (props: any) => {
         // dispatch(deleteProduct(payload));
       }
     }
+    console.log("rowData", props.rowData);
+
+    updateData(props.rowData);
     setShowConfirmDialog(false);
   };
   const updateData = (newData: any) => {
@@ -275,6 +279,7 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "pickmaterial") {
+
       let payload = {
         c_center: props.form.getFieldValue("costCenter").value,
         component: data["pickmaterial"],
@@ -560,6 +565,7 @@ const TextInputCellRenderer = (props: any) => {
             options={transformOptionData(componentDetails || [])}
             onChange={(e) => handleChange(e.value)}
             value={typeof value === "string" ? { value } : value?.text}
+            // value={typeof value === "string" ? { value } : value?.text}
             style={{ pointerEvents: "auto" }}
           />
         );

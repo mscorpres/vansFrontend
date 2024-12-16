@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 
 import { MoreOutlined } from "@ant-design/icons";
 import {
@@ -40,6 +39,7 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -402,7 +402,6 @@ const Q2 = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -432,14 +431,12 @@ const Q2 = () => {
                 </FormItem>
               )}
             />
-            {/* )} */}{" "}
+            {/* )} */}
             <div className="flex gap-[10px] justify-end  px-[5px]">
               <Button
+                variant="contained"
                 type="submit"
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                //   onClick={() => {
-                //     fetchBOMList();
-                //   }}
               >
                 Search
               </Button>
@@ -447,9 +444,6 @@ const Q2 = () => {
               <ActionMenu />
             </div>
             <Divider />
-            {/* <div className="h-[calc(100vh-10px)] grid grid-cols-[350px_1fr] flex "> */}
-            {/* <div className="bg-[#fff] "> */}
-            {/* <div className="p-[10px]"> */}
             {rowData.length > 0 && (
               <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
                 <Card className="rounded-sm shadow-sm shadow-slate-500">
@@ -471,9 +465,9 @@ const Q2 = () => {
               </div>
             )}
           </form>
-        </Form>{" "}
+        </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
@@ -497,9 +491,8 @@ const Q2 = () => {
         >
           <SheetHeader className={modelFixHeaderStyle}>
             <SheetTitle className="text-slate-600">View Component</SheetTitle>
-          </SheetHeader>{" "}
+          </SheetHeader>
           <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-            {" "}
             {loading1("fetch") && <FullPageLoading />}
             <AgGridReact
               //   loadingCellRenderer={loadingCellRenderer}
@@ -525,12 +518,11 @@ const Q2 = () => {
         >
           <SheetHeader className={modelFixHeaderStyle}>
             <SheetTitle className="text-slate-600">Box Data</SheetTitle>
-          </SheetHeader>{" "}
-          <div className="flex gap-[10px] justify-end  px-[5px] h-[50px]">
-            {" "}
+          </SheetHeader>
+          <div className="flex gap-[10px] justify-end  px-[5px] py-[10px] h-[50px]">
             <Button
               // type="submit"
-              className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey mt-[8px]"
+              className="shadow shadow-slate-500 text-grey mt-[8px] w-[10px] h-[30px] "
               // onClick={() => {}}
               disabled={rowData.length === 0}
               onClick={(e: any) => {
@@ -542,7 +534,6 @@ const Q2 = () => {
             </Button>
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-            {" "}
             {loading1("fetch") && <FullPageLoading />}
             <AgGridReact
               //   loadingCellRenderer={loadingCellRenderer}

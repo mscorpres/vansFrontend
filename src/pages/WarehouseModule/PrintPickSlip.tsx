@@ -5,7 +5,6 @@ import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
@@ -28,6 +27,7 @@ import { transformOptionData2 } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { rangePresets } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { Button } from "@mui/material";
 const ActionMenu: React.FC<ActionMenuProps> = ({ row, printTheSelectedPo }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -213,9 +213,7 @@ const PrintPickSlip: React.FC = () => {
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      {loading && <FullPageLoading />}
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -234,7 +232,7 @@ const PrintPickSlip: React.FC = () => {
               styles={customStyles}
               components={{ DropdownIndicator }}
               placeholder="Select Type"
-              className="border-0 basic-single"
+              className="border-0 basic-single z-10"
               classNamePrefix="select border-0"
               isDisabled={false}
               isClearable={true}
@@ -262,7 +260,7 @@ const PrintPickSlip: React.FC = () => {
           ) : (
             <Form.Item className="w-full" name="data">
               <ReusableAsyncSelect
-                // placeholder="Cost Center"
+                placeholder="Search Transaction Id"
                 endpoint="/backend/getOutTransaction"
                 transform={transformOptionData2}
                 fetchOptionWith="query2"
@@ -273,33 +271,18 @@ const PrintPickSlip: React.FC = () => {
           )}
           <div className="w-full flex justify-end">
             <Button
+              variant="contained"
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
               onClick={fetchManageList}
             >
               Search
-            </Button>{" "}
-          </div>{" "}
-          {/* <CustomTooltip
-              message="Add Address"
-              side="top"
-              className="bg-yellow-700"
-            >
-              <Button
-                onClick={() => {
-                  setSheetOpen(true);
-                }}
-                className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
-              >
-                <Plus className="h-[20px] w-[20px]" />
-              </Button>
-            </CustomTooltip> */}
-          {/* </form>{" "} */}
+            </Button>
+          </div>
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
@@ -313,7 +296,7 @@ const PrintPickSlip: React.FC = () => {
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
-      </div>{" "}
+      </div>
       <ConfirmationModal
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}

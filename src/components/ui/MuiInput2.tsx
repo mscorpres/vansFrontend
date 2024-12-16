@@ -20,6 +20,15 @@ export const MuiInput2 = ({ label, name, control, fullWidth = true, type }) => {
           helperText={fieldState?.error?.message} // Show error message
           focused={!!field.value} // Focus input if there is a value
           type={type}
+          sx={{
+            height: "48px", // Set custom height here (adjust as needed)
+            "& .MuiInputBase-root": {
+              height: "100%", // Ensure the inner input matches the outer height
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              height: "100%", // Adjust the outline height to match
+            },
+          }}
         />
       )}
     />

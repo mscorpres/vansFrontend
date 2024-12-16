@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 
@@ -32,6 +31,7 @@ import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { rangePresets } from "@/General";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -176,9 +176,8 @@ const R6 = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[500px_1fr]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -187,19 +186,20 @@ const R6 = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(fetchQueryResults)}
-            className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+            className="space-y-6 overflow-hidden p-[10px] h-[470px]"
           >
             <FormField
               control={form.control}
               name="types"
               render={({ field }) => (
                 <FormItem className="w-full">
+                  {/* <FormLabel className={LableStyle}>Type</FormLabel> */}
                   <FormControl>
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
                       placeholder=" Enter Type"
-                      className="border-0 basic-single"
+                      className="border-0 basic-single z-20"
                       classNamePrefix="select border-0"
                       isDisabled={false}
                       isClearable={true}
@@ -218,10 +218,11 @@ const R6 = () => {
                 name="date"
                 render={({ field }) => (
                   <FormItem className="w-full">
+                    {/* <FormLabel className={LableStyle}>Part Name</FormLabel> */}
                     <FormControl>
                       <Space direction="vertical" size={12} className="w-full">
                         <RangePicker
-                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
+                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full z-1"
                           onChange={(value) =>
                             field.onChange(
                               value ? value.map((date) => date!.toDate()) : []
@@ -242,7 +243,7 @@ const R6 = () => {
                 name="component"
                 render={() => (
                   <FormItem>
-                    <FormLabel className={LableStyle}>Part Name</FormLabel>
+                    {/* <FormLabel className={LableStyle}>Part Name</FormLabel> */}
                     <FormControl>
                       <ReusableAsyncSelect
                         placeholder="Part Name"
@@ -258,17 +259,7 @@ const R6 = () => {
                 )}
               />
             )}
-            {/* )} */}{" "}
             <div className="flex gap-[10px] justify-end  px-[5px]">
-              <Button
-                type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                //   onClick={() => {
-                //     fetchBOMList();
-                //   }}
-              >
-                Search
-              </Button>
               <Button
                 // type="submit"
                 className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
@@ -281,12 +272,21 @@ const R6 = () => {
               >
                 <IoMdDownload size={20} />
               </Button>
+              <Button
+                variant="contained"
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                //   onClick={() => {
+                //     fetchBOMList();
+                //   }}
+              >
+                Search
+              </Button>
             </div>
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

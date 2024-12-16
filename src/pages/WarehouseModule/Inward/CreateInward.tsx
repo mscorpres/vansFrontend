@@ -13,7 +13,7 @@ import {
   transformOptionData2,
   transformStateOptions,
 } from "@/helper/transform";
-import { Button, Form } from "antd";
+import { Form } from "antd";
 import { primartButtonStyle, InputStyle } from "@/constants/themeContants";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { useDispatch, useSelector } from "react-redux";
@@ -47,6 +47,9 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import MuiInput from "@/components/ui/MuiInput";
+import { Button } from "@mui/material";
+import { ArrowLeftIcon } from "lucide-react";
+import { Save } from "@mui/icons-material";
 
 interface Props {
   setTab: string;
@@ -223,7 +226,7 @@ const CreateInward: React.FC<Props> = ({
         // <FullPageLoading />
       }
       <Form form={form} layout="vertical" initialValues={initialValues}>
-        <div className="rounded p-[30px] shadow bg-[#fff] h-[calc(100vh-145px)] overflow-y-auto">
+        <div className="rounded p-[30px] shadow bg-[#fff] h-[calc(100vh-180px)] overflow-y-auto">
           <div className="grid grid-cols-1 gap-[30px]">
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -238,13 +241,13 @@ const CreateInward: React.FC<Props> = ({
                 <div className="mt-[30px] grid grid-cols-3 gap-[40px]">
                   <Form.Item
                     name="vendorType"
-                    label="Vendor Type"
+                    // label="Vendor Type"
                     rules={rules.vendorType}
                   >
                     <Select
                       styles={customStyles}
-                      placeholder="Vendor type"
-                      className="border-0 basic-single z-20 relative"
+                      placeholder="Vendor Type"
+                      className="border-0 basic-single z-20 relative my-[30px]"
                       classNamePrefix="select border-0"
                       components={{ DropdownIndicator }}
                       isDisabled={false}
@@ -271,7 +274,7 @@ const CreateInward: React.FC<Props> = ({
                           width: 350,
                         }}
                       >
-                        Vendor Name
+                        {/* Vendor Name */}
                         <span
                           onClick={() => setSheetOpen(true)}
                           style={{
@@ -310,7 +313,7 @@ const CreateInward: React.FC<Props> = ({
                           width: 350,
                         }}
                       >
-                        Branch Name
+                        {/* Branch Name */}
                         <span
                           onClick={() => setSheetOpenBranch(true)}
                           style={{
@@ -349,18 +352,18 @@ const CreateInward: React.FC<Props> = ({
                   <Form.Item
                     name="vendorGst"
                     // label="GSTIN"
-                    className="my-[25px]"
+                    // className="my-[25px]"
                     rules={rules.vendorGst}
                   >
                     <MuiInput name="vendorGst" form={form} label="GSTIN" />
                   </Form.Item>
                   <Form.Item
                     name="costCenter"
-                    label="Cost Center"
+                    // label="Cost Center"
                     rules={rules.costCenter}
                   >
                     <ReusableAsyncSelect
-                      // placeholder="Cost Center"
+                      placeholder="Cost Center"
                       endpoint="/backend/costCenter"
                       transform={transformOptionData2}
                       fetchOptionWith="query2"
@@ -369,7 +372,7 @@ const CreateInward: React.FC<Props> = ({
                   </Form.Item>{" "}
                   <Form.Item
                     name="currency"
-                    label="Currency"
+                    // label="Currency"
                     className=""
                     rules={rules.currency}
                   >
@@ -400,7 +403,7 @@ const CreateInward: React.FC<Props> = ({
                   </Form.Item>
                   <Form.Item
                     name="exchange_rate"
-                    label="Exchange Rate"
+                    // label="Exchange Rate"
                     className=""
                     rules={rules.exchange_rate}
                   >
@@ -429,10 +432,11 @@ const CreateInward: React.FC<Props> = ({
             </Card>
           </div>
         </div>
-        <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300 text-white">
+        <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300">
           <Button
+            variant="contained"
             onClick={getValues}
-            className={`${primartButtonStyle} flex gap-[10px] text-white`}
+            className={`${primartButtonStyle} flex gap-[10px] `}
             type="submit"
           >
             Next
@@ -457,57 +461,50 @@ const CreateInward: React.FC<Props> = ({
               {/* <form onSubmit={forms.handleSubmit(addVendor)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
                 <div className="grid grid-cols-2 gap-[20px]">
-                  <Form.Item name="label" label=" Address label">
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="GSTIN / UIN"
+                  <Form.Item name="label">
+                    <MuiInput
+                      form={forms}
+                      name="label"
+                      placeholder=" Address label"
+                      label={" Address label"}
                     />
-                  </Form.Item>{" "}
+                  </Form.Item>
                   <Form.Item
                     name="pan"
-                    label="Pan No."
                     className=""
                     // rules={rules.vendorGst}
                   >
-                    <Input
-                      className={InputStyle}
-                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      // placeholder="GSTIN / UIN"
+                    <MuiInput
+                      form={forms}
+                      name="pan"
+                      placeholder="Pan Number"
+                      label={"Pan Number"}
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="cin"
-                    label="CIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input
-                      className={InputStyle}
-                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      // placeholder="GSTIN / UIN"
+                  <Form.Item name="cin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="cin"
+                      placeholder="CIN"
+                      label={"CIN"}
                     />
                   </Form.Item>
                 </div>
-                <Divider />
+                {/* <Divider /> */}
                 <div className="grid grid-cols-2 gap-[20px]">
-                  {" "}
                   <Form.Item
                     name="company"
-                    label="Company Name"
                     className=""
                     rules={rules.vendorGst}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      // placeholder="GSTIN / UIN"
+                    <MuiInput
+                      form={forms}
+                      name="company"
+                      placeholder="Company Name"
+                      label={"Company Name"}
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="state"
-                    label="State"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="state" className="" rules={rules.vendorGst}>
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
@@ -524,78 +521,82 @@ const CreateInward: React.FC<Props> = ({
                       }
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="city"
-                    label="City"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="city" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="city"
+                      placeholder="City"
+                      label={"City"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="gstin"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="gstin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="gstin"
+                      placeholder="GSTIN"
+                      label={"GSTIN"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="pin"
-                    label="Pin No."
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="pin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="pin"
+                      placeholder="Pin Number"
+                      label={"Pin Number"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="email"
-                    label="Email"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter Email" />
+                  <Form.Item name="email" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="email"
+                      placeholder="Email"
+                      label={"Email"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="mobile"
-                    label="Mobile"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter mobile" />
+                  <Form.Item name="mobile" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="mobile"
+                      placeholder="Mobile"
+                      label={"Mobile"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="fax"
-                    label="Fax"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter fax" />
+                  <Form.Item name="fax" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="fax"
+                      placeholder="Fax"
+                      label={"Fax"}
+                    />
                   </Form.Item>
-                </div>{" "}
-                <div className="grid grid-cols-2 gap-[20px]"></div>
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  className=""
-                  rules={rules.vendorGst}
-                >
-                  <Input className={InputStyle} placeholder="Enter address" />
+                </div>
+                <Form.Item name="address" rules={rules.vendorGst}>
+                  <MuiInput
+                    form={forms}
+                    name="address"
+                    placeholder="Address"
+                    label={"Address"}
+                  />
                 </Form.Item>
               </div>
               <div className={modelFixFooterStyle}>
                 <Button
-                  variant={"outline"}
+                  variant="outlined"
+                  startIcon={<ArrowLeftIcon />}
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
                     setSheetOpen(false);
+                    forms.resetFields();
                     e.preventDefault();
                   }}
                 >
                   Back
                 </Button>
                 <Button
+                  sx={{ ml: 2 }}
+                  variant="contained"
                   type="submit"
+                  startIcon={<Save />}
                   onClick={addVendor}
                   className="bg-cyan-700 hover:bg-cyan-600 text-white"
                 >
@@ -624,38 +625,16 @@ const CreateInward: React.FC<Props> = ({
             <Form form={forms} layout="vertical">
               {/* <form onSubmit={form.handleSubmit(createNewBranch)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
-                <Form.Item name="label" label=" Address label" className="">
-                  <Input
-                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                    placeholder="GSTIN / UIN"
+                <Form.Item name="label" className="">
+                  <MuiInput
+                    form={forms}
+                    name="label"
+                    placeholder=" Address label"
+                    label={" Address label"}
                   />
-                </Form.Item>{" "}
+                </Form.Item>
                 <div className="grid grid-cols-2 gap-[20px]">
-                  {/* <FormField
-                        control={form.control}
-                        name="company"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Company Name
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Enter Company Name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      /> */}{" "}
-                  <Form.Item
-                    name="state"
-                    label="State"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="state" className="" rules={rules.vendorGst}>
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
@@ -672,78 +651,85 @@ const CreateInward: React.FC<Props> = ({
                       }
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="city"
-                    label="City"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="city" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="city"
+                      placeholder="City"
+                      label={"City"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="gstin"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="gstin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="gstin"
+                      placeholder="GSTIN"
+                      label={"GSTIN"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="pin"
-                    label="Pin No."
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter City" />
+                  <Form.Item name="pin" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="pin"
+                      placeholder="Pin Number"
+                      label={"Pin Number"}
+                      type={"number"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="email"
-                    label="Email"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter Email" />
+                  <Form.Item name="email" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="email"
+                      placeholder="Email"
+                      label={"Email"}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    name="mobile"
-                    label="Mobile"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter mobile" />
+                  <Form.Item name="mobile" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="mobile"
+                      placeholder="Mobile"
+                      label={"Mobile"}
+                      type={"number"}
+                    />
                   </Form.Item>
                 </div>
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  className=""
-                  rules={rules.vendorGst}
-                >
-                  <Input className={InputStyle} placeholder="Enter address" />
+                <Form.Item name="address" className="" rules={rules.vendorGst}>
+                  <MuiInput
+                    form={forms}
+                    name="address"
+                    placeholder="Address"
+                    label={"Address"}
+                  />
                 </Form.Item>
                 <div className="grid grid-cols-2 gap-[20px]">
-                  <Form.Item
-                    name="fax"
-                    label="Fax"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input className={InputStyle} placeholder="Enter fax" />
+                  <Form.Item name="fax" className="" rules={rules.vendorGst}>
+                    <MuiInput
+                      form={forms}
+                      name="fax"
+                      placeholder="Fax"
+                      label={"Fax"}
+                    />
                   </Form.Item>
                 </div>
               </div>
               <div className={modelFixFooterStyle}>
                 <Button
-                  variant={"outline"}
+                  startIcon={<ArrowLeftIcon />}
+                  variant="outlined"
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
                     setSheetOpenBranch(false);
+                    forms.resetFields();
                     e.preventDefault();
                   }}
                 >
                   Back
                 </Button>
                 <Button
+                  startIcon={<Save />}
+                  sx={{ ml: 2 }}
+                  variant="contained"
                   type="submit"
                   onClick={createNewBranch}
                   className="bg-cyan-700 hover:bg-cyan-600 text-white"
