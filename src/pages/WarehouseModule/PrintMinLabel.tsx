@@ -190,7 +190,7 @@ function PrintMinLabel() {
                     fetchOptionWith="payloadSearchTerm"
                   />
                 </Form.Item>
-              ) : (
+              ) : selType?.value ? (
                 <>
                   <Form.Item
                     name="min"
@@ -226,6 +226,8 @@ function PrintMinLabel() {
                     />
                   </Form.Item>
                 </>
+              ) : (
+                ""
               )}
             </div>
             <div className="flex justify-end">
