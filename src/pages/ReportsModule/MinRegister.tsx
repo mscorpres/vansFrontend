@@ -119,8 +119,8 @@ const MinRegister = () => {
       width: 280,
     },
     {
-      headerName: "Remark",
-      field: "COMMENT",
+      headerName: "Decription",
+      field: "Decription",
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
       width: 250,
@@ -237,6 +237,13 @@ const MinRegister = () => {
       field: "ISSUEBY",
       filter: "agTextColumnFilter",
       width: 190,
+    },
+    {
+      headerName: "Remark",
+      field: "COMMENT",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 250,
     },
   ];
   const type = [
