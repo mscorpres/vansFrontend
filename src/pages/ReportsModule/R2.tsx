@@ -137,14 +137,14 @@ const R2 = () => {
       minWidth: 190,
       flex: 1,
     },
-    {
-      headerName: "Vendor Compenent Code/Description",
-      field: "vendorDes",
-      filter: "agTextColumnFilter",
-      minWidth: 320,
-      cellRenderer: CopyCellRenderer,
-      flex: 2,
-    },
+    // {
+    //   headerName: "Vendor Component Code/Description",
+    //   field: "vendorDes",
+    //   filter: "agTextColumnFilter",
+    //   minWidth: 320,
+    //   cellRenderer: CopyCellRenderer,
+    //   flex: 2,
+    // },
 
     {
       headerName: "UoM",
@@ -229,12 +229,12 @@ const R2 = () => {
     //   filter: "agTextColumnFilter",
     //   width: 150,
     // },
-    // {
-    //   headerName: "Description",
-    //   field: "description",
-    //   filter: "agTextColumnFilter",
-    //   width: 150,
-    // },
+    {
+      headerName: "Description",
+      field: "description",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
   ];
   const type = [
     {
@@ -248,6 +248,10 @@ const R2 = () => {
     {
       label: "Project",
       value: "PROJECT",
+    },
+    {
+      label: "Completed",
+      value: "C",
     },
   ];
 
