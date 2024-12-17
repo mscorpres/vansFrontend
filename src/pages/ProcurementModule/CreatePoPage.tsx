@@ -17,7 +17,7 @@ import {
   transformOptionData,
   transformOptionData2,
 } from "@/helper/transform";
-import { Button, DatePicker, Divider, Form } from "antd";
+import { DatePicker, Divider, Form } from "antd";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { useDispatch, useSelector } from "react-redux";
@@ -55,7 +55,8 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import MuiInput from "@/components/ui/MuiInput";
 import { ArrowLeftIcon } from "lucide-react";
-import { Save } from "@mui/icons-material";
+import { KeyboardBackspace, Save } from "@mui/icons-material";
+import { Button } from "@mui/material";
 interface Props {
   setTab: string;
   setPayloadData: string;
@@ -335,10 +336,10 @@ const CreatePoPage: React.FC<Props> = ({
   }, [vendorBillingDetails]);
 
   return (
-    <div className="h-[calc(100vh-100px)]">
+    <div className="h-[calc(100vh-100px)] relative">
       {loading && <FullPageLoading />}
       <Form form={form} layout="vertical">
-        <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-180px)] overflow-y-auto">
+        <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-180px)] overflow-y-auto ">
           <div className="grid grid-cols-2 gap-[30px]">
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -365,14 +366,19 @@ const CreatePoPage: React.FC<Props> = ({
                       name="color"
                       options={poTypeOptions}
                       value={poTypeOptions[0]}
+                      placeholder="Select PO Type"
                     />
                     {/* <p>error message</p> */}
                   </Form.Item>
                   {selPoType?.value == "S" && (
-                    <Form.Item name="originalPO" rules={rules.vendorType}>
+                    <Form.Item
+                      name="originalPO"
+                      rules={rules.vendorType}
+                      className="z-10 relative"
+                    >
                       <ReusableAsyncSelect
-                        classname="z-20 "
-                        // placeholder="Original PO"
+                        className="z-10 relative"
+                        placeholder="Original PO"
                         endpoint="/backend/searchPoByPoNo"
                         transform={transformOptionData}
                         onChange={(e) => form.setFieldValue("originalPO", e)}
@@ -432,9 +438,10 @@ const CreatePoPage: React.FC<Props> = ({
                   }
                 >
                   <ReusableAsyncSelect
-                    // placeholder="Vendor Name"
+                    placeholder="Vendor Name"
                     endpoint="/backend/vendorList"
                     transform={transformOptionData2}
+                    className="z- 10"
                     onChange={(e) => form.setFieldValue("vendorName", e)}
                     // value={selectedCustomer}
                     fetchOptionWith="query2"
@@ -589,7 +596,7 @@ const CreatePoPage: React.FC<Props> = ({
                     rules={rules.costCenter}
                   >
                     <ReusableAsyncSelect
-                      // placeholder="Cost Center"
+                      placeholder="Cost Center"
                       endpoint="/backend/costCenter"
                       transform={transformOptionData2}
                       fetchOptionWith="query2"
@@ -819,6 +826,7 @@ const CreatePoPage: React.FC<Props> = ({
         <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300 text-white">
           <Button
             onClick={getValues}
+            variant="contained"
             className={`${primartButtonStyle} flex gap-[10px] text-white`}
             type="submit"
           >
@@ -965,7 +973,8 @@ const CreatePoPage: React.FC<Props> = ({
               </div>
               <div className={modelFixFooterStyle}>
                 <Button
-                  variant={"outline"}
+                  variant="outlined"
+                  startIcon={<KeyboardBackspace />}
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
                     setSheetOpen(false);
@@ -977,6 +986,9 @@ const CreatePoPage: React.FC<Props> = ({
                 </Button>
                 <Button
                   type="submit"
+                  startIcon={<Save />}
+                  sx={{ ml: 2 }}
+                  variant="contained"
                   onClick={addVendor}
                   className="bg-cyan-700 hover:bg-cyan-600 text-white"
                 >
@@ -1095,7 +1107,8 @@ const CreatePoPage: React.FC<Props> = ({
               </div>
               <div className={modelFixFooterStyle}>
                 <Button
-                  variant={"outline"}
+                  variant="outlined"
+                  startIcon={<KeyboardBackspace />}
                   className="shadow-slate-300 mr-[10px] border-slate-400 border"
                   onClick={(e: any) => {
                     setSheetOpenBranch(false);
@@ -1106,7 +1119,10 @@ const CreatePoPage: React.FC<Props> = ({
                   Back
                 </Button>
                 <Button
+                  startIcon={<Save />}
                   type="submit"
+                  sx={{ ml: 2 }}
+                  variant="contained"
                   onClick={createNewBranch}
                   className="bg-cyan-700 hover:bg-cyan-600 text-white"
                 >
@@ -1165,6 +1181,8 @@ const CreatePoPage: React.FC<Props> = ({
                   Back
                 </Button>
                 <Button
+                  variant="contained"
+                  sx={{ ml: 2 }}
                   startIcon={<Save />}
                   type="submit"
                   onClick={createCostCenter}

@@ -415,7 +415,7 @@ const ManagePoPage: React.FC = () => {
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
@@ -455,7 +455,7 @@ const ManagePoPage: React.FC = () => {
       />
       <Sheet open={sheetOpen?.po_transaction} onOpenChange={setSheetOpen}>
         <SheetContent
-          className="min-w-[35%] p-0"
+          className="min-w-[35%] p-0 relative"
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}

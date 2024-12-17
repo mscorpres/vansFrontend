@@ -77,7 +77,7 @@ const AddPO: React.FC<Props> = ({
   const dispatch = useDispatch<AppDispatch>();
 
   const { currencyList } = useSelector((state: RootState) => state.client);
-  const { laoding } = useSelector((state: RootState) => state.sellRequest);
+  const { loading } = useSelector((state: RootState) => state.sellRequest);
   const navigate = useNavigate();
 
   // const { execFun, loading: loading1 } = useApi();
