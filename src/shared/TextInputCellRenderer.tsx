@@ -277,7 +277,7 @@ const TextInputCellRenderer = (props: any) => {
     if (colDef.field === "pickmaterial") {
       let payload = {
         c_center: props.form.getFieldValue("costCenter").value,
-        component: data["pickmaterial"],
+        component: data["pickmaterial"].value,
       };
 
       dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
@@ -558,8 +558,11 @@ const TextInputCellRenderer = (props: any) => {
               }
             }}
             options={transformOptionData(componentDetails || [])}
-            onChange={(e) => handleChange(e.value)}
-            value={typeof value === "string" ? { value } : value?.text}
+            onChange={(e) => handleChange(e)}
+            value={
+              typeof value === "string" ? { value } : value?.text || value.label
+            }
+            // value={typeof value === "string" ? { value } : value?.text}
             style={{ pointerEvents: "auto" }}
           />
         );
@@ -792,7 +795,8 @@ const TextInputCellRenderer = (props: any) => {
           <Input
             onChange={handleInputChange}
             // readOnly
-            // value={value}
+            value={value}
+            // type="number"
             // type="number"
             // onClick={() => props.setSheetOpen(true)}
             placeholder={colDef.headerName}

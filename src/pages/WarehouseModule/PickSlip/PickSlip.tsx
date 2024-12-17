@@ -224,7 +224,7 @@ const PickSlip = () => {
     const values = await form.validateFields();
     let payload = {
       customer: values.customerName?.value,
-      component: rowData.map((r) => r.pickmaterial),
+      component: rowData.map((r) => r.pickmaterial.value),
       qty: rowData.map((r) => r.outQty),
       box: rowData.map((r) => r.selectOutBoxes),
       remark: rowData.map((r) => r.remark),
@@ -375,14 +375,17 @@ const PickSlip = () => {
   const closeDrawer = () => {
     setSheetOpen(false);
     setFinalRows(selectedRows);
+
+    // Make sure selectedRows has valid data
     let boxName = selectedRows.map((item) => item?.box_name);
     let boxQty = selectedRows.map((item) => item?.qty);
 
     setSelectedBox(boxName.join(","));
-    // onSelectionChanged();
+
+    // Ensure you're comparing pickmaterial correctly
     setRowData((prevData) =>
       prevData.map((item) =>
-        item.pickmaterial === compKey.component
+        item.pickmaterial.value === compKey.component // Compare with string if pickmaterial is a string
           ? {
               ...item,
               selectOutBoxes: boxName.join(","),
@@ -391,7 +394,9 @@ const PickSlip = () => {
           : item
       )
     );
+    // Remove the redundant setRowData(rowData);
   };
+
 
   const openDrawer = (params) => {
     // dispatch(fetchAvailableStockBoxes({ search: params.data.pickmaterial }));
@@ -412,6 +417,11 @@ const PickSlip = () => {
 
     setSelectedRows(updatedRows); // Update the selectedRows state with the new value
   };
+  useEffect(() => {
+    if (rowData) {
+      setRowData(rowData);
+    }
+  }, [rowData]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
