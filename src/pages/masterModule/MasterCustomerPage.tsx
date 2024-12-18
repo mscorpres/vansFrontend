@@ -355,11 +355,12 @@ const MasterCustomerPage: React.FC = () => {
   };
   const createNewBranch = async () => {
     const value = await form.validateFields();
+    console.log("value", value);
 
     let payload = {
       client: addBranch?.code,
       billToLabel: value.billlabel,
-      billToCountry: value.billcountry.value,
+      billToCountry: value.billcountry?.value,
       billToState: value.billstate.value,
       billToPincode: value.billpincode,
       billToPhone: value.billphone,
@@ -378,8 +379,10 @@ const MasterCustomerPage: React.FC = () => {
       shipToAddress2: value.shipAddress1,
       same_shipping_addres: samebilling,
     };
+    console.log("payload", payload);
 
     const response = await execFun(() => addbranchToClient(payload), "fetch");
+    console.log("response", response);
 
     if (response?.data?.success) {
       toast({
