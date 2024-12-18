@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
@@ -47,6 +48,7 @@ const FormSchema = z.object({
       message: "Please select a valid date range.",
     }),
   types: z.string().optional(),
+  search: z.string().optional(),
 });
 
 const R2 = () => {
@@ -59,13 +61,17 @@ const R2 = () => {
   const { RangePicker } = DatePicker;
 
   const dateFormat = "YYYY/MM/DD";
+  const theType = form.watch("types");
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     setRowData([]);
-    let { date } = formData;
+    let { date, search } = formData;
     let dataString = "";
+
     if (date) {
       dataString = exportDateRangespace(date);
+    } else {
+      dataString = search;
     }
     let payload = {
       wise: formData.types,
@@ -233,7 +239,8 @@ const R2 = () => {
       headerName: "Description",
       field: "description",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 250,
+      minWidth: 250,
     },
   ];
   const type = [
@@ -291,30 +298,54 @@ const R2 = () => {
                   <FormMessage />
                 </FormItem>
               )}
-            />{" "}
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Space direction="vertical" size={12} className="w-full">
-                      <RangePicker
-                        className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                        onChange={(value) =>
-                          field.onChange(
-                            value ? value.map((date) => date!.toDate()) : []
-                          )
-                        }
-                        format={"DD/MM/YYYY"}
-                        presets={rangePresets}
-                      />
-                    </Space>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
             />
+            {theType === "PROJECT" ? (
+              <FormField
+                control={form.control}
+                name="search"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={LableStyle}>
+                      Search
+                      <span className="pl-1 text-red-500 font-bold">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className={InputStyle}
+                        placeholder="Search"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Space direction="vertical" size={12} className="w-full">
+                        <RangePicker
+                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
+                          onChange={(value) =>
+                            field.onChange(
+                              value ? value.map((date) => date!.toDate()) : []
+                            )
+                          }
+                          format={"DD/MM/YYYY"}
+                          presets={rangePresets}
+                        />
+                      </Space>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             <div className="flex gap-[10px] justify-end  px-[5px]">
               <Button
                 type="submit"
