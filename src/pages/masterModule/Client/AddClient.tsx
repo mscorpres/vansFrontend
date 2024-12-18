@@ -95,9 +95,10 @@ const FormSchema = z.object({
     }),
   country: z
     .union([z.string(), z.number()])
-    .refine((data) => data !== undefined && data !== "", {
-      message: "Country is required.",
-    })
+    .optional()
+    // .refine((data) => data !== undefined && data !== "", {
+    //   // message: "Country is required.",
+    // })
     .transform((val) => String(val)),
   state: z.string().refine((data) => data !== undefined && data.length > 0, {
     message: "State is required.",
@@ -233,7 +234,7 @@ const AddClient: React.FC<Props> = ({
       salesperson: data.salesPerson,
       panno: data.pan,
       address: data.address,
-      country: data.country,
+      country: data?.country,
       state: data.state,
       state2: data.state,
       city: data.city,
@@ -302,12 +303,12 @@ const AddClient: React.FC<Props> = ({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Your Name
+                              Company Name
                             </FormLabel>
                             <FormControl>
                               <Input
                                 className={InputStyle}
-                                placeholder="Enter Name"
+                                placeholder="Enter Company Name"
                                 {...field}
                               />
                             </FormControl>
