@@ -232,12 +232,16 @@ const PickSlip = () => {
       boxqty: rowData.map((r) => r.boxqty),
     };
     dispatch(stockOut(payload)).then((res: any) => {
-      if (res.payload.success) {
+
+      if (res.payload.data.success) {
         toast({
-          title: res.payload.message,
+          title: res.payload.data.message,
           className: "bg-green-600 text-white items-center",
         });
         form.resetFields();
+        setRowData([]);
+        setRowDataBoxes([]);
+        setSelectedRows([]);
         setShowConfirmation(false);
       } else {
         toast({
@@ -380,6 +384,7 @@ const PickSlip = () => {
     setTotalQty(sum);
   }, [selectedRows]);
   const closeDrawer = () => {
+    setTotalQty(0);
     setSheetOpen(false);
     setFinalRows(selectedRows);
 
@@ -456,6 +461,12 @@ const PickSlip = () => {
       setRowData(rowData);
     }
   }, [rowData]);
+  useEffect(() => {
+    if (sheetOpen) {
+      setTotalQty(0);
+    }
+  }, [sheetOpen]);
+
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
@@ -616,7 +627,10 @@ const PickSlip = () => {
           </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Typography.Text>
-              Total:{selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
+              Total:
+              {sheetOpen
+                ? selectedRows.reduce((a, b) => a + Number(b?.qty), 0)
+                : 0}
             </Typography.Text>
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
