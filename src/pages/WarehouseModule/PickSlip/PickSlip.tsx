@@ -298,13 +298,11 @@ const PickSlip = () => {
       minWidth: 300,
       width: 300,
       cellRenderer: (params: any) => {
-        // console.log("params", params);
-
         return (
           <div
             className="p-2 border border-gray-300 rounded-md w-[300px] cursor-pointer break-words"
             // style={{ minHeight: "auto" }}
-            onClick={() => openDrawer(params)}
+            onClick={() => openDrawer(params.data.pickmaterial.value)}
           >
             {params.value ? params.value : "Select Out Box(es)"}
           </div>
@@ -366,8 +364,17 @@ const PickSlip = () => {
   const onSelectionChanged = (event) => {
     const selectedNodes = event.api.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
+
+    // Add the additional parameter to each selectedData item
+    const modifiedSelectedData = selectedData.map((item) => ({
+      ...item, // Keep existing properties
+      pickmaterialVal: sheetOpen, // Add the new parameter
+    }));
+
+    // Set the modified selected rows
+    setSelectedRows(modifiedSelectedData);
   };
+
   useEffect(() => {
     let sum = selectedRows.reduce((a, b) => a + Number(b?.qty), 0);
     setTotalQty(sum);
@@ -376,31 +383,58 @@ const PickSlip = () => {
     setSheetOpen(false);
     setFinalRows(selectedRows);
 
-    // Make sure selectedRows has valid data
-    let boxName = selectedRows.map((item) => item?.box_name);
-    let boxQty = selectedRows.map((item) => item?.qty);
-
-    setSelectedBox(boxName.join(","));
-
-    // Ensure you're comparing pickmaterial correctly
     setRowData((prevData) =>
-      prevData.map((item) =>
-        item.pickmaterial.value === compKey.component // Compare with string if pickmaterial is a string
-          ? {
-              ...item,
-              selectOutBoxes: boxName.join(","),
-              boxqty: boxQty.join(","),
-            }
-          : item
-      )
-    );
-    // Remove the redundant setRowData(rowData);
-  };
+      prevData.map((item) => {
+        const pickMaterialValue = item.pickmaterial?.value; // Value of the current row's pickmaterial
+        const compValue = compKey.component; // Value we're comparing against
 
+        // If the pickmaterial matches the component, update the row with the correct box name and quantity
+        if (pickMaterialValue === compValue) {
+          console.log("here in update", selectedRows);
+          let boxNames = selectedRows.map((item) => item?.box_name);
+          let boxQtys = selectedRows.map((item) => item?.qty);
+
+          setSelectedBox(boxNames.join(","));
+          // Find the matching box name and quantity for the current pickmaterialValue
+
+          // Return the updated row with the correct box data
+          return {
+            ...item,
+            selectOutBoxes: boxNames.join(","), // Updated box name (no duplicates)
+            boxqty: boxQtys.join(","), // Updated box quantity (no duplicates)
+          };
+        }
+
+        // If no match, return the row unchanged
+        return item;
+      })
+    );
+  };
 
   const openDrawer = (params) => {
     // dispatch(fetchAvailableStockBoxes({ search: params.data.pickmaterial }));
-    setSheetOpen(true);
+    setSheetOpen(params);
+    let payload = {
+      c_center: form.getFieldValue("costCenter").value,
+      component: params,
+    };
+    dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
+      setCompKey(payload);
+      // if (res?.payload.code == 500) {
+      //   toast({
+      //     title: "Out Boxes not available!",
+      //     // title: res.payload.message.msg,
+      //     className: "bg-red-700 text-white text-center",
+      //   });
+      // }
+
+      if (res.payload?.success == false) {
+        toast({
+          title: res.payload?.message,
+          className: "bg-red-700 text-white text-center",
+        });
+      }
+    });
     // setFinalRows(selectedRows);
   };
   const onCellValueChanged = (event: any) => {
@@ -546,7 +580,7 @@ const PickSlip = () => {
 "
       />
       <Sheet
-        open={sheetOpen == true && availableStockBoxes?.data?.length > 0}
+        open={sheetOpen && availableStockBoxes?.data?.length > 0}
         onOpenChange={setSheetOpen}
       >
         <SheetContent
@@ -560,7 +594,8 @@ const PickSlip = () => {
               Storable Box(es) List
             </SheetTitle>
           </SheetHeader>{" "}
-          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full relative">
+            {loading && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowDataBoxes}
@@ -578,7 +613,7 @@ const PickSlip = () => {
               // checkboxSelection={true}
               onSelectionChanged={onSelectionChanged}
             />
-          </div>{" "}
+          </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Typography.Text>
               Total:{selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
