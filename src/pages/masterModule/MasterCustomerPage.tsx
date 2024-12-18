@@ -360,7 +360,7 @@ const MasterCustomerPage: React.FC = () => {
     let payload = {
       client: addBranch?.code,
       billToLabel: value.billlabel,
-      billToCountry: value.billcountry?.value,
+      // billToCountry: value.billcountry?.value,
       billToState: value.billstate.value,
       billToPincode: value.billpincode,
       billToPhone: value.billphone,
@@ -394,7 +394,7 @@ const MasterCustomerPage: React.FC = () => {
       setSameBilling(false);
     } else {
       toast({
-        title: response?.data?.message,
+        title: response?.message,
         className: "bg-red-600 text-white items-center",
       });
     }
