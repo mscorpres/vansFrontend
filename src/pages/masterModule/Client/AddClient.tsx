@@ -135,8 +135,6 @@ const AddClient: React.FC<Props> = ({
   const data = useSelector((state: RootState) => state.createSalesOrder);
   const navigate = useNavigate();
   useEffect(() => {
-    // dispatch(fetchBillingAddress({ billing_code: "R26331LI" }));
-    // dispatch(fetchBillingAddressList({ search: "" }));
     dispatch(fetchCountries());
     dispatch(fetchStates());
   }, []);
