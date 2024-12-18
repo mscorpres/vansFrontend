@@ -275,28 +275,29 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "pickmaterial") {
-      let payload = {
-        c_center: props.form.getFieldValue("costCenter").value,
-        component: data["pickmaterial"].value,
-      };
+      ///will be called in pickslip
+      // let payload = {
+      //   c_center: props.form.getFieldValue("costCenter").value,
+      //   component: data["pickmaterial"].value,
+      // };
 
-      dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
-        props.setCompKey(payload);
-        // if (res?.payload.code == 500) {
-        //   toast({
-        //     title: "Out Boxes not available!",
-        //     // title: res.payload.message.msg,
-        //     className: "bg-red-700 text-white text-center",
-        //   });
-        // }
+      // dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
+      //   props.setCompKey(payload);
+      //   // if (res?.payload.code == 500) {
+      //   //   toast({
+      //   //     title: "Out Boxes not available!",
+      //   //     // title: res.payload.message.msg,
+      //   //     className: "bg-red-700 text-white text-center",
+      //   //   });
+      //   // }
 
-        if (res.payload?.success == false) {
-          toast({
-            title: res.payload?.message,
-            className: "bg-red-700 text-white text-center",
-          });
-        }
-      });
+      //   if (res.payload?.success == false) {
+      //     toast({
+      //       title: res.payload?.message,
+      //       className: "bg-red-700 text-white text-center",
+      //     });
+      //   }
+      // });
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
