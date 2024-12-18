@@ -1086,6 +1086,18 @@ const storeSlice = createSlice({
       .addCase(printSingleMin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(stockOut.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(stockOut.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(stockOut.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
       });
   },
 });

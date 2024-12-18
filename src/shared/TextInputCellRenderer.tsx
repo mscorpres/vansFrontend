@@ -804,6 +804,19 @@ const TextInputCellRenderer = (props: any) => {
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );
+      case "qty":
+        return (
+          <Input
+            onChange={handleInputChange}
+            // readOnly
+            value={value}
+            // type="number"
+            // type="number"
+            // onClick={() => props.setSheetOpen(true)}
+            placeholder={colDef.headerName}
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
       case "transferToBox":
         return (
           <Select
