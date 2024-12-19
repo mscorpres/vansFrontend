@@ -214,6 +214,7 @@ const CreatePoPage: React.FC<Props> = ({
       forms.resetFields();
 
       setSheetOpenBranch(false);
+      dispatch(listOfVendorBranchList({ vendorcode: selectedVendor?.value }));
     } else {
       toast({
         title: response.data.message.msg,
