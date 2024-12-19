@@ -215,12 +215,9 @@ export const fetchTransactionForApproval = createAsyncThunk<any>(
         // payload
       );
 
-      return response.data;
+      return response;
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error("An unknown error occurred");
+      return error;
     }
   }
 );

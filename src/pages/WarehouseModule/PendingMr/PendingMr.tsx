@@ -216,10 +216,11 @@ const PendingMr: React.FC = () => {
     // let date = exportDateRange(values.data);
     let payload = { status: values.wise.value };
     dispatch(fetchTransactionForApproval(payload)).then((res: any) => {
+
       if (res?.payload?.success) {
       } else {
         toast({
-          title: res.payload?.message,
+          title: res?.payload?.message,
           className: "text-white bg-red-700",
         });
       }
