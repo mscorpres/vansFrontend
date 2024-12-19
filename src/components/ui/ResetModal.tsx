@@ -6,6 +6,7 @@ import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Refresh } from "@mui/icons-material";
+import { Cancel } from "../shared/Buttons";
 
 const style = {
   position: "absolute",
@@ -63,7 +64,8 @@ export default function ResetModal({ open, setOpen, form, message, reset }) {
                 marginTop: "20px",
               }}
             >
-              <Button onClick={handleClose}>Cancel</Button>
+              <Cancel onClick={handleClose}>Cancel</Cancel>
+
               <Button
                 style={{
                   marginLeft: "10px",

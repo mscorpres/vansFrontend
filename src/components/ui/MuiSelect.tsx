@@ -17,16 +17,20 @@ export const MuiSelect = ({ options, label, name, form }) => {
       <Autocomplete
         // styles={customStyles}
         // sx={{ height: "30px" }}
+
         sx={{
-          height: "30px",
           "& .MuiInputBase-root": {
             backgroundColor: value?.value ? "#FFFBEB" : "transparent", // Set background color to yellow if a value is selected
             borderColor: value?.value ?? " .5px #FFB300",
             "&:hover .MuiOutlinedInput-notchedOutline": {
               borderColor: value?.value ?? "#a8a29e", // Change border color on hover
             },
+            // Decrease the height of the input field
+            height: "44px", // Adjust the height here as needed
           },
-  
+          // "& .MuiOutlinedInput-input": {
+          //   padding: "5px ", // Adjust padding for smaller height
+          // },
         }}
         options={option}
         onChange={(_, newValue) => {

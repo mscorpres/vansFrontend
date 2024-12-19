@@ -54,6 +54,9 @@ import { spigenAxios } from "@/axiosIntercepter";
 import { AgGridReact } from "ag-grid-react";
 import { Download } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import MuiInput from "@/components/ui/MuiInput";
+import { AttachImage, Back, Submit, Upload } from "@/components/shared/Buttons";
+import { TextField } from "@mui/material";
 const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const [open, setOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -390,7 +393,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     },
   ];
   return (
-    <div className="h-[calc(100vh-100px)] ">
+    <div className="h-[calc(100vh-100px)]  relative">
       {loading1("fetch") && <FullPageLoading />}
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
@@ -441,26 +444,28 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
-                          <Form.Item name="sku" label="SKU">
-                            <Input
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] ">
+                          <Form.Item name="sku">
+                            <MuiInput
+                              form={form}
+                              name="sku"
+                              label="SKU"
                               className={InputStyle}
-                              placeholder="Enter SKU"
-                              // {...field}
                             />
                           </Form.Item>
                           {/* </div>
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] "> */}
-                          <Form.Item name="productName" label="Product Name">
-                            <Input
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] "> */}
+                          <Form.Item name="productName">
+                            <MuiInput
+                              form={form}
+                              name="productName"
+                              label="Product Name"
                               className={InputStyle}
-                              placeholder="Enter Product Name"
-                              // {...field}
                             />
                           </Form.Item>
                         </div>{" "}
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
-                          <Form.Item name="type" label="Product Type">
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] ">
+                          <Form.Item name="type">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -474,26 +479,28 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             />
                           </Form.Item>
                           {/* </div>
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] "> */}
-                          <Form.Item name="category" label="Product Category">
-                            <Input
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] "> */}
+                          <Form.Item name="category">
+                            <MuiInput
+                              form={form}
+                              name="category"
+                              label="Product Category"
                               className={InputStyle}
-                              placeholder="Enter Product Category"
-                              // {...field}
                             />
                           </Form.Item>
                         </div>
-                        <div className="grid grid-cols-3 gap-[40px] mt-[30px] ">
-                          <Form.Item name="mrp" label="MRP">
-                            <Input
+                        <div className="grid grid-cols-3 gap-[20px] mt-[30px] ">
+                          <Form.Item name="mrp">
+                            <MuiInput
+                              form={form}
+                              name="MRP"
+                              label="MRP"
                               className={InputStyle}
-                              placeholder="Enter MRP"
-                              // {...field}
                             />
                           </Form.Item>
                           {/* </div>
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] "> */}
-                          <Form.Item name="uom" label="UOM">
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] "> */}
+                          <Form.Item name="uom">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -516,19 +523,19 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             />
                           </Form.Item>
                           {/* </div>
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] "> */}
-                          <Form.Item name="costPrice" label="Cost Price ">
-                            <Input
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] "> */}
+                          <Form.Item name="costPrice">
+                            <MuiInput
+                              form={form}
+                              name="costPrice"
+                              label="Cost Price"
                               className={InputStyle}
-                              placeholder="Enter Cost Price "
-                              // {...field}
                             />
                           </Form.Item>
                         </div>{" "}
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] ">
                           <Form.Item
                             name="enabled"
-                            label="Enabled"
                             rules={[
                               {
                                 required: true,
@@ -549,15 +556,13 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             />
                           </Form.Item>
                           {/* </div> */}
-                          {/* <div className="grid grid-cols-2 gap-[40px] mt-[30px] "> */}
-                          <Form.Item
-                            name="description"
-                            label="Product Description"
-                          >
-                            <Input
+                          {/* <div className="grid grid-cols-2 gap-[20px] mt-[30px] "> */}
+                          <Form.Item name="description">
+                            <MuiInput
+                              form={form}
+                              name="description"
+                              label="Product Description"
                               className={InputStyle}
-                              placeholder="Enter Product Description"
-                              // {...field}
                             />
                           </Form.Item>
                         </div>
@@ -573,12 +578,8 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
-                          <Form.Item
-                            name="tax"
-                            label="TAX TYPE 
-"
-                          >
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] ">
+                          <Form.Item name="tax">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -591,11 +592,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                               options={taxDetails}
                             />
                           </Form.Item>
-                          <Form.Item
-                            name="gst"
-                            label="GST Tax Rate 
-"
-                          >
+                          <Form.Item name="gst">
                             <Select
                               styles={customStyles}
                               components={{ DropdownIndicator }}
@@ -608,16 +605,12 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                               options={gstRateList}
                             />
                           </Form.Item>
-                          <Form.Item
-                            name="hsn"
-                            label="HSN
-"
-                          >
-                            <Input
+                          <Form.Item name="hsn">
+                            <MuiInput
+                              form={form}
+                              name="hsn"
+                              label="HSN"
                               className={InputStyle}
-                              placeholder="Enter HSN 
-"
-                              // {...field}
                             />
                           </Form.Item>
                         </div>
@@ -633,55 +626,65 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         </p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
-                          <Form.Item name="brand" label="Brand">
-                            <Input
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] ">
+                          <Form.Item name="brand">
+                            <MuiInput
+                              form={form}
+                              name="brand"
+                              label="Brand"
                               className={InputStyle}
-                              placeholder="Enter Brand"
                             />
                           </Form.Item>
-                          <Form.Item name="ean" label="EAN">
-                            <Input
+                          <Form.Item name="ean">
+                            <MuiInput
+                              form={form}
+                              name="ean"
+                              label="EAN"
                               className={InputStyle}
-                              placeholder="Enter EAN"
                             />
                           </Form.Item>
-                          <Form.Item name="weight" label="Weight (gms)">
-                            <Input
+                          <Form.Item name="weight">
+                            <MuiInput
+                              form={form}
+                              name="weight"
+                              label="Weight (gms)"
                               className={InputStyle}
-                              placeholder="Enter Weight (gms)"
                             />
                           </Form.Item>
-                          <Form.Item
-                            name="vweight"
-                            label="Volumetric Weight (gms)"
-                          >
-                            <Input
+                          <Form.Item name="vweight">
+                            <MuiInput
+                              form={form}
+                              name="vweight"
+                              label="Volumetric Weight (gms)"
                               className={InputStyle}
-                              placeholder="Enter Volumetric Weight (gms)"
                             />
                           </Form.Item>
-                          <Form.Item name="height" label="Height (mm)">
-                            <Input
+                          <Form.Item name="height">
+                            <MuiInput
+                              form={form}
+                              name="height"
+                              label="Height (mm)"
                               className={InputStyle}
-                              placeholder="Enter Height (mm)"
                             />
                           </Form.Item>
-                          <Form.Item name="width" label="Width (mm)">
-                            <Input
+                          <Form.Item name="width">
+                            <MuiInput
+                              form={form}
+                              name="width"
+                              label="Width (mm)"
                               className={InputStyle}
-                              placeholder="Enter Width (mm)"
                             />
                           </Form.Item>{" "}
-                          <div className="grid w-full max-w-sm items-center gap-1.5">
-                            {/* <Label htmlFor="picture">Picture</Label>
+                        </div>
+                        <div className="grid flex  justify-center w-full justify-center items-center mt-[30px]">
+                          {/* <Label htmlFor="picture">Picture</Label>
                         <Input
                           id="picture"
                           type="file"
                           accept="image/*" // Only allow image files
                           onChange={handleFileChange}
                         /> */}
-                            {/* {preview && (
+                          {/* {preview && (
                             <img
                               src={preview}
                               alt="Preview"
@@ -692,15 +695,15 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                               }}
                             />
                           )} */}
-                            <Button
+                          <div className="flex mx-auto">
+                            <AttachImage
+                              // sx={{ width: "100%" }}
+                              text=" Attach Image"
                               onClick={(e) => {
                                 e.preventDefault(e);
                                 setSheetOpen(true);
                               }}
-                              // disabled={!selectedFile}
-                            >
-                              Attach Image
-                            </Button>
+                            />
                           </div>
                         </div>
                       </CardContent>
@@ -713,62 +716,69 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                         <p className="text-slate-600 text-[13px]"></p>
                       </CardHeader>
                       <CardContent className="mt-[30px]">
-                        <div className="grid grid-cols-2 gap-[40px] mt-[30px] ">
-                          <Form.Item name="brand" label="MIN Stock (FG)">
-                            <Input
+                        <div className="grid grid-cols-2 gap-[20px] mt-[30px] ">
+                          <Form.Item name="brand">
+                            <MuiInput
+                              form={form}
+                              name="brand"
+                              label="MIN Stock (FG)"
                               className={InputStyle}
-                              placeholder="Enter MIN Stock (FG)"
                             />
                           </Form.Item>
-                          <Form.Item name="minStock" label="MIN Stock (RM)">
-                            <Input
+                          <Form.Item name="minStock">
+                            <MuiInput
+                              form={form}
+                              name="minStock"
+                              label="MIN Stock (RM)"
                               className={InputStyle}
-                              placeholder="Enter MIN Stock (RM)"
                             />
                           </Form.Item>
-                          <Form.Item name="batch" label="Mfg Batch Size">
-                            <Input
+                          <Form.Item name="batch">
+                            <MuiInput
+                              form={form}
+                              name="batch"
+                              label="Mfg Batch Size"
                               className={InputStyle}
-                              placeholder="Enter Mfg Batch Size"
                             />
                           </Form.Item>
-                          <Form.Item
-                            name="stockLoc"
-                            label="Default Stock Location"
-                          >
-                            <Input
+                          <Form.Item name="stockLoc">
+                            <MuiInput
+                              form={form}
+                              name="stockLoc"
+                              label="Enter Default Stock Location"
                               className={InputStyle}
-                              placeholder="Enter Default Stock Location"
                             />
                           </Form.Item>
-                          <Form.Item name="labourCost" label="Labour Cost">
-                            <Input
+                          <Form.Item name="labourCost">
+                            <MuiInput
+                              form={form}
+                              name="labourCost"
+                              label="Enter Labour Cost"
                               className={InputStyle}
-                              placeholder="Enter Labour Cost"
                             />
                           </Form.Item>
-                          <Form.Item
-                            name="packingCost"
-                            label="Sec Packing Cost"
-                          >
-                            <Input
+                          <Form.Item name="packingCost">
+                            <MuiInput
+                              form={form}
+                              name="packingCost"
+                              label="Sec Packing Cost"
                               className={InputStyle}
-                              placeholder="Enter Sec Packing Cost"
                             />
                           </Form.Item>
-                          <Form.Item name="jwCost" label="JW Cost">
-                            <Input
+                          <Form.Item name="jwCost">
+                            <MuiInput
+                              form={form}
+                              name="jwCost"
+                              label="JW Cost"
                               className={InputStyle}
-                              placeholder="Enter JW Cost"
                             />
                           </Form.Item>
-                          <Form.Item
-                            name="otherCost"
-                            label="Default Other Cost"
-                          >
-                            <Input
+                          <Form.Item name="otherCost">
+                            <MuiInput
+                              form={form}
+                              name="otherCost"
+                              label="Default Other Cost"
                               className={InputStyle}
-                              placeholder="Enter Other Cost"
                             />
                           </Form.Item>
                         </div>
@@ -778,7 +788,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 </div>
 
                 <div className={modelFixFooterStyle}>
-                  <Button
+                  {/* <Button
                     variant={"outline"}
                     className="shadow-slate-300 mr-[10px] border-slate-400 border"
                     onClick={(e) => {
@@ -791,13 +801,28 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                   <Button
                     // type="submit"
                     className="bg-cyan-700 hover:bg-cyan-600"
-                    onClick={(e: any) => {
-                      setOpen(true);
+                    onClick={(e) => {
                       e.preventDefault();
+                      setSheetOpenEdit(false);
                     }}
                   >
                     Update
-                  </Button>
+                  </Button>{" "} */}
+                  <Back
+                    text="Back"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSheetOpenEdit(false);
+                    }}
+                  />
+                  <Submit
+                    text="Update"
+                    onClick={(e: any) => {
+                      // setOpen(true);
+                      submitTheForm();
+                      e.preventDefault();
+                    }}
+                  />
                 </div>
               </form>
             </Form>
@@ -861,10 +886,20 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
             </FileUploader>{" "}
             <div className="w-full flex justify-center">
               <div className="w-[80%] flex justify-center">
-                <Input
+                <TextField
+                  //   id="filled-basic"
+                  //   color="grey"
+                  //   sx={{ height: "30px" }}
+                  variant="outlined"
+                  label="Image Captions"
                   placeholder="Enter Image Captions"
-                  className={InputStyle}
+                  fullWidth={true}
+                  // label={label}
+                  value={captions}
                   onChange={(e) => setCaptions(e.target.value)}
+                  //   error={form}
+                  //   helperText={"geee"}
+                  //   onChange={()=>{form.setFieldsValue({})}}
                 />
               </div>
             </div>{" "}
@@ -883,21 +918,8 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
             </div>
           </div>{" "}
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Button
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-              // onClick={() => setTab("create")}
-              onClick={() => setSheetOpen(false)}
-            >
-              Back
-            </Button>{" "}
-            <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={uploadDocs}
-              // loading={laoding}
-            >
-              {/* {isApprove ? "Approve" : "Submit"} */}
-              Upload
-            </Button>
+            <Back onClick={() => setSheetOpen(false)} />
+            <Upload onClick={uploadDocs} />
           </div>{" "}
         </SheetContent>
       </Sheet>{" "}

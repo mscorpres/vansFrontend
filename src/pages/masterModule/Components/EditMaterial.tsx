@@ -6,7 +6,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Form, Switch, Typography } from "antd";
+import { Form, Switch } from "antd";
 
 import {
   fetchMaterialDocsFiles,
@@ -28,11 +28,11 @@ import {
   FileUploaderContent,
   FileUploaderItem,
 } from "@/components/shared/FileUpload";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { Input } from "@/components/ui/input";
 import { InputStyle } from "@/constants/themeContants";
-import { Button } from "@/components/ui/button";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { gstRateList, taxType } from "@/components/shared/Options";
 import { spigenAxios } from "@/axiosIntercepter";
@@ -41,18 +41,10 @@ import { IoCloudUpload } from "react-icons/io5";
 import { AgGridReact } from "ag-grid-react";
 import { Download } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import {
-  Box,
-  Card,
-  CardContent,
-  Drawer,
-  IconButton,
-  TextField,
-} from "@mui/material";
 import MuiInput from "@/components/ui/MuiInput";
 import MuiSelect from "@/components/ui/MuiSelect";
-import { ChevronLeftIcon } from "@radix-ui/react-icons";
-import { MuiDrawer } from "@/components/ui/MuiDrawer";
+import { Button, TextField } from "@mui/material";
+import { AttachImage, Back, Submit, Upload } from "@/components/shared/Buttons";
 const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   const { execFun, loading: loading1 } = useApi();
   const [editForm] = Form.useForm();
@@ -99,7 +91,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         compCode: arr.partcode,
         componentName: arr.name,
         uom: { label: arr.uomname, value: arr.uomid },
-        // uom: arr.uomid,
         soqqty: arr.soqqty,
         sUom: { label: arr.soqname, value: arr.soqid },
         taxTypes: arr.tax_type,
@@ -129,6 +120,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         purchaseCost: arr.pocost,
         OtherCost: arr.othercost,
       };
+
       editForm.setFieldsValue(a);
     } else {
       toast({
@@ -177,7 +169,10 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       //doubtfull param
       //   alert: values.taxType,category: values.moqQty,
     };
+    // }
 
+    // return;
+    // return;
     setLoading(true);
     const response = await execFun(
       () => updateComponentofMaterial(payload),
@@ -192,7 +187,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       editForm.resetFields();
       setLoading(false);
       setSheetOpenEdit(false);
-      setCaptions("");
     } else {
       // setSheetOpenEdit(false);
 
@@ -203,8 +197,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     }
     setLoading(false);
   };
-  console.log("caption", captions);
-
   const listSUom = async () => {
     // const response = await execFun(() => listOfUom(), "submit");
     const response = await spigenAxios.get("/suom");
@@ -229,9 +221,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
       "fetch"
     );
     let { data } = response;
-    console.log("response", response);
-
-    if (response?.data?.success) {
+    if (data.success) {
       // toast
       let arr = response.data.data.map((r: any) => {
         return {
@@ -239,7 +229,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
         };
       });
       setDocList(arr);
-      setCaptions("");
       toast({
         title: "Docs fetched successfully",
         className: "bg-green-600 text-white items-center",
@@ -268,6 +257,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     });
 
     const response = await execFun(() => uploadCompImg(formData), "fetch");
+
     let { data } = response;
     if (data.success) {
       // toast
@@ -283,7 +273,7 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
     } else {
       toast({
         title: data.message,
-        className: "bg-green-600 text-white items-center",
+        className: "bg-red-600 text-white items-center",
       });
     }
     // setLoading(false);
@@ -374,11 +364,20 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[550px_1fr] overflow-hidden">
       {(loading1("fetch") || loading == true) && <FullPageLoading />}
-      <MuiDrawer
+      <Sheet
         open={sheetOpenEdit}
-        setOpen={setSheetOpenEdit}
-        title={`Update Component: ${sheetOpenEdit?.c_name}`}
-        content={
+        onOpenChange={() => setSheetOpenEdit(setSheetOpenEdit)}
+      >
+        <SheetTrigger></SheetTrigger>
+        <SheetContent
+          className="min-w-[85%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">{`Update Component: ${sheetOpenEdit?.c_name}`}</SheetTitle>
+          </SheetHeader>
           <Form form={editForm} layout="vertical">
             <div>
               <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-100px)] overflow-y-auto">
@@ -611,10 +610,17 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                           />
                         </Form.Item>
                       </div>
-                      <div className="grid w-full max-w-sm items-center gap-1.5">
-                        <Button onClick={() => setSheetOpen(true)}>
+                      <div className="grid flex  justify-center w-full max-w-xl items-center gap-1.5">
+                        {/* <Button onClick={() => setSheetOpen(true)}>
                           Attach Image
-                        </Button>
+                        </Button> */}
+                        <div className="flex">
+                          <AttachImage
+                            // sx={{ width: "100%" }}
+                            text=" Attach Image"
+                            onClick={() => setSheetOpen(true)}
+                          />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -693,132 +699,115 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 </div>
               </div>
               <div className={modelFixFooterStyle}>
-                <Button
-                  variant={"outline"}
-                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                <Back
+                  text="Back"
                   onClick={(e: any) => {
                     setSheetOpenEdit(null);
                     e.preventDefault();
                   }}
-                >
-                  Back
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-cyan-700 hover:bg-cyan-600"
-                  onClick={submitTheForm}
-                  // disabled={editForm.validateFields()}
-                >
-                  Submit
-                </Button>
+                />
+                <Submit text="Submit" onClick={submitTheForm} />
               </div>
             </div>
           </Form>
-        }
-      />
-      <MuiDrawer
-        open={sheetOpen == true}
-        setOpen={setSheetOpen}
-        title={" Upload Image here"}
-        width={600}
-        content={
-          <>
-            <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-              {loading1("fetch") && <FullPageLoading />}
-              <FileUploader
-                value={files}
-                onValueChange={handleFileChange}
-                dropzoneOptions={{
-                  accept: {
-                    "image/*": [".jpg", ".jpeg", ".png", ".gif"],
-                  },
-                  maxFiles: 1,
-                  maxSize: 4 * 1024 * 1024, // 4 MB
-                  multiple: true,
-                }}
-              >
-                <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
-                  <h2 className="text-xl font-semibold text-center mb-4">
-                    <div className=" text-center w-full justify-center flex">
-                      <div>Upload Your Files</div>
-                      <div>
-                        <IoCloudUpload
-                          className="text-cyan-700 ml-5 h-[20]"
-                          size={"1.5rem"}
-                        />
-                      </div>
+        </SheetContent>
+      </Sheet>
+      <Sheet open={sheetOpen == true} onOpenChange={setSheetOpen}>
+        <SheetContent
+          className="min-w-[55%] p-0"
+          onInteractOutside={(e: any) => {
+            e.preventDefault();
+          }}
+        >
+          {/* {loading == true && <FullPageLoading />} */}
+          <SheetHeader className={modelFixHeaderStyle}>
+            <SheetTitle className="text-slate-600">
+              Upload Image here
+            </SheetTitle>
+          </SheetHeader>{" "}
+          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+            {loading1("fetch") && <FullPageLoading />}
+            <FileUploader
+              value={files}
+              onValueChange={handleFileChange}
+              dropzoneOptions={{
+                accept: {
+                  "image/*": [".jpg", ".jpeg", ".png", ".gif"],
+                },
+                maxFiles: 1,
+                maxSize: 4 * 1024 * 1024, // 4 MB
+                multiple: true,
+              }}
+            >
+              <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
+                <h2 className="text-xl font-semibold text-center mb-4">
+                  <div className=" text-center w-full justify-center flex">
+                    {" "}
+                    <div>Upload Your Files</div>
+                    <div>
+                      {" "}
+                      <IoCloudUpload
+                        className="text-cyan-700 ml-5 h-[20]"
+                        size={"1.5rem"}
+                      />
                     </div>
-                  </h2>
-                  <FileInput>
-                    <span className="text-slate-500 text-sm text-center w-full justify-center flex">
-                      Drag and drop files here, or click to select files
-                    </span>
-                  </FileInput>
-                </div>
-                <div className=" m-[20px]">
-                  <FileUploaderContent>
-                    {files?.map((file, index) => (
-                      <FileUploaderItem key={index} index={index}>
-                        <span>{file.name}</span>
-                      </FileUploaderItem>
-                    ))}
-                  </FileUploaderContent>
-                </div>
-              </FileUploader>
-              <div className="w-full flex justify-center">
-                <div className="w-[80%] flex justify-center">
-                  <TextField
-                    //   id="filled-basic"
-                    //   color="grey"
-                    //   sx={{ height: "30px" }}
-                    variant="outlined"
-                    label="Image Captions"
-                    placeholder="Enter Image Captions"
-                    fullWidth={true}
-                    // label={label}
-                    value={captions}
-                    onChange={(e) => setCaptions(e.target.value)}
-                    //   error={form}
-                    //   helperText={"geee"}
-                    //   onChange={()=>{form.setFieldsValue({})}}
-                  />
-                </div>
+                  </div>
+                </h2>
+                <FileInput>
+                  <span className="text-slate-500 text-sm text-center w-full justify-center flex">
+                    Drag and drop files here, or click to select files
+                  </span>
+                </FileInput>{" "}
+              </div>{" "}
+              <div className=" m-[20px]">
+                <FileUploaderContent>
+                  {files?.map((file, index) => (
+                    <FileUploaderItem key={index} index={index}>
+                      <span>{file.name}</span>
+                    </FileUploaderItem>
+                  ))}
+                </FileUploaderContent>
               </div>
-              <div className="ag-theme-quartz h-[calc(100vh-400px)] mt-2">
-                <AgGridReact
-                  //   loadingCellRenderer={loadingCellRenderer}
-                  rowData={docList}
-                  columnDefs={columnDefsDoc}
-                  defaultColDef={{ filter: true, sortable: true }}
-                  pagination={true}
-                  paginationPageSize={10}
-                  paginationAutoPageSize={true}
-                  suppressCellFocus={true}
-                  overlayNoRowsTemplate={OverlayNoRowsTemplate}
+            </FileUploader>{" "}
+            <div className="w-full flex justify-center">
+              <div className="w-[80%] flex justify-center">
+                <TextField
+                  //   id="filled-basic"
+                  //   color="grey"
+                  //   sx={{ height: "30px" }}
+                  variant="outlined"
+                  label="Image Captions"
+                  placeholder="Enter Image Captions"
+                  fullWidth={true}
+                  // label={label}
+                  value={captions}
+                  onChange={(e) => setCaptions(e.target.value)}
+                  //   error={form}
+                  //   helperText={"geee"}
+                  //   onChange={()=>{form.setFieldsValue({})}}
                 />
               </div>
             </div>
-            <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-              <Button
-                className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-                onClick={() => setSheetOpen(false)}
-              >
-                Back
-              </Button>
-              <Button
-                className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-                onClick={uploadDocs}
-                // loading={laoding}
-              >
-                {/* {isApprove ? "Approve" : "Submit"} */}
-                Upload
-              </Button>
-            </div>{" "}
-          </>
-        }
-      />
-
-  
+            <div className="ag-theme-quartz h-[calc(100vh-400px)] mt-5">
+              <AgGridReact
+                //   loadingCellRenderer={loadingCellRenderer}
+                rowData={docList}
+                columnDefs={columnDefsDoc}
+                defaultColDef={{ filter: true, sortable: true }}
+                pagination={true}
+                paginationPageSize={10}
+                paginationAutoPageSize={true}
+                suppressCellFocus={true}
+                overlayNoRowsTemplate={OverlayNoRowsTemplate}
+              />
+            </div>
+          </div>{" "}
+          <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+            <Back onClick={() => setSheetOpen(false)} />
+            <Upload onClick={uploadDocs} />
+          </div>
+        </SheetContent>
+      </Sheet>{" "}
     </Wrapper>
   );
 };

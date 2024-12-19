@@ -19,6 +19,7 @@ export const MuiInput = ({ fullWidth, label, form, name, type }) => {
       focused={!!form.getFieldValue(name)}
       type={type}
       sx={{
+        // paddingY: "2px",
         height: "48px", // Set custom height here (adjust as needed)
         "& .MuiInputBase-root": {
           height: "100%", // Ensure the inner input matches the outer height

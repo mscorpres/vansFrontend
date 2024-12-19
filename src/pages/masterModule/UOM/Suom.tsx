@@ -26,10 +26,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-import { Filter, Send } from "lucide-react";
+import { Filter } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import MuiInput from "@/components/ui/MuiInput";
-import { Refresh } from "@mui/icons-material";
+import { Refresh, Send } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import ResetModal from "@/components/ui/ResetModal";
 import ConfirmModal from "@/components/ui/ConfirmModal";
@@ -123,11 +123,8 @@ const Suom = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr]">
-      {" "}
-      {loading1("fetch") && <FullPageLoading />}
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
-        {loading1("fetch") && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Add
@@ -193,7 +190,8 @@ const Suom = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
@@ -206,7 +204,7 @@ const Suom = () => {
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
-      <ResetModal open={resetModel} setOpen={setResetModel} form={form}  />
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
       <ConfirmModal
         open={open}
         setOpen={setOpen}

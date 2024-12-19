@@ -393,11 +393,11 @@ const Material = () => {
     <>
       <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[630px_1fr] overflow-hidden">
         <div className="bg-[#fff]">
-          <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <div className="h-[56px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
             <Filter className="h-[20px] w-[20px]" />
             Add
           </div>
-          <Form form={form} layout="vertical" className=" p-[15px]">
+          <Form form={form} layout="vertical" className=" p-[20px]">
             {sheetOpenHSN == false ? (
               <>
                 <div className="grid grid-cols-3 gap-[10px] ">
@@ -465,7 +465,7 @@ const Material = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-[10px] py-[-10px]">
+                <div className="grid grid-cols-3 gap-[10px] ">
                   <div className="">
                     <Form.Item name="group" rules={rules.group}>
                       <MuiSelect
@@ -498,7 +498,7 @@ const Material = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-[10px] py-[25px]">
+                <div className="grid grid-cols-2 gap-[10px]">
                   <div className="">
                     <Form.Item name="maker" rules={rules.maker}>
                       <MuiInput
@@ -574,29 +574,28 @@ const Material = () => {
                       overlayNoRowsTemplate={OverlayNoRowsTemplate}
                     />
                   </div>
-                  <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-                    <Button
-                      className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
-                      onClick={() => setSheetOpenHSN(false)}
-                    >
-                      Back
-                    </Button>
-
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      className="shadow shadow-slate-500"
-                      // onClick={(e) => e.preventDefault()}
-                      onClick={(e: any) => {
-                        setOpen(true);
-                        e.preventDefault();
-                      }}
-                    >
-                      Submit
-                    </Button>
-                  </div>
                 </div>
-                <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between"></div>
+                <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+                  <Button
+                    className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
+                    onClick={() => setSheetOpenHSN(false)}
+                  >
+                    Back
+                  </Button>
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    className="shadow shadow-slate-500"
+                    // onClick={(e) => e.preventDefault()}
+                    onClick={(e: any) => {
+                      setOpen(true);
+                      e.preventDefault();
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </div>
               </>
             )}
           </Form>

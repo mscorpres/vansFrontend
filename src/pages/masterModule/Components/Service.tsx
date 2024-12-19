@@ -1,45 +1,24 @@
 import { useEffect, useState } from "react";
-import { z } from "zod";
-import { AgGridReact } from "ag-grid-react";
-import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { InputStyle } from "@/constants/themeContants";
-
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
-import { Input } from "@/components/ui/input";
-
-import Select from "react-select";
-
 import useApi from "@/hooks/useApi";
 import {
   listOfUom,
   saveService,
   serviceList,
 } from "@/components/shared/Api/masterApi";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import FullPageLoading from "@/components/shared/FullPageLoading";
 import EditService from "./EditService";
 import { Form, Row } from "antd";
 import { useToast } from "@/components/ui/use-toast";
-import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import ConfirmationModal from "@/components/shared/ConfirmationModal";
-import DataTable from "@/components/ui/DataTable";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-import { Button, OutlinedInput } from "@mui/material";
+import { Button } from "@mui/material";
 import ResetModal from "@/components/ui/ResetModal";
 import { Refresh, Send } from "@mui/icons-material";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import MuiSelect from "@/components/ui/MuiSelect";
 import MuiInput from "@/components/ui/MuiInput";
+import DataTable from "@/components/ui/DataTable";
+import { Reset, Submit } from "@/components/shared/Buttons";
 
 const Service = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -100,8 +79,7 @@ const Service = () => {
     {
       field: "action",
       headerName: "Action",
-      flex: 1,
-      minWidght: 150,
+      minWidght: 50,
       renderCell: (e) => {
         return (
           <div className="flex gap-[5px] items-center justify-center h-full">
@@ -124,6 +102,7 @@ const Service = () => {
       field: "c_part_no",
       filter: "agTextColumnFilter",
       renderCell: CopyCellRenderer,
+      flex: 1,
       width: 200,
     },
     {
@@ -131,6 +110,7 @@ const Service = () => {
       field: "c_name",
       filter: "agTextColumnFilter",
       renderCell: CopyCellRenderer,
+      flex: 1,
       width: 250,
     },
 
@@ -175,7 +155,7 @@ const Service = () => {
       {/* {loading1("fetch") && <FullPageLoading />} */}
       <div className="bg-[#fff]">
         {" "}
-        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+        <div className="h-[56px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Add
         </div>
@@ -183,7 +163,7 @@ const Service = () => {
         <Form form={form} layout="vertical" {...form}>
           <form
             // onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 h-[500px] overflow-hidden  p-[15px]"
+            className="space-y-6 h-[500px] overflow-hidden  p-[20px]"
           >
             <div className="grid grid-cols-2 gap-[10px] mb-[-20px]  ">
               <div className="">
@@ -237,7 +217,7 @@ const Service = () => {
               </Form.Item>
             </div>
             <Row justify="end">
-              <Button
+              {/* <Button
                 // type="reset"
                 className="shadow shadow-slate-500"
                 onClick={(e: any) => {
@@ -260,7 +240,20 @@ const Service = () => {
                 className="shadowshadow-slate-500"
               >
                 Submit
-              </Button>
+              </Button> */}
+              <Reset
+                onClick={(e: any) => {
+                  setResetModel(true);
+                  e.preventDefault();
+                }}
+              />
+              <Submit
+                text="Submit"
+                onClick={(e: any) => {
+                  setOpen(true);
+                  e.preventDefault();
+                }}
+              />
             </Row>
           </form>
         </Form>
@@ -279,7 +272,7 @@ const Service = () => {
           loading={loading1("fetch")}
         />
       </div>
-      <ResetModal open={resetModel} setOpen={setResetModel} form={form}  />
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
       <ConfirmModal
         open={open}
         setOpen={setOpen}

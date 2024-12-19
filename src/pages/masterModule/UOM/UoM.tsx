@@ -119,11 +119,7 @@ const UoM = () => {
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      {" "}
-      {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
-        {" "}
-        {loading1("fetch") && <FullPageLoading />}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] ">
           <Filter className="h-[20px] w-[20px]" />
           Add
@@ -133,7 +129,7 @@ const UoM = () => {
             // onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6 overflow-hidden  p-[15px] mt-[10px]"
           >
-            {" "}
+             
             <Form.Item
               name="groupName"
               // label="Unit Name"
@@ -186,7 +182,9 @@ const UoM = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
+         
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
@@ -199,7 +197,7 @@ const UoM = () => {
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
-      <ResetModal open={resetModel} setOpen={setResetModel} form={form}  />
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
       <ConfirmModal
         open={open}
         setOpen={setOpen}

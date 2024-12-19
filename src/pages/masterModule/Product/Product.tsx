@@ -39,6 +39,7 @@ import { Refresh, Send } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import ResetModal from "@/components/ui/ResetModal";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { Reset, Submit } from "@/components/shared/Buttons";
 
 const Product = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -266,7 +267,7 @@ const Product = () => {
               </Form.Item>
             </div>
             <div className="bg-white h-[50px] flex items-center justify-end gap-[20px]">
-              <Button
+              {/* <Button
                 // type="reset"
                 className="shadow shadow-slate-500 mr-[10px]"
                 onClick={(e: any) => {
@@ -288,7 +289,20 @@ const Product = () => {
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 ml-[20px]"
               >
                 Submit
-              </Button>
+              </Button> */}
+              <Reset
+                onClick={(e: any) => {
+                  setResetModel(true);
+                  e.preventDefault();
+                }}
+              />
+              <Submit
+                text="Submit"
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  setOpen(true);
+                }}
+              />
             </div>
           </form>
         </Form>{" "}
@@ -299,7 +313,7 @@ const Product = () => {
           />
         )}
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-50px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

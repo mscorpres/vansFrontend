@@ -35,6 +35,7 @@ import { Refresh, Send } from "@mui/icons-material";
 import ResetModal from "@/components/ui/ResetModal";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import { Button } from "@mui/material";
+import { Reset, Submit } from "@/components/shared/Buttons";
 const CustomerComponent = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
@@ -169,32 +170,19 @@ const CustomerComponent = () => {
             />
           </Form.Item>
           <div className="bg-white h-[50px] flex items-center justify-end gap-[20px]">
-            <Button
-              // type="reset"
-              className="shadow shadow-slate-500 mr-[10px]"
+            <Reset
               onClick={(e: any) => {
                 setResetModel(true);
                 e.preventDefault();
               }}
-              startIcon={<Refresh />}
-            >
-              Reset
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              onClick={() => setOpen(true)}
-              startIcon={<Send />}
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 ml-[20px]"
-            >
-              Submit
-            </Button>
+            />
+            <Submit text="Submit" onClick={() => setOpen(true)} />
           </div>
 
           {/* </form> */}
         </Form>
       </div>
-      <div className="ag-theme-quartz  h-[calc(100vh-100px)]">
+      <div className="ag-theme-quartz  h-[calc(100vh-100px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
@@ -209,7 +197,7 @@ const CustomerComponent = () => {
         />
       </div>
 
-      <ResetModal open={resetModel} setOpen={setResetModel} form={form}  />
+      <ResetModal open={resetModel} setOpen={setResetModel} form={form} />
       <ConfirmModal
         open={open}
         setOpen={setOpen}
@@ -244,14 +232,14 @@ const columnDefs: ColDef<RowData>[] = [
     width: 250,
   },
   {
-    headerName: "Code",
+    headerName: "Customer Code",
     field: "cust",
     filter: "agTextColumnFilter",
     cellRenderer: CopyCellRenderer,
-    width: 150,
+    width: 190,
   },
   {
-    headerName: " Name",
+    headerName: "Customer Name",
     field: "cust_name",
     filter: "agTextColumnFilter",
     width: 250,

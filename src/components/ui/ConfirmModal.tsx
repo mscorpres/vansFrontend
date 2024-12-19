@@ -6,6 +6,7 @@ import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Refresh, Send } from "@mui/icons-material";
+import { Cancel, Confirm } from "../shared/Buttons";
 
 const style = {
   position: "absolute",
@@ -63,10 +64,10 @@ export default function ConfirmModal({ open, setOpen, form, submit }) {
                 marginTop: "20px",
               }}
             >
-              <Button variant="outlined" onClick={handleClose}>
+              {/* <Button variant="outlined" onClick={handleClose}>
                 Cancel
-              </Button>
-              <Button
+              </Button> */}
+              {/* <Button
                 style={{
                   marginLeft: "10px",
                   // backgroundColor: "#d32f2f ",
@@ -78,7 +79,9 @@ export default function ConfirmModal({ open, setOpen, form, submit }) {
                 startIcon={<Send />}
               >
                 Confirm
-              </Button>
+              </Button> */}
+              <Cancel onClick={handleClose} />
+              <Confirm onClick={submit} />
             </div>
           </Box>
         </Fade>
