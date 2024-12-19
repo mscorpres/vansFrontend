@@ -158,6 +158,12 @@ const R4 = () => {
       width: 150,
     },
     {
+      headerName: "Silicon Stock",
+      field: "siliconStock",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
       headerName: "Stock Time",
       field: "closing_stock_time",
       filter: "agTextColumnFilter",
