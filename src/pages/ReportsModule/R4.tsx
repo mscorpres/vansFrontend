@@ -84,7 +84,6 @@ const R4 = () => {
         )
       );
     }
-    // Perform the action
   };
 
   const columnDefs: ColDef<rowData>[] = [

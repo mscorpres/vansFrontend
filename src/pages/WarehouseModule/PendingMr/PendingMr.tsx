@@ -219,7 +219,7 @@ const PendingMr: React.FC = () => {
       if (res?.payload?.success) {
       } else {
         toast({
-          title: res.payload?.message,
+          title: res?.payload?.message,
           className: "text-white bg-red-700",
         });
       }

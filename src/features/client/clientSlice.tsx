@@ -772,6 +772,19 @@ const clientSlice = createSlice({
         state.error =
           action.error.message || "Failed to fetch Cost Center List";
       })
+      .addCase(rejectPo.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(rejectPo.fulfilled, (state, action) => {
+        state.loading = false;
+        state.approvePoList = action.payload;
+      })
+      .addCase(rejectPo.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
       .addCase(updatePo.pending, (state) => {
         state.loading = true;
         state.error = null;
