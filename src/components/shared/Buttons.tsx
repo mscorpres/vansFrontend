@@ -43,12 +43,13 @@ export const Cancel = ({ text, onClick }) => {
     </Button>
   );
 };
-export const Submit = ({ text, onClick }) => {
+export const Submit = ({ text, onClick, disabled }) => {
   return (
     <Button
       sx={{ ml: 1 }}
       startIcon={<Send />}
       variant="contained"
+      disabled={disabled}
       onClick={onClick}
       className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
     >

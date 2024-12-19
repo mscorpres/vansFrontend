@@ -28,6 +28,7 @@ import MuiInput from "@/components/ui/MuiInput";
 import { Button } from "@mui/material";
 import ResetModal from "@/components/ui/ResetModal";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { Reset, Submit } from "@/components/shared/Buttons";
 
 const Groups = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -108,15 +109,13 @@ const Groups = () => {
 
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[350px_1fr]">
-      {" "}
-      {loading1("fetch") && <FullPageLoading />}
       <div className="bg-[#fff]">
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Add
         </div>
         <Form form={form} layout="vertical">
-          <form className="space-y-6 overflow-hidden p-[10px]">
+          <form className="space-y-6 overflow-hidden p-[20px]">
             {" "}
             <Form.Item
               name="groupName"
@@ -130,34 +129,26 @@ const Groups = () => {
                 label="Group Name"
               />
             </Form.Item>{" "}
-            <div className="bg-whiteh-[50px] flex items-center justify-end gap-[20px]">
-              <Button
-                className="rounded-md shadow  shadow-slate-500 max-w-max "
+            <div className="bg-whiteh-[50px] flex items-center justify-end ">
+              <Reset
                 onClick={(e: any) => {
                   e.preventDefault();
                   setResetModel(true);
                 }}
-              >
-                Reset
-              </Button>
-
-              <Button
-                type="submit"
-                variant="contained"
-                className="shadow shadow-slate-500"
-                // onClick={(e) => e.preventDefault()}
+              />
+              <Submit
+                text="Submit"
                 onClick={(e: any) => {
                   setOpen(true);
                   e.preventDefault();
                 }}
-              >
-                Submit
-              </Button>
+              />
             </div>
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-50px)] relative ">
+        {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}

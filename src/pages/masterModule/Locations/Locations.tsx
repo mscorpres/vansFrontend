@@ -36,6 +36,7 @@ import ResetModal from "@/components/ui/ResetModal";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import { Refresh, Send } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { Reset, Submit } from "@/components/shared/Buttons";
 const Locations = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [asyncOptions, setAsyncOptions] = useState([]);
@@ -198,7 +199,6 @@ const Locations = () => {
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[550px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -208,7 +208,6 @@ const Locations = () => {
             // onSubmit={form.handleSubmit(onsubmit)}
             className="space-y-6 overflow-hidden p-[20px] h-[550px]"
           >
-            {" "}
             <div className="">
               <Form.Item
                 name="location"
@@ -226,7 +225,7 @@ const Locations = () => {
                   label={"Location Name"}
                 />
               </Form.Item>
-            </div>{" "}
+            </div>
             <div className="grid grid-cols-2 gap-[40px] mt-[30px] mb-[-30px]">
               <div className="">
                 <Form.Item
@@ -287,34 +286,25 @@ const Locations = () => {
               </Form.Item>
             </div>
             <div className="bg-white h-[50px] flex items-center justify-end gap-[20px]">
-              <Button
-                // type="reset"
-                className="shadow shadow-slate-500 mr-[10px]"
+              <Reset
+                text="Back"
                 onClick={(e: any) => {
                   e.preventDefault();
                   setResetModel(true);
                 }}
-                startIcon={<Refresh />}
-              >
-                Reset
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
+              />
+              <Submit
+                text="Submit"
                 onClick={(e) => {
                   e.preventDefault();
                   setShowConfirmation(true);
                 }}
-                startIcon={<Send />}
-                className="shadow shadow-slate-500 ml-[20px]"
-              >
-                Submit
-              </Button>
+              />
             </div>
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-50px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-50px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

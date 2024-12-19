@@ -31,6 +31,7 @@ import { Button } from "@mui/material";
 import { Refresh, Save, Send } from "@mui/icons-material";
 import ResetModal from "@/components/ui/ResetModal";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { Reset, Submit } from "@/components/shared/Buttons";
 
 const Hsn = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -185,7 +186,6 @@ const Hsn = () => {
   return (
     <Wrapper className="h-[calc(100vh-50px)] grid grid-cols-[450px_1fr] overflow-hidden">
       <div className="bg-[#fff]">
-        {loading1("fetch") && <FullPageLoading />}{" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -223,9 +223,10 @@ const Hsn = () => {
             className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
           >
             <Plus className="font-[600]" /> Add Item
-          </Button>{" "}
+          </Button>
         </div>
-        <div className="ag-theme-quartz h-[calc(100vh-150px)] w-full">
+        <div className="ag-theme-quartz h-[calc(100vh-150px)] w-full relative">
+          {loading1("fetch") && <FullPageLoading />}
           <AgGridReact
             ref={gridRef}
             rowData={rowData}
@@ -242,8 +243,8 @@ const Hsn = () => {
             suppressCellFocus={true}
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
-          <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Button
+          <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end  px-[20px]">
+            {/* <Button
               startIcon={<Refresh />}
               className="rounded-md shadow  max-w-max px-[30px]"
               onClick={() => setCallReset(true)}
@@ -256,7 +257,7 @@ const Hsn = () => {
             >
               Back
             </Button> */}
-            <Button
+            {/* <Button
               startIcon={<Send />}
               variant="contained"
               className="rounded-md  max-w-max px-[30px]"
@@ -264,7 +265,13 @@ const Hsn = () => {
               disabled={rowData.length === 0}
             >
               Submit
-            </Button>
+            </Button>{" "} */}
+            <Reset text="Back" onClick={() => setCallReset(true)} />
+            <Submit
+              disabled={rowData.length === 0}
+              text="Submit"
+              onClick={() => setShowConfirmation(true)}
+            />
           </div>
         </div>
       </div>
