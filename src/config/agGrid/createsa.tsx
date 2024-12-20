@@ -78,6 +78,7 @@ const AddSalesOrder = ({
       type: "product",
       material: "",
       materialDescription: "",
+      partno: "",
       // asinNumber: "B01N1SE4EP",
       orderQty: 1,
       // rate: 0,

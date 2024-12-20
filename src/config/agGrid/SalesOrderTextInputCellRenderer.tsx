@@ -21,9 +21,7 @@ import { transformOptionData } from "@/helper/transform";
 import { useParams } from "react-router-dom";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
 import moment from "moment";
-import {
-  fetchComponentDetailByCode,
-  } from "@/features/salesmodule/createSalesOrderSlice";
+import { fetchComponentDetailByCode } from "@/features/salesmodule/createSalesOrderSlice";
 const frameworks = [
   {
     value: "/",
@@ -97,7 +95,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
   const [open, setOpen] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
-  const { value, colDef, data, api, column,  setRowData } = props;
+  const { value, colDef, data, api, column, setRowData } = props;
   const { componentDetails } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
@@ -152,14 +150,14 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
         }
       });
     }
-    
+
     const localValue = parseFloat(data.localValue) || 0; // Ensure localValue is a number
     let cgst = 0;
     let sgst = 0;
     let igst = 0;
     const calculation = (localValue * data.gstRate) / 100;
-    if(props.exRate?.currency!=="364907247"){
-      data["foreignValue"] = localValue*props.exRate?.exchange_rate
+    if (props.exRate?.currency !== "364907247") {
+      data["foreignValue"] = localValue * props.exRate?.exchange_rate;
     }
 
     if (data.gstType === "L") {
@@ -199,8 +197,8 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       data["localValue"] = newValue * parseFloat(data.rate);
     }
     const localValue = parseFloat(data.localValue) || 0; // Ensure localValue is a number
-    if(props.exRate?.currency!=="364907247"){
-      data["foreignValue"] = localValue*props.exRate?.exchange_rate
+    if (props.exRate?.currency !== "364907247") {
+      data["foreignValue"] = localValue * props.exRate?.exchange_rate;
     }
     // Calculate GST based on the updated values
     const gstRate = parseFloat(data.gstRate) || 0;
@@ -294,6 +292,16 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
             value={typeof value === "string" ? { value } : value?.name}
           />
         );
+      case "partno":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            // type="text"
+            placeholder={colDef.headerName}
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
       case "asinNumber":
         return (
           <Popover open={open} onOpenChange={setOpen}>
@@ -347,7 +355,10 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
                 {value
                   ? gstType.find((option) => option.value === value)?.label
                   : colDef.headerName}
-                  {console.log(gstType.find((option) => option.value === value)?.label,value)}
+                {console.log(
+                  gstType.find((option) => option.value === value)?.label,
+                  value
+                )}
                 <FaSortDown className="w-5 h-5 ml-2 mb-[5px] opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>
@@ -491,7 +502,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       case "sgst":
       case "igst":
       case "partno":
-        case "stock":
+      case "stock":
         return (
           <Input
             readOnly
