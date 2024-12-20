@@ -189,7 +189,7 @@ export const fetchAvailableStock = createAsyncThunk(
   async (payload: any, { rejectWithValue }) => {
     try {
       const response = (await spigenAxios.get<any>(
-       `backend/fetchAvailableStockBoxes?component=${payload?.component}`
+        `backend/fetchAvailableStockBoxes?component=${payload?.component}&costcenter=${payload.c_center}`
       )) as any;
 
       return response.data;
