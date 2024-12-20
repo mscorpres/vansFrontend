@@ -62,6 +62,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const handleMaterialListModalClose = () =>
     setIsMaterialListModalVisible(false);
+  // dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
 
   const handleshowMaterialList = (row: RowData) => {
     dispatch(fetchMaterialList({ so_id: row?.so_id }));
@@ -157,6 +158,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       if (response?.payload?.code == 200) {
         setIsMaterialListModalVisible(false);
         handleMaterialListModalClose();
+        dispatch(
+          fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
+        );
       }
     });
   };
@@ -221,7 +225,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         key="materialList"
         onClick={() => handleshowMaterialList(row)}
         disabled={
-          row?.approveStatus === "Pending" || row?.soStatus === "Closed" ||row?.approveStatus === "Rejected"
+          row?.approveStatus === "Pending" ||
+          row?.soStatus === "Closed" ||
+          row?.approveStatus === "Rejected"
         }
       >
         Create Shipment
@@ -363,7 +369,7 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Reject Reason",
     field: "reject_reason",
     filter: "agTextColumnFilter",
-    cellRenderer:TruncateCellRenderer,
+    cellRenderer: TruncateCellRenderer,
   },
 ];
 

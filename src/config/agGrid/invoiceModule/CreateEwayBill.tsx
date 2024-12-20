@@ -1336,7 +1336,6 @@ export default function CreateEwayBill() {
                             <FormItem>
                               <FormLabel className={LableStyle}>
                                 Dispatch Doc No.
-                               
                               </FormLabel>
                               <FormControl>
                                 <Input
@@ -1360,7 +1359,6 @@ export default function CreateEwayBill() {
                             <FormItem>
                               <FormLabel className={LableStyle}>
                                 Dispatch Through
-                              
                               </FormLabel>
                               <FormControl>
                                 <Input
@@ -1453,63 +1451,62 @@ export default function CreateEwayBill() {
                       />
                     </div>
                     {!isEwayBill && (
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="header.delivery_note"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Delivery Note
-                              
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Dilever Note"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    )}
-                     {!isEwayBill && (
-                    <div>
-                      <FormField
-                        control={form.control}
-                        name="header.delivery_date"
-                        render={() => (
-                          <FormItem className="pl-[10px] w-full flex flex-col">
-                            <FormLabel className={LableStyle}>
-                              Delivery Date
-                            </FormLabel>
-                            <FormControl>
-                              <Space direction="vertical" size={12}>
-                                <DatePicker
-                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                  className={DatePickerStyle}
-                                  format="DD-MM-YYYY"
-                                  onChange={(value: Dayjs | null) => {
-                                    const formattedDate = value
-                                      ? value.format("DD-MM-YYYY")
-                                      : "";
-                                    form.setValue(
-                                      "headers.delivery_date",
-                                      formattedDate
-                                    );
-                                  }}
+                      <div className="">
+                        <FormField
+                          control={form.control}
+                          name="header.delivery_note"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                Delivery Note
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  className={InputStyle}
+                                  placeholder="Dilever Note"
+                                  {...field}
                                 />
-                              </Space>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                     )}
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
+                    {!isEwayBill && (
+                      <div>
+                        <FormField
+                          control={form.control}
+                          name="header.delivery_date"
+                          render={() => (
+                            <FormItem className="pl-[10px] w-full flex flex-col">
+                              <FormLabel className={LableStyle}>
+                                Delivery Date
+                              </FormLabel>
+                              <FormControl>
+                                <Space direction="vertical" size={12}>
+                                  <DatePicker
+                                    // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
+                                    className={DatePickerStyle}
+                                    format="DD-MM-YYYY"
+                                    onChange={(value: Dayjs | null) => {
+                                      const formattedDate = value
+                                        ? value.format("DD-MM-YYYY")
+                                        : "";
+                                      form.setValue(
+                                        "headers.delivery_date",
+                                        formattedDate
+                                      );
+                                    }}
+                                  />
+                                </Space>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -1725,7 +1722,7 @@ export default function CreateEwayBill() {
             <div className="h-[50px] flex items-center justify-center gap-[20px] px-[20px] pt-10">
               <Button
                 className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px] w-[148px] h-[50px] font-[600]"
-                disabled={Object.keys(form.formState.errors).length > 0}
+                // disabled={Object.keys(form.formState.errors).length > 0}
                 onClick={handleSubmit}
               >
                 Submit
