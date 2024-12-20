@@ -360,7 +360,7 @@ const MasterCustomerPage: React.FC = () => {
     let payload = {
       client: addBranch?.code,
       billToLabel: value.billlabel,
-      // billToCountry: value.billcountry?.value,
+      billToCountry: value.billcountry?.value,
       billToState: value.billstate.value,
       billToPincode: value.billpincode,
       billToPhone: value.billphone,
