@@ -306,7 +306,7 @@ export const fetchComponentDetailByCode = createAsyncThunk<
     `salesOrder/getComponentDetailsByCode?component_code=${component_code}`
   );
 
-  if (response.data.status === "success") {
+  if (response?.data?.success) {
     return response.data.data;
   } else {
     // Redux Toolkit will automatically handle the error
