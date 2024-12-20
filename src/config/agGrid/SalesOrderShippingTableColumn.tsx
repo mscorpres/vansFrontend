@@ -21,7 +21,7 @@ import {
 import { TruncateCellRenderer } from "@/General";
 import PickSlipModal from "@/config/agGrid/PickSlipModal";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-import { toast } from "react-toastify";
+import { toast } from "@/components/ui/use-toast";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -71,9 +71,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const confirmApprove = () => {
     dispatch(approveShipment({ so_id: row?.shipment_id })).then(
       (response: any) => {
-
-        if (response?.payload?.code == 200) {
-          toast.success(response?.payload?.message);
+        if (response?.payload?.success) {
+          toast({
+            className: "bg-green-600 text-white items-center",
+            title:
+              response.payload.message || "Sales Order Approved successfully",
+          });
           dispatch(
             fetchSalesOrderShipmentList({
               type: "date_wise",
@@ -96,7 +99,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         };
         dispatch(cancelShipment(payload)).then((response: any) => {
           console.log(response);
-          if (response?.payload?.code == 200) {
+          if (response?.payload?.status) {
+            toast({
+              className: "bg-green-600 text-white items-center",
+              title: response?.payload?.message,
+            });
             form.resetFields(); // Clear the form fields after submission
             dispatch(
               fetchSalesOrderShipmentList({

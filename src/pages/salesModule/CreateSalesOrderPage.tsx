@@ -135,7 +135,7 @@ const CreateSalesOrderPage = () => {
         hsnCode: material.hsnCode || "",
         remark: material.itemRemark || "",
         updateid: material?.updateid || 0,
-        stock:material?.closingQty,
+        stock: material?.closingQty,
         isNew: true,
       }));
       setRowData(data);
@@ -252,7 +252,7 @@ const CreateSalesOrderPage = () => {
     form.setValue("billIdName", e.label);
     dispatch(fetchBillAddress(e.value)).then((response: any) => {
       const data = response.payload.data;
-      form.setValue("billFrom.address1", data.addressLine1, {
+      form.setValue("billFrom.address1", data.address, {
         shouldValidate: true,
         shouldDirty: true,
       });

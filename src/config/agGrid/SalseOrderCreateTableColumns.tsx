@@ -55,14 +55,14 @@ export const columnDefs = [
     cellRenderer: "textInputCellRenderer",
     minWidth: 200,
   },
-  {
-    headerName: "Current Stock",
-    field: "stock",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
+  // {
+  //   headerName: "Current Stock",
+  //   field: "stock",
+  //   editable: false,
+  //   flex: 1,
+  //   cellRenderer: "textInputCellRenderer",
+  //   minWidth: 200,
+  // },
   {
     headerName: "Rate",
     field: "rate",
