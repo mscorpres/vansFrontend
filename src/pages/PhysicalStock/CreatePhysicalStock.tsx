@@ -197,7 +197,6 @@ const CreatePhysicalStock = () => {
     {
       headerName: "Box Qty",
       field: "orderQty",
-      editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
