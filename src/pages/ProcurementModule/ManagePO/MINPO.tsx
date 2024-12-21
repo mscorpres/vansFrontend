@@ -30,6 +30,7 @@ import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { removeHtmlTags } from "@/components/shared/Options";
+import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
 const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [rowData, setRowData] = useState([]);
   const [search, setSearch] = useState("");
@@ -40,6 +41,9 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [attachmentFile, setAttachmentFile] = useState([]);
   const [showLoading, setShowLoading] = useState(false);
   const [vendorDetails, setVendorDetails] = useState([]);
+  const { currency } = useSelector(
+    (state: RootState) => state.createSalesOrder
+  );
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
   const { loading } = useSelector((state: RootState) => state.client);
@@ -52,11 +56,17 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
           setRowData={setRowData}
           rowData={rowData}
           search={search}
+          currency={currency}
         />
       ),
     }),
     []
   );
+
+  useEffect(() => {
+    dispatch(fetchCurrency());
+  }, []);
+
   const columnDefs = [
     {
       headerName: "",
@@ -100,6 +110,22 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       minWidth: 200,
     },
     {
+      headerName: "Currency",
+      field: "currency",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 120,
+    },
+    {
+      headerName: "Exchange Rate",
+      field: "exchange_rate",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 180,
+    },
+    {
       headerName: "Invoice Id",
       field: "invoice",
       editable: false,
@@ -123,14 +149,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-    // {
-    //   headerName: "Currency",
-    //   field: "currency",
-    //   editable: false,
-    //   flex: 1,
-    //   cellRenderer: "textInputCellRenderer",
-    //   minWidth: 250,
-    // },
+
     {
       headerName: "GST Rate",
       field: "gstRate",
@@ -163,14 +182,14 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-    // {
-    //   headerName: "Foreign Value",
-    //   field: "foreignValue",
-    //   editable: false,
-    //   flex: 1,
-    //   cellRenderer: "textInputCellRenderer",
-    //   minWidth: 200,
-    // },
+    {
+      headerName: "Foreign Value",
+      field: "foreignValue",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
     {
       headerName: "CGST",
       field: "cgst",
@@ -199,11 +218,12 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const handleSubmit = async () => {
     setShowConfirmation(false);
     let arr = rowData;
+    console.log("arr ---", arr);
 
     let payload = {
       poid: viewMinPo?.po_transaction,
       currency: arr.map((r: any) => r.currency),
-      exchange: arr.map((r: any) => r.exchange),
+      exchange: arr.map((r: any) => r.exchange_rate),
       component: arr.map((r: any) => r?.componentKey),
       access_code: arr.map((r: any) => r.access_code),
       qty: arr.map((r: any) => r.orderQty),
@@ -346,6 +366,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   }, [rowData]);
 
   const calltheApi = async () => {
+    dispatch(fetchCurrency());
     dispatch(fetchDataPOforMIN({ poid: viewMinPo.po_transaction })).then(
       (response: any) => {
         if (response.payload.success) {
@@ -364,6 +385,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
               remark: r.description,
               hsnCode: r.hsncode,
               dueDate: r.orderduedate,
+              currency: r.currency,
               ...r,
             };
           });

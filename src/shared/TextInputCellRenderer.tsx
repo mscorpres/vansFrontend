@@ -42,6 +42,7 @@ import {
 } from "@/features/client/storeSlice";
 import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
 import { toast } from "@/components/ui/use-toast";
+import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 
 const type = [
   {
@@ -168,7 +169,7 @@ const TextInputCellRenderer = (props: any) => {
     api,
     column,
     materialList,
-    currency,
+    // currency,
     setRowData,
   } = props;
   const { componentDetails } = useSelector(
@@ -185,7 +186,9 @@ const TextInputCellRenderer = (props: any) => {
     boxData,
     phyStockFromBoxData,
   } = useSelector((state: RootState) => state.store);
-  const { currencyList } = useSelector((state: RootState) => state.client);
+  const { currency } = useSelector(
+    (state: RootState) => state.createSalesOrder
+  );
   const { product } = useSelector((state: RootState) => state.store);
   const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
   const [asyncOptions, setAsyncOptions] = useState([]);
@@ -220,7 +223,9 @@ const TextInputCellRenderer = (props: any) => {
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     // setRowData((prevData: any) => [...prevData, newData]);
   };
-
+  // useEffect(() => {
+  //   dispatch(fetchCurrency());
+  // }, []);
   const handleCurrencyChange = (value: any) => {
     data["currency"] = value;
 
@@ -326,8 +331,6 @@ const TextInputCellRenderer = (props: any) => {
           });
           //  data["boxPartName"] = r?.payload.data;
         } else {
-      
-
           data["orderQty"] = r?.payload.data.data[0].closingqty;
         }
       });
@@ -888,6 +891,44 @@ const TextInputCellRenderer = (props: any) => {
               rowId={data.rowId}
             />
           </>
+        );
+
+      case "currency":
+        return (
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-[100%] justify-between  text-slate-600 items-center  border-slate-400 shadow-none"
+              >
+                {value
+                  ? currency?.find((option) => option?.currency_id === value)
+                      ?.currency_symbol
+                  : colDef.headerName}
+                <FaSortDown className="w-5 h-5 ml-2 mb-[5px] opacity-50 shrink-0" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[250px] p-0  ">
+              <Command>
+                <CommandInput placeholder="Search..." />
+                <CommandEmpty>No {colDef.headerName} found.</CommandEmpty>
+                <CommandList className="max-h-[400px] overflow-y-auto">
+                  {currency?.map((framework) => (
+                    <CommandItem
+                      key={framework.currency_id}
+                      value={framework.currency_id}
+                      className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px]"
+                      onSelect={(currentValue) => handleChange(currentValue)}
+                    >
+                      {framework.currency_symbol}
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         );
       case "rate":
         return (
