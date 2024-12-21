@@ -326,10 +326,7 @@ const TextInputCellRenderer = (props: any) => {
           });
           //  data["boxPartName"] = r?.payload.data;
         } else {
-          console.log(
-            "r.payload.data.closingqty",
-            r?.payload.data.data[0].closingqty
-          );
+      
 
           data["orderQty"] = r?.payload.data.data[0].closingqty;
         }
