@@ -325,6 +325,13 @@ const TextInputCellRenderer = (props: any) => {
             className: "bg-red-700 text-white text-center",
           });
           //  data["boxPartName"] = r?.payload.data;
+        } else {
+          console.log(
+            "r.payload.data.closingqty",
+            r?.payload.data.data[0].closingqty
+          );
+
+          data["orderQty"] = r?.payload.data.data[0].closingqty;
         }
       });
     }
