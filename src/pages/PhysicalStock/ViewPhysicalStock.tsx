@@ -137,7 +137,7 @@ const ViewPhysicalStock = () => {
     },
     {
       headerName: "Date & Time",
-      field: "approved_dt",
+      field: "insert_date",
       filter: "agTextColumnFilter",
       minWidth: 180,
       flex: 1,
