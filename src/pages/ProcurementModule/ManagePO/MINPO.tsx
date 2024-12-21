@@ -218,12 +218,11 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const handleSubmit = async () => {
     setShowConfirmation(false);
     let arr = rowData;
-    console.log("arr ---", arr);
 
     let payload = {
       poid: viewMinPo?.po_transaction,
       currency: arr.map((r: any) => r.currency),
-      exchange: arr.map((r: any) => r.exchange_rate),
+      exchange_rate: arr.map((r: any) => r.exchange_rate),
       component: arr.map((r: any) => r?.componentKey),
       access_code: arr.map((r: any) => r.access_code),
       qty: arr.map((r: any) => r.orderQty),
