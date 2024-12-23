@@ -58,7 +58,7 @@ const Material = () => {
   const addNewRow = () => {
     const newRow = {
       asinNumber: "B01N1SE4EP",
-
+      id: "",
       gstRate: 18,
       hsnSearch: "",
       isNew: true,
@@ -353,13 +353,13 @@ const Material = () => {
 
   const HsncolumnDefs: ColDef<rowData>[] = [
     {
-      headerName: "",
+      headerName: "Id",
       valueGetter: "node.rowIndex + 1",
       cellRenderer: "textInputCellRenderer",
-      maxWidth: 100,
+      maxWidth: 50,
       field: "delete",
     },
-    { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
+    { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 80 },
 
     {
       headerName: "HSN/SAC Code",
@@ -367,16 +367,16 @@ const Material = () => {
       // editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
-      width: 200,
+      minWidth: 350,
     },
 
     {
-      headerName: "Tax (%) Percentage",
+      headerName: "Tax (%)",
       field: "gstRate",
       editable: false,
-      flex: 1,
+      // flex: 1,
       cellRenderer: "textInputCellRenderer",
-      width: 200,
+      minWidth: 100,
     },
   ];
   const addHsn = async () => {

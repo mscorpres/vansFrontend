@@ -311,6 +311,13 @@ const TextInputCellRenderer = (props: any) => {
       api.applyTransaction({ update: [data] });
       updateData(data);
     }
+    if (colDef.field === "hsnSearch") {
+      // data[hsnSearch] = data["hsnSearch"];
+
+      api.refreshCells({ rowNodes: [props.node], columns: [column] });
+      api.applyTransaction({ update: [data] });
+      updateData(data);
+    }
     if (colDef.field === "boxName") {
       dispatch(getPhysicalStockfromBox({ boxno: data["boxName"] })).then(
         (r) => {
@@ -1161,11 +1168,11 @@ const TextInputCellRenderer = (props: any) => {
       case "hsnSearch":
         return (
           <Select
-            onPopupScroll={(e) => e.preventDefault()}
+            // onPopupScroll={(e) => e.preventDefault()}
             className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px] w-full"
             // className="w-full"
             labelInValue
-            filterOption={false}
+            filterOption={true}
             showSearch
             placeholder="Select Material"
             onSearch={(e) => {
@@ -1176,7 +1183,7 @@ const TextInputCellRenderer = (props: any) => {
             }}
             options={transformOptionData(hsnlist || [])}
             onChange={(e) => handleChange(e.value)}
-            value={typeof value === "string" ? { value } : value?.text}
+            value={typeof value === "string" ? { value } : value?.label}
             style={{ pointerEvents: "auto" }} // Ensure pointer events are enabled
           />
         );
