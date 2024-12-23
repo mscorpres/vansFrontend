@@ -8,6 +8,7 @@ import styled from "styled-components";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
 import {
   fetchBillingAddress,
   fetchClientAddressDetail,
@@ -19,7 +20,6 @@ import {
 
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { Dispatch, SetStateAction } from "react";
-import { Button } from "@/components/ui/button";
 import {
   InputStyle,
   LableStyle,
@@ -47,6 +47,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import MuiInput2 from "@/components/ui/MuiInput2";
 import MuiSelect2 from "@/components/ui/MuiSelect2";
+import { Button } from "@mui/material";
 
 interface OptionType {
   value: string;
@@ -285,7 +286,7 @@ const AddClient: React.FC<Props> = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {loading1("1") && <FullPageLoading />}
-          <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-150px)] overflow-y-auto">
+          <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-50px)] overflow-y-auto">
             <div className="grid grid-cols-1 gap-[30px]">
               <Card className="rounded shadow bg-[#fff]">
                 <CardHeader className=" bg-[#e0f2f1]  flex justify-center px-[10px] ">
@@ -418,7 +419,7 @@ const AddClient: React.FC<Props> = ({
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
                                 placeholder="Country"
-                                className="border-0 basic-single"
+                                className="border-0 basic-single z-[10]"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}
                                 isClearable={true}
@@ -446,7 +447,7 @@ const AddClient: React.FC<Props> = ({
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
                                 placeholder="State"
-                                className="border-0 basic-single"
+                                className="border-0 basic-single z-[10]"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}
                                 isClearable={true}
@@ -609,9 +610,11 @@ const AddClient: React.FC<Props> = ({
           </div>
           <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300">
             <Button
+              variant="contained"
               // onClick={() => setTab("add")}
-              className={`${primartButtonStyle} flex gap-[10px]`}
+              className={`${primartButtonStyle} `}
               type="submit"
+              startIcon={<SaveAsIcon />}
             >
               Submit
               {/* <FaArrowRightLong className="" /> */}

@@ -8,6 +8,8 @@ import { AgGridReact } from "ag-grid-react";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { InputStyle, LableStyle } from "@/constants/themeContants";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
 import {
   Form,
   FormControl,
@@ -25,7 +27,9 @@ import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import {
   addVendorBranch,
   fetchAllListOfVendor,
@@ -57,6 +61,7 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { transformStateOptions } from "@/helper/transform";
 import { Button } from "@mui/material";
 import MuiInput2 from "@/components/ui/MuiInput2";
+import { Register } from "@/components/shared/Buttons";
 const FormSchema = z.object({
   wise: z.string().optional(),
   branch: z.string().optional(),
@@ -828,12 +833,14 @@ const VendorList = () => {
                         setSheetOpen(false);
                         e.preventDefault();
                       }}
+                      startIcon={<KeyboardBackspaceIcon />}
                     >
                       Back
                     </Button>
                     <Button
                       sx={{ marginLeft: "10px" }}
                       variant="contained"
+                      startIcon={<SaveAsIcon />}
                       type="submit"
                       className="bg-cyan-700 hover:bg-cyan-600"
                     >
@@ -1088,6 +1095,7 @@ const VendorList = () => {
                         setSheetOpenView(false);
                         e.preventDefault();
                       }}
+                      startIcon={<KeyboardBackspaceIcon />}
                     >
                       Back
                     </Button>
@@ -1097,6 +1105,7 @@ const VendorList = () => {
                       type="submit"
                       // onClick={() => updateViewBranch()}
                       className="bg-cyan-700 hover:bg-cyan-600"
+                      startIcon={<PublishedWithChangesIcon />}
                     >
                       Update
                     </Button>
@@ -1322,6 +1331,7 @@ const VendorList = () => {
                         setSheetOpenBranch(false);
                         e.preventDefault();
                       }}
+                      startIcon={<KeyboardBackspaceIcon />}
                     >
                       Back
                     </Button>
@@ -1330,6 +1340,7 @@ const VendorList = () => {
                       variant="contained"
                       type="submit"
                       className="bg-cyan-700 hover:bg-cyan-600"
+                      startIcon={<SaveAsIcon />}
                     >
                       Register
                     </Button>
@@ -1425,6 +1436,7 @@ const VendorList = () => {
                         setSheetOpenEdit(false);
                         e.preventDefault();
                       }}
+                      startIcon={<KeyboardBackspaceIcon />}
                     >
                       Back
                     </Button>
@@ -1433,6 +1445,7 @@ const VendorList = () => {
                       variant="contained"
                       type="submit"
                       className="bg-cyan-700 hover:bg-cyan-600"
+                      startIcon={<PublishedWithChangesIcon />}
                     >
                       Update
                     </Button>

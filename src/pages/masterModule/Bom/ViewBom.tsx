@@ -65,7 +65,7 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
           <SheetHeader className={modelFixHeaderStyle}>
             <SheetTitle className="text-slate-600">View BOM</SheetTitle>
           </SheetHeader>{" "}
-          <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+          <div className="ag-theme-quartz h-[calc(100vh-50px)] p-[10px]">
             {loading1("fetch") && <FullPageLoading />}
             <AgGridReact
               //   loadingCellRenderer={loadingCellRenderer}

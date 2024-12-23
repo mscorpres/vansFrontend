@@ -17,6 +17,7 @@ import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
+import { Search } from "@/components/shared/Buttons";
 
 const CreateBom = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -158,17 +159,12 @@ const CreateBom = () => {
             </Form.Item>
 
             <div className="flex items-center justify-end">
-              <Button
-                variant="contained"
-                type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              <Search
                 onClick={(e) => {
                   e.preventDefault();
                   fetchBOMList();
                 }}
-              >
-                Search
-              </Button>
+              />
             </div>
           </form>
         </Form>

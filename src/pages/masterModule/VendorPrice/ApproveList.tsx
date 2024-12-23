@@ -20,6 +20,8 @@ import { useSelector } from "react-redux";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { Search } from "@/components/shared/Buttons";
+import { Check } from "@mui/icons-material";
 
 const { RangePicker } = DatePicker;
 const ApproveList: React.FC = () => {
@@ -190,14 +192,7 @@ const ApproveList: React.FC = () => {
             </Space>
           </Form.Item>
           <div className="w-full flex justify-end">
-            <Button
-              type="submit"
-              variant="contained"
-              className="shadow  shadow-slate-500  flex justify-right items-right w-20"
-              onClick={fetchList}
-            >
-              Search
-            </Button>
+            <Search onClick={fetchList} />
           </div>
         </Form>
         <Divider />
@@ -205,9 +200,15 @@ const ApproveList: React.FC = () => {
       <div className="ag-theme-quartz h-[calc(100vh-150px)]  bg-white relative">
         <div className="flex items-center gap-[20px] justify-end bg-white my-[8px] mr-[10px]">
           <Button
+            sx={{
+              color: "white",
+              backgroundColor: "#217346",
+              ":hover": { backgroundColor: "#48a672" },
+            }}
             onClick={() => setShowConfirmation(true)}
             className="  flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md m-[10px] my-[10px]  "
             disabled={!selectedRows.length}
+            startIcon={<Check />}
           >
             Approve
           </Button>

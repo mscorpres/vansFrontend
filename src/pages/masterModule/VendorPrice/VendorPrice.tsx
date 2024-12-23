@@ -23,6 +23,8 @@ import { downloadCSVCustomColumns } from "@/components/shared/ExportToCSV";
 import { Filter } from "lucide-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
+import { Next, Reset } from "@/components/shared/Buttons";
+import { Check } from "@mui/icons-material";
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
@@ -114,8 +116,7 @@ const VendorPrice = () => {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
-      flex: 1,
-      width: 90,
+      maxWidth: 90,
     },
     {
       headerName: "Vendor Code",
@@ -155,7 +156,6 @@ const VendorPrice = () => {
           Filter
         </div>
         <div className="ag-theme-quartz h-[calc(100vh-150px)] w-full">
-          {loading1("fetch") && <FullPageLoading />}
           <FileUploader
             value={files}
             onValueChange={handleFileChange}
@@ -210,18 +210,12 @@ const VendorPrice = () => {
                 Sample File
               </Typography>
             </a>
-            <Button
-              variant="contained"
-              type="submit"
-              className="bg-cyan-700 hover:bg-cyan-600"
-              onClick={() => sendFileForParse()}
-            >
-              Next
-            </Button>
+
+            <Next onClick={() => sendFileForParse()} />
           </div>
         </div>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-150px)]">
+      <div className="ag-theme-quartz h-[calc(100vh-150px)] relative">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}
@@ -235,13 +229,9 @@ const VendorPrice = () => {
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+          <Reset onClick={() => setRowData([])} />
           <Button
-            className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
-            onClick={() => setRowData([])}
-          >
-            Reset
-          </Button>{" "}
-          <Button
+            startIcon={<Check />}
             variant="contained"
             className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px] "
             onClick={onsubmit}

@@ -9,7 +9,7 @@ import {
 import { InputStyle, modelFixHeaderStyle } from "@/constants/themeContants";
 import { Form, Input, Menu, Select } from "antd";
 
-import { Download, Filter, Plus, Trash2, Upload } from "lucide-react";
+import { Download, Filter, Plus, Trash2 } from "lucide-react";
 import { AgGridReact } from "ag-grid-react";
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import "ag-grid-enterprise";
@@ -50,7 +50,8 @@ import { IoCloudUpload } from "react-icons/io5";
 import { spigenAxios } from "@/axiosIntercepter";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { ColDef, StatusPanelDef } from "@ag-grid-community/core";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
+import { Add, Back, Next, Reset, Upload } from "@/components/shared/Buttons";
 const EditBom = () => {
   const [form] = Form.useForm();
   const gridRef = useRef<AgGridReact<RowData>>(null);
@@ -565,7 +566,7 @@ const EditBom = () => {
     formData.append("subject", sheetOpenEdit);
     formData.append("sku", form.getFieldValue("sku"));
     formData.append("doc_name", captions);
-    files.map((comp) => {
+    files?.map((comp) => {
       formData.append("files", comp);
     });
     const response = await spigenAxios.post("/bom/uploadDocs", formData);
@@ -680,14 +681,18 @@ const EditBom = () => {
                 </Button>
               )}
 
-              <Button
+              {/* <Button
                 sx={{ backgroundColor: "#2fa062", color: "#fff" }}
                 onClick={() => setSheetOpen(true)}
                 className="bg-[#217346] text-white hover:bg-[#48a672] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
-              >
-                <Upload className="text-white w-[20px] h-[20px]" /> Upload Docs
+              > */}
+              {/* <Upload className="text-white w-[20px] h-[20px]" /> Upload Docs
                 Here
-              </Button>
+              </Button> */}
+              <Upload
+                text={"Upload Docs Here"}
+                onClick={() => setSheetOpen(true)}
+              />
             </div>
             <div className="ag-theme-quartz h-[calc(100vh-160px)] w-full">
               {loading && <FullPageLoading />}
@@ -728,14 +733,15 @@ const EditBom = () => {
                   {stage1 === "1" ? "Next" : "Submit"}
                 </Button> */}
                 {stage1 === "1" && (
-                  <Button
-                    variant="contained"
-                    startIcon={<NavigateNextIcon />}
-                    className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
-                    onClick={handleNext}
-                  >
-                    Next
-                  </Button>
+                  <Next onClick={handleNext} />
+                  // <Button
+                  //   variant="contained"
+                  //   startIcon={<NavigateNextIcon />}
+                  //   className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
+                  //   onClick={handleNext}
+                  // >
+                  //   Next
+                  // </Button>
                 )}
               </div>
             </div>
@@ -770,17 +776,16 @@ const EditBom = () => {
                       // onChange={(e: any) => form.setFieldValue("wise", e)}
                     />
                   </Form.Item>
-
-                  <Button
-                    type="submit"
-                    className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      addNewAlternateComponent();
-                    }}
-                  >
-                    Add Component
-                  </Button>
+                  <div className="flex justify-end gap-[10px]">
+                    <Add
+                      variant="outlined"
+                      text={"Add Component"}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        addNewAlternateComponent();
+                      }}
+                    />{" "}
+                  </div>
                 </form>
               </Form>
             </div>
@@ -799,18 +804,8 @@ const EditBom = () => {
             </div>
           </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Button
-              className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={handleReset}
-            >
-              Reset
-            </Button>
-            <Button
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={handleToBackEdit}
-            >
-              Back To Edit
-            </Button>
+            <Back text={" Back To Edit"} onClick={handleToBackEdit} />
+            <Reset onClick={handleReset} />
           </div>
         </>
       )}
@@ -871,10 +866,19 @@ const EditBom = () => {
             </FileUploader>{" "}
             <div className="w-full flex justify-center">
               <div className="w-[80%] flex justify-center">
-                <Input
+                <TextField
+                  //   id="filled-basic"
+                  //   color="grey"
+                  //   sx={{ height: "30px" }}
+                  variant="outlined"
+                  label="Image Captions"
                   placeholder="Enter Image Captions"
-                  className={InputStyle}
-                  onChange={(e) => setCaptions(e.target.value)}
+                  fullWidth={true}
+                  // label={label}
+                  value={captions}
+                  onChange={(e) => setCaptions(e.target.value)} //   error={form}
+                  //   helperText={"geee"}
+                  //   onChange={()=>{form.setFieldsValue({})}}
                 />
               </div>
             </div>{" "}
@@ -893,20 +897,22 @@ const EditBom = () => {
             </div>
           </div>{" "}
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Button
+            {/* <Button
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setSheetOpen(false)}
             >
               Back
-            </Button>{" "}
-            <Button
+            </Button>{" "} */}
+            {/* <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={uploadDocs}
               // loading={laoding}
             >
               {/* {isApprove ? "Approve" : "Submit"} */}
-              Upload
-            </Button>
+            {/* Upload
+            </Button> */}
+            <Back onClick={() => setSheetOpen(false)} />
+            <Upload onClick={uploadDocs} />
           </div>{" "}
         </SheetContent>
       </Sheet>{" "}

@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
@@ -10,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { useToast } from "@/components/ui/use-toast";
 import { AppDispatch } from "@/store";
 import styled from "styled-components";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
 import { AgGridReact } from "ag-grid-react";
 import {
   addbranchToClient,
@@ -42,6 +40,8 @@ import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import CustomTooltip from "@/components/shared/CustomTooltip";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import MuiInput from "@/components/ui/MuiInput";
+import { Button } from "@mui/material";
+import { Back } from "@/components/shared/Buttons";
 const MasterCustomerPage: React.FC = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [addBranch, setAddBranch] = useState(false);
@@ -938,22 +938,21 @@ const MasterCustomerPage: React.FC = () => {
                 </Form>
               </div>
               <div className={modelFixFooterStyle}>
-                <Button
-                  variant={"outline"}
-                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                <Back
                   onClick={(e: any) => {
                     setAddBranch(false);
                     e.preventDefault();
                   }}
-                >
-                  Back
-                </Button>
+                />
                 <Button
+                  startIcon={<SaveAsIcon />}
+                  sx={{ ml: 1 }}
                   type="submit"
+                  variant="contained"
                   className="bg-cyan-700 hover:bg-cyan-600"
                   onClick={() => createNewBranch()}
                 >
-                  Create
+                  Register
                 </Button>
               </div>
             </div>
