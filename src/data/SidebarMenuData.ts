@@ -158,7 +158,7 @@ export const materialmenu = [
         ],
       },
       {
-        name: "Vender / Suppliar",
+        name: "Vender / Supplier",
         subMenu: [{ name: "Add / Rectify", path: "/master/vendor" }],
       },
       {
