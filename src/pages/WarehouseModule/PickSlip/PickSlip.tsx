@@ -129,6 +129,7 @@ const PickSlip = () => {
       value: "no",
     },
   ];
+  // Handle cell value changes
 
   const getTheListHSN = async (value) => {
     const response = await execFun(() => fetchHSN(value), "fetch");
@@ -169,6 +170,7 @@ const PickSlip = () => {
           selectedRows={selectedRows}
           finalrows={finalrows.length}
           boxName={boxName}
+          onCellValueChanged={onCellValueChanged}
           openDrawer={openDrawer}
           totalQty={selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
           selectedBox={selectedRows.map((item) => item?.box_name).join(",")}
@@ -232,7 +234,6 @@ const PickSlip = () => {
       boxqty: rowData.map((r) => r.boxqty),
     };
     dispatch(stockOut(payload)).then((res: any) => {
-
       if (res.payload.data.success) {
         toast({
           title: res.payload.data.message,
@@ -347,7 +348,7 @@ const PickSlip = () => {
     },
 
     {
-      headerName: "Avail QTY",
+      headerName: "Avail Qty",
       field: "qty",
       editable: false,
       flex: 1,
