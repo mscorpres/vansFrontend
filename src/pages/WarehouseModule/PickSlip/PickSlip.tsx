@@ -468,7 +468,6 @@ const PickSlip = () => {
     }
   }, [sheetOpen]);
 
-
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
       <div className="bg-[#fff]">
@@ -627,7 +626,7 @@ const PickSlip = () => {
             />
           </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Typography.Text>
+            <Typography.Text className="font-[700]">
               Total:
               {sheetOpen
                 ? selectedRows.reduce((a, b) => a + Number(b?.qty), 0)
