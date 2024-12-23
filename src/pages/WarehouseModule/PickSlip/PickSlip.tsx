@@ -106,7 +106,6 @@ const PickSlip = () => {
   const isValue = Form.useWatch("partName", form);
   const selectedCC = Form.useWatch("costCenter", form);
   const selectedCustomer = Form.useWatch("customerName", form);
-  console.log("isValue", isValue);
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const typeOption = [
@@ -341,7 +340,7 @@ const PickSlip = () => {
     {
       headerName: "Select BOX(es)",
       field: "box_name",
-      editable: false,
+      editable: true,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -350,12 +349,30 @@ const PickSlip = () => {
     {
       headerName: "Avail Qty",
       field: "qty",
-      editable: false,
+      editable: true,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
   ];
+
+  const handleCellValueChange = (params: any) => {
+    // api.refreshCells({
+    //   rowNodes: [props.node],
+    //   columns: [column, "qty"],
+    // });
+
+    const { oldValue, newValue, colDef, data } = params;
+
+    if (oldValue !== newValue) {
+      // console.log(
+      //   `${colDef.headerName} changed from ${oldValue} to ${newValue}`
+      // );
+      // Handle additional logic if needed, e.g., API calls, updating local state, etc.
+      // Here, we log the change.
+    }
+  };
+
   const handleReset = () => {
     form.resetFields();
     setRowData([]);
@@ -621,6 +638,11 @@ const PickSlip = () => {
               gridOptions={commonAgGridConfig}
               //   suppressCellFocus={false}
               suppressRowClickSelection={false}
+              // onCellEditingStarted={(params) =>
+              // console.log("Cell editing started", params)
+              // }
+              onCellEditingStopped={handleCellValueChange}
+              onCellValueChanged={handleCellValueChange} // Your existing change handler
               rowSelection="multiple"
               // checkboxSelection={true}
               onSelectionChanged={onSelectionChanged}
