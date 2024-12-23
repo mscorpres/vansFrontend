@@ -281,7 +281,7 @@ export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
     try {
       if (payload?.component?.length > 3) {
         const response = await spigenAxios.get(
-          `backend/fetchAvailableStockBoxes?component=${payload?.component}&costCenterKey=${payload.c_center}`
+          `backend/fetchAvailableStockBoxes?component=${payload?.component}&costcenter=${payload.c_center}`
         );
 
         return response?.data;
