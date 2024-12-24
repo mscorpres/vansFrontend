@@ -139,29 +139,29 @@ const R4 = () => {
       filter: "agTextColumnFilter",
       width: 150,
     },
-    {
-      headerName: "Refresh Stock",
-      field: "Refresh",
-      filter: "agTextColumnFilter",
-      width: 150,
-      cellRenderer: (params) => {
-        // Assume you have a unique row id like params.data.id or params.rowIndex
-        const uniqueId = params.data.id || params.rowIndex;
+    // {
+    //   headerName: "Refresh Stock",
+    //   field: "Refresh",
+    //   filter: "agTextColumnFilter",
+    //   width: 150,
+    //   cellRenderer: (params) => {
+    //     // Assume you have a unique row id like params.data.id or params.rowIndex
+    //     const uniqueId = params.data.id || params.rowIndex;
 
-        return (
-          <div>
-            <IoIosRefresh
-              color="#3b82f6"
-              onClick={() => handleClick(uniqueId, params)}
-              className={`transition-transform duration-100 ${
-                isAnimating === uniqueId ? "rotate-180" : ""
-              }`}
-              style={{ cursor: "pointer" }}
-            />{" "}
-          </div>
-        );
-      },
-    },
+    //     return (
+    //       <div>
+    //         <IoIosRefresh
+    //           color="#3b82f6"
+    //           onClick={() => handleClick(uniqueId, params)}
+    //           className={`transition-transform duration-100 ${
+    //             isAnimating === uniqueId ? "rotate-180" : ""
+    //           }`}
+    //           style={{ cursor: "pointer" }}
+    //         />{" "}
+    //       </div>
+    //     );
+    //   },
+    // },
 
     {
       headerName: "Navs Stock",
@@ -255,6 +255,9 @@ const R4 = () => {
               }}
             >
               Search
+            </Button>
+            <Button className=" bg-white text-black hover:bg-slate-200">
+              <IoIosRefresh />
             </Button>
 
             {/* <div>
