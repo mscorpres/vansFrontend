@@ -196,7 +196,7 @@ export const createFgOut = createAsyncThunk<any>(
         payload
       );
 
-      return response.data;
+      return response;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(error.message);

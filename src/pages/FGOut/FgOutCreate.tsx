@@ -63,6 +63,7 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import MuiInput from "@/components/ui/MuiInput";
 import { Button } from "@mui/material";
 import { Refresh, Send } from "@mui/icons-material";
+import { Reset } from "@/components/shared/Buttons";
 const dateFormat = "YYYY/MM/DD";
 const FormSchema = z.object({
   wise: z.string().optional(),
@@ -350,16 +351,7 @@ const FgOutCreate = () => {
           description={`Are you sure to submit details of this entry?`}
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-          <Button
-            startIcon={<Refresh />}
-            className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
-            onClick={reset}
-            // onClick={() =>
-            // isApprove ? setShowRejectConfirm(true) : setRowData([])
-            // }
-          >
-            Reset
-          </Button>
+          <Reset onClick={reset} />
           <Button
             startIcon={<Send />}
             variant="contained"
