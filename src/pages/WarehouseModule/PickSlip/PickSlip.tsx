@@ -281,14 +281,13 @@ const PickSlip = () => {
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
+      minWidth: 450,
     },
 
     {
       headerName: "Out Qty",
       field: "outQty",
       editable: false,
-      flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
