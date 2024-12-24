@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import { DatePicker, Form } from "antd";
 import useApi from "@/hooks/useApi";
-import { fetchCloseStock, fetchR4 } from "@/components/shared/Api/masterApi";
+import {
+  fetchCloseStock,
+  fetchR4,
+  fetchR4refreshed,
+} from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -71,6 +75,28 @@ const R4 = () => {
           className: "bg-red-700 text-white",
         });
       }
+    }
+  };
+  const getRefreshed = async () => {
+    const response = await execFun(() => fetchR4refreshed(), "fetch");
+    console.log("response", response);
+    let { data } = response;
+    if (data.success) {
+      let arr = data.data.map((r, index) => {
+        return {
+          id: index + 1,
+          ...r,
+        };
+      });
+
+      setRowData(arr);
+      setShowList(false);
+      fetchQueryResults();
+    } else {
+      toast({
+        title: response?.data.message,
+        className: "bg-red-700 text-white",
+      });
     }
   };
   const searchData = (query: string) =>
@@ -139,29 +165,29 @@ const R4 = () => {
       filter: "agTextColumnFilter",
       width: 150,
     },
-    {
-      headerName: "Refresh Stock",
-      field: "Refresh",
-      filter: "agTextColumnFilter",
-      width: 150,
-      cellRenderer: (params) => {
-        // Assume you have a unique row id like params.data.id or params.rowIndex
-        const uniqueId = params.data.id || params.rowIndex;
+    // {
+    //   headerName: "Refresh Stock",
+    //   field: "Refresh",
+    //   filter: "agTextColumnFilter",
+    //   width: 150,
+    //   cellRenderer: (params) => {
+    //     // Assume you have a unique row id like params.data.id or params.rowIndex
+    //     const uniqueId = params.data.id || params.rowIndex;
 
-        return (
-          <div>
-            <IoIosRefresh
-              color="#3b82f6"
-              onClick={() => handleClick(uniqueId, params)}
-              className={`transition-transform duration-100 ${
-                isAnimating === uniqueId ? "rotate-180" : ""
-              }`}
-              style={{ cursor: "pointer" }}
-            />{" "}
-          </div>
-        );
-      },
-    },
+    //     return (
+    //       <div>
+    //         <IoIosRefresh
+    //           color="#3b82f6"
+    //           onClick={() => handleClick(uniqueId, params)}
+    //           className={`transition-transform duration-100 ${
+    //             isAnimating === uniqueId ? "rotate-180" : ""
+    //           }`}
+    //           style={{ cursor: "pointer" }}
+    //         />{" "}
+    //       </div>
+    //     );
+    //   },
+    // },
 
     {
       headerName: "Navs Stock",
@@ -255,6 +281,12 @@ const R4 = () => {
               }}
             >
               Search
+            </Button>
+            <Button
+              className=" bg-white text-black hover:bg-slate-200"
+              onClick={getRefreshed}
+            >
+              <IoIosRefresh />
             </Button>
 
             {/* <div>
