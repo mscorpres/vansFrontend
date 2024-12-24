@@ -79,6 +79,7 @@ const AddSalesOrder = ({
       material: "",
       materialDescription: "",
       // asinNumber: "B01N1SE4EP",
+      partno: "",
       orderQty: 1,
       // rate: 0,
       currency: "364907247",

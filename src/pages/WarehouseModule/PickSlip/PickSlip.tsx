@@ -170,6 +170,7 @@ const PickSlip = () => {
           selectedRows={selectedRows}
           finalrows={finalrows.length}
           boxName={boxName}
+          onCellValueChanged={onCellValueChanged}
           openDrawer={openDrawer}
           totalQty={selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
           selectedBox={selectedRows.map((item) => item?.box_name).join(",")}
@@ -226,7 +227,7 @@ const PickSlip = () => {
     const values = await form.validateFields();
     let payload = {
       customer: values.customerName?.value,
-      component: rowData.map((r) => r.pickmaterial),
+      component: rowData.map((r) => r.pickmaterial.value),
       qty: rowData.map((r) => r.outQty),
       box: rowData.map((r) => r.selectOutBoxes),
       remark: rowData.map((r) => r.remark),
@@ -234,12 +235,15 @@ const PickSlip = () => {
       boxqty: rowData.map((r) => r.boxqty),
     };
     dispatch(stockOut(payload)).then((res: any) => {
-      if (res.payload.success) {
+      if (res.payload.data.success) {
         toast({
           title: res.payload.message,
           className: "bg-green-600 text-white items-center",
         });
         form.resetFields();
+        setRowData([]);
+        setRowDataBoxes([]);
+        setSelectedRows([]);
         setShowConfirmation(false);
       } else {
         toast({
@@ -279,7 +283,7 @@ const PickSlip = () => {
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
+      minWidth: 450,
     },
 
     {
@@ -306,7 +310,7 @@ const PickSlip = () => {
           <div
             className="p-2 border border-gray-300 rounded-md w-[300px] cursor-pointer break-words"
             // style={{ minHeight: "auto" }}
-            onClick={() => openDrawer(params)}
+            onClick={() => openDrawer(params.data.pickmaterial.value)}
           >
             {params.value ? params.value : "Select Out Box(es)"}
           </div>
@@ -340,21 +344,37 @@ const PickSlip = () => {
     {
       headerName: "Select BOX(es)",
       field: "box_name",
-      editable: false,
+      editable: true,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
 
     {
-      headerName: "Avail QTY",
+      headerName: "Avail Qty",
       field: "qty",
-      editable: false,
+      editable: true,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
   ];
+  const handleCellValueChange = (params: any) => {
+    // api.refreshCells({
+    //   rowNodes: [props.node],
+    //   columns: [column, "qty"],
+    // });
+
+    const { oldValue, newValue, colDef, data } = params;
+
+    if (oldValue !== newValue) {
+      // console.log(
+      //   `${colDef.headerName} changed from ${oldValue} to ${newValue}`
+      // );
+      // Handle additional logic if needed, e.g., API calls, updating local state, etc.
+      // Here, we log the change.
+    }
+  };
   const handleReset = () => {
     form.resetFields();
     setRowData([]);
@@ -368,6 +388,13 @@ const PickSlip = () => {
   const onSelectionChanged = (event) => {
     const selectedNodes = event.api.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
+    // Add the additional parameter to each selectedData item
+    const modifiedSelectedData = selectedData.map((item) => ({
+      ...item, // Keep existing properties
+      pickmaterialVal: sheetOpen, // Add the new parameter
+    }));
+
+    // Set the modified selected rows
     setSelectedRows(selectedData);
   };
   useEffect(() => {
@@ -375,6 +402,7 @@ const PickSlip = () => {
     setTotalQty(sum);
   }, [selectedRows]);
   const closeDrawer = () => {
+    setTotalQty(0);
     setSheetOpen(false);
     setFinalRows(selectedRows);
     let boxName = selectedRows.map((item) => item?.box_name);
@@ -383,22 +411,58 @@ const PickSlip = () => {
     setSelectedBox(boxName.join(","));
     // onSelectionChanged();
     setRowData((prevData) =>
-      prevData.map((item) =>
-        item.pickmaterial === compKey.component
-          ? {
-              ...item,
-              selectOutBoxes: boxName.join(","),
-              boxqty: boxQty.join(","),
-            }
-          : item
-      )
+      prevData.map((item) => {
+        const pickMaterialValue = item.pickmaterial?.value; // Value of the current row's pickmaterial
+        const compValue = compKey.component; // Value we're comparing against
+
+        // If the pickmaterial matches the component, update the row with the correct box name and quantity
+        if (pickMaterialValue === compValue) {
+          console.log("here in update", selectedRows);
+          let boxNames = selectedRows.map((item) => item?.box_name);
+          let boxQtys = selectedRows.map((item) => item?.qty);
+
+          setSelectedBox(boxNames.join(","));
+          // Find the matching box name and quantity for the current pickmaterialValue
+
+          // Return the updated row with the correct box data
+          return {
+            ...item,
+            selectOutBoxes: boxNames.join(","), // Updated box name (no duplicates)
+            boxqty: boxQtys.join(","), // Updated box quantity (no duplicates)
+          };
+        }
+
+        // If no match, return the row unchanged
+        return item;
+      })
     );
   };
 
   console.log("rowData", rowData);
   const openDrawer = (params) => {
     // dispatch(fetchAvailableStockBoxes({ search: params.data.pickmaterial }));
-    setSheetOpen(true);
+    setSheetOpen(params);
+    let payload = {
+      c_center: form.getFieldValue("costCenter").value,
+      component: params,
+    };
+    dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
+      setCompKey(payload);
+      // if (res?.payload.code == 500) {
+      //   toast({
+      //     title: "Out Boxes not available!",
+      //     // title: res.payload.message.msg,
+      //     className: "bg-red-700 text-white text-center",
+      //   });
+      // }
+
+      if (res.payload?.success == false) {
+        toast({
+          title: res.payload?.message,
+          className: "bg-red-700 text-white text-center",
+        });
+      }
+    });
     // setFinalRows(selectedRows);
   };
   const onCellValueChanged = (event: any) => {
@@ -415,11 +479,19 @@ const PickSlip = () => {
 
     setSelectedRows(updatedRows); // Update the selectedRows state with the new value
   };
-
+  useEffect(() => {
+    if (rowData) {
+      setRowData(rowData);
+    }
+  }, [rowData]);
+  useEffect(() => {
+    if (sheetOpen) {
+      setTotalQty(0);
+    }
+  }, [sheetOpen]);
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white">
       <div className="bg-[#fff]">
-       
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -551,7 +623,7 @@ const PickSlip = () => {
 "
       />
       <Sheet
-        open={sheetOpen == true && availableStockBoxes?.data?.length > 0}
+        open={sheetOpen && availableStockBoxes?.data?.length > 0}
         onOpenChange={setSheetOpen}
       >
         <SheetContent
@@ -565,7 +637,8 @@ const PickSlip = () => {
               Storable Box(es) List
             </SheetTitle>
           </SheetHeader>{" "}
-          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full relative">
+            {loading && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowDataBoxes}
@@ -582,11 +655,16 @@ const PickSlip = () => {
               rowSelection="multiple"
               // checkboxSelection={true}
               onSelectionChanged={onSelectionChanged}
+              onCellEditingStopped={handleCellValueChange}
+              onCellValueChanged={handleCellValueChange} // Your existing change handler
             />
           </div>{" "}
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Typography.Text>
-              Total:{selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
+            <Typography.Text className="font-[700]">
+              Total:
+              {sheetOpen
+                ? selectedRows.reduce((a, b) => a + Number(b?.qty), 0)
+                : 0}
             </Typography.Text>
             <Button
               variant="contained"

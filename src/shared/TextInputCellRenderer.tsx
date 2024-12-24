@@ -312,7 +312,6 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "hsnSearch") {
-      console.log("hsnSearch", data);
 
       data["hsnSearch"] = data.hsnSearch;
 

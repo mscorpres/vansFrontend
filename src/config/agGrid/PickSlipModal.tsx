@@ -99,14 +99,18 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     },
     {
       headerName: "OUT BOX(es)",
-      field: "selectOutBoxes",
-      cellRenderer: (params) => {
+      field: "outBoxQty",
+      cellRenderer: (params: any) => {
+        const rowId = params.data?.item;
+        const selectedForRow = selectedBoxes[rowId];
         return (
           <div
-            className="p-2 border border-gray-300 rounded-md w-[200px] cursor-pointer word-break-all"
-            onClick={() => console.log("Clicked:", params)}
+            className="p-2 border border-gray-300 rounded-md"
+            onClick={() => handleBoxesClick(params)}
           >
-            {params.value ? params.value : "Select Out Box(es)"}
+            {selectedForRow && selectedForRow?.boxes?.length > 0
+              ? selectedForRow.boxes.join(", ")
+              : "Select Out Box(es)"}
           </div>
         );
       },
@@ -169,7 +173,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     };
 
     dispatch(stockOut(payload) as any).then((res: any) => {
-      if (res.payload.code === 200) {
+      if (res.payload.code === 200 || res.payload.success) {
         toast({
           title: res.payload.message || "Material Out Successfully",
           className: "bg-green-600 text-white items-center",
@@ -185,8 +189,10 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     const newBoxes = selectData.map((item: any) => item.box_name);
     const newQtys = selectData.map((item: any) => item.stock);
     // Update the state
-    setBox((prevBox) => [...prevBox, newBoxes.join(",")]);
-    setQty((prevQty) => [...prevQty, newQtys.join(",")]);
+    setBox((prevBox) => [newBoxes.join(",")]);
+    setQty((prevQty) => [newQtys.join(",")]);
+    // setBox((prevBox) => [...prevBox, newBoxes.join(",")]);
+    // setQty((prevQty) => [...prevQty, newQtys.join(",")]);
     setSheetOpen(false);
   };
   const getRowHeight = (params) => {
