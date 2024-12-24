@@ -99,8 +99,15 @@ const R6 = () => {
       width: 90,
     },
     {
-      headerName: "Part",
+      headerName: "Part Code",
       field: "PART",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 190,
+    },
+    {
+      headerName: "Part Name",
+      field: "NAME",
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
       width: 190,

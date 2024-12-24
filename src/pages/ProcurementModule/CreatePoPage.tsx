@@ -219,6 +219,7 @@ const CreatePoPage: React.FC<Props> = ({
       forms.resetFields();
 
       setSheetOpenBranch(false);
+      dispatch(listOfVendorBranchList({ vendorcode: selectedVendor?.value }));
     } else {
       toast({
         title: response.data.message.msg,
@@ -825,7 +826,6 @@ const CreatePoPage: React.FC<Props> = ({
           </div>
         </div>
         <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300 text-white">
-         
           <Next onClick={getValues} />
         </div>
       </Form>

@@ -1725,7 +1725,7 @@ export default function CreateEwayBill() {
             <div className="h-[50px] flex items-center justify-center gap-[20px] px-[20px] pt-10">
               <Button
                 className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px] w-[148px] h-[50px] font-[600]"
-                disabled={Object.keys(form.formState.errors).length > 0}
+                // disabled={Object.keys(form.formState.errors).length > 0}
                 onClick={handleSubmit}
               >
                 Submit

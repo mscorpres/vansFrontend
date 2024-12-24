@@ -75,10 +75,10 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const confirmApprove = () => {
     dispatch(approveSo({ so_id: row?.so_id })).then((response: any) => {
-      if (response?.payload?.code == 200) {
+      if (response?.payload?.success) {
         toast({
           className: "bg-green-600 text-white items-center",
-          description:
+          title:
             response.payload.message || "Sales Order Approved successfully",
         });
         dispatch(
@@ -126,8 +126,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         };
         dispatch(cancelSalesOrder(payload)).then((response: any) => {
           console.log(response);
-          if (response?.payload?.code == 200) {
+          if (response?.payload?.success) {
             form.resetFields(); // Clear the form fields after submission
+            toast({
+              className: "bg-green-600 text-white items-center",
+              title: response.payload.message,
+            });
             dispatch(
               fetchSellRequestList({
                 type: "date_wise",
@@ -154,9 +158,16 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const onCreateShipment = (payload: any) => {
     dispatch(createShipment(payload)).then((response: any) => {
       console.log(response);
-      if (response?.payload?.code == 200) {
+      if (response?.payload?.success) {
+        toast({
+          className: "bg-green-600 text-white items-center",
+          title: response.payload.message,
+        });
         setIsMaterialListModalVisible(false);
         handleMaterialListModalClose();
+        dispatch(
+          fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
+        );
       }
     });
   };
@@ -172,7 +183,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         remark: values.remark,
       };
       dispatch(shortClose(payload)).then((response: any) => {
-        if (response?.payload?.code == 200) {
+        if (response?.payload?.success) {
+          toast({
+            className: "bg-green-600 text-white items-center",
+            title: response.payload.message,
+          });
           setShowHandleCloseModal(false);
           dispatch(
             fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
@@ -221,7 +236,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         key="materialList"
         onClick={() => handleshowMaterialList(row)}
         disabled={
-          row?.approveStatus === "Pending" || row?.soStatus === "Closed" ||row?.approveStatus === "Rejected"
+          row?.approveStatus === "Pending" ||
+          row?.soStatus === "Closed" ||
+          row?.approveStatus === "Rejected"
         }
       >
         Create Shipment
@@ -363,7 +380,7 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Reject Reason",
     field: "reject_reason",
     filter: "agTextColumnFilter",
-    cellRenderer:TruncateCellRenderer,
+    cellRenderer: TruncateCellRenderer,
   },
 ];
 

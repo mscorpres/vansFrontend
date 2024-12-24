@@ -24,8 +24,14 @@ export interface RowData {
 
 
 export const columnDefs = [
-  { headerName: "", valueGetter: "node.rowIndex + 1",cellRenderer: "textInputCellRenderer",maxWidth: 100,field:"delete" },
- 
+  {
+    headerName: "",
+    valueGetter: "node.rowIndex + 1",
+    cellRenderer: "textInputCellRenderer",
+    maxWidth: 100,
+    field: "delete",
+  },
+
   {
     headerName: "Component / Part",
     field: "material",
@@ -35,7 +41,7 @@ export const columnDefs = [
     minWidth: 500,
   },
   {
-    headerName: "Customer PART Name",
+    headerName: "Customer Part Name",
     field: "partno",
     editable: false,
     flex: 1,
@@ -50,14 +56,14 @@ export const columnDefs = [
     cellRenderer: "textInputCellRenderer",
     minWidth: 200,
   },
-  {
-    headerName: "Current Stock",
-    field: "stock",
-    editable: false,
-    flex: 1,
-    cellRenderer: "textInputCellRenderer",
-    minWidth: 200,
-  },
+  // {
+  //   headerName: "Current Stock",
+  //   field: "stock",
+  //   editable: false,
+  //   flex: 1,
+  //   cellRenderer: "textInputCellRenderer",
+  //   minWidth: 200,
+  // },
   {
     headerName: "Rate",
     field: "rate",
@@ -122,7 +128,7 @@ export const columnDefs = [
     cellRenderer: "textInputCellRenderer",
     minWidth: 200,
   },
- 
+
   {
     headerName: "HSN Code",
     field: "hsnCode",
@@ -147,6 +153,7 @@ export const dummyData: RowData[] = [
     material: "Steel",
     asinNumber: "B01N1SE4EP",
     orderQty: 100,
+    partno: "",
     rate: 50,
     currency: "USD",
     gstRate: 18,
@@ -167,6 +174,7 @@ export const dummyData: RowData[] = [
     rate: 20,
     currency: "EUR",
     gstRate: 18,
+    partno: "",
     gstType: "inter state",
     localValue: 4000,
     foreignValue: 4000,
@@ -184,6 +192,7 @@ export const dummyData: RowData[] = [
     rate: 30,
     currency: "INR",
     gstRate: 18,
+    partno: "",
     gstType: "local",
     localValue: 4500,
     foreignValue: 4500,

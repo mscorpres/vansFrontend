@@ -215,7 +215,7 @@ export const fetchTransactionForApproval = createAsyncThunk<any>(
         // payload
       );
 
-      return response.data;
+      return response;
     } catch (error) {
       return error;
     }
@@ -281,7 +281,7 @@ export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
     try {
       if (payload?.component?.length > 3) {
         const response = await spigenAxios.get(
-          `backend/fetchAvailableStockBoxes?component=${payload?.component}`
+          `backend/fetchAvailableStockBoxes?component=${payload?.component}&costcenter=${payload.c_center}`
         );
 
         return response?.data;
@@ -1096,6 +1096,7 @@ const storeSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       })
+
       .addCase(createFgOut.pending, (state) => {
         state.loading = true;
         state.error = null;

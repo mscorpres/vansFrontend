@@ -5,7 +5,7 @@ import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import styled from "styled-components";
-import { DatePicker } from "antd";
+import { DatePicker, Form } from "antd";
 import useApi from "@/hooks/useApi";
 import { fetchCloseStock, fetchR4 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
@@ -15,6 +15,9 @@ import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { IoIosRefresh } from "react-icons/io";
+import { Input } from "@/components/ui/input";
+import { Filter } from "lucide-react";
+import { InputStyle } from "@/constants/themeContants";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -28,9 +31,9 @@ const FormSchema = z.object({
 
 const R4 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
+  const [showList, setShowList] = useState(false);
+  const [form] = Form.useForm();
+
   const { execFun, loading: loading1 } = useApi();
   const [isAnimating, setIsAnimating] = useState(false);
   //   const { addToast } = useToastContainer()
@@ -39,25 +42,42 @@ const R4 = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    const response = await execFun(() => fetchR4(), "fetch");
-    setRowData([]);
-    let { data } = response;
-    if (data.success) {
-      let arr = data.data.map((r, index) => {
-        return {
-          id: index + 1,
-          ...r,
-        };
-      });
-
-      setRowData(arr);
+    const value = await form.validateFields();
+    if (value.search && rowData) {
+      setShowList(true);
+      let a = rowData.filter((item) =>
+        Object.values(item)
+          .join(" ")
+          .toLowerCase()
+          .includes(value?.search?.toLowerCase())
+      );
+      setRowData(a);
     } else {
-      toast({
-        title: response?.data.message,
-        className: "bg-red-700 text-white",
-      });
+      const response = await execFun(() => fetchR4(), "fetch");
+      setRowData([]);
+      let { data } = response;
+      if (data.success) {
+        let arr = data.data.map((r, index) => {
+          return {
+            id: index + 1,
+            ...r,
+          };
+        });
+
+        setRowData(arr);
+        setShowList(false);
+      } else {
+        toast({
+          title: response?.data.message,
+          className: "bg-red-700 text-white",
+        });
+      }
     }
   };
+  const searchData = (query: string) =>
+    rowData.filter((item) =>
+      Object.values(item).join(" ").toLowerCase().includes(query.toLowerCase())
+    );
   const handleClick = async (id, params) => {
     setIsAnimating(id);
 
@@ -158,6 +178,12 @@ const R4 = () => {
       width: 150,
     },
     {
+      headerName: "Silicon Stock",
+      field: "siliconStock",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
       headerName: "Stock Time",
       field: "closing_stock_time",
       filter: "agTextColumnFilter",
@@ -205,22 +231,43 @@ const R4 = () => {
   }, []);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-1">
-      <div className="flex gap-[10px] justify-end  px-[5px] bg-white h-[50px]">
-        <Button
-          // type="submit"
-          className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey mt-[8px]"
-          // onClick={() => {}}
-          disabled={rowData.length === 0}
-          onClick={(e: any) => {
-            e.preventDefault();
-            handleDownloadExcel();
-          }}
-        >
-          <IoMdDownload size={20} />
-        </Button>
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+      <div className="bg-[#fff] ">
+        {" "}
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <Filter className="h-[20px] w-[20px]" />
+          Filter
+        </div>
+        <div className="p-[10px] justify-center">
+          <Form form={form} layout="vertical">
+            <Form.Item name="search" label="Search">
+              <Input
+                className={InputStyle}
+                placeholder="Enter Search"
+                // {...field}
+              />
+            </Form.Item>
+          </Form>
+          <div className="flex gap-[10px] w-full justify-space-between">
+            <Button
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={() => {
+                fetchQueryResults();
+              }}
+            >
+              Search
+            </Button>
+
+            {/* <div>
+              {showList && (
+                <a className="cursor-pointer p-[40px] mt-[50px]">Show List</a>
+              )}
+            </div> */}
+          </div>
+        </div>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-150px)] relative">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
         {" "}
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact

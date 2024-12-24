@@ -98,9 +98,7 @@ const FormSchema = z.object({
     }),
   country: z
     .union([z.string(), z.number()])
-    .refine((data) => data !== undefined && data !== "", {
-      message: "Country is required.",
-    })
+    .optional()
     .transform((val) => String(val)),
   state: z.string().refine((data) => data !== undefined && data.length > 0, {
     message: "State is required.",
@@ -236,7 +234,7 @@ const AddClient: React.FC<Props> = ({
       salesperson: data.salesPerson,
       panno: data.pan,
       address: data.address,
-      country: data.country,
+      country: data?.country,
       state: data.state,
       state2: data.state,
       city: data.city,

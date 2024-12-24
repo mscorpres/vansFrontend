@@ -220,7 +220,7 @@ const PendingMr: React.FC = () => {
       if (res?.payload?.success) {
       } else {
         toast({
-          title: res.payload?.message,
+          title: res?.payload?.message,
           className: "text-white bg-red-700",
         });
       }
@@ -270,10 +270,8 @@ const PendingMr: React.FC = () => {
             />
           </Form.Item>
           <div className="w-full flex justify-end">
-
             <Search onClick={fetchManageList} />
           </div>
-
         </Form>
         <Divider />
       </div>

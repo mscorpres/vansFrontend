@@ -59,7 +59,8 @@ const HomePage = () => {
               MsCorpres Automation Pvt Ltd
             </p>
             <p className="text-[13px] text-zinc-500">
-              Assotech Business Cresterra ,Unit No 321, Tower - 4
+              Office No. 1 and 2, 3rd Floor, Plot number B-88 Sector 83, Noida,
+              Gautam Buddha Nagar, 201305
             </p>
             <p className="text-[13px] text-zinc-500">
               Phone 2: +91 88 26 788880{" "}

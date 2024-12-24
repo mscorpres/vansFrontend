@@ -30,6 +30,7 @@ import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { removeHtmlTags } from "@/components/shared/Options";
+import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
 import { Button } from "@mui/material";
 import { Refresh, UploadFile } from "@mui/icons-material";
 import ResetModal from "@/components/ui/ResetModal";
@@ -47,6 +48,9 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
   const { loading } = useSelector((state: RootState) => state.client);
+  const { currency } = useSelector(
+    (state: RootState) => state.createSalesOrder
+  );
   const { execFun, loading: loading1 } = useApi();
   const components = useMemo(
     () => ({
@@ -56,11 +60,15 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
           setRowData={setRowData}
           rowData={rowData}
           search={search}
+          currency={currency}
         />
       ),
     }),
     []
   );
+  useEffect(() => {
+    dispatch(fetchCurrency());
+  }, []);
   const columnDefs = [
     {
       headerName: "",
@@ -80,12 +88,21 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       minWidth: 200,
     },
     {
-      headerName: "ITEM DESCRIPTION",
-      field: "remark",
+      headerName: "Part No.",
+      field: "c_partno",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
+    },
+
+    {
+      headerName: "Description",
+      field: "materialDescription",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 350,
     },
     {
       headerName: "Order Qty",
@@ -102,6 +119,22 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
+    },
+    {
+      headerName: "Currency",
+      field: "currency",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 120,
+    },
+    {
+      headerName: "Exchange Rate",
+      field: "exchange_rate",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 180,
     },
     {
       headerName: "Invoice Id",
@@ -199,6 +232,14 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
+    {
+      headerName: "Remark",
+      field: "remark",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
   ];
   const handleSubmit = async () => {
     setShowConfirmation(false);
@@ -207,7 +248,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     let payload = {
       poid: viewMinPo?.po_transaction,
       currency: arr.map((r: any) => r.currency),
-      exchange: arr.map((r: any) => r.exchange),
+      exchange_rate: arr.map((r: any) => r.exchange_rate),
       component: arr.map((r: any) => r?.componentKey),
       access_code: arr.map((r: any) => r.access_code),
       qty: arr.map((r: any) => r.orderQty),
@@ -350,6 +391,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   }, [rowData]);
 
   const calltheApi = async () => {
+    dispatch(fetchCurrency());
     dispatch(fetchDataPOforMIN({ poid: viewMinPo.po_transaction })).then(
       (response: any) => {
         if (response.payload.success) {
@@ -358,16 +400,18 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
             return {
               id: id + 1,
               isNew: true,
-              component_fullname: r.c_partno + " -" + r.component_fullname,
+              component_fullname: r.component_fullname,
+              c_partno: r.c_partno,
               orderQty: r.orderqty,
               rate: r.orderrate,
               gstRate: r.gstrate,
               gstTypeForPO: r.gsttype,
               localValue: r.usdValue,
               value: r.totalValue,
-              remark: r.description,
+              materialDescription: r.description,
               hsnCode: r.hsncode,
               dueDate: r.orderduedate,
+              currency: r.currency,
               ...r,
             };
           });

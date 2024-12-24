@@ -172,7 +172,7 @@ const AddPOPopovers: React.FC<Props> = ({ uiState ,derivedState}) => {
               <li className="p-1">
                 Download<span> </span>
                 <a
-                  href="https://vansapiv2.mscorpres.net/files/salesItem.xlsx"
+                  href="https://vansapiv2.mscorpres.net/files/salesItems.xlsx"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-teal-500 hover:underline"

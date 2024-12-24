@@ -39,6 +39,8 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { rangePresets } from "@/General";
 import { Button } from "@mui/material";
+import MuiInput from "@/components/ui/MuiInput";
+import MuiInput2 from "@/components/ui/MuiInput2";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -48,6 +50,7 @@ const FormSchema = z.object({
       message: "Please select a valid date range.",
     }),
   types: z.string().optional(),
+  search: z.string().optional(),
 });
 
 const R2 = () => {
@@ -60,13 +63,16 @@ const R2 = () => {
   const { RangePicker } = DatePicker;
 
   const dateFormat = "YYYY/MM/DD";
+  const theType = form.watch("types");
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     setRowData([]);
-    let { date } = formData;
+    let { date, search } = formData;
     let dataString = "";
     if (date) {
       dataString = exportDateRangespace(date);
+    } else {
+      dataString = search;
     }
     let payload = {
       wise: formData.types,
@@ -138,14 +144,14 @@ const R2 = () => {
       minWidth: 190,
       flex: 1,
     },
-    {
-      headerName: "Vendor Compenent Code/Description",
-      field: "vendorDes",
-      filter: "agTextColumnFilter",
-      minWidth: 320,
-      cellRenderer: CopyCellRenderer,
-      flex: 2,
-    },
+    // {
+    //   headerName: "Vendor Compenent Code/Description",
+    //   field: "vendorDes",
+    //   filter: "agTextColumnFilter",
+    //   minWidth: 320,
+    //   cellRenderer: CopyCellRenderer,
+    //   flex: 2,
+    // },
 
     {
       headerName: "UoM",
@@ -230,12 +236,12 @@ const R2 = () => {
     //   filter: "agTextColumnFilter",
     //   width: 150,
     // },
-    // {
-    //   headerName: "Description",
-    //   field: "description",
-    //   filter: "agTextColumnFilter",
-    //   width: 150,
-    // },
+    {
+      headerName: "Description",
+      field: "description",
+      filter: "agTextColumnFilter",
+      width: 350,
+    },
   ];
   const type = [
     {
@@ -249,6 +255,10 @@ const R2 = () => {
     {
       label: "Project",
       value: "PROJECT",
+    },
+    {
+      label: "Completed",
+      value: "C",
     },
   ];
 
@@ -275,7 +285,7 @@ const R2 = () => {
                       styles={customStyles}
                       components={{ DropdownIndicator }}
                       placeholder=" Enter Type"
-                      className="border-0 basic-single"
+                      className="border-0 basic-single z-[10]"
                       classNamePrefix="select border-0"
                       isDisabled={false}
                       isClearable={true}
@@ -288,29 +298,54 @@ const R2 = () => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Space direction="vertical" size={12} className="w-full">
-                      <RangePicker
-                        className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                        onChange={(value) =>
-                          field.onChange(
-                            value ? value.map((date) => date!.toDate()) : []
-                          )
-                        }
-                        format={"DD/MM/YYYY"}
-                        presets={rangePresets}
+            {theType === "PROJECT" ? (
+              <FormField
+                control={form.control}
+                name="search"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={LableStyle}>
+                      Search
+                      <span className="pl-1 text-red-500 font-bold">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <MuiInput2
+                        form={form}
+                        name="search"
+                        placeholder="Enter search"
+                        control={form.control} // Pass control here
+                        label={"Search"}
                       />
-                    </Space>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Space direction="vertical" size={12} className="w-full">
+                        <RangePicker
+                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
+                          onChange={(value) =>
+                            field.onChange(
+                              value ? value.map((date) => date!.toDate()) : []
+                            )
+                          }
+                          format={"DD/MM/YYYY"}
+                          presets={rangePresets}
+                        />
+                      </Space>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <div className="flex gap-[10px] justify-end  px-[5px]">
               <Button
                 // type="submit"

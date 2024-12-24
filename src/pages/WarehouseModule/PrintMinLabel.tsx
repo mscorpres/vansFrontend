@@ -161,8 +161,8 @@ function PrintMinLabel() {
                 <Select
                   styles={customStyles}
                   components={{ DropdownIndicator }}
-                  placeholder="Print Type"
-                  className="border-0 basic-single  mb-[-24px] z-20"
+                  // placeholder=" Enter UOM"
+                  className="border-0 basic-single z-[10]"
                   classNamePrefix="select border-0"
                   isDisabled={false}
                   isClearable={true}
@@ -170,10 +170,7 @@ function PrintMinLabel() {
                   options={types}
                 />
               </Form.Item>
-              {selType == "Transfer" ||
-              selType?.value == "Transfer" ||
-              selType == "MIN" ||
-              selType?.value == "MIN" ? (
+              {selType?.value == "Transfer" || selType?.value == "MIN" ? (
                 <Form.Item
                   name="min"
                   label="  MIN"
@@ -181,8 +178,6 @@ function PrintMinLabel() {
                 >
                   <ReusableAsyncSelect
                     // placeholder="Customer Name"
-                    className="z-10"
-                    placeholder="Search Transfer"
                     endpoint="/backend/getTrfMinsTransaction4Label"
                     transform={transformOptionData}
                     // onChange={(e) => form.setValue("customerName", e)}
@@ -198,7 +193,7 @@ function PrintMinLabel() {
                     rules={[{ required: true }]}
                   >
                     <ReusableAsyncSelect
-                      placeholder="Search MIN"
+                      // placeholder="Customer Name"
                       endpoint="/backend/getMinsTransaction4Label"
                       transform={transformOptionData2}
                       // onChange={(e) => form.setValue("customerName", e)}
@@ -209,14 +204,13 @@ function PrintMinLabel() {
                   <Form.Item
                     className="w-full"
                     name="box"
-                    label="Boxes"
                     rules={[{ required: true }]}
                   >
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
                       placeholder="Select Boxes"
-                      className="border-0 basic-single mb-[-24px]"
+                      className="border-0 basic-single"
                       classNamePrefix="select border-0"
                       isDisabled={false}
                       isClearable={true}
@@ -230,22 +224,21 @@ function PrintMinLabel() {
                 ""
               )}
             </div>
-            <div className="flex justify-end">
-              <Button
-                variant="contained"
-                type="submit"
-                startIcon={<PrintIcon />}
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 text-white"
-                onClick={(e: any) => {
-                  e.preventDefault();
-                  onsubmit();
-                }}
-              >
-                Print
-              </Button>
-            </div>
+
+            <Button
+              variant="contained"
+              type="submit"
+              startIcon={<PrintIcon />}
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 text-white"
+              onClick={(e: any) => {
+                e.preventDefault();
+                onsubmit();
+              }}
+            >
+              Print
+            </Button>
           </form>
-        </Form>
+        </Form>{" "}
       </div>
       <div
         className="h-[500px] bg-cover bg-repeat rounded relative"

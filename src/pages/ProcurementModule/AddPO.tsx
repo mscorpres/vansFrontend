@@ -737,7 +737,7 @@ const AddPO: React.FC<Props> = ({
           </div>
         </div>
       </div>
-     
+
       <ConfirmationModal
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}
@@ -758,7 +758,7 @@ const AddPO: React.FC<Props> = ({
             : "Submit"
         } details of all components of this Purchase Order?`}
       />
-     
+
       <RejectModal
         open={showRejectConfirm}
         onClose={() => setShowRejectConfirm(false)}
@@ -804,7 +804,6 @@ const AddPO: React.FC<Props> = ({
           }
           onClick={() => setShowConfirmation(true)}
         />
-       
       </div>
       <ResetModal
         open={resetModel}
