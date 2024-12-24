@@ -42,6 +42,7 @@ import {
 } from "@/features/client/storeSlice";
 import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
 import { toast } from "@/components/ui/use-toast";
+import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 
 const type = [
   {
@@ -168,7 +169,7 @@ const TextInputCellRenderer = (props: any) => {
     api,
     column,
     materialList,
-    currency,
+    // currency,
     setRowData,
   } = props;
   const { componentDetails } = useSelector(
@@ -185,7 +186,9 @@ const TextInputCellRenderer = (props: any) => {
     boxData,
     phyStockFromBoxData,
   } = useSelector((state: RootState) => state.store);
-  const { currencyList } = useSelector((state: RootState) => state.client);
+  const { currency } = useSelector(
+    (state: RootState) => state.createSalesOrder
+  );
   const { product } = useSelector((state: RootState) => state.store);
   const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
   const [asyncOptions, setAsyncOptions] = useState([]);
@@ -196,7 +199,6 @@ const TextInputCellRenderer = (props: any) => {
 
   const handleConfirmDelete = () => {
     if (selectedRowIndex !== null) {
-
       setRowData((prevData: any) =>
         prevData.filter((_: any, index: any) => index !== selectedRowIndex)
       );
@@ -214,9 +216,6 @@ const TextInputCellRenderer = (props: any) => {
         // dispatch(deleteProduct(payload));
       }
     }
-    console.log("rowData", props.rowData);
-
-    updateData(props.rowData);
     setShowConfirmDialog(false);
   };
   const updateData = (newData: any) => {
@@ -224,7 +223,9 @@ const TextInputCellRenderer = (props: any) => {
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     // setRowData((prevData: any) => [...prevData, newData]);
   };
-
+  // useEffect(() => {
+  //   dispatch(fetchCurrency());
+  // }, []);
   const handleCurrencyChange = (value: any) => {
     data["currency"] = value;
 
@@ -232,6 +233,9 @@ const TextInputCellRenderer = (props: any) => {
   };
   const handleChange = (value: string) => {
     const newValue = value;
+    // console.log("newValue", newValue);
+
+    api.refreshCells({ rowNodes: [props.node], columns: [column] });
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "procurementMaterial") {
       data["procurementMaterial"] = data.procurementMaterial;
@@ -279,29 +283,38 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "pickmaterial") {
+      ///will be called in pickslip
+      // let payload = {
+      //   c_center: props.form.getFieldValue("costCenter").value,
+      //   component: data["pickmaterial"].value,
+      // };
 
-      let payload = {
-        c_center: props.form.getFieldValue("costCenter").value,
-        component: data["pickmaterial"],
-      };
+      // dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
+      //   props.setCompKey(payload);
+      //   // if (res?.payload.code == 500) {
+      //   //   toast({
+      //   //     title: "Out Boxes not available!",
+      //   //     // title: res.payload.message.msg,
+      //   //     className: "bg-red-700 text-white text-center",
+      //   //   });
+      //   // }
 
-      dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
-        props.setCompKey(payload);
-        // if (res?.payload.code == 500) {
-        //   toast({
-        //     title: "Out Boxes not available!",
-        //     // title: res.payload.message.msg,
-        //     className: "bg-red-700 text-white text-center",
-        //   });
-        // }
+      //   if (res.payload?.success == false) {
+      //     toast({
+      //       title: res.payload?.message,
+      //       className: "bg-red-700 text-white text-center",
+      //     });
+      //   }
+      // });
 
-        if (res.payload?.success == false) {
-          toast({
-            title: res.payload?.message,
-            className: "bg-red-700 text-white text-center",
-          });
-        }
-      });
+      api.refreshCells({ rowNodes: [props.node], columns: [column] });
+      api.applyTransaction({ update: [data] });
+      updateData(data);
+    }
+    if (colDef.field === "hsnSearch") {
+      console.log("hsnSearch", data);
+
+      data["hsnSearch"] = data.hsnSearch;
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
@@ -329,6 +342,8 @@ const TextInputCellRenderer = (props: any) => {
             className: "bg-red-700 text-white text-center",
           });
           //  data["boxPartName"] = r?.payload.data;
+        } else {
+          data["orderQty"] = r?.payload.data.data[0].closingqty;
         }
       });
     }
@@ -563,8 +578,10 @@ const TextInputCellRenderer = (props: any) => {
               }
             }}
             options={transformOptionData(componentDetails || [])}
-            onChange={(e) => handleChange(e.value)}
-            value={typeof value === "string" ? { value } : value?.text}
+            onChange={(e) => handleChange(e)}
+            value={
+              typeof value === "string" ? { value } : value?.text || value.label
+            }
             // value={typeof value === "string" ? { value } : value?.text}
             style={{ pointerEvents: "auto" }}
           />
@@ -798,7 +815,21 @@ const TextInputCellRenderer = (props: any) => {
           <Input
             onChange={handleInputChange}
             // readOnly
-            // value={value}
+            value={value}
+            // type="number"
+            // type="number"
+            // onClick={() => props.setSheetOpen(true)}
+            placeholder={colDef.headerName}
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "qty":
+        return (
+          <Input
+            onChange={handleInputChange}
+            // readOnly
+            value={value}
+            // type="number"
             // type="number"
             // onClick={() => props.setSheetOpen(true)}
             placeholder={colDef.headerName}
@@ -872,6 +903,44 @@ const TextInputCellRenderer = (props: any) => {
               rowId={data.rowId}
             />
           </>
+        );
+
+      case "currency":
+        return (
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-[100%] justify-between  text-slate-600 items-center  border-slate-400 shadow-none"
+              >
+                {value
+                  ? currency?.find((option) => option?.currency_id === value)
+                      ?.currency_symbol
+                  : colDef.headerName}
+                <FaSortDown className="w-5 h-5 ml-2 mb-[5px] opacity-50 shrink-0" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[250px] p-0  ">
+              <Command>
+                <CommandInput placeholder="Search..." />
+                <CommandEmpty>No {colDef.headerName} found.</CommandEmpty>
+                <CommandList className="max-h-[400px] overflow-y-auto">
+                  {currency?.map((framework) => (
+                    <CommandItem
+                      key={framework.currency_id}
+                      value={framework.currency_id}
+                      className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px]"
+                      onSelect={(currentValue) => handleChange(currentValue)}
+                    >
+                      {framework.currency_symbol}
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         );
       case "rate":
         return (
@@ -1105,7 +1174,7 @@ const TextInputCellRenderer = (props: any) => {
             className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px] w-full"
             // className="w-full"
             labelInValue
-            filterOption={false}
+            filterOption={true}
             showSearch
             placeholder="Select Material"
             onSearch={(e) => {
@@ -1115,8 +1184,8 @@ const TextInputCellRenderer = (props: any) => {
               }
             }}
             options={transformOptionData(hsnlist || [])}
-            onChange={(e) => handleChange(e.value)}
-            value={typeof value === "string" ? { value } : value?.text}
+            onChange={(e) => handleChange(e)}
+            value={typeof value === "string" ? { value } : value?.label}
             style={{ pointerEvents: "auto" }} // Ensure pointer events are enabled
           />
         );
@@ -1131,6 +1200,16 @@ const TextInputCellRenderer = (props: any) => {
           />
         );
       case "component_fullname":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "c_partno":
         return (
           <Input
             onChange={handleInputChange}

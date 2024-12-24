@@ -62,7 +62,7 @@ const Material = () => {
   const addNewRow = () => {
     const newRow = {
       asinNumber: "B01N1SE4EP",
-
+      id: "",
       gstRate: 18,
       hsnSearch: "",
       isNew: true,

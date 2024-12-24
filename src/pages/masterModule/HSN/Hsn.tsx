@@ -68,7 +68,8 @@ const Hsn = () => {
           id: index + 1,
           //   ...r,
           gstRate: r.hsntax,
-          hsnSearch: { text: r.hsnlabel, value: r.hsncode },
+          hsnSearch: { label: r.hsnlabel, value: r.hsncode },
+          hsnCode: r.hsncode,
           isNew: true,
         };
       });
@@ -158,6 +159,14 @@ const Hsn = () => {
       cellRenderer: "textInputCellRenderer",
       maxWidth: 100,
       field: "delete",
+    },
+    {
+      headerName: "HSN Code",
+      field: "hsnCode",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
     },
     {
       headerName: "HSN/SAC Code",

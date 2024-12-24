@@ -15,6 +15,14 @@ export const transformOptionData = (data: any[]) => {
     }));
   }
 };
+export const transformOptionDatahsn = (data: any[]) => {
+  if (data?.length) {
+    return data?.map((item) => ({
+      label: item.id,
+      value: item.id,
+    }));
+  }
+};
 export const transformOptionData2 = (data: any[]) => {
   let newData: any[] = data?.data;
   if (newData?.length) {
