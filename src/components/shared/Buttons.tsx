@@ -81,7 +81,7 @@ export const Upload = ({ text, onClick }) => {
       sx={{
         ml: 1,
         backgroundColor: "#217346",
-        ":hover": { backgroundColor: "#48a672" },
+        ":hover": { backgroundColor: "#2f8254" },
       }}
       startIcon={<UploadIcon />}
       variant="contained"

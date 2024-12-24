@@ -24,6 +24,11 @@ const RejectModal: React.FC<Props> = ({
   // Check if the input matches 'reject' (case-insensitive)
   const isRejectInputValid = rejectInput.trim().toLowerCase() === "reject";
 
+  const cancelClose = () => {
+    onClose(false);
+    setRejectText("");
+    setRejectInput("");
+  };
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
@@ -54,7 +59,7 @@ const RejectModal: React.FC<Props> = ({
         </div>
         <div className="flex items-center gap-[10px] justify-end mt-[10px]">
           <Button
-            onClick={() => onClose(false)}
+            onClick={cancelClose}
             variant={"outline"}
             className="shadow-slate-300"
           >

@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AgGridReact } from "ag-grid-react";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { AppDispatch, RootState } from "@/store";
+import UploadIcon from "@mui/icons-material/Upload";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDataPOforMIN, poMIN } from "@/features/client/clientSlice";
 import {
@@ -661,7 +662,12 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
             </Button>
             <Button
               variant="contained"
-              className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
+              startIcon={<UploadIcon />}
+              sx={{
+                ml: 1,
+                backgroundColor: "#217346",
+                ":hover": { backgroundColor: "#2f8254" },
+              }}
               onClick={uploadDocs}
               // loading={laoding}
             >

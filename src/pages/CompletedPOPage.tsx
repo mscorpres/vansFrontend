@@ -26,6 +26,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { rangePresets } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
+import { Search } from "@/components/shared/Buttons";
 
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setView,
@@ -290,30 +291,10 @@ const CompletedPOPage: React.FC = () => {
             </Form.Item>
           )}
           <div className="w-full flex justify-end">
-            <Button
-              variant="contained"
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={fetchManageList}
-            >
-              Search
-            </Button>
+            
+            <Search onClick={fetchManageList} />
           </div>
-          {/* <CustomTooltip
-              message="Add Address"
-              side="top"
-              className="bg-yellow-700"
-            >
-              <Button
-                onClick={() => {
-                  setSheetOpen(true);
-                }}
-                className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
-              >
-                <Plus className="h-[20px] w-[20px]" />
-              </Button>
-            </CustomTooltip> */}
-          {/* </form>    */}
+         
         </Form>
         <Divider />
       </div>

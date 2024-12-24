@@ -36,6 +36,7 @@ import { exportDatepace } from "@/components/shared/Options";
 import { Button } from "@mui/material";
 import { Refresh } from "@mui/icons-material";
 import ResetModal from "@/components/ui/ResetModal";
+import { Back, Submit } from "@/components/shared/Buttons";
 
 interface Props {
   setTab: string;
@@ -76,8 +77,13 @@ const AddPO: React.FC<Props> = ({
   const [taxDetails, setTaxDetails] = useState([]);
   const dispatch = useDispatch<AppDispatch>();
 
-  const { currencyList } = useSelector((state: RootState) => state.client);
+  const { currencyList, loading: loading1 } = useSelector(
+    (state: RootState) => state.client
+  );
   const { loading } = useSelector((state: RootState) => state.sellRequest);
+  const { loading: loading2 } = useSelector(
+    (state: RootState) => state.createSalesOrder
+  );
   const navigate = useNavigate();
 
   // const { execFun, loading: loading1 } = useApi();
@@ -469,6 +475,7 @@ const AddPO: React.FC<Props> = ({
     },
   ];
   const handleReject = () => {
+    setShowRejectConfirm(false);
     dispatch(
       rejectPo({ poid: params?.id?.replaceAll("_", "/"), remark: rejectText })
     ).then((response: any) => {
@@ -712,7 +719,7 @@ const AddPO: React.FC<Props> = ({
             </div> */}
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full relative">
-            {loading && <FullPageLoading />}
+            {(loading || loading2 || loading1) && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
@@ -730,17 +737,7 @@ const AddPO: React.FC<Props> = ({
           </div>
         </div>
       </div>
-      {/* <ConfirmationModal
-        open={showConfirmation}
-        onClose={() => setShowConfirmation(false)}
-        onOkay={handleSubmit}
-        okayText={isApprove ? "Approve" : "Submit"}
-        title="Confirm Submit!"
-        description={`Are you sure to ${
-          isApprove ? "Approve" : "Submit"
-        } details of all components of this Purchase Order?`}
-        // description="Are you sure to submit details of all components of this Purchase Order?"
-      /> */}
+     
       <ConfirmationModal
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}
@@ -761,12 +758,7 @@ const AddPO: React.FC<Props> = ({
             : "Submit"
         } details of all components of this Purchase Order?`}
       />
-      {/* <ConfirmModal
-        open={showConfirmation}
-        setOpen={setShowConfirmation}
-        form={form}
-        submit={handleSubmit}
-      /> */}
+     
       <RejectModal
         open={showRejectConfirm}
         onClose={() => setShowRejectConfirm(false)}
@@ -782,15 +774,17 @@ const AddPO: React.FC<Props> = ({
         // } details of all components of this Purchase Order?`}
       />
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-        <Button
+        {/* <Button
           startIcon={<KeyboardBackspaceIcon />}
           className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
           onClick={() => setTab("create")}
         >
           Back
-        </Button>
+        </Button> */}
+        <Back onClick={() => setTab("create")} />
         <Button
           startIcon={<Refresh />}
+          variant="outlined"
           className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
           onClick={() =>
             isApprove == "approve"
@@ -800,17 +794,17 @@ const AddPO: React.FC<Props> = ({
         >
           {isApprove == "approve" ? "Reject" : "Reset"}
         </Button>
-        <Button
-          variant="contained"
-          className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
+        <Submit
+          text={
+            isApprove == "approve"
+              ? "Approve"
+              : isApprove == "edit"
+              ? "Update"
+              : "Submit"
+          }
           onClick={() => setShowConfirmation(true)}
-        >
-          {isApprove == "approve"
-            ? "Approve"
-            : isApprove == "edit"
-            ? "Update"
-            : "Submit"}
-        </Button>
+        />
+       
       </div>
       <ResetModal
         open={resetModel}

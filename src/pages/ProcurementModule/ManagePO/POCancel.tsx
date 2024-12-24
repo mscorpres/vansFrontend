@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { Button } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
 
 interface Props {
   cancel: boolean;
@@ -66,7 +67,11 @@ const POCancel: React.FC<Props> = ({
       }
     });
   };
-
+  const cancelClose = () => {
+    setCancel(false);
+    setRemarkDescription(false);
+    setCancelInput("");
+  };
   return (
     <Dialog open={cancel} onOpenChange={setCancel}>
       {loading && <FullPageLoading />}
@@ -92,7 +97,7 @@ const POCancel: React.FC<Props> = ({
             <Label className={LableStyle}>Remark</Label>
             <Textarea
               className={InputStyle}
-              value={remarkDescription}
+              value={remarkDescription == false ? "" : remarkDescription}
               onChange={(e) => setRemarkDescription(e.target.value)}
             />
           </div>
@@ -100,12 +105,13 @@ const POCancel: React.FC<Props> = ({
         <div className="flex items-center gap-[10px] justify-end mt-[10px]">
           <Button
             variant="outlined"
-            onClick={() => setCancel(false)}
+            onClick={cancelClose}
             className="shadow-slate-300"
           >
             No
           </Button>
           <Button
+            startIcon={<CheckIcon />}
             variant="contained"
             onClick={handleCancelPO}
             disabled={!isCancelInputValid} // Disable the button if the input is not "cancel"

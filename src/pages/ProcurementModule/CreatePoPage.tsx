@@ -57,6 +57,7 @@ import MuiInput from "@/components/ui/MuiInput";
 import { ArrowLeftIcon } from "lucide-react";
 import { KeyboardBackspace, Save } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { Next } from "@/components/shared/Buttons";
 interface Props {
   setTab: string;
   setPayloadData: string;
@@ -824,15 +825,8 @@ const CreatePoPage: React.FC<Props> = ({
           </div>
         </div>
         <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300 text-white">
-          <Button
-            onClick={getValues}
-            variant="contained"
-            className={`${primartButtonStyle} flex gap-[10px] text-white`}
-            type="submit"
-          >
-            Next
-            <FaArrowRightLong className="" />
-          </Button>
+         
+          <Next onClick={getValues} />
         </div>
       </Form>
       {/* ///add Branch */}

@@ -47,6 +47,7 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { uploadAttachmentForPO } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import { Button, TextField } from "@mui/material";
+import { Search, Upload, Back } from "@/components/shared/Buttons";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -308,6 +309,7 @@ const ManagePoPage: React.FC = () => {
   useEffect(() => {
     form.setFieldValue("data", "");
   }, [selectedwise]);
+  console.log("sheetOpen", sheetOpen);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -388,34 +390,14 @@ const ManagePoPage: React.FC = () => {
             </Form.Item>
           )}
           <div className="w-full flex justify-end">
-            <Button
-              variant="contained"
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
-              onClick={fetchManageList}
-            >
-              Search
-            </Button>
+          
+            <Search onClick={fetchManageList} />
           </div>
-          {/* <CustomTooltip
-              message="Add Address"
-              side="top"
-              className="bg-yellow-700"
-            >
-              <Button
-                onClick={() => {
-                  setSheetOpen(true);
-                }}
-                className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
-              >
-                <Plus className="h-[20px] w-[20px]" />
-              </Button>
-            </CustomTooltip> */}
-          {/* </form>    */}
+        
         </Form>
         <Divider />
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] ">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
@@ -455,17 +437,19 @@ const ManagePoPage: React.FC = () => {
       />
       <Sheet open={sheetOpen?.po_transaction} onOpenChange={setSheetOpen}>
         <SheetContent
-          className="min-w-[35%] p-0 relative"
+          className="min-w-[15%] p-0 "
           onInteractOutside={(e: any) => {
             e.preventDefault();
           }}
         >
           {/* {loading == true && <FullPageLoading />} */}
           <SheetHeader className={modelFixHeaderStyle}>
-            <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
+            <SheetTitle className="text-slate-600 ">
+              Upload Docs here
+            </SheetTitle>
           </SheetHeader>
-          {(loading1("fetch") || loadingPage) && <FullPageLoading />}
           <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+            {(loading1("fetch") || loadingPage) && <FullPageLoading />}
             <FileUploader
               value={files}
               onValueChange={handleFileChange}
@@ -532,21 +516,15 @@ const ManagePoPage: React.FC = () => {
             </div>
           </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Button
+            {/* <Button
               className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setSheetOpen(false)}
             >
               Back
-            </Button>
-            <Button
-              variant="contained"
-              className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
-              onClick={uploadDocs}
-              // loading={laoding}
-            >
-              {/* {isApprove ? "Approve" : "Submit"} */}
-              Upload
-            </Button>
+            </Button> */}
+            <Back onClick={() => setSheetOpen(false)} />
+
+            <Upload onClick={uploadDocs} />
           </div>
         </SheetContent>
       </Sheet>
