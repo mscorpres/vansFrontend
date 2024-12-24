@@ -312,7 +312,9 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "hsnSearch") {
-      // data[hsnSearch] = data["hsnSearch"];
+      console.log("hsnSearch", data);
+
+      data["hsnSearch"] = data.hsnSearch;
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
       api.applyTransaction({ update: [data] });
@@ -1168,7 +1170,7 @@ const TextInputCellRenderer = (props: any) => {
       case "hsnSearch":
         return (
           <Select
-            // onPopupScroll={(e) => e.preventDefault()}
+            onPopupScroll={(e) => e.preventDefault()}
             className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px] w-full"
             // className="w-full"
             labelInValue
@@ -1182,7 +1184,7 @@ const TextInputCellRenderer = (props: any) => {
               }
             }}
             options={transformOptionData(hsnlist || [])}
-            onChange={(e) => handleChange(e.value)}
+            onChange={(e) => handleChange(e)}
             value={typeof value === "string" ? { value } : value?.label}
             style={{ pointerEvents: "auto" }} // Ensure pointer events are enabled
           />
