@@ -406,6 +406,10 @@ export const fetchR4 = async (payload: any) => {
   );
   return response;
 };
+export const fetchR4refreshed = async (payload: any) => {
+  const response = await spigenAxios.get("/report/fetchCloseStockAll", payload);
+  return response;
+};
 export const fetchCloseStock = async (payload: any) => {
   const response = await spigenAxios.post(`report/fetchCloseStock`, {
     component_key: payload,
