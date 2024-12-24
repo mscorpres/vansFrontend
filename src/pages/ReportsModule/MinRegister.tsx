@@ -29,6 +29,7 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { rangePresets } from "@/General";
 import { Button } from "@mui/material";
+import { Search } from "@/components/shared/Buttons";
 
 const MinRegister = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -348,16 +349,12 @@ const MinRegister = () => {
             >
               <IoMdDownload size={20} />
             </Button>
-            <Button
-              variant="contained"
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+
+            <Search
               onClick={() => {
                 fetchQueryResults();
               }}
-            >
-              Search
-            </Button>
+            />
           </div>
           {/* </form> */}
         </Form>

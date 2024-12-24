@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import { min } from "lodash";
+import SearchIcon from "@mui/icons-material/Search";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { Button } from "@mui/material";
 const FormSchema = z.object({
@@ -210,6 +210,7 @@ const ViewPhysicalStock = () => {
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               onClick={fetchFGList}
+              startIcon={<SearchIcon />}
             >
               Search
             </Button>

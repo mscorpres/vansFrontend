@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
+import SearchIcon from "@mui/icons-material/Search";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { ICellRendererParams } from "ag-grid-community";
 import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
@@ -327,6 +328,7 @@ const R2 = () => {
                 variant="contained"
                 type="submit"
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                startIcon={<SearchIcon />}
                 //   onClick={() => {
                 //     fetchBOMList();
                 //   }}

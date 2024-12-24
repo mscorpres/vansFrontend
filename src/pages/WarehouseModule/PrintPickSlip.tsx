@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
+import SearchIcon from "@mui/icons-material/Search";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
 import Select from "react-select";
@@ -273,8 +274,8 @@ const PrintPickSlip: React.FC = () => {
             <Button
               variant="contained"
               type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
               onClick={fetchManageList}
+              startIcon={<SearchIcon />}
             >
               Search
             </Button>

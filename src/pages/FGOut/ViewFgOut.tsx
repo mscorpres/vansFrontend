@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
+import { Search } from "@/components/shared/Buttons";
 const FormSchema = z.object({
   searchValue: z.string().optional(),
   datainp: z.string().optional(),
@@ -156,14 +157,7 @@ const ViewFgOut = () => {
             >
               <IoMdDownload size={20} />
             </Button>
-            <Button
-              variant="contained"
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={fetchFGList}
-            >
-              Search
-            </Button>
+            <Search onClick={fetchFGList} />
           </div>
         </Form>
       </div>

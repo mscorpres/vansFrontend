@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Form,
   FormControl,
@@ -170,6 +171,7 @@ const Q3 = () => {
               <Button
                 type="submit"
                 variant="contained"
+                startIcon={<SearchIcon />}
                 className="shadow  shadow-slate-500"
                 //   onClick={() => {
                 //     fetchBOMList();

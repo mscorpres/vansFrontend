@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
+import SearchIcon from "@mui/icons-material/Search";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import {
   Form,
@@ -250,6 +251,7 @@ const TransactionOut = () => {
               <Button
                 variant="contained"
                 type="submit"
+                startIcon={<SearchIcon />}
                 className="shadow shadow-slate-500"
                 //   onClick={() => {
                 //     fetchBOMList();

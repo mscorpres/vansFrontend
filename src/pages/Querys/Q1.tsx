@@ -14,6 +14,7 @@ import { Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
 import { transformOptionData } from "@/helper/transform";
+import SearchIcon from "@mui/icons-material/Search";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
@@ -211,6 +212,7 @@ const Q1 = () => {
               <Button
                 variant="contained"
                 type="submit"
+                startIcon={<SearchIcon />}
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
                 //   onClick={() => {
                 //     fetchBOMList();

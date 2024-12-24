@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
+import SearchIcon from "@mui/icons-material/Search";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 
 import { LableStyle } from "@/constants/themeContants";
@@ -274,6 +275,7 @@ const R6 = () => {
               </Button>
               <Button
                 variant="contained"
+                startIcon={<SearchIcon />}
                 type="submit"
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
                 //   onClick={() => {

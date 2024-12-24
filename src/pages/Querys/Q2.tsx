@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
+import SearchIcon from "@mui/icons-material/Search";
 
 import { MoreOutlined } from "@ant-design/icons";
 import {
@@ -436,6 +437,7 @@ const Q2 = () => {
               <Button
                 variant="contained"
                 type="submit"
+                startIcon={<SearchIcon />}
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               >
                 Search

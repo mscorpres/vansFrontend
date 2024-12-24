@@ -64,6 +64,7 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
+import { Search } from "@/components/shared/Buttons";
 
 const PendingFg = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -277,18 +278,13 @@ const PendingFg = () => {
               >
                 <IoMdDownload size={20} />
               </Button>
-              <Button
-                variant="contained"
-                type="submit"
-                className="shadow  shadow-slate-500"
-                // onClick={() => {}}
+
+              <Search
                 onClick={(e: any) => {
                   e.preventDefault();
                   fetchFGList();
                 }}
-              >
-                Search
-              </Button>
+              />
             </div>
           </form>
         </Form>{" "}

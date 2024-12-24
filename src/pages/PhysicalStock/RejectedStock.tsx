@@ -339,7 +339,7 @@ const RejectedStock = () => {
                     variant="outlined"
                     className="shadow-slate-300 mr-[10px] border-slate-400 border"
                     onClick={(e: any) => {
-                      //   setOpen(true);
+                      setSheetOpenView(false);
                       e.preventDefault();
                     }}
                   >

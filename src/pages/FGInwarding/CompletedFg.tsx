@@ -5,6 +5,7 @@ import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
+import SearchIcon from "@mui/icons-material/Search";
 
 import {
   Form,
@@ -258,6 +259,7 @@ const CompeletedFg = () => {
                 type="submit"
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
                 //   onClick={fetchFGList}
+                startIcon={<SearchIcon />}
               >
                 Search
               </Button>

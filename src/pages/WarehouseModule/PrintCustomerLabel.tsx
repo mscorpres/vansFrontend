@@ -3,6 +3,7 @@ import { Filter } from "lucide-react";
 import styled from "styled-components";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
+import PrintIcon from "@mui/icons-material/Print";
 import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { useDispatch, useSelector } from "react-redux";
 import { cutomerLable } from "@/features/client/storeSlice";
@@ -61,6 +62,7 @@ function PrintMinLabel() {
               <Button
                 variant="contained"
                 type="submit"
+                startIcon={<PrintIcon />}
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 text-white"
                 onClick={(e: any) => {
                   e.preventDefault();

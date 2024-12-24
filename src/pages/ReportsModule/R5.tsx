@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Print from "@/assets/Print.jpg";
+import SearchIcon from "@mui/icons-material/Search";
 
 import {
   Form,
@@ -193,6 +194,7 @@ const R5 = () => {
               <Button
                 variant="contained"
                 type="submit"
+                startIcon={<SearchIcon />}
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
                 //   onClick={() => {
                 //     fetchBOMList();
@@ -215,11 +217,7 @@ const R5 = () => {
               alt="no access"
               className="border-rounded  rounded-full"
             />
-            {/* <MdLocalPrintshop className="h-[150px] w-[150px] text-cyan-800" /> */}
-            {/* <Link to={"/"} className="flex items-center gap-[5px]">
-              <p className="text-cyan-800 font-[600]">Production</p>
-              <BiLinkExternal className="text-cyan-800" />
-            </Link> */}
+            
           </div>
         </div>
       </div>

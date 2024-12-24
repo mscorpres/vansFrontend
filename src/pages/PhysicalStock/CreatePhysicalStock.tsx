@@ -19,6 +19,7 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
 import { Refresh, Send } from "@mui/icons-material";
+import { Reset } from "@/components/shared/Buttons";
 
 const CreatePhysicalStock = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -297,15 +298,11 @@ const CreatePhysicalStock = () => {
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Button
-              startIcon={<Refresh />}
-              variant="outlined"
-              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
+       
+            <Reset
               onClick={() => setCallReset(true)}
               disabled={rowData.length == 0}
-            >
-              Reset
-            </Button>
+            />
             {/* <Button
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
               //   onClick={() => setTab("create")}

@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import socket from "@/components/shared/socket";
+import SearchIcon from "@mui/icons-material/Search";
 import Print from "@/assets/Print.jpg";
 
 import {
@@ -202,6 +203,7 @@ const R1 = () => {
               <Button
                 variant="contained"
                 type="submit"
+                startIcon={<SearchIcon />}
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
                 //   onClick={() => {
                 //     fetchBOMList();
