@@ -85,13 +85,22 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
+
+    {
+      headerName: "Part No.",
+      field: "c_partno",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
     {
       headerName: "ITEM DESCRIPTION",
       field: "remark",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
+      minWidth: 350,
     },
     {
       headerName: "Order Qty",
@@ -374,7 +383,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
             return {
               id: id + 1,
               isNew: true,
-              component_fullname: r.c_partno + " -" + r.component_fullname,
+              component_fullname: r.component_fullname,
+              c_partno: r.c_partno,
               orderQty: r.orderqty,
               rate: r.orderrate,
               gstRate: r.gstrate,

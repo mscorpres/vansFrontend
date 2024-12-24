@@ -1207,6 +1207,16 @@ const TextInputCellRenderer = (props: any) => {
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );
+      case "c_partno":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="text"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
       case "moveQty":
         return (
           <Input
