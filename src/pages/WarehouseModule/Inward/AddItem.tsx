@@ -7,6 +7,7 @@ import DatePickerCellRenderer from "@/config/agGrid/DatePickerCellRenderer";
 import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import styled from "styled-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import UploadIcon from "@mui/icons-material/Upload";
 import { AddPoUIStateType } from "@/types/AddPOTypes";
 import {
   modelFixFooterStyle,
@@ -48,6 +49,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
 import { KeyboardBackspace, Refresh } from "@mui/icons-material";
+import { Back, Reset } from "@/components/shared/Buttons";
 // interface Props{
 //   setTab:Dispatch<SetStateAction<string>>;
 // }
@@ -667,24 +669,8 @@ const AddPO: React.FC<Props> = ({
         // } details of all components of this Purchase Order?`}
       />
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-        <Button
-          startIcon={<KeyboardBackspace />}
-          className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
-          onClick={() => setTab("create")}
-        >
-          Back
-        </Button>{" "}
-        <Button
-          startIcon={<Refresh />}
-          className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
-          // onClick={() =>
-          //   isApprove ? setShowRejectConfirm(true) : setRowData([])
-          // }
-          onClick={() => setRowData([])}
-        >
-          {/* {isApprove ? "Reject" : "Reset"} */}
-          Reset
-        </Button>
+        <Back onClick={() => setTab("create")} />
+        <Reset onClick={() => setRowData([])} />
         <Button
           variant="contained"
           startIcon={<Save />}
@@ -761,7 +747,12 @@ const AddPO: React.FC<Props> = ({
             </Button>{" "}
             <Button
               variant="contained"
-              className="rounded-md shadow shadow-slate-500 max-w-max px-[30px]"
+              sx={{
+                ml: 1,
+                backgroundColor: "#217346",
+                ":hover": { backgroundColor: "#2f8254" },
+              }}
+              startIcon={<UploadIcon />}
               onClick={uploadDocs}
               // loading={laoding}
             >

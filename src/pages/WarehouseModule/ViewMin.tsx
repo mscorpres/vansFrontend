@@ -27,6 +27,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
+import { Search } from "@/components/shared/Buttons";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -312,14 +313,7 @@ const ViewMin: React.FC = () => {
             </Form.Item>
           )}
           <div className="w-full flex justify-end">
-            <Button
-              variant="contained"
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
-              onClick={fetchManageList}
-            >
-              Search
-            </Button>{" "}
+            <Search onClick={fetchManageList} />
           </div>{" "}
           {/* <CustomTooltip
               message="Add Address"

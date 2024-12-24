@@ -50,6 +50,7 @@ import MuiInput from "@/components/ui/MuiInput";
 import { Button } from "@mui/material";
 import { ArrowLeftIcon } from "lucide-react";
 import { Save } from "@mui/icons-material";
+import { Next } from "@/components/shared/Buttons";
 
 interface Props {
   setTab: string;
@@ -226,7 +227,7 @@ const CreateInward: React.FC<Props> = ({
         // <FullPageLoading />
       }
       <Form form={form} layout="vertical" initialValues={initialValues}>
-        <div className="rounded p-[30px] shadow bg-[#fff] h-[calc(100vh-180px)] overflow-y-auto">
+        <div className="rounded p-[30px] shadow bg-[#fff] h-[calc(100vh-180px)] overflow-y-hidden">
           <div className="grid grid-cols-1 gap-[30px]">
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -238,7 +239,7 @@ const CreateInward: React.FC<Props> = ({
                 </p>
               </CardHeader>
               <CardContent className="mt-[10px]">
-                <div className="mt-[30px] grid grid-cols-3 gap-[40px]">
+                <div className="mt-[30px] grid grid-cols-3 gap-[20px]">
                   <Form.Item
                     name="vendorType"
                     // label="Vendor Type"
@@ -348,7 +349,7 @@ const CreateInward: React.FC<Props> = ({
                     />
                   </Form.Item>{" "}
                 </div>
-                <div className="mt-[30px] grid grid-cols-4 gap-[40px]">
+                <div className="mt-[30px] grid grid-cols-4 gap-[20px]">
                   <Form.Item
                     name="vendorGst"
                     // label="GSTIN"
@@ -414,7 +415,7 @@ const CreateInward: React.FC<Props> = ({
                     />
                   </Form.Item>
                 </div>{" "}
-                <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
+                <div className="mt-[30px] grid grid-cols-2 gap-[20px]">
                   <Form.Item
                     name="address"
                     // label="Address"
@@ -433,7 +434,7 @@ const CreateInward: React.FC<Props> = ({
           </div>
         </div>
         <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300">
-          <Button
+          {/* <Button
             variant="contained"
             onClick={getValues}
             className={`${primartButtonStyle} flex gap-[10px] `}
@@ -441,7 +442,8 @@ const CreateInward: React.FC<Props> = ({
           >
             Next
             <FaArrowRightLong className="" />
-          </Button>
+          </Button> */}
+          <Next onClick={getValues} />
         </div>
       </Form>{" "}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>

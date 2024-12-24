@@ -23,6 +23,7 @@ import { fetchTransactionForApproval } from "@/features/client/storeSlice";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
+import { Search } from "@/components/shared/Buttons";
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -242,7 +243,6 @@ const PendingMr: React.FC = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff]">
-         
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -270,35 +270,14 @@ const PendingMr: React.FC = () => {
             />
           </Form.Item>
           <div className="w-full flex justify-end">
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
-              onClick={fetchManageList}
-              variant="contained"
-            >
-              Search
-            </Button>
+
+            <Search onClick={fetchManageList} />
           </div>
-          {/* <CustomTooltip
-              message="Add Address"
-              side="top"
-              className="bg-yellow-700"
-            >
-              <Button
-                onClick={() => {
-                  setSheetOpen(true);
-                }}
-                className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
-              >
-                <Plus className="h-[20px] w-[20px]" />
-              </Button>
-            </CustomTooltip> */}
-          {/* </form>  */}
+
         </Form>
         <Divider />
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)] relative">
-         
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
@@ -312,22 +291,8 @@ const PendingMr: React.FC = () => {
           paginationPageSizeSelector={[10, 25, 50]}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
-      </div> 
-      {/* <ViewCompoents
-        view={view}
-        setView={setView}
-        setShowConfirmation={setShowConfirmation}
-        showConfirmation={showConfirmation}
-        loading={loading}
-      />
-      <POCancel
-        cancel={cancel}
-        setCancel={setCancel}
-        // handleCancelPO={handleCancelPO}
-        remarkDescription={remarkDescription}
-        setRemarkDescription={setRemarkDescription}
-      /> 
-      <MINPO viewMinPo={viewMinPo} setViewMinPo={setViewMinPo} /> */}
+      </div>
+
       <ConfirmationModal
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}

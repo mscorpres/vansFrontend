@@ -233,7 +233,9 @@ const BoxMarkup = () => {
           <div className="flex gap-[5px] items-center justify-center h-full">
             {/* <Button className="bg-green-700 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-green-600"> */}
 
-            <Button onClick={() => setSheetOpen(e)}>Settle</Button>
+            <Button variant="contained" onClick={() => setSheetOpen(e)}>
+              Settle
+            </Button>
             {/* </Button> */}
           </div>
         );
@@ -401,7 +403,7 @@ const BoxMarkup = () => {
           />
         )}
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+      <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full relative">
         <AgGridReact
           ref={gridRef}
           rowData={rowData}
