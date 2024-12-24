@@ -192,7 +192,7 @@ const AddPO: React.FC<Props> = ({
       pocomment: formVal.comment,
       pocreatetype: formVal?.poType.value,
       currency: formVal?.currency.value,
-      exchange_rate:
+      exchange:
         formVal?.currency.value == "364907247" ? "1" : formVal?.exchange_rate,
       // exchange:
       //   formVal?.currency.value == "364907247" ? "1" : formVal?.exchange_rate,
@@ -236,7 +236,7 @@ const AddPO: React.FC<Props> = ({
           // currency: arr.map((r: any) => r.currency),
           // exchange_rate: arr.map((r: any) => r.exchange),
           currency: formVal?.currency.value,
-          exchange_rate: formVal?.exchange_rate,
+          exchange: formVal?.exchange_rate,
           // exchange: formVal?.exchange_rate,
           // original_po: null,
 
