@@ -192,8 +192,10 @@ const AddPO: React.FC<Props> = ({
       pocomment: formVal.comment,
       pocreatetype: formVal?.poType.value,
       currency: formVal?.currency.value,
-      exchange:
+      exchange_rate:
         formVal?.currency.value == "364907247" ? "1" : formVal?.exchange_rate,
+      // exchange:
+      //   formVal?.currency.value == "364907247" ? "1" : formVal?.exchange_rate,
       duedate: exportDatepace(formVal?.duedate),
       // original_po: null,
       // currency: arr.map((r: any) => r.currency),
@@ -234,7 +236,8 @@ const AddPO: React.FC<Props> = ({
           // currency: arr.map((r: any) => r.currency),
           // exchange_rate: arr.map((r: any) => r.exchange),
           currency: formVal?.currency.value,
-          exchange: formVal?.exchange_rate,
+          exchange_rate: formVal?.exchange_rate,
+          // exchange: formVal?.exchange_rate,
           // original_po: null,
 
           component: arr.map((r: any) => r?.componentKey),
@@ -274,7 +277,6 @@ const AddPO: React.FC<Props> = ({
           poid: params.id?.replaceAll("_", "/"),
         };
         dispatch(poApprove(a)).then((response: any) => {
-   
           if (response?.payload.success) {
             setShowConfirmation(false);
             toast({
@@ -294,7 +296,6 @@ const AddPO: React.FC<Props> = ({
         });
       } else {
         dispatch(createSellRequest(payload)).then((response: any) => {
-
           if (response?.payload.success) {
             setShowConfirmation(false);
             toast({
