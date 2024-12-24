@@ -94,9 +94,10 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
+
     {
-      headerName: "ITEM DESCRIPTION",
-      field: "remark",
+      headerName: "Description",
+      field: "materialDescription",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -222,6 +223,14 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
+    },
+    {
+      headerName: "Remark",
+      field: "remark",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 350,
     },
   ];
   const handleSubmit = async () => {
@@ -391,7 +400,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
               gstTypeForPO: r.gsttype,
               localValue: r.usdValue,
               value: r.totalValue,
-              remark: r.description,
+              materialDescription: r.description,
               hsnCode: r.hsncode,
               dueDate: r.orderduedate,
               currency: r.currency,
