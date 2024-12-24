@@ -76,6 +76,9 @@ const AddPO: React.FC<Props> = ({
   const { currencyList, loading } = useSelector(
     (state: RootState) => state.client
   );
+  const { loading: loading1 } = useSelector(
+    (state: RootState) => state.sellRequest
+  );
   const navigate = useNavigate();
 
   // const { execFun, loading: loading1 } = useApi();
@@ -274,7 +277,6 @@ const AddPO: React.FC<Props> = ({
           poid: params.id?.replaceAll("_", "/"),
         };
         dispatch(poApprove(a)).then((response: any) => {
-   
           if (response?.payload.success) {
             setShowConfirmation(false);
             toast({
@@ -294,7 +296,6 @@ const AddPO: React.FC<Props> = ({
         });
       } else {
         dispatch(createSellRequest(payload)).then((response: any) => {
-
           if (response?.payload.success) {
             setShowConfirmation(false);
             toast({
@@ -589,7 +590,7 @@ const AddPO: React.FC<Props> = ({
 
   return (
     <Wrapper>
-      {loading && <FullPageLoading />}
+      {(loading || loading1) && <FullPageLoading />}
       <AddPOPopovers uiState={uiState} />
       <div className="h-[calc(100vh-150px)] grid grid-cols-[400px_1fr]">
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
@@ -714,7 +715,7 @@ const AddPO: React.FC<Props> = ({
             </div> */}
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
-            {loading && <FullPageLoading />}
+            {(loading || loading1) && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
