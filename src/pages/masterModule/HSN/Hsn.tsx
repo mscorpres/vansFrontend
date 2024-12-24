@@ -64,7 +64,7 @@ const Hsn = () => {
           id: index + 1,
           //   ...r,
           gstRate: r.hsntax,
-          hsnSearch: { text: r.hsnlabel, value: r.hsncode },
+          hsnSearch: { label: r.hsnlabel, value: r.hsncode },
           hsnCode: r.hsncode,
           isNew: true,
         };
