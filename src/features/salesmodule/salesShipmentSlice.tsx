@@ -141,7 +141,7 @@ export const approveShipment = createAsyncThunk(
       if (!response.data) {
         throw new Error("No data received");
       }
-      if (response?.data?.code == 200) {
+      if (response?.data?.code == 200 || response?.data?.status == "success") {
         toast({
           title: response?.data?.message,
           className: "bg-green-600 text-white items-center",
@@ -188,10 +188,9 @@ export const fetchAvailableStock = createAsyncThunk(
   "client/fetchAvailableStock",
   async (payload: any, { rejectWithValue }) => {
     try {
-       const response = await spigenAxios.get(
-         `backend/fetchAvailableStockBoxes?component=${payload?.component}&costcenter=${payload.c_center}`
-       );
-
+      const response = await spigenAxios.get(
+        `backend/fetchAvailableStockBoxes?component=${payload?.component}&costcenter=${payload.c_center}`
+      );
 
       return response.data;
     } catch (error) {

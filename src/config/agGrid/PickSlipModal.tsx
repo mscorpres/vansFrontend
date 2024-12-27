@@ -172,7 +172,6 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     };
 
     dispatch(stockOut(payload) as any).then((res: any) => {
-
       if (res.payload.code === 200 || res.payload.success) {
         toast({
           title: res.payload.message || "Material Out Successfully",
@@ -189,8 +188,8 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     const newBoxes = selectData.map((item: any) => item.box_name);
     const newQtys = selectData.map((item: any) => item.stock);
     // Update the state
-    setBox((prevBox) => [newBoxes.join(",")]);
-    setQty((prevQty) => [newQtys.join(",")]);
+    setBox((prevBox) => [...prevBox, newBoxes.join(",")]);
+    setQty((prevQty) => [...prevQty, newQtys.join(",")]);
     // setBox((prevBox) => [...prevBox, newBoxes.join(",")]);
     // setQty((prevQty) => [...prevQty, newQtys.join(",")]);
     setSheetOpen(false);
