@@ -33,6 +33,7 @@ const AddSalesOrder = ({
   setRowData,
   rowData,
   setBackCreate,
+  getCostCenter,
 }: {
   setTab: React.Dispatch<React.SetStateAction<string>>;
   payloadData: any;
@@ -53,6 +54,7 @@ const AddSalesOrder = ({
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
   const navigate = useNavigate();
+
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
   const uiState: AddPoUIStateType = {
@@ -127,6 +129,7 @@ const AddSalesOrder = ({
           setRowData={setRowData}
           exRate={form.getValues("currency")}
           derivedType={derivedType}
+          getCostCenter={getCostCenter}
         />
       ),
       datePickerCellRenderer: DatePickerCellRenderer,
