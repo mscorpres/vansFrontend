@@ -41,6 +41,7 @@ const CreateSalesOrderPage = () => {
   });
   const billToStateCode = form.watch("billTo.state");
   const billFromStateCode = form.watch("billFrom.state");
+  const getCostCenter = form.watch("costcenter");
   console.log("billToStateCode", billToStateCode);
   console.log("billFromStateCode", billFromStateCode);
 
@@ -323,6 +324,7 @@ const CreateSalesOrderPage = () => {
             setRowData={setRowData}
             form={form}
             setBackCreate={setBackCreate}
+            getCostCenter={getCostCenter}
           />
         </TabsContent>
       </Tabs>
