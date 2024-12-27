@@ -43,9 +43,9 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   const gridRef = useRef<AgGridReact<any>>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [rowItem, setRowItem] = useState<string>("");
-  const [selectedBoxes, setSelectedBoxes] = useState<{ [rowId: string]: any }>(
-    {}
-  ); // Changed to store selected boxes per row
+  const [selectedBoxes, setSelectedBoxes] = useState<{
+    [rowId: string]: { boxes: string[]; qty: string[] };
+  }>({});
   const [box, setBox] = useState<string[]>([]);
   const [qty, setQty] = useState<string[]>([]);
   const dispatch = useDispatch();
@@ -56,14 +56,15 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   // Function to handle when a row's "Select Box" field is clicked
   const handleBoxesClick = (params: any) => {
     setSheetOpen(true);
-    const rowId = params.data.item;
-    setRowItem(rowId);
+    const rowId = params.data.item; // Ensure this is the correct row identifier
+    setRowItem(rowId); // Store the rowId so it can be used for updating the boxes
     const payload = {
       c_center: sellRequestDetails?.header?.costcenter?.code,
       component: params.data?.item,
     };
     dispatch(fetchAvailableStock(payload) as any).then((response: any) => {
       if (response.payload.code === 200) {
+        // Handle response if needed
       }
     });
   };
@@ -102,6 +103,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       cellRenderer: (params: any) => {
         const rowId = params.data?.item;
         const selectedForRow = selectedBoxes[rowId];
+
         return (
           <div
             className="p-2 border border-gray-300 rounded-md"
@@ -155,10 +157,8 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
         : [],
     [sellRequestDetails?.items]
   );
-
   // Submit function to gather all the selected boxes and quantities
   const onSubmit = () => {
-    // Create payload with selected boxes and quantities for each row
     const payload = {
       shipment_id: sellRequestDetails?.header?.shipment_id,
       customer: sellRequestDetails?.header?.customer_name?.customer_code,
@@ -166,9 +166,12 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       qty: sellRequestDetails?.items?.map((item: any) => item?.qty),
       remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark),
       costcenter: sellRequestDetails?.header?.costcenter?.code,
-      //   boxqty: selectedBoxes.map((box: any) => box?.box_qty),
-      box: box,
-      boxqty: qty,
+      box: Object.values(selectedBoxes).map((boxData) =>
+        boxData.boxes.join(",")
+      ),
+      boxqty: Object.values(selectedBoxes).map((boxData) =>
+        boxData.qty.join(",")
+      ),
     };
 
     dispatch(stockOut(payload) as any).then((res: any) => {
@@ -184,16 +187,48 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   };
 
   const updateBoxAndQty = (selectData: any) => {
-    // Extract the box_name and stock values and push them into the state arrays
     const newBoxes = selectData.map((item: any) => item.box_name);
     const newQtys = selectData.map((item: any) => item.stock);
-    // Update the state
-    setBox((prevBox) => [...prevBox, newBoxes.join(",")]);
-    setQty((prevQty) => [...prevQty, newQtys.join(",")]);
-    // setBox((prevBox) => [...prevBox, newBoxes.join(",")]);
-    // setQty((prevQty) => [...prevQty, newQtys.join(",")]);
-    setSheetOpen(false);
+
+    setSelectedBoxes((prevSelectedBoxes) => {
+      const updatedBoxes = { ...prevSelectedBoxes };
+
+      // Check if the row already has selected boxes (identified by rowItem)
+      if (updatedBoxes[rowItem]) {
+        // If the box is already present, we will update the box and qty arrays
+        const existingBoxes = updatedBoxes[rowItem].boxes;
+        const existingQtys = updatedBoxes[rowItem].qty;
+
+        // Only add new boxes and qtys that are not already present
+        newBoxes.forEach((box, index) => {
+          if (!existingBoxes.includes(box)) {
+            existingBoxes.push(box);
+            existingQtys.push(newQtys[index]);
+          } else {
+            // If the box already exists, update the quantity if needed
+            const boxIndex = existingBoxes.indexOf(box);
+            if (boxIndex >= 0) {
+              existingQtys[boxIndex] = newQtys[index]; // Update quantity for the existing box
+            }
+          }
+        });
+
+        updatedBoxes[rowItem].boxes = existingBoxes;
+        updatedBoxes[rowItem].qty = existingQtys;
+      } else {
+        // If no boxes are selected for this row yet, create a new entry
+        updatedBoxes[rowItem] = {
+          boxes: newBoxes,
+          qty: newQtys,
+        };
+      }
+
+      return updatedBoxes;
+    });
+
+    setSheetOpen(false); // Close the sheet after selection
   };
+
   return (
     <Sheet open={visible} onOpenChange={onClose}>
       <SheetHeader></SheetHeader>

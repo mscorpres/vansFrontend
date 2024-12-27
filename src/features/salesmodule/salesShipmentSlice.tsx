@@ -141,7 +141,11 @@ export const approveShipment = createAsyncThunk(
       if (!response.data) {
         throw new Error("No data received");
       }
-      if (response?.data?.code == 200 || response?.data?.status == "success") {
+      if (
+        response?.data?.code == 200 ||
+        response?.data?.status == "success" ||
+        response?.data?.success
+      ) {
         toast({
           title: response?.data?.message,
           className: "bg-green-600 text-white items-center",
@@ -167,7 +171,11 @@ export const createInvoice = createAsyncThunk(
         payload
       )) as any;
 
-      if (response?.data?.code == 200) {
+      if (
+        response?.data?.code == 200 ||
+        response.data.status == "success" ||
+        response.data.success
+      ) {
         toast({
           title: response?.data?.message,
           className: "bg-green-600 text-white items-center",
@@ -334,6 +342,7 @@ const sellShipmentSlice = createSlice({
       .addCase(fetchAvailableStock.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to cancel sell request";
+        state.availableStock = [];
       })
       .addCase(cancelShipment.pending, (state) => {
         state.loading = true;

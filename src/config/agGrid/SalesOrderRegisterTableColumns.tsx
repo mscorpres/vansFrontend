@@ -20,7 +20,7 @@ import {
   shortClose,
 } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
 import { TruncateCellRenderer } from "@/General";
 
@@ -45,7 +45,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dateRange = useSelector(
     (state: RootState) => state.sellRequest.dateRange
   );
-
+  const { toast } = useToast();
   const handleUpdate = (row: any) => {
     const soId = row?.so_id; // Replace with actual key for employee ID
     window.open(`/sales/order/update/${soId.replaceAll("/", "_")}`, "_blank");
@@ -76,7 +76,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const confirmApprove = () => {
     dispatch(approveSo({ so_id: row?.so_id })).then((response: any) => {
-      if (response?.payload?.code == 200) {
+      if (
+        response?.payload?.code == 200 ||
+        response?.payload?.success ||
+        response?.payload?.status == success
+      ) {
         toast({
           className: "bg-green-600 text-white items-center",
           description:
@@ -100,7 +104,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         };
         dispatch(rejectSo(payload) as any).then((response: any) => {
           console.log(response);
-          if (response?.payload?.code == 200) {
+          if (response?.payload?.code == 200 || response?.payload?.success) {
             form.resetFields();
             dispatch(
               fetchSellRequestList({
@@ -127,7 +131,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         };
         dispatch(cancelSalesOrder(payload)).then((response: any) => {
           console.log(response);
-          if (response?.payload?.code == 200) {
+          if (response?.payload?.code == 200 || response?.payload?.success) {
             form.resetFields(); // Clear the form fields after submission
             dispatch(
               fetchSellRequestList({
@@ -155,7 +159,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const onCreateShipment = (payload: any) => {
     dispatch(createShipment(payload)).then((response: any) => {
       console.log(response);
-      if (response?.payload?.code == 200) {
+      if (response?.payload?.success) {
+        toast({
+          className: "bg-green-600 text-white items-center",
+          description: response.payload.message,
+        });
         setIsMaterialListModalVisible(false);
         handleMaterialListModalClose();
         dispatch(
@@ -176,7 +184,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         remark: values.remark,
       };
       dispatch(shortClose(payload)).then((response: any) => {
-        if (response?.payload?.code == 200) {
+        if (response?.payload?.code == 200 || response?.payload?.success) {
           setShowHandleCloseModal(false);
           dispatch(
             fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
@@ -380,12 +388,12 @@ const materialListColumnDefs: ColDef[] = [
     field: "so_id",
     width: 150,
   },
-  {
-    headerName: "Item",
-    field: "item",
-    width: 200,
-    cellRenderer: "truncateCellRenderer",
-  },
+  // {
+  //   headerName: "Itemssssssssss",
+  //   field: "item",
+  //   width: 200,
+  //   cellRenderer: "truncateCellRenderer",
+  // },
   {
     headerName: "Item Name",
     field: "itemName",

@@ -34,10 +34,15 @@ const CreateSalesOrderPage = () => {
   const { updateData, loading, currency } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
+
   const form = useForm<z.infer<typeof createSalesFormSchema>>({
     resolver: zodResolver(createSalesFormSchema),
     mode: "onBlur",
   });
+  const billToStateCode = form.watch("billTo.state");
+  const billFromStateCode = form.watch("billFrom.state");
+  console.log("billToStateCode", billToStateCode);
+  console.log("billFromStateCode", billFromStateCode);
 
   useEffect(() => {
     if (pathname?.includes("update") && params?.id) {
@@ -112,6 +117,9 @@ const CreateSalesOrderPage = () => {
       form.setValue("costcenter_name", header.costcenter?.name);
       form.setValue("billIdName", header.bill_from?.billing?.name);
       form.setValue("billFrom.billFromId", header?.bill_from?.billing?.code);
+  
+     
+
       if (header?.customer?.state?.code == header?.bill_from?.state?.code) {
         setDerivedType("L");
       } else {
@@ -135,7 +143,7 @@ const CreateSalesOrderPage = () => {
         hsnCode: material.hsnCode || "",
         remark: material.itemRemark || "",
         updateid: material?.updateid || 0,
-        stock:material?.closingQty,
+        stock: material?.closingQty,
         isNew: true,
       }));
       setRowData(data);
@@ -219,9 +227,11 @@ const CreateSalesOrderPage = () => {
           shouldValidate: true,
           shouldDirty: true,
         });
+     
 
         if (
-          form.getValues("billTo.state") == form.getValues("billFrom.state")
+          form.getValues("billTo.state") == form.getValues("billFrom.state") ||
+          billToStateCode == billFromStateCode
         ) {
           setDerivedType("L");
         } else {
@@ -231,6 +241,7 @@ const CreateSalesOrderPage = () => {
     });
   };
 
+  console.log("setDerivedType", derivedType);
   const handleCostCenterChange = (e: any) => {
     form.setValue("costcenter", e.value, {
       shouldValidate: true,
