@@ -240,8 +240,9 @@ export const createShipment = createAsyncThunk(
         "/salesOrder/createShipment",
         payload
       )) as any;
+      console.log("response", response);
 
-      if (response?.data?.code == 200) {
+      if (response?.data?.code == 200 || response?.data?.success == true) {
         toast({
           title: response?.data?.message,
           className: "bg-green-600 text-white items-center",
