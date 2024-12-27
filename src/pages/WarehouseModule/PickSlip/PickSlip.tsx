@@ -221,8 +221,11 @@ const PickSlip = () => {
 
   const handleSubmit = async () => {
     setShowConfirmation(false);
-    const value = form.getFieldsValue();
+    // const value = form.getFieldsValue();
     const values = await form.validateFields();
+    console.log("values", values);
+    console.log("rowData", rowData);
+
     let payload = {
       customer: values.customerName?.value,
       component: rowData.map((r) => r.pickmaterial.value),
@@ -339,7 +342,7 @@ const PickSlip = () => {
     {
       headerName: "Select BOX(es)",
       field: "box_name",
-      editable: true,
+      editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -348,29 +351,29 @@ const PickSlip = () => {
     {
       headerName: "Avail Qty",
       field: "qty",
-      editable: true,
+      editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
   ];
 
-  const handleCellValueChange = (params: any) => {
-    // api.refreshCells({
-    //   rowNodes: [props.node],
-    //   columns: [column, "qty"],
-    // });
+  // const handleCellValueChange = (params: any) => {
+  //   // api.refreshCells({
+  //   //   rowNodes: [props.node],
+  //   //   columns: [column, "qty"],
+  //   // });
 
-    const { oldValue, newValue, colDef, data } = params;
+  //   const { oldValue, newValue, colDef, data } = params;
 
-    if (oldValue !== newValue) {
-      // console.log(
-      //   `${colDef.headerName} changed from ${oldValue} to ${newValue}`
-      // );
-      // Handle additional logic if needed, e.g., API calls, updating local state, etc.
-      // Here, we log the change.
-    }
-  };
+  //   if (oldValue !== newValue) {
+  //     // console.log(
+  //     //   `${colDef.headerName} changed from ${oldValue} to ${newValue}`
+  //     // );
+  //     // Handle additional logic if needed, e.g., API calls, updating local state, etc.
+  //     // Here, we log the change.
+  //   }
+  // };
 
   const handleReset = () => {
     form.resetFields();
@@ -639,9 +642,9 @@ const PickSlip = () => {
               suppressRowClickSelection={false}
               // onCellEditingStarted={(params) =>
               // console.log("Cell editing started", params)
-              // }
-              onCellEditingStopped={handleCellValueChange}
-              onCellValueChanged={handleCellValueChange} // Your existing change handler
+              // // }
+              // onCellEditingStopped={handleCellValueChange}
+              // onCellValueChanged={handleCellValueChange} // Your existing change handler
               rowSelection="multiple"
               // checkboxSelection={true}
               onSelectionChanged={onSelectionChanged}
