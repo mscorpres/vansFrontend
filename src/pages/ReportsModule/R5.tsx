@@ -1,4 +1,4 @@
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,16 +18,27 @@ import { DatePicker, Space } from "antd";
 import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 
-import { exportDateRangespace } from "@/components/shared/Options";
+import {
+  exportDatepace,
+  exportDateRangespace,
+} from "@/components/shared/Options";
 import socket from "@/components/shared/socket";
 const FormSchema = z.object({
   date: z
-    .array(z.date())
-    .length(2)
+    .union([z.date(), z.array(z.date()).length(2)]) // Either a single date or an array with exactly 2 dates
     .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
+    .refine(
+      (data) => {
+        // Additional refinement to ensure that if it's an array, it has exactly 2 dates
+        if (Array.isArray(data)) {
+          return data.length === 2;
+        }
+        return true; // If it's a single date, it's valid
+      },
+      {
+        message: "Please select a valid date range.",
+      }
+    ),
   types: z.string().optional(),
 });
 
@@ -45,7 +56,7 @@ const R5 = () => {
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     let { date } = formData;
 
-    let dataString = exportDateRangespace(date);
+    let dataString = exportDatepace(date);
 
     socket.emit("allComponentCloseingStock", {
       date: dataString,
@@ -166,7 +177,6 @@ const R5 = () => {
             onSubmit={form.handleSubmit(fetchQueryResults)}
             className="space-y-6 overflow-hidden p-[10px] h-[370px]"
           >
-            
             <FormField
               control={form.control}
               name="date"
@@ -174,7 +184,7 @@ const R5 = () => {
                 <FormItem className="w-full">
                   <FormControl>
                     <Space direction="vertical" size={12} className="w-full">
-                      <RangePicker
+                      {/* <RangePicker
                         className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
                         onChange={(value) =>
                           field.onChange(
@@ -182,6 +192,14 @@ const R5 = () => {
                           )
                         }
                         format={"DD/MM/YYYY"}
+                      /> */}
+                      <DatePicker
+                        format="DD-MM-YYYY" // Set the format to dd-mm-yyyy
+                        onChange={(date, dateString) => {
+                          // Use `date` to get the Date object, or `dateString` for formatted value
+                          form.setValue("date", date ? date.toDate() : null);
+                        }}
+                        className="w-[100%] border-slate-400 shadow-none mt-[2px]"
                       />
                     </Space>
                   </FormControl>
@@ -202,9 +220,7 @@ const R5 = () => {
           </form>
         </Form>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-      
-      </div>
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]"></div>
     </Wrapper>
   );
 };
