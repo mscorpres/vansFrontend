@@ -288,8 +288,19 @@ const R4 = () => {
               onClick={getRefreshed}
             >
               <IoIosRefresh />
+            </Button>{" "}
+            <Button
+              // type="submit"
+              className=" bg-white text-black hover:bg-slate-200"
+              disabled={rowData.length === 0}
+              onClick={(e: any) => {
+                e.preventDefault();
+                handleDownloadExcel();
+              }}
+              disabled={rowData.length == 0}
+            >
+              <IoMdDownload size={20} />
             </Button>
-
             {/* <div>
               {showList && (
                 <a className="cursor-pointer p-[40px] mt-[50px]">Show List</a>
