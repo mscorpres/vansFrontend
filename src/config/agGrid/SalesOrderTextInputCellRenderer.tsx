@@ -353,12 +353,14 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
                 className="w-[100%] justify-between  text-slate-600 items-center  border-slate-400 shadow-none"
               >
                 {value
-                  ? gstType.find((option) => option.value === value)?.label
+                  ? gstType.find((option) => option.value === props.derivedType)
+                      ?.label
                   : colDef.headerName}
                 {console.log(
                   gstType.find((option) => option.value === value)?.label,
                   value
                 )}
+                {/* {props.derivedType} */}
                 <FaSortDown className="w-5 h-5 ml-2 mb-[5px] opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>

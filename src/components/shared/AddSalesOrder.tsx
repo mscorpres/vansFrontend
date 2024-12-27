@@ -32,7 +32,7 @@ const AddSalesOrder = ({
   form,
   setRowData,
   rowData,
-  setBackCreate
+  setBackCreate,
 }: {
   setTab: React.Dispatch<React.SetStateAction<string>>;
   payloadData: any;
@@ -40,7 +40,7 @@ const AddSalesOrder = ({
   form: any;
   rowData: any;
   setRowData: any;
-  setBackCreate: any
+  setBackCreate: any;
 }) => {
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
@@ -64,6 +64,7 @@ const AddSalesOrder = ({
     resetModel,
     setResetModel,
   };
+  console.log("derivedType", derivedType);
 
   const addNewRow = () => {
     const newRow: RowData = {
@@ -125,6 +126,7 @@ const AddSalesOrder = ({
           currency={"currency"}
           setRowData={setRowData}
           exRate={form.getValues("currency")}
+          derivedType={derivedType}
         />
       ),
       datePickerCellRenderer: DatePickerCellRenderer,
@@ -253,7 +255,7 @@ const AddSalesOrder = ({
 
   return (
     <Wrapper>
-      <AddPOPopovers uiState={uiState} derivedState={derivedType}/>
+      <AddPOPopovers uiState={uiState} derivedState={derivedType} />
       <div className="h-[calc(100vh-150px)] grid grid-cols-[400px_1fr]">
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
           <Card className="rounded-sm shadow-sm shadow-slate-500">
@@ -378,7 +380,10 @@ const AddSalesOrder = ({
       <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
         <Button
           className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-          onClick={() => {setTab("create");setBackCreate(true)}}
+          onClick={() => {
+            setTab("create");
+            setBackCreate(true);
+          }}
         >
           Back
         </Button>

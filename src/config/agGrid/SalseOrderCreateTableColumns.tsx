@@ -137,7 +137,7 @@ export const columnDefs = [
     minWidth: 200,
   },
   {
-    headerName: "Item Desc",
+    headerName: "Remark",
     field: "remark",
     editable: false,
     flex: 1,
