@@ -16,7 +16,11 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { uploadSOExcel } from "@/features/salesmodule/createSalesOrderSlice";
 
-const AddPOPopovers: React.FC<Props> = ({ uiState, derivedState }) => {
+const AddPOPopovers: React.FC<Props> = ({
+  uiState,
+  derivedState,
+  getCostCenter,
+}) => {
   const {
     excelModel,
     setExcelModel,
@@ -64,6 +68,7 @@ const AddPOPopovers: React.FC<Props> = ({ uiState, derivedState }) => {
     // Map data from excel
     const mappedData = data.data.map((item: any) => {
       // Calculate localValue (parse rate and qty as floats to ensure they are numbers)
+
       const localValue = parseFloat(item.rate) * parseFloat(item.qty) || 0;
       const gstRate = parseFloat(item.gst) || 0; // Ensure gstRate is parsed as a float
       const gstType = derivedState || "I"; // Default to "I" (Inter-state) if gsttype is missing
@@ -96,7 +101,7 @@ const AddPOPopovers: React.FC<Props> = ({ uiState, derivedState }) => {
 
       // Prepare the mapped data for the row
       return {
-        partno: item?.partcode || "", // Ensure partNo is available
+        partno: item.item.partNo || "", // Ensure partNo is available
         orderQty: parseFloat(item.qty) || 1, // Default to 1 if qty is missing or invalid
         material: item?.item || "", // Ensure the material data is included
         rate: parseFloat(item.rate) || 0, // Ensure rate is numeric
@@ -140,7 +145,11 @@ const AddPOPopovers: React.FC<Props> = ({ uiState, derivedState }) => {
           <div>
             <ExcelImportButton
               onImport={handleImport}
-              uploadFunction={(file) => dispatch(uploadSOExcel({ file: file }))}
+              uploadFunction={(file) =>
+                dispatch(
+                  uploadSOExcel({ file: file, getCostCenter: getCostCenter })
+                )
+              }
             />
           </div>
           <div>
