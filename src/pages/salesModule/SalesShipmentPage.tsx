@@ -71,6 +71,9 @@ const SalesShipmentPage: React.FC = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+  const { loading: loading1 } = useSelector(
+    (state: RootState) => state.sellRequest
+  );
 
   const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
     const { dateRange, shipid_wise } = formData;
@@ -109,7 +112,7 @@ const SalesShipmentPage: React.FC = () => {
     () => ({
       shipmentsActionRenderer: ShipMentsActionCellRender,
       CopyCellRenderer: CopyCellRenderer,
-      truncateCellRenderer:TruncateCellRenderer
+      truncateCellRenderer: TruncateCellRenderer,
     }),
     []
   );
@@ -225,8 +228,9 @@ const SalesShipmentPage: React.FC = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+        {(loading || loading1) && <FullPageLoading />}
         <AgGridReact
-        ref={gridRef}
+          ref={gridRef}
           loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs}
