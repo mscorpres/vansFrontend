@@ -388,12 +388,7 @@ const materialListColumnDefs: ColDef[] = [
     field: "so_id",
     width: 150,
   },
-  // {
-  //   headerName: "Itemssssssssss",
-  //   field: "item",
-  //   width: 200,
-  //   cellRenderer: "truncateCellRenderer",
-  // },
+
   {
     headerName: "Item Name",
     field: "itemName",
@@ -406,6 +401,12 @@ const materialListColumnDefs: ColDef[] = [
     cellRenderer: "truncateCellRenderer",
   },
   { headerName: "SKU Code", field: "itemPartNo" },
+  {
+    headerName: "Customer Part No",
+    field: "customer_part_no",
+    width: 200,
+    cellRenderer: "truncateCellRenderer",
+  },
   {
     headerName: "Qty",
     field: "qty",
