@@ -71,8 +71,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const confirmApprove = () => {
     dispatch(approveShipment({ so_id: row?.shipment_id })).then(
       (response: any) => {
-        console.log("response", response);
-
         if (response?.payload?.code == 200 || response?.payload?.success) {
           toast.success(response?.payload?.message);
           dispatch(
@@ -172,11 +170,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const materialListColumns: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
-    {
-      headerName: "Item",
-      field: "item",
-      cellRenderer: TruncateCellRenderer,
-    },
+
     {
       headerName: "Item Name",
       field: "itemName",
@@ -190,6 +184,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       width: 300,
     },
     { headerName: "Item Part Number", field: "itemPartNo" },
+    {
+      headerName: "Customer Part No",
+      field: "customer_part_no",
+      cellRenderer: TruncateCellRenderer,
+    },
     { headerName: "Qty", field: "qty" },
     { headerName: "Rate", field: "rate" },
     { headerName: "GST Rate", field: "gstRate" },
