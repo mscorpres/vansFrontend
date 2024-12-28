@@ -15,7 +15,11 @@ import { CgArrowTopRight } from "react-icons/cg";
 import { Printer } from "lucide-react";
 import { TruncateCellRenderer } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 
 interface ViewInvoiceModalProps {
@@ -83,7 +87,8 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
 }) => {
   const columnDefs: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
-    { headerName: "SO ID", field: "so_id" },
+    // { headerName: "SO ID", field: "soId" },
+    // { headerName: "Shipment ID", field: "soId" },
     { headerName: "Item Code", field: "itemPartNo" },
     { headerName: "Item Name", field: "itemName" },
     {
@@ -100,6 +105,8 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
     { headerName: "Remarks", field: "itemRemark" },
   ];
   const data = sellRequestDetails?.headerData;
+  const shipmentIdextracted = data?.shipmentId;
+  // console.log("shipmentIdextracted", shipmentIdextracted) ;
 
   const itemCGSTs = sellRequestDetails?.materialData?.map(
     (item) => parseFloat(item?.cgstRate) || 0
@@ -116,6 +123,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
       (acc, item) => acc + (item.rate ?? 0) * (item.qty ?? 0),
       0
     ) ?? 0;
+  console.log("sellRequestDetails", sellRequestDetails);
 
   const totalCGST = itemCGSTs?.reduce((acc, value) => acc + value, 0);
   const totalSGST = itemSGSTs?.reduce((acc, value) => acc + value, 0);
@@ -136,6 +144,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
       `width=${width},height=${height},top=${top},left=${left},status=1,scrollbars=1,location=0,resizable=yes`
     );
   }
+  console.log("data", data);
 
   const handleEwayClick = (module: string) => {
     const shipmentId = sellRequestDetails?.headerData?.invoiceNo || "";
@@ -160,7 +169,8 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
       >
         {loading && <FullPageLoading />}
         <SheetTitle>
-          View Material List : {sellRequestDetails?.headerData?.invoiceNo}
+          View Material List : {sellRequestDetails?.headerData?.invoiceNo} |{""}
+          {shipmentIdextracted}
         </SheetTitle>
 
         <div className="ag-theme-quartz h-[calc(100vh-140px)] grid grid-cols-4 gap-4">
@@ -181,7 +191,9 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                 <p className="text-[14px]">{data?.billTo?.gst}</p>
                 <h3 className="font-[600]">Address</h3>
                 <p className="text-[14px]">
-                  {(data?.billTo?.address1 ?? "") +" "+ data?.billTo?.address2}
+                  {(data?.billTo?.address1 ?? "") +
+                    " " +
+                    data?.billTo?.address2}
                 </p>
               </CardContent>
             </Card>
@@ -198,7 +210,8 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                 <p className="text-[14px]">{data?.billFrom?.gstin}</p>
                 <h3 className="font-[600]">Address</h3>
                 <p className="text-[14px]">
-                  {(data?.billFrom?.address1 ?? "") +" "+
+                  {(data?.billFrom?.address1 ?? "") +
+                    " " +
                     (data?.billFrom?.address2 ?? "")}
                 </p>
               </CardContent>
@@ -318,43 +331,52 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                 <CgArrowTopRight className="h-[20px] w-[20px] font-[600]" />
               </Button>
               <div className="col-span-3 flex flex-col h-full">
-            <div className="flex justify-end mb-4 gap-4">
-              {/* Print Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
-                    Print{" "}
-                    <Printer className="pl-1 h-[20px] w-[20px] font-[600]" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end" // Align dropdown to the right
-                  className="z-50 bg-white shadow-lg rounded-md overflow-hidden max-w-[200px]"
-                >
-                  <DropdownMenuItem
-                    onClick={() =>
-                      handlePrintInvoice(sellRequestDetails?.headerData?.invoiceNo, "Original")
-                    }
-                  >
-                    Original
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() =>
-                      handlePrintInvoice(sellRequestDetails?.headerData?.invoiceNo, "Duplicate")
-                    }
-                  >
-                    Duplicate
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() =>
-                      handlePrintInvoice(sellRequestDetails?.headerData?.invoiceNo, "Triplicate")
-                    }
-                  >
-                    Transporter
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                <div className="flex justify-end mb-4 gap-4">
+                  {/* Print Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline">
+                        Print{" "}
+                        <Printer className="pl-1 h-[20px] w-[20px] font-[600]" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end" // Align dropdown to the right
+                      className="z-50 bg-white shadow-lg rounded-md overflow-hidden max-w-[200px]"
+                    >
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handlePrintInvoice(
+                            sellRequestDetails?.headerData?.invoiceNo,
+                            "Original"
+                          )
+                        }
+                      >
+                        Original
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handlePrintInvoice(
+                            sellRequestDetails?.headerData?.invoiceNo,
+                            "Duplicate"
+                          )
+                        }
+                      >
+                        Duplicate
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handlePrintInvoice(
+                            sellRequestDetails?.headerData?.invoiceNo,
+                            "Triplicate"
+                          )
+                        }
+                      >
+                        Transporter
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             </div>
             <div className="ag-theme-quartz flex-1">

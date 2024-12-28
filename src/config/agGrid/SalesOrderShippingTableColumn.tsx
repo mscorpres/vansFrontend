@@ -185,7 +185,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     },
     { headerName: "Item Part Number", field: "itemPartNo" },
     {
-      headerName: "Customer Part No",
+      headerName: "Customer Part Number",
       field: "customer_part_no",
       cellRenderer: TruncateCellRenderer,
     },

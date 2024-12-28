@@ -383,11 +383,11 @@ export const columnDefs: ColDef<any>[] = [
 
 const materialListColumnDefs: ColDef[] = [
   { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
-  {
-    headerName: "SO ID",
-    field: "so_id",
-    width: 150,
-  },
+  // {
+  //   headerName: "SO ID",
+  //   field: "so_id",
+  //   width: 150,
+  // },
 
   {
     headerName: "Item Name",
@@ -400,9 +400,9 @@ const materialListColumnDefs: ColDef[] = [
     field: "itemSpecification",
     cellRenderer: "truncateCellRenderer",
   },
-  { headerName: "SKU Code", field: "itemPartNo" },
+  { headerName: "Part No.", field: "itemPartNo" },
   {
-    headerName: "Customer Part No",
+    headerName: "Customer Part No.",
     field: "customer_part_no",
     width: 200,
     cellRenderer: "truncateCellRenderer",
