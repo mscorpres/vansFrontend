@@ -146,12 +146,13 @@ export const fetchBillingAddress = createAsyncThunk<
 export const uploadSOExcel = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { file: File } // Define the type of the argument you expect
->("/client/uploadExcel", async ({ file }) => {
+>("/client/uploadExcel", async ({ file, getCostCenter }) => {
   const formData = new FormData();
   formData.append("file", file); // Append the file to FormData
+  formData.append("cost_center", getCostCenter); // Append the file to FormData
 
   const response = await spigenAxios.post(
-    "/salesOrder/uploadSOItems",
+    `/salesOrder/uploadSOItems`,
     formData,
     {
       headers: {
