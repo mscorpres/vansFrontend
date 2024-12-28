@@ -53,7 +53,7 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
   // Create shipment payload from selected items
   const handleCreateShipment = () => {
     const itemDetails = {
-      item: selectedItems.map((item) => item.item), 
+      item: selectedItems.map((item) => item.item),
       qty: selectedItems.map((item) => item.qty),
       rate: selectedItems.map((item) => item.rate),
       currency: selectedItems.map((item) => item.currency || "USD"),
@@ -88,11 +88,11 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
       field: "so_id",
       width: 150,
     },
-    {
-      headerName: "Item",
-      field: "item",
-      width: 200,
-    },
+    // {
+    //   headerName: "Item",
+    //   field: "item",
+    //   width: 200,
+    // },
     {
       headerName: "Item Name",
       field: "itemName",
@@ -171,25 +171,25 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
       // },
       cellRenderer: (params: any) => {
         const { value, colDef, data, api, column } = params;
-      
+
         // Function to handle quantity change
         const onChangeQty = (e: React.ChangeEvent<HTMLInputElement>) => {
           const newValue = e.target.value;
-      
+
           // Parse newValue to a float number
-          const qty = parseFloat(newValue);  // Ensure the qty is a number
-      
+          const qty = parseFloat(newValue); // Ensure the qty is a number
+
           const rate = parseFloat(data.rate) || 0; // Ensure rate is also a number
           const localValue = qty * rate; // Now, this will correctly calculate the value
-      
+
           let cgst = 0;
           let sgst = 0;
           let igst = 0;
           const calculation = (localValue * data.gstRate) / 100;
-      
+
           // Update the qty field in data
           data[colDef.field] = newValue; // Update the input value (qty field)
-      
+
           // GST Calculation
           if (data.gst_type === "L") {
             // Intra-State
@@ -208,17 +208,24 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
             data.sgstRate = sgst.toFixed(2);
             data.igstRate = igst.toFixed(2);
           }
-      
+
           // Refresh the cell to show updated value
           api.refreshCells({
             rowNodes: [params.node],
-            columns: [column, "qty", "foreignValue", "cgstRate", "sgstRate", "igstRate"],
+            columns: [
+              column,
+              "qty",
+              "foreignValue",
+              "cgstRate",
+              "sgstRate",
+              "igstRate",
+            ],
           });
-      
+
           // Apply transaction to update the data grid
           api.applyTransaction({ update: [data] });
         };
-      
+
         return (
           <input
             type="number"
@@ -227,8 +234,7 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
             className="p-2 border border-gray-300 rounded-md"
           />
         );
-      }
-      
+      },
     },
     { headerName: "Pending Quantity", field: "pending_qty" },
     { headerName: "Price", field: "rate" },
