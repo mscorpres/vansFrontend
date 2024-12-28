@@ -271,7 +271,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClose={() => setShowConfirmationModal(false)}
         sellRequestDetails={shipmentMaterialList?.items}
         row={{ req_id: row?.so_id }}
-        loading={loading2}
+        loading={loading2 || loading}
         columnDefs={materialListColumns}
         title={`Approve Shipment Order for ${row?.shipment_id}`}
         submitText="Approve"

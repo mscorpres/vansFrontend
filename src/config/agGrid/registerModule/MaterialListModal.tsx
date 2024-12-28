@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { TruncateCellRenderer } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 
 interface MaterialListModalProps {
   visible: boolean;
@@ -78,6 +79,7 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
         </div>
 
         <div className="ag-theme-quartz h-[calc(100vh-170px)]">
+          {loading && <FullPageLoading />}
           <AgGridReact
             ref={gridRef}
             modules={[CsvExportModule]}
