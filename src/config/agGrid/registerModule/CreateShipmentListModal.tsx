@@ -102,9 +102,11 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
     {
       headerName: "Item Specification",
       field: "itemSpecification",
+      width: 300,
       cellRenderer: "truncateCellRenderer",
     },
-    { headerName: "SKU Code", field: "itemPartNo" },
+    { headerName: "Part No.", field: "itemPartNo" },
+    { headerName: "Customer Part No.", field: "customer_part_no" },
     {
       headerName: "Quantity",
       field: "qty",

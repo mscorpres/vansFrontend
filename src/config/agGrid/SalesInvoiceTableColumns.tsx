@@ -3,7 +3,12 @@ import { ColDef } from "ag-grid-community";
 import { Button, Dropdown, Form } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { cancelInvoice, fetchInvoiceDetail, fetchSalesOrderInvoiceList, printSellInvoice } from "@/features/salesmodule/salesInvoiceSlice";
+import {
+  cancelInvoice,
+  fetchInvoiceDetail,
+  fetchSalesOrderInvoiceList,
+  printSellInvoice,
+} from "@/features/salesmodule/salesInvoiceSlice";
 import { AppDispatch, RootState } from "@/store";
 import { useState } from "react";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
@@ -25,17 +30,17 @@ const ActionMenu: React.FC<any> = ({ row }) => {
 
   const handleViewInvoice = (row: any) => {
     setViewInvoice(true);
-    dispatch(fetchInvoiceDetail({ invoiceNo: row.invoiceNo })); 
+    dispatch(fetchInvoiceDetail({ invoiceNo: row.invoiceNo }));
   };
 
   const handlePrintInvoice = async (orderId: string, printInvType: string) => {
     dispatch(
-      printSellInvoice({ invoiceNo: orderId, printType: printInvType})
+      printSellInvoice({ invoiceNo: orderId, printType: printInvType })
     ).then((response: any) => {
       if (response?.payload?.success) {
         printFunction(response?.payload?.data.buffer.data);
       }
-    })
+    });
   };
 
   const handleOk = () => {
@@ -139,6 +144,12 @@ export const columnDefs: ColDef<RowData>[] = [
   {
     headerName: "SO Invoice ID",
     field: "invoiceNo",
+    filter: "agNumberColumnFilter",
+    cellRenderer: CopyCellRenderer,
+  },
+  {
+    headerName: "Shipment ID",
+    field: "shipmentId",
     filter: "agNumberColumnFilter",
     cellRenderer: CopyCellRenderer,
   },
