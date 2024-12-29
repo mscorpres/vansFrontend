@@ -90,6 +90,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
     // { headerName: "SO ID", field: "soId" },
     // { headerName: "Shipment ID", field: "soId" },
     { headerName: "Item Code", field: "itemPartNo" },
+    { headerName: "Customer Part No.", field: "customer_part_no" },
     { headerName: "Item Name", field: "itemName" },
     {
       headerName: "Item Description",
