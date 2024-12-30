@@ -71,6 +71,7 @@ const CreatePoPage: React.FC<Props> = ({
   currencyList,
   setResetSure,
   resetSure,
+  currencyval,
 }) => {
   const [searchData, setSearchData] = useState("");
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
@@ -103,6 +104,13 @@ const CreatePoPage: React.FC<Props> = ({
       value: "vendor",
     },
   ];
+  useEffect(() => {
+    if (currencyval?.value == "364907247") {
+      form.setFieldValue("exchange_rate", "1");
+    } else {
+      form.setFieldValue("exchange_rate", "");
+    }
+  }, [currencyval]);
 
   const selBranch = Form.useWatch("branch", form);
   const dueDate = Form.useWatch("duedate", form);
@@ -111,6 +119,7 @@ const CreatePoPage: React.FC<Props> = ({
   const selBilling = Form.useWatch("billingId", form);
   const selPoType = Form.useWatch("poType", form);
   const selvenName = Form.useWatch("vendorName", form);
+
 
   const [forms] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
