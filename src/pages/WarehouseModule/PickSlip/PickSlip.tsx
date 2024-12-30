@@ -223,9 +223,6 @@ const PickSlip = () => {
     setShowConfirmation(false);
     // const value = form.getFieldsValue();
     const values = await form.validateFields();
-    console.log("values", values);
-    console.log("rowData", rowData);
-
     let payload = {
       customer: values.customerName?.value,
       component: rowData.map((r) => r.pickmaterial.value),

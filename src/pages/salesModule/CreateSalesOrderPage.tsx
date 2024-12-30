@@ -42,8 +42,6 @@ const CreateSalesOrderPage = () => {
   const billToStateCode = form.watch("billTo.state");
   const billFromStateCode = form.watch("billFrom.state");
   const getCostCenter = form.watch("costcenter");
-  console.log("billToStateCode", billToStateCode);
-  console.log("billFromStateCode", billFromStateCode);
 
   useEffect(() => {
     if (pathname?.includes("update") && params?.id) {
@@ -239,7 +237,6 @@ const CreateSalesOrderPage = () => {
     });
   };
 
-  console.log("setDerivedType", derivedType);
   const handleCostCenterChange = (e: any) => {
     form.setValue("costcenter", e.value, {
       shouldValidate: true,

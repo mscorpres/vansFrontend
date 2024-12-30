@@ -88,7 +88,6 @@ export const saveMapCustomer = async (payload: any) => {
   return response;
 };
 export const getComponentsByNameAndNo = async (search: any) => {
-  console.log("search", search);
 
   const response = await spigenAxios.get(
     `/backend/getComponentByNameAndNo/${search}`
@@ -424,7 +423,6 @@ export const fetchR6 = async (payload: any) => {
   return response;
 };
 export const getComponentDetailsForServices = async (payload: any) => {
-  // console.log("payload", payload);
 
   const response = await spigenAxios.get(
     `/component/fetchUpdateComponent/${payload}`
@@ -435,8 +433,6 @@ export const getComponentDetailsForServices = async (payload: any) => {
   return response;
 };
 export const getProductDetailsForEdit = async (payload: any) => {
-  // console.log("payload", payload);
-
   const response = await spigenAxios.get(
     `/products/getProductForUpdate/${payload}`
     // {
@@ -505,7 +501,6 @@ export const getListOfProductSKU = async (payload: any) => {
   return response;
 };
 export const getdetailsOfUpdateComponent = async (payload: any) => {
-  // console.log("payload", payload);
 
   const response = await spigenAxios.get(
     `/component/fetchUpdateComponent/${payload.componentKey}`
@@ -585,7 +580,6 @@ export const addbranchToClient = async (payload: any) => {
   return response;
 };
 export const fetchHSN = async (payload: any) => {
-  // console.log("payload", payload);
 
   const response = await spigenAxios.get(
     `/backend/fetchHsn/${payload}`
@@ -632,7 +626,6 @@ export const getAlternativeComponents = async (payload: any) => {
 };
 
 export const fetchbomComponents = async (payload: any) => {
-  // console.log("payload", payload);
 
   const response = await spigenAxios.get(
     `/bom/bomComponents/${payload}`
