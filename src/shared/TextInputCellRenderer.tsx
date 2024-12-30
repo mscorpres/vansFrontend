@@ -43,6 +43,7 @@ import {
 import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
 import { toast } from "@/components/ui/use-toast";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
+import dayjs from "dayjs";
 
 const type = [
   {
@@ -383,7 +384,7 @@ const TextInputCellRenderer = (props: any) => {
       data.cgst = cgst.toFixed(2);
       data.sgst = sgst.toFixed(2);
       data.igst = igst.toFixed(2);
-      data["gstRate"] = 0;
+      data["gstRate"] = "0";
     }
     // setDisplayText(text);
     data[colDef.field] = newValue; // update the data
@@ -453,6 +454,7 @@ const TextInputCellRenderer = (props: any) => {
         data.cgst = cgst.toFixed(2);
         data.sgst = sgst.toFixed(2);
         data.igst = igst.toFixed(2);
+        data["gstRate"] = "0";
       }
 
       // Update IGST for all cases where relevant fields change
@@ -481,9 +483,22 @@ const TextInputCellRenderer = (props: any) => {
   };
 
   const handleDateChange = (date: moment.Moment | null) => {
+
     data.dueDate = date ? date.format("DD-MM-YYYY") : ""; // Format the date for storage
     updateData(data); // Update the data
   };
+  useEffect(() => {
+    if (data["gstTypeForPO"]) {
+      data["gstRate"] = data["gstTypeForPO"];
+    }
+  }, [data["gstTypeForPO"]]);
+  useEffect(() => {
+    console.log(data["currency"], data["currency"]);
+    if (data["currency"] == "364907247") {
+      data["exchange_rate"] = "1";
+      // data["gstRate"] = data["gstTypeForPO"];
+    }
+  }, [data["currency"]]);
 
   const renderContent = () => {
     switch (colDef.field) {
@@ -1006,7 +1021,7 @@ const TextInputCellRenderer = (props: any) => {
           <DatePicker
             format="DD-MM-YYYY" // Set the format to dd-mm-yyyy
             onChange={handleDateChange}
-            value={value ? moment(value, "DD-MM-YYYY") : null} // Convert string to moment object
+            value={value ? dayjs(value, "DD-MM-YYYY") : null} // Convert string to moment object
             className="w-[100%] border-slate-400 shadow-none mt-[2px]"
           />
         );
@@ -1307,6 +1322,16 @@ const TextInputCellRenderer = (props: any) => {
             value={value}
             placeholder={colDef.headerName}
             // type="number"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "exchange_rate":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="number"
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );
