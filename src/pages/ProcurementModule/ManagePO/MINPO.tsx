@@ -31,6 +31,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { removeHtmlTags } from "@/components/shared/Options";
 import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
+import dayjs from "dayjs";
 const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [rowData, setRowData] = useState([]);
   const [search, setSearch] = useState("");
@@ -402,7 +403,9 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
               value: r.totalValue,
               materialDescription: r.description,
               hsnCode: r.hsncode,
-              dueDate: r.orderduedate,
+              // dueDate: formattedDate(r.orderduedate),
+              // dueDate: r.orderduedate,
+              dueDate: dayjs(r.orderduedate, "DD-MM-YYYY"),
               currency: r.currency,
               ...r,
             };
