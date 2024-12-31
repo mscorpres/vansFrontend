@@ -109,8 +109,6 @@ const CreatePoPage: React.FC<Props> = ({
 
     if (currencyval?.value == "364907247") {
       form.setFieldValue("exchange_rate", "1");
-    } else if (isApprove !== "edit"|| isApprove !== "approve") {
-      form.setFieldValue("exchange_rate", "");
     }
   }, [currencyval]);
 
