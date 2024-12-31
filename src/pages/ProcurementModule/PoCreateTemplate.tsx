@@ -191,6 +191,7 @@ const PoCreateTemplate = () => {
             currencyList={currency}
             setResetSure={setResetSure}
             resetSure={resetSure}
+            isApprove={isApprove}
             currencyval={currencyval}
           />
         </TabsContent>
