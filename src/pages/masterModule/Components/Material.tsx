@@ -264,7 +264,7 @@ const Material = () => {
 
       type: fixedVal.type.value,
       notes: fixedVal.specifiction,
-      hsns: hsnrowData.map((r) => r.hsnSearch),
+      hsns: hsnrowData.map((r) => r.hsnSearch.value),
       taxs: hsnrowData.map((r) => r.gstRate),
       group: fixedVal.group.value,
       isSmt: fixedVal.smt.value,
