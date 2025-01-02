@@ -461,7 +461,7 @@ const TextInputCellRenderer = (props: any) => {
       data["cgst"] = cgst.toFixed(2);
       data["sgst"] = sgst.toFixed(2);
       data["igst"] = igst.toFixed(2);
-      data["gstRate"] = 0;
+      data["gstRate"] = "0";
       if (data["exchange_rate"]) {
         data["foreignValue"] = data["exchange_rate"] * data["localValue"];
       }
@@ -1366,7 +1366,7 @@ const TextInputCellRenderer = (props: any) => {
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );
-    
+
       case "cust_part_code":
         return (
           <Input
