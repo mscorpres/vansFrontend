@@ -483,7 +483,6 @@ const TextInputCellRenderer = (props: any) => {
   };
 
   const handleDateChange = (date: moment.Moment | null) => {
-
     data.dueDate = date ? date.format("DD-MM-YYYY") : ""; // Format the date for storage
     updateData(data); // Update the data
   };
@@ -1332,6 +1331,50 @@ const TextInputCellRenderer = (props: any) => {
             value={value}
             placeholder={colDef.headerName}
             type="number"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "exchange_rate":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            placeholder={colDef.headerName}
+            type="number"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "name":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            disabled={true}
+            placeholder={colDef.headerName}
+            // type="number"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "part_no":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            disabled={true}
+            placeholder={colDef.headerName}
+            // type="number"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+    
+      case "cust_part_code":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            disabled={true}
+            placeholder={colDef.headerName}
+            // type="number"
             className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
           />
         );

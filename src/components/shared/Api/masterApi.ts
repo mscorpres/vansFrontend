@@ -88,8 +88,11 @@ export const saveMapCustomer = async (payload: any) => {
   return response;
 };
 export const getComponentsByNameAndNo = async (search: any) => {
+<<<<<<< HEAD
   console.log("search", search);
 
+=======
+>>>>>>> 8666684 (customer enquiry added)
   const response = await spigenAxios.get(
     `/backend/getComponentByNameAndNo/${search}`
   );
@@ -424,8 +427,6 @@ export const fetchR6 = async (payload: any) => {
   return response;
 };
 export const getComponentDetailsForServices = async (payload: any) => {
-  // console.log("payload", payload);
-
   const response = await spigenAxios.get(
     `/component/fetchUpdateComponent/${payload}`
     // {
@@ -505,8 +506,6 @@ export const getListOfProductSKU = async (payload: any) => {
   return response;
 };
 export const getdetailsOfUpdateComponent = async (payload: any) => {
-  // console.log("payload", payload);
-
   const response = await spigenAxios.get(
     `/component/fetchUpdateComponent/${payload.componentKey}`
     // payloadd
@@ -585,8 +584,6 @@ export const addbranchToClient = async (payload: any) => {
   return response;
 };
 export const fetchHSN = async (payload: any) => {
-  // console.log("payload", payload);
-
   const response = await spigenAxios.get(
     `/backend/fetchHsn/${payload}`
     //    {
@@ -632,8 +629,6 @@ export const getAlternativeComponents = async (payload: any) => {
 };
 
 export const fetchbomComponents = async (payload: any) => {
-  // console.log("payload", payload);
-
   const response = await spigenAxios.get(
     `/bom/bomComponents/${payload}`
     //    {
@@ -658,4 +653,52 @@ export const fetchBomForProduct = async (payload: any) => {
   );
   return response;
 };
+export const getallItemClosingStock = async (payload: any) => {
+  const response = await spigenAxios.get(
+    `/customer/allItemClosingStock`
+    //    {
+    //   search: payload,
+    // }
+  );
+  return response;
+};
+export const getCustomerStock = async (payload: any) => {
+  const response = await spigenAxios.get(
+    `/customer/cust_stock`
+    //    {
+    //   search: payload,
+    // }
+  );
+  return response;
+};
+export const getAllCustomerEnquiry = async (payload: any) => {
+  const response = await spigenAxios.get(
+    "/customer/getAllCustomerEnquiry"
+    //    {
+    //   search: payload,
+    // }
+  );
+  return response;
+};
+export const saveCustStockremark = async (payload: any) => {
+  const response = await spigenAxios.post(
+    `/customer/saveCustStockremark`,
+    payload
+    //    {
+    //   search: payload,
+    // }
+  );
+  return response;
+};
+export const refreshStock = async (payload: any) => {
+  const response = await spigenAxios.get(
+    "/report/fetchCloseStockAll"
+
+    //    {
+    //   search: payload,
+    // }
+  );
+  return response;
+};
+
 // /purchaseOrder/fetchComponentList4PO
