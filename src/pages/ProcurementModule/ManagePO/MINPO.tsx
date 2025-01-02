@@ -257,6 +257,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       igst: arr.map((r: any) => r.igst),
       remark: arr.map((r: any) => r.remark),
     };
+    console.log("payload",payload)
 
     // return;
     try {
