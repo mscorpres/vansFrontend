@@ -290,7 +290,8 @@ const SidebarMenues: React.FC<Props> = ({ uiState }) => {
       />
 
       <ul className="flex flex-col text-white p-[5px] mt-[50px]">
-        {isClient ? clientMenu : nonClientMenu}
+        {/* {isClient ? clientMenu : nonClientMenu} */}
+        {nonClientMenu}
       </ul>
     </div>
   );
