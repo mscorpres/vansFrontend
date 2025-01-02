@@ -1,116 +1,284 @@
-import React, { useState } from "react";
-
-import FP2 from "@/assets/FP2.png";
+import { useState } from "react";
 import {
-  Card,
-  CardContent,
+  Box,
+  Container,
   TextField,
   Button,
   Typography,
-  Box,
-  Snackbar,
+  Paper,
+  CircularProgress,
+  InputAdornment,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
-import KeyIcon from "@mui/icons-material/Key";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { styled } from "@mui/system";
-const ForgetPasswordNew = () => {
-  const [email, setEmail] = useState("");
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+import { IoMdMail } from "react-icons/io";
+import { RiLockPasswordLine } from "react-icons/ri";
+import { MdSecurity } from "react-icons/md";
+// import { AppDispatch } from "@/store";
+// import { useDispatch } from "react-redux";
+// import { getPasswordOtp, verifyOtp } from "@/features/authentication/authSlice";
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  borderRadius: 16,
+  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+  position: "relative",
+  overflow: "hidden",
+}));
+
+const FormContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(3),
+}));
+
+const StyledTextField = styled(TextField)(() => ({
+  "& .MuiOutlinedInput-root": {
+    borderRadius: 8,
+    transition: "all 0.3s ease",
+    "&:hover": {
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    },
+    "&.Mui-focused": {
+      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.15)",
+    },
+  },
+}));
+
+const SecurityImage = styled(Box)({
+  width: "100%",
+  minHeight: "400px", // Ensure there's a minimum height
+  backgroundImage:
+    'url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800")',
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  borderRadius: 16,
+});
+
+const ForgetPasswordNew = () => {
+  const theme = useTheme();
+  // const dispatch = useDispatch<AppDispatch>();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    verificationCode: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState<any>({});
+  const [step, setStep] = useState(1);
+
+  const validateEmail = (email:string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   };
 
-  const handleSubmit = () => {
-    // Validate email
-    if (!email) {
-      setSnackbarMessage("Please enter an email address.");
-      setOpenSnackbar(true);
-      return;
-    }
+  const handleChange = (field: string) => (event:any) => {
+    const value = event.target.value;
+    setFormData({ ...formData, [field]: value });
 
-    // Handle password reset logic here (e.g., API call)
-    console.log("Password reset request for:", email);
-    setSnackbarMessage("Password reset instructions sent to your email!");
-    setOpenSnackbar(true);
+    if (field === "email") {
+      setErrors({
+        ...errors,
+        email: !validateEmail(value) ? "Invalid email format" : "",
+      });
+    } else if (field === "confirmPassword") {
+      setErrors({
+        ...errors,
+        confirmPassword:
+          value !== formData.newPassword ? "Passwords do not match" : "",
+      });
+    }
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      if (step === 1) {
+        // dispatch(getPasswordOtp(formData.email)).then((res: any) => {
+        //   if (res?.payload?.success) {
+        //     setStep(2);
+        //   } 
+        // });
+        setStep(2);
+      } else if (step === 2) {
+        // const payload = {
+        //   emailId: formData.email,
+        //   otp: formData.verificationCode, 
+        //   password: formData.confirmPassword                                                                       
+        // }
+        // dispatch(verifyOtp(payload as any)).then((res: any) => {
+        //     console.log(res)
+        //     if(res?.payload?.success){
+        //       setStep(3);
+        //     }
+        // })
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="h-[calc(100vh-50px)] w-full flex items-center justify-center">
-      <div className="h-[calc(100vh-50px)]   w-full grid grid-cols-2 bg-[url(@/assets/FP2.png)] bg-size-cover bg-cover w-100 h-100 ">
-        <div className="w-full h-full  ">
-          {/* <img
-          src={FP2}
-          // alt="project under developent"
-          className="h-[70%] justify-self-center opacity-80"
-        /> */}
-        </div>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: 4,
+          minHeight: "80vh",
+          alignItems: "center",
+        }}
+      >
+        <Box flex={1}>
+          <StyledPaper elevation={0}>
+            <Typography
+              variant="h4"
+              component="h1"
+              gutterBottom
+              sx={{ fontWeight: 600, color: theme.palette.primary.main }}
+            >
+              Password Recovery
+            </Typography>
+            <Typography variant="body1" color="text.secondary" paragraph>
+              {step === 1
+                ? "Enter your email address to receive a verification code."
+                : step === 2
+                ? "Enter the verification code sent to your email and Create your new password."
+                : ""}
+            </Typography>
 
-        <div className="h-[600px]   flex items-center justify-center w-full ">
-          {/* <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          sx={{ backgroundColor: "#f4f4f4" }}
-        > */}
-          <Card sx={{ maxWidth: 500, width: "100%", padding: 2, opacity: 1 }}>
-            <CardContent>
-              <div className="flex items-center justify-center mb-4 ">
-                <div className="flex items-center justify-center w-25 h-25 bg-[#BAD3FD] p-2  color-black rounded-full ">
-                  <KeyIcon className="text-black" fontSize="medium" />
-                </div>
-              </div>
-              <Typography variant="h4" component="h2" gutterBottom>
-                Forgot Password
-              </Typography>
-              <Typography variant="body1" color="textSecondary" paragraph>
-                Enter your email address to receive password reset instructions.
-              </Typography>
+            <form onSubmit={handleSubmit}>
+              <FormContainer>
+                {step === 1 && (
+                  <StyledTextField
+                    fullWidth
+                    label="Email Address"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange("email")}
+                    error={Boolean(errors.email)}
+                    helperText={errors.email}
+                    required
+                    autoComplete="email"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <IoMdMail />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
 
-              <TextField
-                label="Email Address"
-                type="email"
-                fullWidth
-                variant="outlined"
-                value={email}
-                onChange={handleEmailChange}
-                sx={{ marginBottom: 2 }}
-                required
-              />
+                {step === 2 && (
+                  <>
+                  <StyledTextField
+                    fullWidth
+                    label="Verification Code"
+                    value={formData.verificationCode}
+                    onChange={handleChange("verificationCode")}
+                    required
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MdSecurity />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                    <StyledTextField
+                      fullWidth
+                      label="New Password"
+                      type="password"
+                      value={formData.newPassword}
+                      onChange={handleChange("newPassword")}
+                      required
+                      autoComplete="new-password"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <RiLockPasswordLine />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                    <StyledTextField
+                      fullWidth
+                      label="Confirm Password"
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange("confirmPassword")}
+                      error={Boolean(errors.confirmPassword)}
+                      helperText={errors.confirmPassword}
+                      required
+                      autoComplete="new-password"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <RiLockPasswordLine />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </>
+                )}
 
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                onClick={handleSubmit}
-                sx={{ marginBottom: 2 }}
-              >
-                Send Reset Link
-              </Button>
-              <Button
-                variant="link"
-                // color="primary"
-                fullWidth
-                onClick={handleSubmit}
-                startIcon={<KeyboardBackspaceIcon />}
-              >
-                Back to Log in
-              </Button>
-            </CardContent>
-          </Card>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                  sx={{
+                    borderRadius: 2,
+                    py: 1.5,
+                    backgroundColor: theme.palette.primary.main,
+                    "&:hover": {
+                      backgroundColor: theme.palette.primary.dark,
+                    },
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : step === 1 ? (
+                    "Send Verification Code"
+                  ) : step === 2 ? (
+                    "Submit"
+                  ) : (
+                    "Reset Password"
+                  )}
+                </Button>
 
-          {/* Snackbar for feedback */}
-          <Snackbar
-            open={openSnackbar}
-            autoHideDuration={6000}
-            onClose={() => setOpenSnackbar(false)}
-            message={snackbarMessage}
-          />
-          {/* </Box> */}
-        </div>
-      </div>
-    </div>
+                {step > 1 && (
+                  <Button
+                    variant="text"
+                    onClick={() => setStep(step - 1)}
+                    sx={{ mt: 1 }}
+                  >
+                    Go Back
+                  </Button>
+                )}
+              </FormContainer>
+            </form>
+          </StyledPaper>
+        </Box>
+
+        {!isMobile && (
+          <Box flex={1}>
+            <SecurityImage />
+          </Box>
+        )}
+      </Box>
+    </Container>
   );
 };
 
