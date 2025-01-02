@@ -104,6 +104,7 @@ import SopPage from "@/pages/fileupload/SopPage";
 import LogningV2 from "@/pages/WarehouseModule/LogningV2";
 import ForgetPasswordNew from "./pages/ForgetPasswordNew";
 import ChangePassword from "./pages/ChangePassword";
+import Profile from "@/components/shared/Api/Profile";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -1112,6 +1113,14 @@ const router = createBrowserRouter([
     element: (
       <MainLayout>
         <BlockedPageRenderPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <MainLayout>
+        <Profile />
       </MainLayout>
     ),
   },
