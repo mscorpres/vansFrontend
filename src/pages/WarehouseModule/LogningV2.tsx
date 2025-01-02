@@ -252,9 +252,9 @@ const LogningV2: React.FC = () => {
                     </FormHelperText>
                   )}
                 </FormControl>
-                {/* <Link href="#" fontSize={12} className="">
+                <Link href="/forgot-password" fontSize={12} className="">
                   Forgot Password
-                </Link> */}
+                </Link>
               </div>
               <LoadingButton
                 loading={loading}
