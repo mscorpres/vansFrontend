@@ -88,11 +88,6 @@ export const saveMapCustomer = async (payload: any) => {
   return response;
 };
 export const getComponentsByNameAndNo = async (search: any) => {
-<<<<<<< HEAD
-  console.log("search", search);
-
-=======
->>>>>>> 8666684 (customer enquiry added)
   const response = await spigenAxios.get(
     `/backend/getComponentByNameAndNo/${search}`
   );
