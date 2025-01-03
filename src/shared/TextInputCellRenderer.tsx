@@ -43,7 +43,6 @@ import {
 import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
 import { toast } from "@/components/ui/use-toast";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-// import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import dayjs from "dayjs";
 
 const type = [
