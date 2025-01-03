@@ -246,7 +246,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       access_code: arr.map((r: any) => r.access_code),
       qty: arr.map((r: any) => r.orderQty),
       rate: arr.map((r: any) => r.rate),
-      invoiceDate: arr.map((r: any) => formattedDate(r.dueDate)),
+      invoiceDate: arr.map((r: any) => dayjs(r.dueDate).format("DD-MM-YYYY")),
       invoice: arr.map((r: any) => r.invoice),
       invoices: attachmentFile,
       hsncode: arr.map((r: any) => r.hsnCode),
