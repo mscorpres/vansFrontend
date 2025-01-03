@@ -461,7 +461,7 @@ const TextInputCellRenderer = (props: any) => {
       data["cgst"] = cgst.toFixed(2);
       data["sgst"] = sgst.toFixed(2);
       data["igst"] = igst.toFixed(2);
-      data["gstRate"] = "0";
+      // data["gstRate"] = "0";
       if (data["exchange_rate"]) {
         data["foreignValue"] = data["exchange_rate"] * data["localValue"];
       }
