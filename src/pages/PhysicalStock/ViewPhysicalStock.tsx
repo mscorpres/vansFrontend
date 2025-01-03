@@ -39,7 +39,7 @@ const ViewPhysicalStock = () => {
   const dispatch = useDispatch<AppDispatch>();
   const fetchFGList = async () => {
     const values = await form.validateFields();
-    let dataString = exportDatepace(values.dateRange);
+    let dataString = exportDatepace(values?.dateRange);
 
     // return;
     let payload = { date: dataString };

@@ -706,6 +706,47 @@ export const approveStockItem = createAsyncThunk<ResponseData>(
   }
 );
 
+export const getAllCustomerEnquiry = createAsyncThunk<ResponseData>(
+  "/customer/getAllCustomerEnquiry", // Action type
+  async () => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.get("/customer/getAllCustomerEnquiry");
+
+      return response; // Return the response data to Redux
+    } catch (error) {
+      return error;
+    }
+  }
+);
+export const getCustomerStock = createAsyncThunk<ResponseData>(
+  "/customer/cust_stock", // Action type
+  async () => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.get("/customer/cust_stock");
+      console.log("response", response);
+
+      return response; // Return the response data to Redux
+    } catch (error) {
+      return error;
+    }
+  }
+);
+export const getallItemClosingStock = createAsyncThunk<ResponseData>(
+  "/customer/allItemClosingStock", // Action type
+  async () => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.get("/customer/allItemClosingStock");
+      console.log("response", response);
+
+      return response; // Return the response data to Redux
+    } catch (error) {
+      return error;
+    }
+  }
+);
 const storeSlice = createSlice({
   name: "client",
   initialState,
@@ -1106,6 +1147,30 @@ const storeSlice = createSlice({
         state.aproveStock = action.payload;
       })
       .addCase(createFgOut.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(getAllCustomerEnquiry.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllCustomerEnquiry.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(getAllCustomerEnquiry.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(getCustomerStock.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCustomerStock.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(getCustomerStock.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       });

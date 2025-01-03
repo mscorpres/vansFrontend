@@ -105,6 +105,10 @@ import LogningV2 from "@/pages/WarehouseModule/LogningV2";
 import ForgetPasswordNew from "./pages/ForgetPasswordNew";
 import ChangePassword from "./pages/ChangePassword";
 import Profile from "@/components/shared/Api/Profile";
+import CustomerEnquiry from "./pages/CustomerEnquiry/CustomerEnquiry";
+import CustomerLayout from "./layouts/CustomerLayout";
+import YourStock from "./pages/CustomerEnquiry/YourStock";
+import AllItemStock from "./pages/CustomerEnquiry/AllItemStock";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -1095,6 +1099,42 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/viewphysicalStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          {/* <CreatePhyStock> */}
+          <CustomerEnquiry />
+          {/* </CreatePhyStock> */}
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/customer/customerEnquires",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CustomerLayout>
+            <YourStock />
+          </CustomerLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/customer/yourStock",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <CustomerLayout>
+            <AllItemStock />
+          </CustomerLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/customer/allItemStock",
   },
 
   {
