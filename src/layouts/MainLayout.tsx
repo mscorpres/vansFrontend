@@ -179,7 +179,7 @@ function MainLayout(props: { children: React.ReactNode }) {
               </Link>
             </div> */}
             <Typography.Text className="text-white">Vans</Typography.Text>
-            {/* <div>
+            <div>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
@@ -197,7 +197,7 @@ function MainLayout(props: { children: React.ReactNode }) {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            </div> */}
+            </div>
             <MuiTooltip title="SOP" placement="right">
               <IconButton
                 onClick={() => navigate("/sop")}
@@ -289,7 +289,7 @@ function MainLayout(props: { children: React.ReactNode }) {
             </TooltipProvider>
           </div>
         </div>
-        <main className="ml-[60px]  bg-[#ffffff] h-full">{props.children}</main>
+        <main className="ml-[60px]  bg-[#f1f1f1] h-full">{props.children}</main>
       </div>
     </Wrapper>
   );

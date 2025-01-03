@@ -50,12 +50,12 @@ const ProfileSidebar: React.FC<Props> = ({ uiState }) => {
             <span className="text-[13px]"> Update User Details</span>
           </Link> */}
           <Link
-            to={"/profile"}
+            to={"#"}
             className="dispaly flex items-center gap-[10px] py-[8px] px-[10px] hover:bg-white/10 rounded text-slate-300"
-            onClick={() => setSheet2Open(false)}
+            onClick={() => setChangePassword(true)}
           >
             <PiPasswordFill className="h-[15px] w-[15px]" />
-            <span className="text-[13px]"> Profile</span>
+            <span className="text-[13px]"> Change Password</span>
           </Link>
         </div>
         <div className="absolute bottom-0 left-0 p-[10px] w-full flex justify-center items-center">
