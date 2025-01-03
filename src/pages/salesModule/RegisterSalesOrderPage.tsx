@@ -213,7 +213,7 @@ const RegisterSalesOrderPage: React.FC = () => {
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact
-        ref={gridRef}
+          ref={gridRef}
           loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs as any}
@@ -223,6 +223,7 @@ const RegisterSalesOrderPage: React.FC = () => {
           suppressCellFocus={true}
           paginationAutoPageSize={true}
           loadingOverlayComponent={OverlayNoRowsTemplate}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

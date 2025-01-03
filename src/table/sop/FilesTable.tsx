@@ -27,9 +27,9 @@ import { AppDispatch, RootState } from "@/store";
 import { downloadFile } from "@/General";
 type Props = {
   rowdata: Filedata[];
-  refreshfile: () => void
+  refreshfile: () => void;
 };
-const FilesTable: React.FC<Props> = ({ rowdata,refreshfile }) => {
+const FilesTable: React.FC<Props> = ({ rowdata, refreshfile }) => {
   const [id, setId] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch<AppDispatch>();
@@ -90,24 +90,41 @@ const FilesTable: React.FC<Props> = ({ rowdata,refreshfile }) => {
                 color="primary"
                 size="small"
                 onClick={() => {
-                  window.open(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/${params.data.url}`, "_blank");
+                  window.open(
+                    `${import.meta.env.VITE_REACT_APP_API_BASE_URL}/${
+                      params.data.url
+                    }`,
+                    "_blank"
+                  );
                 }}
               >
                 <FullscreenIcon fontSize="small" />
               </IconButton>
             </MuiTooltip>
             <MuiTooltip title="Download" placement="bottom">
-              <IconButton disabled color="success" onClick={() => downloadFile({fileName: params.data.name, fileUrl: `${import.meta.env.VITE_REACT_APP_API_BASE_URL}/${params.data.url}`})}>
+              <IconButton
+                disabled
+                color="success"
+                onClick={() =>
+                  downloadFile({
+                    fileName: params.data.name,
+                    fileUrl: `${import.meta.env.VITE_REACT_APP_API_BASE_URL}/${
+                      params.data.url
+                    }`,
+                  })
+                }
+              >
                 <GetAppIcon fontSize="small" />
               </IconButton>
             </MuiTooltip>
             <MuiTooltip title="Delete" placement="bottom">
-              <IconButton color="error" size="small"
-              
-              onClick={() => {
-               setId(params.data.id);
-               setOpen(true);
-              }}
+              <IconButton
+                color="error"
+                size="small"
+                onClick={() => {
+                  setId(params.data.id);
+                  setOpen(true);
+                }}
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>
@@ -120,26 +137,41 @@ const FilesTable: React.FC<Props> = ({ rowdata,refreshfile }) => {
 
   return (
     <Wrapper>
-       <Dialog maxWidth="md" open={open} onClose={() => setOpen(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <div className="absolute top-0 left-0 right-0">{deleteFolderLoading && <LinearProgress />}</div>
-        <DialogTitle id="alert-dialog-title">{"Are you absolutely sure?"}</DialogTitle>
+      <Dialog
+        maxWidth="md"
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <div className="absolute top-0 left-0 right-0">
+          {deleteFolderLoading && <LinearProgress />}
+        </div>
+        <DialogTitle id="alert-dialog-title">
+          {"Are you absolutely sure?"}
+        </DialogTitle>
         <DialogContent sx={{ width: "600px" }}>
-          <DialogContentText id="alert-dialog-description" color="warning" fontSize={13}>
+          <DialogContentText
+            id="alert-dialog-description"
+            color="warning"
+            fontSize={13}
+          >
             <WarningIcon color="warning" sx={{ mr: 1 }} fontSize="small" />
-            Do you Want to delete  this file? This action will permanently delete the selected file. This operation cannot be undone. Do you still want to proceed?
+            Do you Want to delete this file? This action will permanently delete
+            the selected file. This operation cannot be undone. Do you still
+            want to proceed?
           </DialogContentText>
-          
         </DialogContent>
         <DialogActions>
-          <Button onClick={() =>setOpen(false)}>Cancel</Button>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
           <Button
             variant="contained"
             color="error"
             onClick={() => {
               dispatch(deleteFolder(id)).then((res: any) => {
                 if (res.payload.data.success) {
-                setOpen(false);
-                refreshfile();
+                  setOpen(false);
+                  refreshfile();
                 }
               });
             }}
