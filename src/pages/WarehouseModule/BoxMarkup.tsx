@@ -335,6 +335,7 @@ const BoxMarkup = () => {
         // setRowData([]);
         // form.resetFields();
         // form.resetFields();
+        // form.resetFields();
       } else {
         toast({
           title: res.payload.message,
