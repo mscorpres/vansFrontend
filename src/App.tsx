@@ -108,6 +108,7 @@ import CustomerEnquiry from "./pages/CustomerEnquiry/CustomerEnquiry";
 import CustomerLayout from "./layouts/CustomerLayout";
 import YourStock from "./pages/CustomerEnquiry/YourStock";
 import AllItemStock from "./pages/CustomerEnquiry/AllItemStock";
+import Profile from "@/components/shared/Api/Profile";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -1152,6 +1153,14 @@ const router = createBrowserRouter([
     element: (
       <MainLayout>
         <BlockedPageRenderPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <MainLayout>
+        <Profile />
       </MainLayout>
     ),
   },
