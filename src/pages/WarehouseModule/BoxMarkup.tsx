@@ -332,8 +332,8 @@ const BoxMarkup = () => {
           className: "bg-green-600 text-white items-center",
         });
         setSheetOpen(false);
-        setRowData([]);
-        form.resetFields();
+        // setRowData([]);
+        // form.resetFields();
       } else {
         toast({
           title: res.payload.message,
