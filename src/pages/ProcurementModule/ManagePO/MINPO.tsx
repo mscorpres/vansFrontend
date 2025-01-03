@@ -81,7 +81,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Component/Part",
       field: "component_fullname",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -90,7 +91,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Part No.",
       field: "c_partno",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -99,7 +101,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Description",
       field: "materialDescription",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 350,
@@ -107,7 +110,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Order Qty",
       field: "orderQty",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -115,7 +119,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Rate",
       field: "rate",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -123,7 +128,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Currency",
       field: "currency",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 120,
@@ -131,7 +137,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Exchange Rate",
       field: "exchange_rate",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 180,
@@ -139,7 +146,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Invoice Id",
       field: "invoice",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -147,7 +155,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Invoice Date",
       field: "dueDate",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -155,7 +164,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "HSN Code",
       field: "hsnCode",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -164,7 +174,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "GST Rate",
       field: "gstRate",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -172,7 +183,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "GST Type",
       field: "gstTypeForPO",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -180,7 +192,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Value",
       field: "value",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -188,7 +201,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Local Value",
       field: "localValue",
-      editable: false,
+      sortable: true,
+      filter: true, //,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -196,7 +210,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Foreign Value",
       field: "foreignValue",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -204,7 +219,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "CGST",
       field: "cgst",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -212,7 +228,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "SGST",
       field: "sgst",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -220,7 +237,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "IGST",
       field: "igst",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
@@ -228,7 +246,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
     {
       headerName: "Remark",
       field: "remark",
-      editable: false,
+      sortable: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 350,
@@ -439,8 +458,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   }, []);
   const defaultColDef = useMemo<ColDef>(() => {
     return {
-      floatingFilter: false,
-      editable: false,
+      floatingFilter: true,
+      editable: true,
     };
   }, []);
 
@@ -572,17 +591,13 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
                 <AgGridReact
                   ref={gridRef}
                   rowData={rowData}
-                  columnDefs={columnDefs}
-                  defaultColDef={defaultColDef}
+                  columnDefs={columnDefs as (ColDef | ColGroupDef)[]}
                   statusBar={statusBar}
                   components={components}
-                  pagination={true}
-                  paginationPageSize={10}
                   animateRows={true}
                   gridOptions={commonAgGridConfig}
+                  suppressCellFocus={false}
                   suppressRowClickSelection={false}
-                  overlayNoRowsTemplate={OverlayNoRowsTemplate}
-                  suppressCellFocus={true}
                 />
               </div>
               <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
