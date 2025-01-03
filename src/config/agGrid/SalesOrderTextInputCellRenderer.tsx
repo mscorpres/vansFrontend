@@ -136,7 +136,11 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "material") {
       dispatch(
-        fetchComponentDetailByCode({ component_code: value, vencode: "CUS001" })
+        fetchComponentDetailByCode({
+          component_code: value,
+          vencode: "CUS001",
+          costCenter: props.getCostCenter,
+        })
       ).then((response: any) => {
         if (response.meta.requestStatus === "fulfilled") {
           const componentData = response.payload;

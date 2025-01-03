@@ -12,9 +12,9 @@ import SetPassword from "@/components/shared/SetPassword";
 const ProfileSidebar: React.FC<Props> = ({ uiState }) => {
   const { sidebaref, setSheet2Open, sheet2Open, setLogotAlert } = uiState;
   const userData = localStorage.getItem("loggedInUser");
-  const[changePassword,setChangePassword]=useState(false)
+  const [changePassword, setChangePassword] = useState(false);
   const user = userData ? JSON.parse(userData) : null;
-  
+
   return (
     <div
       ref={sidebaref}
@@ -69,7 +69,10 @@ const ProfileSidebar: React.FC<Props> = ({ uiState }) => {
           </Button>
         </div>
       </div>
-      <SetPassword open={changePassword} onClose={()=>setChangePassword(false)} />
+      <SetPassword
+        open={changePassword}
+        onClose={() => setChangePassword(false)}
+      />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
+import { Input } from "@/components/ui/input";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import SearchIcon from "@mui/icons-material/Search";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
@@ -309,12 +310,10 @@ const R2 = () => {
                       <span className="pl-1 text-red-500 font-bold">*</span>
                     </FormLabel>
                     <FormControl>
-                      <MuiInput2
-                        form={form}
-                        name="search"
-                        placeholder="Enter search"
-                        control={form.control} // Pass control here
-                        label={"Search"}
+                      <Input
+                        className={InputStyle}
+                        placeholder="Search"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />

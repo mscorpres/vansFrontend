@@ -50,7 +50,7 @@ const FormSchema = z.object({
     .refine((data) => data === undefined || data.length === 2, {
       message: "Please select a valid date range.",
     }),
-    soinvid_wise: z.string().optional(),
+  soinvid_wise: z.string().optional(),
 });
 const SalesInvoicePage: React.FC = () => {
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -62,9 +62,9 @@ const SalesInvoicePage: React.FC = () => {
   );
   const [rowData, setRowData] = useState<any[]>([]); // Local state for row data
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema)
+    resolver: zodResolver(FormSchema),
   });
-console.log(isSearchPerformed)
+  console.log(isSearchPerformed);
   const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
     const { dateRange, soinvid_wise } = formData;
 
@@ -83,7 +83,7 @@ console.log(isSearchPerformed)
       const resultAction = await dispatch(
         fetchSalesOrderInvoiceList({ type: type, data: dataString }) as any
       ).unwrap();
-      if (resultAction.code=="200") {
+      if (resultAction.code == "200") {
         setRowData(resultAction.data);
         setIsSearchPerformed(true);
         toast({
@@ -214,7 +214,7 @@ console.log(isSearchPerformed)
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact
-        ref={gridRef}
+          ref={gridRef}
           loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs as any}
@@ -223,7 +223,7 @@ console.log(isSearchPerformed)
           paginationPageSize={10}
           suppressCellFocus={true}
           paginationAutoPageSize={true}
-          loadingOverlayComponent={OverlayNoRowsTemplate}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />
       </div>
     </Wrapper>

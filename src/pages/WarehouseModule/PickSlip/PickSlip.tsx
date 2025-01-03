@@ -237,7 +237,7 @@ const PickSlip = () => {
     dispatch(stockOut(payload)).then((res: any) => {
       if (res.payload.data.success) {
         toast({
-          title: res.payload.message,
+          title: res.payload.data.message,
           className: "bg-green-600 text-white items-center",
         });
         form.resetFields();

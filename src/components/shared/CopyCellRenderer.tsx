@@ -30,7 +30,6 @@ const CopyCellRenderer = (params: any) => {
 
   return (
     <CopyCellWrapper>
-      <TextWithEllipsis title={params.value}>{params.value}</TextWithEllipsis>
       <Tooltip
         title={`Copy: ${params.value}`}
         placement="top"
@@ -41,14 +40,15 @@ const CopyCellRenderer = (params: any) => {
           onClick={() => copyToClipboard(params.value)}
           style={{
             cursor: "pointer",
-            // marginLeft: "10px",
+            marginLeft: "10px",
             marginRight: "10px",
             width: "20px",
             height: "20px",
           }}
           aria-label={`Copy ${params.value}`}
         />
-      </Tooltip>
+      </Tooltip>{" "}
+      <TextWithEllipsis title={params.value}>{params.value}</TextWithEllipsis>
     </CopyCellWrapper>
   );
 };

@@ -16,7 +16,11 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { uploadSOExcel } from "@/features/salesmodule/createSalesOrderSlice";
 
-const AddPOPopovers: React.FC<Props> = ({ uiState ,derivedState}) => {
+const AddPOPopovers: React.FC<Props> = ({
+  uiState,
+  derivedState,
+  getCostCenter,
+}) => {
   const {
     excelModel,
     setExcelModel,
@@ -67,15 +71,15 @@ const AddPOPopovers: React.FC<Props> = ({ uiState ,derivedState}) => {
       const localValue = parseFloat(item.rate) * parseFloat(item.qty) || 0;
       const gstRate = parseFloat(item.gst) || 0; // Ensure gstRate is parsed as a float
       const gstType = derivedState || "I"; // Default to "I" (Inter-state) if gsttype is missing
-  
+
       // Initialize GST values
       let cgst = 0;
       let sgst = 0;
       let igst = 0;
-  
+
       // Calculate GST based on gstRate and gstType
       const calculation = (localValue * gstRate) / 100;
-  
+
       if (gstType === "L") {
         // Intra-State GST calculation (CGST = SGST)
         cgst = calculation / 2;
@@ -87,16 +91,16 @@ const AddPOPopovers: React.FC<Props> = ({ uiState ,derivedState}) => {
         cgst = 0;
         sgst = 0;
       }
-  
+
       // Foreign value calculation (if currency is not the default)
       // let foreignValue = localValue; // Default to local value if no exchange rate
       // if (props.exRate?.currency !== "364907247") {
       //   foreignValue = localValue * parseFloat(props.exRate?.exchange_rate || "1");
       // }
-  
+
       // Prepare the mapped data for the row
       return {
-        partno: item?.partcode || "", // Ensure partNo is available
+        partno: item.item.partNo || "", // Ensure partNo is available
         orderQty: parseFloat(item.qty) || 1, // Default to 1 if qty is missing or invalid
         material: item?.item || "", // Ensure the material data is included
         rate: parseFloat(item.rate) || 0, // Ensure rate is numeric
@@ -125,11 +129,10 @@ const AddPOPopovers: React.FC<Props> = ({ uiState ,derivedState}) => {
         return [...prevRowData, ...mappedData];
       }
     });
-  
+
     // Close the Excel dialog
     setExcelModel(false);
   };
-  
 
   // const channelValue: string = channel || "";
 
@@ -142,7 +145,9 @@ const AddPOPopovers: React.FC<Props> = ({ uiState ,derivedState}) => {
             <ExcelImportButton
               onImport={handleImport}
               uploadFunction={(file) =>
-              dispatch(uploadSOExcel({ file: file}))
+                dispatch(
+                  uploadSOExcel({ file: file, getCostCenter: getCostCenter })
+                )
               }
             />
           </div>

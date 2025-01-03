@@ -329,7 +329,7 @@ const MinRegister = () => {
                       value ? value.map((date) => date!.toDate()) : []
                     )
                   }
-                  format={"DD/MM/YYYY"}
+                  format={"DD-MM-YYYY"}
                   presets={rangePresets}
                 />
               </Space>

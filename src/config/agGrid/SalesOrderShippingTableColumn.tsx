@@ -70,7 +70,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const confirmApprove = () => {
     dispatch(approveShipment({ so_id: row?.shipment_id })).then(
       (response: any) => {
-        if (response?.payload?.success) {
+        if (response?.payload?.code == 200 || response?.payload?.success) {
           toast({
             className: "bg-green-600 text-white items-center",
             title:
@@ -98,7 +98,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         };
         dispatch(cancelShipment(payload)).then((response: any) => {
           console.log(response);
-          if (response?.payload?.status) {
+          if (response?.payload?.code == 200 || response?.payload?.success) {
             toast({
               className: "bg-green-600 text-white items-center",
               title: response?.payload?.message,
@@ -131,7 +131,10 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           so_id: row?.so_id,
         };
         dispatch(createInvoice(payload)).then((resultAction: any) => {
-          if (resultAction.payload?.code == 200) {
+          if (
+            resultAction.payload?.code == 200 ||
+            resultAction.payload?.success
+          ) {
             setIsInvoiceModalVisible(false);
             dispatch(
               fetchSalesOrderShipmentList({
@@ -174,11 +177,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const materialListColumns: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
-    {
-      headerName: "Item",
-      field: "item",
-      cellRenderer: TruncateCellRenderer,
-    },
+    // {
+    //   headerName: "Item",
+    //   field: "item",
+    //   cellRenderer: TruncateCellRenderer,
+    // },
     {
       headerName: "Item Name",
       field: "itemName",
@@ -192,6 +195,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       width: 300,
     },
     { headerName: "Item Part Number", field: "itemPartNo" },
+    {
+      headerName: "Customer Part Number",
+      field: "customer_part_no",
+      cellRenderer: TruncateCellRenderer,
+    },
     { headerName: "Qty", field: "qty" },
     { headerName: "Rate", field: "rate" },
     { headerName: "GST Rate", field: "gstRate" },
@@ -274,7 +282,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClose={() => setShowConfirmationModal(false)}
         sellRequestDetails={shipmentMaterialList?.items}
         row={{ req_id: row?.so_id }}
-        loading={loading2}
+        loading={loading2 || loading}
         columnDefs={materialListColumns}
         title={`Approve Shipment Order for ${row?.shipment_id}`}
         submitText="Approve"

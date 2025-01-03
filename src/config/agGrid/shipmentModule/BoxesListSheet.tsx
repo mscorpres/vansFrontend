@@ -1,16 +1,24 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { ColDef, RowSelectionOptions } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@/components/ui/button";
 
 const BoxesListSheet = ({ open, close, data, onSelect, loading }: any) => {
-  const [selectedRows, setSelectedRows] = useState<any[]>([]);  // Track selected rows (boxes with qty)
-  const [totalSum, setTotalSum] = useState(0);  // Total sum of selected quantities
+  const [selectedRows, setSelectedRows] = useState<any[]>([]); // Track selected rows (boxes with qty)
+  const [totalSum, setTotalSum] = useState(0); // Total sum of selected quantities
+  const [rowData, setRowData] = useState<any[]>([]);
   const gridRef = useRef<AgGridReact<any>>(null);
 
-  const rowSelection = useMemo<RowSelectionOptions | "single" | "multiple">(() => {
+  const rowSelection = useMemo<
+    RowSelectionOptions | "single" | "multiple"
+  >(() => {
     return {
       mode: "multiRow",
     };
@@ -48,7 +56,10 @@ const BoxesListSheet = ({ open, close, data, onSelect, loading }: any) => {
 
   // Update the total sum whenever selected rows change or quantities are updated
   useEffect(() => {
-    const sum = selectedRows.reduce((acc, row) => acc + (parseInt(row.stock) || 0), 0);
+    const sum = selectedRows.reduce(
+      (acc, row) => acc + (parseInt(row.stock) || 0),
+      0
+    );
     setTotalSum(sum);
   }, [selectedRows]);
 
@@ -63,20 +74,26 @@ const BoxesListSheet = ({ open, close, data, onSelect, loading }: any) => {
     // When a cell value changes (e.g., stock quantity), we need to update the selected rows and recalculate the sum
     const updatedRow = event.data;
     const updatedRows = [...selectedRows];
-    const rowIndex = updatedRows.findIndex((row) => row.box_name === updatedRow.box_name);
-    
+    const rowIndex = updatedRows.findIndex(
+      (row) => row.box_name === updatedRow.box_name
+    );
+
     if (rowIndex >= 0) {
       updatedRows[rowIndex] = updatedRow; // Update the modified row
     }
-    
+
     setSelectedRows(updatedRows); // Update the selectedRows state with the new value
   };
 
   const handleOkClose = () => {
     // Send the selected data back to the parent component
-    const selectedData = selectedRows;  // For simplicity, assuming `data` is what we want to send back
+    const selectedData = selectedRows; // For simplicity, assuming `data` is what we want to send back
     onSelect(selectedData); // Pass the selected data back to the parent
+    setSelectedRows([]);
   };
+  useEffect(() => {
+    setRowData(data);
+  }, [data]);
 
   return (
     <>
@@ -99,7 +116,7 @@ const BoxesListSheet = ({ open, close, data, onSelect, loading }: any) => {
             <AgGridReact
               ref={gridRef}
               rowSelection={rowSelection}
-              rowData={data}
+              rowData={rowData}
               columnDefs={columnDefs}
               suppressCellFocus={true}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}

@@ -146,10 +146,10 @@ export const fetchBillingAddress = createAsyncThunk<
 export const uploadSOExcel = createAsyncThunk<
   any, // Define the type of the data you expect to return
   { file: File } // Define the type of the argument you expect
->("/client/uploadExcel", async ({ file }) => {
+>("/client/uploadExcel", async ({ file, getCostCenter }) => {
   const formData = new FormData();
   formData.append("file", file); // Append the file to FormData
-
+  formData.append("cost_center", getCostCenter);
   const response = await spigenAxios.post(
     "/salesOrder/uploadSOItems",
     formData,
@@ -295,26 +295,29 @@ export const fetchProductData = createAsyncThunk<
 
 export const fetchComponentDetailByCode = createAsyncThunk<
   ComponentDetail[],
-  { component_code: string; vencode: string }
->("client/fetchProductData", async ({ component_code, vencode }) => {
-  const response = await spigenAxios.get<ComponentDetailResponse>(
-    // `/soCreate/getComponentDetailsByCode`,
-    // {
-    //   component_code: component_code,
-    //   vencode: vencode,
-    // }
-    `salesOrder/getComponentDetailsByCode?component_code=${component_code}`
-  );
-
-  if (response?.data?.success) {
-    return response.data.data;
-  } else {
-    // Redux Toolkit will automatically handle the error
-    throw new Error(
-      response.data.message || "Failed to fetch component details"
+  { component_code: string; vencode: string; costCenter: string }
+>(
+  "client/fetchProductData",
+  async ({ component_code, vencode, costCenter }) => {
+    const response = await spigenAxios.get<ComponentDetailResponse>(
+      // `/soCreate/getComponentDetailsByCode`,
+      // {
+      //   component_code: component_code,
+      //   vencode: vencode,
+      // }
+      `salesOrder/getComponentDetailsByCode?component_code=${component_code}&cost_center=${costCenter}`
     );
+
+    if (response?.data?.success) {
+      return response.data.data;
+    } else {
+      // Redux Toolkit will automatically handle the error
+      throw new Error(
+        response.data.message || "Failed to fetch component details"
+      );
+    }
   }
-});
+);
 
 export const fetchCustomerDetail = createAsyncThunk<
   ComponentDetail[], // Expected return type

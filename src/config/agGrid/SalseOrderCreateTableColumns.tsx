@@ -31,6 +31,13 @@ export const columnDefs = [
     maxWidth: 100,
     field: "delete",
   },
+  {
+    headerName: "",
+    valueGetter: "node.rowIndex + 1",
+    cellRenderer: "textInputCellRenderer",
+    maxWidth: 100,
+    field: "delete",
+  },
 
   {
     headerName: "Component / Part",
@@ -138,7 +145,7 @@ export const columnDefs = [
     minWidth: 200,
   },
   {
-    headerName: "Item Desc",
+    headerName: "Remark",
     field: "remark",
     editable: false,
     flex: 1,

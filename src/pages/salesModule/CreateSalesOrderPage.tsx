@@ -38,7 +38,11 @@ const CreateSalesOrderPage = () => {
     resolver: zodResolver(createSalesFormSchema),
     mode: "onBlur",
   });
-
+  const billToStateCode = form.watch("billTo.state");
+  const billFromStateCode = form.watch("billFrom.state");
+  const getCostCenter = form.watch("costcenter");
+  console.log("billToStateCode", billToStateCode);
+  console.log("billFromStateCode", billFromStateCode);
   useEffect(() => {
     if (pathname?.includes("update") && params?.id) {
       const soId = (params.id as string).replace(/_/g, "/");
@@ -221,7 +225,8 @@ const CreateSalesOrderPage = () => {
         });
 
         if (
-          form.getValues("billTo.state") == form.getValues("billFrom.state")
+          form.getValues("billTo.state") == form.getValues("billFrom.state") ||
+          billToStateCode == billFromStateCode
         ) {
           setDerivedType("L");
         } else {
@@ -301,6 +306,7 @@ const CreateSalesOrderPage = () => {
             currencyList={currency}
             searchCustomerList={searchCustomerList}
             backCreate={backCreate}
+            getCostCenter={getCostCenter}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">

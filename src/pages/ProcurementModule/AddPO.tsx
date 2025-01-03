@@ -84,6 +84,7 @@ const AddPO: React.FC<Props> = ({
   const { loading: loading2 } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
+
   const navigate = useNavigate();
 
   // const { execFun, loading: loading1 } = useApi();
@@ -596,6 +597,8 @@ const AddPO: React.FC<Props> = ({
 
   return (
     <Wrapper>
+      {(loading || loading1) && <FullPageLoading />}
+      <AddPOPopovers uiState={uiState} />
       <div className="h-[calc(100vh-150px)] grid grid-cols-[400px_1fr]">
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
           <Card className="rounded-sm shadow-sm shadow-slate-500">

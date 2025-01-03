@@ -791,7 +791,7 @@ const clientSlice = createSlice({
       })
       .addCase(updatePo.fulfilled, (state, action) => {
         state.loading = false;
-        state.approvePoList = action.payload;
+      state.approvePoList = action.payload;
       })
       .addCase(updatePo.rejected, (state, action) => {
         state.loading = false;

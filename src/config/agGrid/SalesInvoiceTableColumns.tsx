@@ -143,6 +143,12 @@ export const columnDefs: ColDef<RowData>[] = [
     cellRenderer: CopyCellRenderer,
   },
   {
+    headerName: "Shipment ID",
+    field: "shipmentId",
+    filter: "agNumberColumnFilter",
+    cellRenderer: CopyCellRenderer,
+  },
+  {
     headerName: "Invoice Status",
     field: "invStatus",
     filter: "agDateColumnFilter",

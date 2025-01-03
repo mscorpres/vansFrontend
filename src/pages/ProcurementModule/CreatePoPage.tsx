@@ -76,6 +76,8 @@ const CreatePoPage: React.FC<Props> = ({
   currencyList,
   setResetSure,
   resetSure,
+  currencyval,
+  isApprove,
 }) => {
   const [searchData, setSearchData] = useState("");
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
@@ -135,7 +137,13 @@ const CreatePoPage: React.FC<Props> = ({
       setStateList(arr);
     }
   };
-
+  useEffect(() => {
+    if (currencyval?.value == "364907247") {
+      form.setFieldValue("exchange_rate", "1");
+    } else if (isApprove !== "edit" || isApprove !== "approve") {
+      form.setFieldValue("exchange_rate", "");
+    }
+  }, [currencyval]);
   //
   const getValues = async () => {
     let valuesOfFrom = await form.validateFields();

@@ -340,12 +340,12 @@ export const shortClose = createAsyncThunk(
         payload
       )) as any;
 
-      if (response?.data?.code == 200) {
-        toast({
-          title: response?.data?.message,
-          className: "bg-green-600 text-white items-center",
-        });
-      }
+     if (response?.data?.success) {
+       toast({
+         title: response?.data?.message,
+         className: "bg-green-600 text-white items-center",
+       });
+     }
 
       return response.data;
     } catch (error) {

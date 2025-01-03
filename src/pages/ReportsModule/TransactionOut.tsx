@@ -129,6 +129,13 @@ const TransactionOut = () => {
       width: 190,
     },
     {
+      headerName: "Description",
+      field: "Description",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 290,
+    },
+    {
       headerName: "Box No.",
       field: "FROMLOCATION",
       filter: "agTextColumnFilter",

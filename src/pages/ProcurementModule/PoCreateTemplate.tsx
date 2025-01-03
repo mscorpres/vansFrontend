@@ -24,6 +24,7 @@ const PoCreateTemplate = () => {
   const [bilStateCode, setBillStateCode] = useState("");
   const [shipStateCode, setShipStateCode] = useState("");
   const [codeType, setCodeType] = useState("");
+  const currencyval = Form.useWatch("currency", form);
   const selectedVendor = Form.useWatch("vendorName", form);
   const exchangingRate = Form.useWatch("exchange_rate", form);
 
@@ -189,6 +190,8 @@ const PoCreateTemplate = () => {
             currencyList={currency}
             setResetSure={setResetSure}
             resetSure={resetSure}
+            isApprove={isApprove}
+            currencyval={currencyval}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">
@@ -214,6 +217,8 @@ const PoCreateTemplate = () => {
             resetTheValues={resetTheValues}
             setResetSure={setResetSure}
             resetSure={resetSure}
+            isApprove={isApprove}
+            currencyval={currencyval}
           />
         </TabsContent>
       </Tabs>

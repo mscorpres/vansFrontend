@@ -268,7 +268,7 @@ const Material = () => {
 
       type: fixedVal.type.value,
       notes: fixedVal.specifiction,
-      hsns: hsnrowData.map((r) => r.hsnSearch),
+      hsns: hsnrowData.map((r) => r.hsnSearch?.value),
       taxs: hsnrowData.map((r) => r.gstRate),
       group: fixedVal.group.value,
       isSmt: fixedVal.smt.value,
@@ -357,10 +357,10 @@ const Material = () => {
 
   const HsncolumnDefs: ColDef<rowData>[] = [
     {
-      headerName: "",
+      headerName: "Id",
       valueGetter: "node.rowIndex + 1",
       cellRenderer: "textInputCellRenderer",
-      maxWidth: 100,
+      maxWidth: 50,
       field: "delete",
     },
     { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
@@ -371,7 +371,7 @@ const Material = () => {
       // editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
-      width: 200,
+      minWidth: 350,
     },
 
     {
@@ -380,7 +380,7 @@ const Material = () => {
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
-      width: 200,
+      minWidth: 100,
     },
   ];
   const addHsn = async () => {
