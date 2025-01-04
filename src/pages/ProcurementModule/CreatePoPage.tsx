@@ -73,6 +73,9 @@ const CreatePoPage: React.FC<Props> = ({
   resetSure,
   currencyval,
   isApprove,
+  setCodeType,
+  isImport,
+  setIsImport,
 }) => {
   const [searchData, setSearchData] = useState("");
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
@@ -106,7 +109,6 @@ const CreatePoPage: React.FC<Props> = ({
     },
   ];
   useEffect(() => {
-
     if (currencyval?.value == "364907247") {
       form.setFieldValue("exchange_rate", "1");
     } else if (isApprove !== "edit"|| isApprove !== "approve") {
@@ -158,9 +160,10 @@ const CreatePoPage: React.FC<Props> = ({
 
     let p = {
       vendor: {
-        vendorname: values.label,
-        panno: values.pan,
-        cinno: values.cin,
+        vendorname: data.label,
+        panno: data.pan,
+        cinno: data.cin,
+        payment_terms: data.paymentTerms,
       },
       branch: {
         branch: values.label,
@@ -269,6 +272,9 @@ const CreatePoPage: React.FC<Props> = ({
 
   useEffect(() => {
     if (selectedVendor && selBranch) {
+      if (vendorBranchlist) {
+        form.setFieldValue("paymentTerms", vendorBranchlist[0].payment_terms);
+      }
       dispatch(
         fetchVendorAddressDetails({
           vendorcode: selectedVendor?.value,
@@ -317,9 +323,16 @@ const CreatePoPage: React.FC<Props> = ({
 
       form.setFieldValue("vendorGst", arr?.gstid);
       form.setFieldValue("address", arr?.address);
+
+      if (arr.state == 100) {
+        setIsImport("Import");
+      } else {
+        setIsImport("");
+      }
     } else {
       form.setFieldValue("vendorGst", "");
       form.setFieldValue("address", "");
+      setIsImport("");
     }
   }, [vendorPODetails]);
   useEffect(() => {
@@ -884,6 +897,18 @@ const CreatePoPage: React.FC<Props> = ({
                       // placeholder="GSTIN / UIN"
                     />
                   </Form.Item>
+                  <Form.Item
+                    name="paymentTerm"
+                    label="Payment Term"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input
+                      className={InputStyle}
+                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // placeholder="GSTIN / UIN"
+                    />
+                  </Form.Item>
                 </div>
                 <Divider />
                 <div className="grid grid-cols-2 gap-[20px]">
@@ -1125,7 +1150,18 @@ const CreatePoPage: React.FC<Props> = ({
                     className=""
                     rules={rules.vendorGst}
                   >
-                    <Input className={InputStyle} placeholder="Enter fax" />
+                    <Input
+                      className={InputStyle}
+                      placeholder="Enter Payment Terms"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="paymentTerms"
+                    label="Payment Terms"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Payment Terms" />
                   </Form.Item>
                 </div>
               </div>

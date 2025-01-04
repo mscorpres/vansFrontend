@@ -330,6 +330,11 @@ export const columnDefs: ColDef<any>[] = [
     cellRenderer: CopyCellRenderer,
   },
   {
+    headerName: "Approve Status",
+    field: "approveStatus",
+    filter: "agTextColumnFilter",
+  },
+  {
     headerName: "Created Date",
     field: "createDate",
     filter: "agTextColumnFilter",
@@ -346,11 +351,7 @@ export const columnDefs: ColDef<any>[] = [
     filter: "agTextColumnFilter",
   },
   { headerName: "Status", field: "soStatus", filter: "agTextColumnFilter" },
-  {
-    headerName: "Approve Status",
-    field: "approveStatus",
-    filter: "agTextColumnFilter",
-  },
+
   {
     headerName: "Customer Name",
     field: "clintname",

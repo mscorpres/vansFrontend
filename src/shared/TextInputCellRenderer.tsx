@@ -249,15 +249,23 @@ const TextInputCellRenderer = (props: any) => {
       ).then((res) => {
         if (res.payload) {
           let data2 = res.payload;
+          let preRate = data2.last_rate.split(" ")[1];
+          // console.log("preRate", preRate);
+
           data["vendorName"] =
             data2?.ven_com?.comp_name + "/ Maker:" + data2.make;
           // data[
           //   "vendorName"
           // ] = `${getComponentData?.ven_com?.comp_name}/ Maker:${getComponentData.make}`;
-          data["orderQty"] = data2.closingQty;
+          // data["orderQty"] = data2.closingQty;
           // data["rate"] = data2.gstrate;
           data["hsnCode"] = data2.hsn;
-          data["prevrate"] = data2.rate;
+          data["rate"] = data2.rate;
+          data["prevrate"] = preRate;
+          data["gstRate"] = data2.gstrate?.value;
+          //get data
+          data["currentStock"] = data2.closingQty;
+
           if (colDef.field === "exchange_rate") {
             data["foreignValue"] = data["exchange_rate"];
           }
@@ -489,7 +497,7 @@ const TextInputCellRenderer = (props: any) => {
   };
   useEffect(() => {
     if (data["gstTypeForPO"]) {
-      data["gstRate"] = data["gstTypeForPO"];
+      data["gstType"] = data["gstTypeForPO"];
     }
   }, [data["gstTypeForPO"]]);
   useEffect(() => {
@@ -1369,6 +1377,17 @@ const TextInputCellRenderer = (props: any) => {
         );
 
       case "cust_part_code":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            disabled={true}
+            placeholder={colDef.headerName}
+            // type="number"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "currentStock":
         return (
           <Input
             onChange={handleInputChange}

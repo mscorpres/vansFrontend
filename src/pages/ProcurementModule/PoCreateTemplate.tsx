@@ -23,6 +23,7 @@ const PoCreateTemplate = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [bilStateCode, setBillStateCode] = useState("");
   const [shipStateCode, setShipStateCode] = useState("");
+  const [isImport, setIsImport] = useState("");
   const [codeType, setCodeType] = useState("");
   const currencyval = Form.useWatch("currency", form);
   const selectedVendor = Form.useWatch("vendorName", form);
@@ -37,6 +38,7 @@ const PoCreateTemplate = () => {
   const resetTheValues = () => {
     setResetSure(true);
     form.resetFields();
+    setIsImport("");
     setRowData([]);
     setTabvalue("create");
 
@@ -157,19 +159,24 @@ const PoCreateTemplate = () => {
   }, [params]);
   useEffect(() => {
     if (bilStateCode && shipStateCode) {
-      if (Number(shipStateCode) == Number(bilStateCode)) {
-        setCodeType("L");
+      if (isImport == "Import") {
+        setCodeType("0");
       } else {
-        setCodeType("I");
+        if (Number(shipStateCode) == Number(bilStateCode)) {
+          setCodeType("L");
+        } else {
+          setCodeType("I");
+        }
       }
     }
-  }, [shipStateCode, bilStateCode]);
+  }, [shipStateCode, bilStateCode, isImport]);
+
+
   useEffect(() => {
     dispatch(fetchCurrency());
   }, []);
   useEffect(() => {
     if (exchangingRate) {
-
       setRoeIs(exchangingRate);
     }
   }, [exchangingRate]);
@@ -193,6 +200,9 @@ const PoCreateTemplate = () => {
             resetSure={resetSure}
             isApprove={isApprove}
             currencyval={currencyval}
+            setCodeType={setCodeType}
+            isImport={isImport}
+            setIsImport={setIsImport}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">
@@ -219,6 +229,8 @@ const PoCreateTemplate = () => {
             setResetSure={setResetSure}
             resetSure={resetSure}
             currencyval={currencyval}
+            isImport={isImport}
+            setIsImport={setIsImport}
           />
         </TabsContent>
       </Tabs>

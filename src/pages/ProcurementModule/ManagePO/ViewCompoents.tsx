@@ -14,6 +14,7 @@ import { fetchViewComponentsOfManage } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { width } from "@mui/system";
 const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     {
       field: "id",
       headerName: "Id",
-      flex: 1,
+      width: 90,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -36,17 +37,17 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
         },
       },
     },
-    {
-      field: "componentPartID",
-      headerName: "PO Id",
-      flex: 1,
-      filterParams: {
-        floatingFilterComponentParams: {
-          suppressFilterButton: true,
-          placeholder: "Filter PO ID...",
-        },
-      },
-    },
+    // {
+    //   field: "componentPartID",
+    //   headerName: "PO Id",
+    //   flex: 1,
+    //   filterParams: {
+    //     floatingFilterComponentParams: {
+    //       suppressFilterButton: true,
+    //       placeholder: "Filter PO ID...",
+    //     },
+    //   },
+    // },
     {
       field: "po_component",
       headerName: "Component Name/Part No.",
@@ -93,6 +94,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
         },
       },
     },
+
     {
       field: "pending_qty",
       headerName: "Pending Qty",
@@ -105,19 +107,31 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
         },
       },
     },
-  ]);
-  const [columnDefsCompleted] = useState<ColDef[]>([
     {
-      field: "componentPartID",
-      headerName: "PO Id",
+      field: "po_order_rate",
+      headerName: "Rate",
       flex: 1,
+      filter: "agDateColumnFilter",
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
-          placeholder: "Filter PO ID...",
+          placeholder: "Filter PO Reg. Date...",
         },
       },
     },
+  ]);
+  const [columnDefsCompleted] = useState<ColDef[]>([
+    // {
+    //   field: "componentPartID",
+    //   headerName: "PO Id",
+    //   flex: 1,
+    //   filterParams: {
+    //     floatingFilterComponentParams: {
+    //       suppressFilterButton: true,
+    //       placeholder: "Filter PO ID...",
+    //     },
+    //   },
+    // },
     {
       field: "po_component",
       headerName: "Component Name/Part No.",
@@ -176,6 +190,18 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
         },
       },
     },
+    {
+      field: "po_order_rate",
+      headerName: "Rate",
+      flex: 1,
+      filter: "agDateColumnFilter",
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter PO Reg. Date...",
+        },
+      },
+    },
   ]);
   const calltheApi = async () => {
     // dispatch(fetchManagePOVeiwComponentList({ poid: view.po_transaction }));
@@ -193,7 +219,6 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     );
     let { data } = response;
     if (data.success) {
-
       let arr = data?.data.data.map((r, id) => {
         return {
           id: id + 1,
