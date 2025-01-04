@@ -238,6 +238,7 @@ const TextInputCellRenderer = (props: any) => {
 
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     data[colDef.field] = value; // Save ID in the data
+
     if (colDef.field === "procurementMaterial") {
       data["procurementMaterial"] = data.procurementMaterial;
       dispatch(

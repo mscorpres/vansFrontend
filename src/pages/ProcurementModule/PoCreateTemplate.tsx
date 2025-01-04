@@ -125,7 +125,7 @@ const PoCreateTemplate = () => {
                 isNew: true,
                 procurementMaterial: r?.selectedComponent[0]?.text,
 
-                vendorName: r.make,
+                vendorName: r?.component_short + "/ Maker:" + r.make,
                 // currency: r.currency,
                 // currency: r.exchangerate,
                 orderQty: r.orderqty,
@@ -170,7 +170,6 @@ const PoCreateTemplate = () => {
       }
     }
   }, [shipStateCode, bilStateCode, isImport]);
-
 
   useEffect(() => {
     dispatch(fetchCurrency());
