@@ -99,11 +99,13 @@ const CreateInward: React.FC<Props> = ({
   const addVendor = async (data) => {
     const values = forms.getFieldsValue();
 
+
     let p = {
       vendor: {
-        vendorname: values.label,
-        panno: values.pan,
-        cinno: values.cin,
+        vendorname: data.label,
+        panno: data.pan,
+        cinno: data.cin,
+        payment_terms: data.paymentTerms,
       },
       branch: {
         branch: values.label,
@@ -491,6 +493,18 @@ const CreateInward: React.FC<Props> = ({
                       // placeholder="GSTIN / UIN"
                     />
                   </Form.Item>
+                  <Form.Item
+                    name="paymentTerm"
+                    label="Payment Term"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input
+                      className={InputStyle}
+                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // placeholder="GSTIN / UIN"
+                    />
+                  </Form.Item>
                 </div>
                 <Divider />
                 <div className="grid grid-cols-2 gap-[20px]">
@@ -733,6 +747,14 @@ const CreateInward: React.FC<Props> = ({
                     rules={rules.vendorGst}
                   >
                     <Input className={InputStyle} placeholder="Enter fax" />
+                  </Form.Item>
+                  <Form.Item
+                    name="paymentTerms"
+                    label="Payment Terms"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <Input className={InputStyle} placeholder="Payment Terms" />
                   </Form.Item>
                 </div>
               </div>

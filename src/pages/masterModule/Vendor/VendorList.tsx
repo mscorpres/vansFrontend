@@ -67,6 +67,7 @@ const FormSchema = z.object({
   email: z.string().optional(),
   address: z.string().optional(),
   fax: z.string().optional(),
+  paymentTerms: z.string().optional(),
   vendorCode: z.string().optional(),
   addressCode: z.string().optional(),
   state: z.string().optional(),
@@ -334,6 +335,7 @@ const VendorList = () => {
       panno: data?.pan,
       vendorcode: data?.vendorCode,
       vendorname: data?.vendorName,
+      payment_terms: data?.paymentTerms,
     };
 
     const response = await execFun(() => vendorUpdateSave(p), "fetch");
@@ -392,6 +394,7 @@ const VendorList = () => {
         vendorname: data.label,
         panno: data.pan,
         cinno: data.cin,
+        payment_terms: data.paymentTerms,
       },
       branch: {
         branch: data.label,
@@ -434,14 +437,15 @@ const VendorList = () => {
         vendorName: arr.vendor_name,
         pan: arr.vendor_pan,
         cin: arr.vendor_cin,
-        cin: arr.vendor_cin,
         vendorCode: arr.vendor_code,
+        payment_terms: arr.payment_terms,
       };
 
       form.setValue("vendorName", obj.vendorName);
       form.setValue("pan", obj.pan);
       form.setValue("cin", obj.cin);
       form.setValue("vendorCode", obj.vendorCode);
+      form.setValue("paymentTerms", obj.payment_terms);
       // let a = arr.map((r) => {
       //   return {
       //     label: r.text,
@@ -622,6 +626,25 @@ const VendorList = () => {
                               <Input
                                 className={InputStyle}
                                 placeholder="Enter CIN"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="paymentTerms"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Payment Terms
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Enter Payment Terms"
                                 {...field}
                               />
                             </FormControl>
@@ -1392,6 +1415,25 @@ const VendorList = () => {
                             <Input
                               className={InputStyle}
                               placeholder="Enter CIN"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="paymentTerms"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Payment Term
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              className={InputStyle}
+                              placeholder="Enter Payment Term"
                               {...field}
                             />
                           </FormControl>
