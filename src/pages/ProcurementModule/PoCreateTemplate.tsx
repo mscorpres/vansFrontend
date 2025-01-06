@@ -125,63 +125,108 @@ const PoCreateTemplate = () => {
             form.setFieldValue("shipAddress", arr.ship?.shipaddress);
             let materials = res.payload.data?.materials;
 
-            materials.forEach(async (item) => {
-              const componentKey = item.componentKey;
+            const fetchData = async () => {
+              let matLst = await Promise.all(
+                materials.map(async (item) => {
+                  const componentKey = item.componentKey;
 
-              if (componentKey) {
-                try {
-                  dispatch(
-                    fetchComponentDetails({
-                      component_code: componentKey,
-                      vencode: form.getFieldValue("vendorName")?.value,
-                    })
-                  ).then((res) => {
-                    if (res.payload) {
-                      // console.log("res.payload", res.payload);
-                      let data2 = res?.payload;
-                      let preRate = data2?.last_rate.split(" ")[1];
-                      let b = materials?.map((r) => {
+                  if (componentKey) {
+                    try {
+                      // Dispatch the action and wait for the response
+                      const res = await dispatch(
+                        fetchComponentDetails({
+                          component_code: componentKey,
+                          vencode: form.getFieldValue("vendorName")?.value,
+                        })
+                      );
+
+                      if (res?.payload) {
+                        let data2 = res.payload;
+                        let preRate = data2?.last_rate.split(" ")[1];
+
                         return {
                           isNew: true,
-                          procurementMaterial: r?.selectedComponent[0]?.text,
-
-                          vendorName: r?.component_short + "/ Maker:" + r.make,
-                          // currency: r.currency,
-                          // currency: r.exchangerate,
-                          orderQty: r.orderqty,
-                          componentKey: r?.componentKey,
-                          rate: r.rate,
-                          gstRate: r.gstrate,
-                          gstTypeForPO: r.gsttype[0].id,
-                          materialDescription: r.remark,
-                          hsnCode: r.hsncode,
-                          dueDate: r.duedate,
-                          localValue: r.taxablevalue,
-                          foreignValue: r.exchangetaxablevalue,
-                          igst: r.igst,
-                          sgst: r.sgst,
-                          cgst: r.cgst,
-                          updateingId: r?.updateid,
+                          procurementMaterial: item.selectedComponent[0]?.text,
+                          vendorName:
+                            item.component_short + "/ Maker:" + item.make,
+                          orderQty: item.orderqty,
+                          componentKey: item.componentKey,
+                          rate: item.rate,
+                          gstRate: item.gstrate,
+                          gstTypeForPO: item.gsttype[0].id,
+                          materialDescription: item.remark,
+                          hsnCode: item.hsncode,
+                          dueDate: item.duedate,
+                          localValue: item.taxablevalue,
+                          foreignValue: item.exchangetaxablevalue,
+                          igst: item.igst,
+                          sgst: item.sgst,
+                          cgst: item.cgst,
+                          updateingId: item.updateid,
                           currentStock: res?.payload?.closingQty,
                           prevrate: preRate,
                         };
-                      });
-                      console.log("b", b);
-                      setRowData(b);
+                      }
+                    } catch (error) {
+                      return {
+                        isNew: true,
+                        procurementMaterial: item.selectedComponent[0]?.text,
+                        vendorName:
+                          item.component_short + "/ Maker:" + item.make,
+                        orderQty: item.orderqty,
+                        componentKey: item.componentKey,
+                        rate: item.rate,
+                        gstRate: item.gstrate,
+                        gstTypeForPO: item.gsttype[0].id,
+                        materialDescription: item.remark,
+                        hsnCode: item.hsncode,
+                        dueDate: item.duedate,
+                        localValue: item.taxablevalue,
+                        foreignValue: item.exchangetaxablevalue,
+                        igst: item.igst,
+                        sgst: item.sgst,
+                        cgst: item.cgst,
+                        updateingId: item.updateid,
+                        // currentStock: res.payload.closingQty,
+                        // prevrate: preRate,
+                      };
                     }
-                  });
-                } catch (error) {
-                  console.error(
-                    `API call failed for componentKey ${componentKey}:`,
-                    error
-                  );
-                }
-              } else {
-                console.warn("componentKey not found for item:", item);
-              }
-            });
-            setRowData(matLst);
-            setPrevRowData(matLst);
+                  } else {
+                    return {
+                      isNew: true,
+                      procurementMaterial: item.selectedComponent[0]?.text,
+                      vendorName: item.component_short + "/ Maker:" + item.make,
+                      orderQty: item.orderqty,
+                      componentKey: item.componentKey,
+                      rate: item.rate,
+                      gstRate: item.gstrate,
+                      gstTypeForPO: item.gsttype[0].id,
+                      materialDescription: item.remark,
+                      hsnCode: item.hsncode,
+                      dueDate: item.duedate,
+                      localValue: item.taxablevalue,
+                      foreignValue: item.exchangetaxablevalue,
+                      igst: item.igst,
+                      sgst: item.sgst,
+                      cgst: item.cgst,
+                      updateingId: item.updateid,
+                      // currentStock: res.payload.closingQty,
+                      // prevrate: preRate,
+                    };
+                  }
+
+                  // Return null if the componentKey doesn't exist or if an error occurs
+                  return null;
+                })
+              );
+
+              // Filter out null values, if any, and update the row data
+              matLst = matLst.filter((item) => item !== null);
+
+              setRowData(matLst);
+              console.log("b", matLst);
+            };
+            fetchData();
           } else {
             toast({
               title: "Something went wrong",
@@ -193,7 +238,6 @@ const PoCreateTemplate = () => {
       );
     }
   }, [params]);
-
 
   useEffect(() => {
     if (bilStateCode && shipStateCode) {
