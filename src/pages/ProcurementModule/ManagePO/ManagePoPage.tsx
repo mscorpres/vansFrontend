@@ -71,7 +71,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
         key=" Components"
         onClick={() => setView(row)} // disabled={isDisabled}
       >
-        View Components
+        View
       </Menu.Item>
       <Menu.Item
         key=" Edit"
