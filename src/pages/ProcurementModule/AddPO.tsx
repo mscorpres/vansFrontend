@@ -62,7 +62,6 @@ const AddPO: React.FC<Props> = ({
   codeType,
   roeIs,
   resetTheValues,
-  isImport,
 }) => {
   const [excelModel, setExcelModel] = useState<boolean>(false);
   const [backModel, setBackModel] = useState<boolean>(false);
@@ -199,11 +198,15 @@ const AddPO: React.FC<Props> = ({
       currency: formVal?.currency.value,
       exchange:
         formVal?.currency.value == "364907247" ? "1" : formVal?.exchange_rate,
+      // exchange:
+      //   formVal?.currency.value == "364907247" ? "1" : formVal?.exchange_rate,
       duedate: exportDatepace(formVal?.duedate),
       // original_po: null,
       // currency: arr.map((r: any) => r.currency),
       // exchange: arr.map((r: any) => r.exchange),
-      component: arr.map((r: any) => r?.procurementMaterial),
+      component: arr.map(
+        (r: any) => r?.procurementMaterial.value ?? r?.procurementMaterial
+      ),
       qty: arr.map((r: any) => r.orderQty),
       rate: arr.map((r: any) => r.rate),
       // duedate: arr.map((r: any) => formattedDate(r.dueDate)),
@@ -240,9 +243,12 @@ const AddPO: React.FC<Props> = ({
           // exchange_rate: arr.map((r: any) => r.exchange),
           currency: formVal?.currency.value,
           exchange: formVal?.exchange_rate,
+          // exchange: formVal?.exchange_rate,
           // original_po: null,
 
-          component: arr.map((r: any) => r?.componentKey),
+          component: arr.map(
+            (r: any) => r?.procurementMaterial.value ?? r?.procurementMaterial
+          ),
           qty: arr.map((r: any) => r.orderQty),
           rate: arr.map((r: any) => r.rate),
           // date: arr.map((r: any) => r.dueDate),
@@ -255,6 +261,8 @@ const AddPO: React.FC<Props> = ({
           remark: arr.map((r: any) => r.remark),
           updaterow: arr.map((r: any) => r.updateingId),
         };
+        console.log("payload2", payload2);
+
         dispatch(updatePo(payload2)).then((response: any) => {
           if (response?.payload.success) {
             setShowConfirmation(false);
@@ -422,155 +430,8 @@ const AddPO: React.FC<Props> = ({
       cellRenderer: "textInputCellRenderer",
       minWidth: 200,
     },
-    // {
-    //   headerName: "Foreign Value",
-    //   field: "foreignValue",
-    //   editable: false,
-    //   flex: 1,
-    //   cellRenderer: "textInputCellRenderer",
-    //   minWidth: 200,
-    // },
-    {
-      headerName: "CGST",
-      field: "cgst",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "SGST",
-      field: "sgst",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "IGST",
-      field: "igst",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    // {
-    //   headerName: "Due Date",
-    //   field: "dueDate",
-    //   editable: false,
-    //   flex: 1,
-    //   cellRenderer: "textInputCellRenderer",
-    //   minWidth: 200,
-    // },
-    {
-      headerName: "HSN Code",
-      field: "hsnCode",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "Remark",
-      field: "remark",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-  ];
-  const columnDefsImport = [
-    {
-      headerName: "",
-      valueGetter: "node.rowIndex + 1",
-      cellRenderer: "textInputCellRenderer",
-      maxWidth: 100,
-      field: "delete",
-    },
-    { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
-
-    {
-      headerName: "Component/Part",
-      field: "procurementMaterial",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 300,
-    },
-    {
-      headerName: "Ven C. Part / Part",
-      field: "vendorName",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 250,
-    },
-    {
-      headerName: "Order Qty",
-      field: "orderQty",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "Stock Qty",
-      field: "currentStock",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "Rate",
-      field: "rate",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "Previous Rate",
-      field: "prevrate",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    // {
-    //   headerName: "Currency",
-    //   field: "currency",
-    //   editable: false,
-    //   flex: 1,
-    //   cellRenderer: "textInputCellRenderer",
-    //   minWidth: 250,
-    // },
-    {
-      headerName: "GST Rate",
-      field: "gstRate",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 150,
-    },
-    {
-      headerName: "GST Type",
-      field: "gstTypeForPO",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
     {
       headerName: "Foreign Value",
-      field: "localValue",
-      editable: false,
-      flex: 1,
-      cellRenderer: "textInputCellRenderer",
-      minWidth: 200,
-    },
-    {
-      headerName: "Local Value",
       field: "foreignValue",
       editable: false,
       flex: 1,
@@ -754,7 +615,7 @@ const AddPO: React.FC<Props> = ({
           <Card className="rounded-sm shadow-sm shadow-slate-500">
             <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
               <CardTitle className="font-[550] text-slate-600">
-                Vendor Detail
+                Client Detail
               </CardTitle>
             </CardHeader>
             <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
@@ -876,11 +737,7 @@ const AddPO: React.FC<Props> = ({
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
-              columnDefs={
-                isImport == "Import"
-                  ? (columnDefsImport as (ColDef | ColGroupDef)[])
-                  : (columnDefs as (ColDef | ColGroupDef)[])
-              }
+              columnDefs={columnDefs as (ColDef | ColGroupDef)[]}
               statusBar={statusBar}
               components={components}
               pagination={true}

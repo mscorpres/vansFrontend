@@ -5,7 +5,10 @@ import AddPO from "./AddPO";
 import { Form } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppDispatch } from "@/store";
-import { fetchDataPOEdit } from "@/features/client/clientSlice";
+import {
+  fetchComponentDetails,
+  fetchDataPOEdit,
+} from "@/features/client/clientSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
 import { toast } from "@/components/ui/use-toast";
@@ -21,6 +24,7 @@ const PoCreateTemplate = () => {
   const [roeIs, setRoeIs] = useState("");
   const [resetSure, setResetSure] = useState(false);
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const [PrevRowData, setPrevRowData] = useState<RowData[]>([]);
   const [bilStateCode, setBillStateCode] = useState("");
   const [shipStateCode, setShipStateCode] = useState("");
   const [isImport, setIsImport] = useState("");
@@ -120,32 +124,64 @@ const PoCreateTemplate = () => {
             form.setFieldValue("shipgst", arr.ship?.shipgstid);
             form.setFieldValue("shipAddress", arr.ship?.shipaddress);
             let materials = res.payload.data?.materials;
-            let matLst = materials?.map((r) => {
-              return {
-                isNew: true,
-                procurementMaterial: r?.selectedComponent[0]?.text,
 
-                vendorName: r?.component_short + "/ Maker:" + r.make,
-                // currency: r.currency,
-                // currency: r.exchangerate,
-                orderQty: r.orderqty,
-                componentKey: r?.componentKey,
-                rate: r.rate,
-                gstRate: r.gstrate,
-                gstTypeForPO: r.gsttype[0].id,
-                materialDescription: r.remark,
-                hsnCode: r.hsncode,
-                dueDate: r.duedate,
-                localValue: r.taxablevalue,
-                foreignValue: r.exchangetaxablevalue,
-                igst: r.igst,
-                sgst: r.sgst,
-                cgst: r.cgst,
-                updateingId: r?.updateid,
-              };
+            materials.forEach(async (item) => {
+              const componentKey = item.componentKey;
+
+              if (componentKey) {
+                try {
+                  dispatch(
+                    fetchComponentDetails({
+                      component_code: componentKey,
+                      vencode: form.getFieldValue("vendorName")?.value,
+                    })
+                  ).then((res) => {
+                    if (res.payload) {
+                      // console.log("res.payload", res.payload);
+                      let data2 = res?.payload;
+                      let preRate = data2?.last_rate.split(" ")[1];
+                      let b = materials?.map((r) => {
+                        return {
+                          isNew: true,
+                          procurementMaterial: r?.selectedComponent[0]?.text,
+
+                          vendorName: r?.component_short + "/ Maker:" + r.make,
+                          // currency: r.currency,
+                          // currency: r.exchangerate,
+                          orderQty: r.orderqty,
+                          componentKey: r?.componentKey,
+                          rate: r.rate,
+                          gstRate: r.gstrate,
+                          gstTypeForPO: r.gsttype[0].id,
+                          materialDescription: r.remark,
+                          hsnCode: r.hsncode,
+                          dueDate: r.duedate,
+                          localValue: r.taxablevalue,
+                          foreignValue: r.exchangetaxablevalue,
+                          igst: r.igst,
+                          sgst: r.sgst,
+                          cgst: r.cgst,
+                          updateingId: r?.updateid,
+                          currentStock: res?.payload?.closingQty,
+                          prevrate: preRate,
+                        };
+                      });
+                      console.log("b", b);
+                      setRowData(b);
+                    }
+                  });
+                } catch (error) {
+                  console.error(
+                    `API call failed for componentKey ${componentKey}:`,
+                    error
+                  );
+                }
+              } else {
+                console.warn("componentKey not found for item:", item);
+              }
             });
-
             setRowData(matLst);
+            setPrevRowData(matLst);
           } else {
             toast({
               title: "Something went wrong",
@@ -157,6 +193,8 @@ const PoCreateTemplate = () => {
       );
     }
   }, [params]);
+
+
   useEffect(() => {
     if (bilStateCode && shipStateCode) {
       if (isImport == "Import") {
