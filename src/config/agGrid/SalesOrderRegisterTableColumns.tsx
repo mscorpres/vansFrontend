@@ -235,7 +235,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         disabled={
           row?.approveStatus === "Pending" ||
           row?.soStatus === "Closed" ||
-          row?.approveStatus === "Rejected"
+          row?.approveStatus === "Rejected" ||
+          row?.approveStatus === "Partially Approved"
         }
       >
         Create Shipment

@@ -33,6 +33,7 @@ import {
   fetchComponentDetails,
   fetchCurrency,
   listOfCostCenter,
+  removePart,
 } from "@/features/client/clientSlice";
 import {
   closingStock,
@@ -213,8 +214,36 @@ const TextInputCellRenderer = (props: any) => {
         so_id: (params?.id as string)?.replace(/_/g, "/"),
         updaterow: data?.updateid,
       };
+
       if (window.location.pathname.includes("update")) {
         // dispatch(deleteProduct(payload));
+      }
+    }
+    setShowConfirmDialog(false);
+  };
+
+  const handleDeleteRowDelete = () => {
+    // return;
+    if (selectedRowIndex !== null) {
+      const formData = new FormData();
+      formData.append("pocode", params?.id?.replaceAll("_", "/")); // Append the file to FormData
+      formData.append("partcode", data["componentKey"]); // Append the file to FormData
+      formData.append("updatecode", data["updateingId"]); // Append the file to FormData
+      setRowData((prevData: any) =>
+        prevData.filter((_: any, index: any) => index !== selectedRowIndex)
+      );
+      api.applyTransaction({
+        remove: [api.getDisplayedRowAtIndex(selectedRowIndex).data],
+      });
+      let payload = {
+        pocode: params?.id?.replaceAll("_", "/"),
+        partcode: data["componentKey"],
+        updatecode: data["updateingId"],
+      };
+      if (window.location.pathname.includes("edit")) {
+        dispatch(removePart(payload)).then((res) => {
+          // console.log("res", res);
+        });
       }
     }
     setShowConfirmDialog(false);
@@ -528,6 +557,30 @@ const TextInputCellRenderer = (props: any) => {
             <CommonModal
               isDialogVisible={showConfirmDialog}
               handleOk={(e: any) => handleConfirmDelete(e)}
+              handleCancel={() => setShowConfirmDialog(false)}
+              title="Reset Details"
+              description={"Are you sure you want to remove this entry?"}
+            />
+          </div>
+        );
+      case "deletePo":
+        return (
+          <div className="flex justify-center">
+            <button
+              onClick={() => handleDeleteRow(props.node.rowIndex)}
+              className={
+                api.getDisplayedRowCount() <= 1
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-red-500 hover:text-red-700 pt-3"
+              }
+              aria-label="Delete"
+              disabled={api.getDisplayedRowCount() <= 1}
+            >
+              <FaTrash />
+            </button>
+            <CommonModal
+              isDialogVisible={showConfirmDialog}
+              handleOk={(e: any) => handleDeleteRowDelete(e)}
               handleCancel={() => setShowConfirmDialog(false)}
               title="Reset Details"
               description={"Are you sure you want to remove this entry?"}

@@ -30,6 +30,11 @@ interface uomPayload {
   id: string;
   value: string;
 }
+interface deletePart {
+  pocode: string;
+  partcode: string;
+  updatecode: string;
+}
 interface shippingAddressPayload {
   // id: string;
   statecode: string;
@@ -297,6 +302,22 @@ export const poMIN = createAsyncThunk<uomPayload>(
         throw new Error(error.message);
       }
       throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const removePart = createAsyncThunk<deletePart>(
+  "/purchaseOrder/removePart",
+  async (payload) => {
+    // console.log("payload", payload);
+
+    try {
+      const response = await spigenAxios.delete<deletePart>(
+        `/purchaseOrder/removePart?pocode=${payload.pocode}&partcode=${payload.partcode}&updatecode=${payload.updatecode}`
+      );
+
+      return response;
+    } catch (error) {
+      return response;
     }
   }
 );
