@@ -160,6 +160,7 @@ const AddPO: React.FC<Props> = ({
           vendorCode={selectedVendor}
           currencyList={currencyList}
           roeIs={roeIs}
+          params={params}
           // componentDetails={hsnlist}
         />
       ),
@@ -348,7 +349,7 @@ const AddPO: React.FC<Props> = ({
       valueGetter: "node.rowIndex + 1",
       cellRenderer: "textInputCellRenderer",
       maxWidth: 100,
-      field: "delete",
+      field: "deletePo",
     },
     { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
 
