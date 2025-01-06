@@ -241,10 +241,10 @@ const TextInputCellRenderer = (props: any) => {
     data[colDef.field] = value; // Save ID in the data
 
     if (colDef.field === "procurementMaterial") {
-      data["procurementMaterial"] = data.procurementMaterial;
+      data["procurementMaterial"] = data?.procurementMaterial;
       dispatch(
         fetchComponentDetails({
-          component_code: data["procurementMaterial"],
+          component_code: data["procurementMaterial"]?.value,
           vencode: props?.vendorCode?.value,
         })
       ).then((res) => {
@@ -645,8 +645,10 @@ const TextInputCellRenderer = (props: any) => {
               }
             }}
             options={transformOptionData(componentDetails || [])}
-            onChange={(e) => handleChange(e.value)}
-            value={typeof value === "string" ? { value } : value?.text}
+            onChange={(e) => handleChange(e)}
+            value={
+              typeof value === "string" ? { value } : value?.text || value.label
+            }
             style={{ pointerEvents: "auto" }}
           />
         );
