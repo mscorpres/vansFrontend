@@ -79,6 +79,7 @@ const AddPO: React.FC<Props> = ({
   const { loading: loading1 } = useSelector(
     (state: RootState) => state.sellRequest
   );
+  const { loading: loading2 } = useSelector((state: RootState) => state.client);
   const navigate = useNavigate();
 
   // const { execFun, loading: loading1 } = useApi();
@@ -176,6 +177,7 @@ const AddPO: React.FC<Props> = ({
   const handleSubmit = async () => {
     setShowConfirmation(false);
     let arr = rowData;
+    console.log(arr);
 
     let payload = {
       vendorname: formVal.vendorName.value,
@@ -247,7 +249,7 @@ const AddPO: React.FC<Props> = ({
           // original_po: null,
 
           component: arr.map(
-            (r: any) => r?.procurementMaterial.value ?? r?.procurementMaterial
+            (r: any) => r?.procurementMaterial.value ?? r?.componentKey
           ),
           qty: arr.map((r: any) => r.orderQty),
           rate: arr.map((r: any) => r.rate),
@@ -733,7 +735,7 @@ const AddPO: React.FC<Props> = ({
             </div> */}
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
-            {(loading || loading1) && <FullPageLoading />}
+            {(loading || loading1 || loading2) && <FullPageLoading />}
             <AgGridReact
               ref={gridRef}
               rowData={rowData}
