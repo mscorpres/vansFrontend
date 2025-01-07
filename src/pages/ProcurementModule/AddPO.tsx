@@ -427,6 +427,7 @@ const AddPO: React.FC<Props> = ({
     },
     {
       // headerName: "Local Value",
+      // headerName: "Local Value",
       headerName: "Foreign Value",
       field: "localValue",
       editable: false,
@@ -436,6 +437,7 @@ const AddPO: React.FC<Props> = ({
     },
     {
       headerName: "Local Value",
+      // headerName: "Foreign Value",
       // headerName: "Foreign Value",
       field: "foreignValue",
       editable: false,
