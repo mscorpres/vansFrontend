@@ -68,10 +68,16 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
       comp_remark: form.getFieldValue("remark"),
       item_remark: selectedItems.map((item) => item.itemRemark),
     };
-    onCreateShipment({ itemDetails: { ...itemDetails }, so_id: row.req_id });
+    // return;
+    onCreateShipment({
+      itemDetails: { ...itemDetails },
+      so_id: row.req_id,
+      cost_center: selectedItems[0].so_costcenter,
+    });
     form.resetFields();
     setOpenConfirmDialog(false);
   };
+
 
   const components = useMemo(
     () => ({
