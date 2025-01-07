@@ -14,7 +14,7 @@ import { fetchViewComponentsOfManage } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import { width } from "@mui/system";
+import { minWidth, width } from "@mui/system";
 const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -51,6 +51,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     {
       field: "po_component",
       headerName: "Component Name/Part No.",
+      minWidth: 350,
       flex: 1,
       filterParams: {
         floatingFilterComponentParams: {
@@ -63,6 +64,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       field: "vendor_part_codes",
       headerName: "	Vendor Component Name / Part No.",
       flex: 2,
+      minWidth: 250,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -222,8 +224,9 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       let arr = data?.data.data.map((r, id) => {
         return {
           id: id + 1,
-          vendor_part_codes: r.vendor_part_code + "/" + r.vendor_part_desc,
-          po_component: r.po_components + "/" + r.componentPartID,
+          vendor_part_codes: r.vendor_part_code + " /" + r.vendor_part_desc,
+          po_component:
+            r.po_components + "/" + r.componentPartID + " /" + r.componentDesc,
           ...r,
         };
       });
