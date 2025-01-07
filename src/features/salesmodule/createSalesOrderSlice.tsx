@@ -149,7 +149,7 @@ export const uploadSOExcel = createAsyncThunk<
 >("/client/uploadExcel", async ({ file, getCostCenter }) => {
   const formData = new FormData();
   formData.append("file", file); // Append the file to FormData
-  formData.append("cost_center", getCostCenter); // Append the file to FormData
+  formData.append("customer", getCostCenter); // Append the file to FormData
 
   const response = await spigenAxios.post(
     `/salesOrder/uploadSOItems`,
@@ -306,7 +306,7 @@ export const fetchComponentDetailByCode = createAsyncThunk<
       //   component_code: component_code,
       //   vencode: vencode,
       // }
-      `salesOrder/getComponentDetailsByCode?component_code=${component_code}&cost_center=${costCenter}`
+      `salesOrder/getComponentDetailsByCode?component_code=${component_code}&customer=${costCenter}`
     );
 
     if (response?.data?.success) {
