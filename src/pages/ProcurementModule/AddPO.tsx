@@ -426,7 +426,8 @@ const AddPO: React.FC<Props> = ({
       minWidth: 200,
     },
     {
-      headerName: "Local Value",
+      // headerName: "Local Value",
+      headerName: "Foreign Value",
       field: "localValue",
       editable: false,
       flex: 1,
@@ -434,7 +435,8 @@ const AddPO: React.FC<Props> = ({
       minWidth: 200,
     },
     {
-      headerName: "Foreign Value",
+      headerName: "Local Value",
+      // headerName: "Foreign Value",
       field: "foreignValue",
       editable: false,
       flex: 1,
