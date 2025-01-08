@@ -16,7 +16,7 @@ import { transformOptionData } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 
 import { toast } from "@/components/ui/use-toast";
-import { Filter } from "lucide-react";
+import { Edit2, Filter } from "lucide-react";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
 import {
@@ -31,10 +31,12 @@ import {
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import UpdateCustomerModal from "@/pages/masterModule/ComponentMap/UpdateCustomerModal";
 const CustomerComponent = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [showRejectConfirm, setShowRejectConfirm] = useState<boolean>(false);
   const [resetModel, setResetModel] = useState(false);
+  const [openModal , setOpenModal] = useState(false);
+  const [data , setData] = useState({})
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
@@ -94,6 +96,73 @@ const CustomerComponent = () => {
   useEffect(() => {
     fetchComponentMap();
   }, []);
+
+  const columnDefs: ColDef<RowData>[] = [
+    { 
+      headerName: "Action", 
+      field: "action", 
+      width: 100,
+      cellRenderer: (params: any) => (
+        <Button
+          className="bg-transparent text-slate-600 hover:bg-[#f5f5f5]"
+          onClick={() => {setData(params.node.data);setOpenModal(true)}}
+          aria-label="Edit"
+        >
+          <Edit2 className="h-[20px] w-[20px]"/>
+        </Button>
+      ),
+      sortable: false, // Optionally disable sorting for Action column
+      filter: false, // Optionally disable filtering for Action column
+    },
+    { headerName: "ID", field: "id", filter: "agNumberColumnFilter", width: 90 },
+    {
+      headerName: "Part Code",
+      field: "part_no",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 120,
+    },
+    {
+      headerName: "Part Name",
+      field: "name",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 250,
+    },
+    {
+      headerName: "Code",
+      field: "cust",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 150,
+    },
+    {
+      headerName: " Name",
+      field: "cust_name",
+      filter: "agTextColumnFilter",
+      width: 250,
+    },
+    {
+      headerName: "Customer Part Code",
+      field: "cust_comp",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 250,
+    },
+    {
+      headerName: "Customer Part Number",
+      field: "cust_part_no",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 250,
+    },
+    {
+      headerName: "Description",
+      field: "c_desc",
+      filter: "agTextColumnFilter",
+      width: 250,
+    },
+  ];
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[450px_1fr]  overflow-hidden">
@@ -227,6 +296,11 @@ const CustomerComponent = () => {
         title="Confirm Submit!"
         description="Are you sure to submit the entry?"
       />
+      <UpdateCustomerModal
+      open={openModal}
+      onClose={setOpenModal}
+      data={data}
+      />
     </Wrapper>
   );
 };
@@ -238,53 +312,4 @@ const Wrapper = styled.div`
     border-bottom: 0;
   }
 `;
-const columnDefs: ColDef<RowData>[] = [
-  { headerName: "ID", field: "id", filter: "agNumberColumnFilter", width: 90 },
-  {
-    headerName: "Part Code",
-    field: "part_no",
-    filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
-    width: 120,
-  },
-  {
-    headerName: "Part Name",
-    field: "name",
-    filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
-    width: 250,
-  },
-  {
-    headerName: "Code",
-    field: "cust",
-    filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
-    width: 150,
-  },
-  {
-    headerName: " Name",
-    field: "cust_name",
-    filter: "agTextColumnFilter",
-    width: 250,
-  },
-  {
-    headerName: "Customer Part Code",
-    field: "cust_comp",
-    filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
-    width: 250,
-  },
-  {
-    headerName: "Customer Part Number",
-    field: "cust_part_no",
-    filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
-    width: 250,
-  },
-  {
-    headerName: "Description",
-    field: "c_desc",
-    filter: "agTextColumnFilter",
-    width: 250,
-  },
-];
+
