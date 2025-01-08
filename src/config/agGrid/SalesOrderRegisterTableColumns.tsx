@@ -410,6 +410,10 @@ const materialListColumnDefs: ColDef[] = [
     cellRenderer: "truncateCellRenderer",
   },
   {
+    headerName: "Due Date",
+    field: "dueDate",
+  },
+  {
     headerName: "Qty",
     field: "qty",
   },
