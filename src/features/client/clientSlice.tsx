@@ -341,7 +341,7 @@ export const poApprove = createAsyncThunk<uomPayload>(
 );
 
 export const updateMapCustomer = createAsyncThunk<uomPayload>(
-  "/component/fetchCustomerMapComponents",
+  "/component/updateMapCustomer",
   async (payload) => {
     try {
       const response = await spigenAxios.put<any>(
@@ -796,6 +796,18 @@ const clientSlice = createSlice({
         state.approvePoList = action.payload;
       })
       .addCase(poApprove.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(updateMapCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateMapCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(updateMapCustomer.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch Cost Center List";

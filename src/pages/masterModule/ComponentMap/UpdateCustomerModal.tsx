@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Form, Row } from "antd";
 import { Input } from "@/components/ui/input";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "@/components/ui/use-toast";
-import { AppDispatch } from "@/store";
+import { AppDispatch, RootState } from "@/store";
 import { InputStyle } from "@/constants/themeContants";
 // import styled from "styled-components";
 import { fetchStates } from "@/features/salesmodule/createSalesOrderSlice";
@@ -15,23 +15,27 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { updateMapCustomer } from "@/features/client/clientSlice";
+import { componentMapListCustomers } from "@/components/shared/Api/masterApi";
+import FullPageLoading from "@/components/shared/FullPageLoading";
 
 interface Props {
   open: boolean;
   onClose: (open: boolean) => void;
   data: any;
+  fetchComponentMap:any
 }
 
 const UpdateCustomerModal: React.FC<Props> = (props: Props) => {
-  const { open, onClose, data } = props;
+  const { open, onClose, data,fetchComponentMap } = props;
   const { toast } = useToast();
+  const { loading } = useSelector((state: RootState) => state.client);
   const dispatch = useDispatch<AppDispatch>();
+  
 
   const [form] = Form.useForm();
-  console.log(data);
   useEffect(() => {
     if (data) {
-      form.setFieldValue("desc", data?.c_desc);
+      form.setFieldValue("desc", data?.customer_desc);
       form.setFieldValue("vendorPartName", data?.cust_name);
       form.setFieldValue("vendorPartCode", data?.cust_part_no);
       form.setFieldValue("vendorName", data?.cust + " " + data?.cust_name);
@@ -54,6 +58,7 @@ const UpdateCustomerModal: React.FC<Props> = (props: Props) => {
           className: "bg-green-600 text-white items-center",
         });
         onClose(false);
+        fetchComponentMap()
       } else {
         toast({
           title: res.payload.message || "Failed to Create Product",
@@ -75,6 +80,7 @@ const UpdateCustomerModal: React.FC<Props> = (props: Props) => {
           e.preventDefault();
         }}
       >
+        {loading && <FullPageLoading/>}
         <SheetHeader>
           <SheetTitle className="text-slate-600 text-[25px]">
             Update Customer

@@ -129,6 +129,13 @@ const CustomerComponent = () => {
       cellRenderer: CopyCellRenderer,
       width: 250,
     },
+  {
+    headerName: "Description",
+    field: "c_desc",
+    filter: "agTextColumnFilter",
+    width: 250,
+    autoHeight: true,
+  },
     {
       headerName: "Code",
       field: "cust",
@@ -157,8 +164,8 @@ const CustomerComponent = () => {
       width: 250,
     },
     {
-      headerName: "Description",
-      field: "c_desc",
+      headerName: "Customer Part Description",
+      field: "customer_desc",
       filter: "agTextColumnFilter",
       width: 250,
     },
@@ -300,6 +307,7 @@ const CustomerComponent = () => {
       open={openModal}
       onClose={setOpenModal}
       data={data}
+      fetchComponentMap={()=>fetchComponentMap()}
       />
     </Wrapper>
   );
