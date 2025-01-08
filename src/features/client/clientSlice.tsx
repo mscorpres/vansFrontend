@@ -339,6 +339,26 @@ export const poApprove = createAsyncThunk<uomPayload>(
     }
   }
 );
+
+export const updateMapCustomer = createAsyncThunk<uomPayload>(
+  "/component/fetchCustomerMapComponents",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.put<any>(
+        "/component/updateMapCustomer",
+        payload
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+
 export const fetchManagePOVeiwComponentList = createAsyncThunk<
   uomPayload,
   { poid: string }
