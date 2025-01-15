@@ -279,6 +279,9 @@ const CreatePoPage: React.FC<Props> = ({
           branchcode: selBranch?.value,
         })
       );
+    } else {
+      form.setFieldValue("vendorGst", "");
+      form.setFieldValue("address", "");
     }
   }, [selectedVendor, selBranch]);
   useEffect(() => {
@@ -303,7 +306,7 @@ const CreatePoPage: React.FC<Props> = ({
   }, []);
   ///setting details from the shipping details
   useEffect(() => {
-    if (shippingPODetails && resetSure == false) {
+    if (shippingPODetails && resetSure == false && selShipping) {
       let arr = shippingPODetails;
       setShipStateCode(shippingPODetails.statecode);
       form.setFieldValue("shipgst", arr?.gstin);
@@ -315,8 +318,9 @@ const CreatePoPage: React.FC<Props> = ({
       form.setFieldValue("shipAddress", "");
     }
   }, [shippingPODetails]);
+
   useEffect(() => {
-    if (vendorPODetails && resetSure == false) {
+    if (vendorPODetails && resetSure == false && selectedVendor && selBranch) {
       let arr = vendorPODetails;
 
       form.setFieldValue("vendorGst", arr?.gstid);
@@ -335,12 +339,17 @@ const CreatePoPage: React.FC<Props> = ({
   }, [vendorPODetails]);
   useEffect(() => {
     if (selBilling) {
-      dispatch(fetchBillingListDetails({ billing_code: selBilling?.value }));
+    dispatch(fetchBillingListDetails({ billing_code: selBilling?.value }));
+    } else {
+      // console.log("ghere");
+      form.setFieldValue("pan", "");
+      form.setFieldValue("billgst", "");
+      form.setFieldValue("billAddress", "");
     }
   }, [selBilling]);
 
   useEffect(() => {
-    if (vendorBillingDetails && resetSure == false) {
+    if (vendorBillingDetails && resetSure == false && selBilling) {
       let arr = vendorBillingDetails;
       setBillStateCode(vendorBillingDetails.statecode);
       form.setFieldValue("pan", arr?.pan);
