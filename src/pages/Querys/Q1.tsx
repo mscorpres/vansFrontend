@@ -110,6 +110,12 @@ const Q1 = () => {
       width: 190,
     },
     {
+      headerName: "Transaction Id",
+      field: "transaction",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
       headerName: "Qty In",
       field: "qty_in",
       filter: "agTextColumnFilter",
