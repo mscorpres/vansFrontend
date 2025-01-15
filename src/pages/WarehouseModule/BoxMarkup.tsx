@@ -347,7 +347,6 @@ const BoxMarkup = () => {
       setShowConfirmation(false);
     });
   };
-  console.log("min", minId);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[250px_1fr] overflow-hidden">
