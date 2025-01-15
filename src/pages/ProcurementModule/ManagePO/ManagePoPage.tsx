@@ -105,7 +105,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   return (
     <>
       <Dropdown overlay={menu} trigger={["click"]}>
-        {/* <Button icon={<Badge />} /> */}
         <MoreOutlined />
       </Dropdown>
     </>
@@ -390,10 +389,8 @@ const ManagePoPage: React.FC = () => {
             </Form.Item>
           )}
           <div className="w-full flex justify-end">
-          
             <Search onClick={fetchManageList} />
           </div>
-        
         </Form>
         <Divider />
       </div>
