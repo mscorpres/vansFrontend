@@ -16,10 +16,19 @@ import {
   Grid,
   IconButton,
   Skeleton,
+  InputAdornment,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { FaEdit, FaKey, FaShieldAlt } from "react-icons/fa";
 import SetPassword from "@/components/shared/SetPassword";
+import { toast } from "@/components/ui/use-toast";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getOtpForProfile,
+  updateProfileName,
+  userDetailsForProfile,
+  verifyOtpForProfileEmail,
+} from "@/features/client/clientSlice";
 
 const StyledCard = styled(Card)(() => ({
   maxWidth: 800,
@@ -29,13 +38,26 @@ const StyledCard = styled(Card)(() => ({
 }));
 
 const ProfileComponent = () => {
-const loading = false;
+  const loading = false;
   const [openEditProfile, setOpenEditProfile] = useState(false);
+  const [openVerify, setOpenVerify] = useState(false);
+  const [openVerifyEmail, setOpenVerifyEmail] = useState(false);
   const [openChangePassword, setOpenChangePassword] = useState(false);
+  const [phoneVerify, setPhoneVerify] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [emailVerify, setEmailVerify] = useState(false);
   const [profileDataLocal, setProfileDataLocal] = useState({
     userName: "",
     email: "",
     phone: "",
+    otp: "",
+    is2faActive: false,
+  }); // Local state for profile editing
+  const [profileDataogLocal, setProfileDataogLocal] = useState({
+    userName: "",
+    email: "",
+    phone: "",
+    otp: "",
     is2faActive: false,
   }); // Local state for profile editing
   const [twoFAEnabled] = useState(profileDataLocal?.is2faActive || false);
@@ -44,15 +66,34 @@ const loading = false;
     message: "",
     severity: "success",
   });
-
+  const dispatch = useDispatch();
+  const { editProfile, loading: editProfileLoading } = useSelector(
+    (state) => state.client
+  );
   useEffect(() => {
-    // Retrieve loggedInUser from local storage
+    // Retrieve loggedInUser from localStorage
     const loggedInUser = localStorage.getItem("loggedInUser");
+
     if (loggedInUser) {
-      const user = JSON.parse(loggedInUser);
-      setProfileDataLocal(user);
+      try {
+        const user = JSON.parse(loggedInUser);
+
+        // Update states with the user data
+        setProfileDataLocal(user);
+        setProfileDataogLocal(user);
+      } catch (error) {
+        console.error("Error parsing loggedInUser:", error);
+      }
+    } else {
+      console.log("No loggedInUser found in localStorage.");
     }
   }, []);
+
+  useEffect(() => {
+    console.log("profileDataogLocal has been updated:", profileDataogLocal);
+    setProfileDataLocal(profileDataogLocal);
+  }, [profileDataogLocal]);
+
   // Handle Edit Profile submission
   // const handleEditProfile = async () => {
   //   try {
@@ -92,12 +133,33 @@ const loading = false;
   // };
 
   // Handle Profile Data Changes
+  const handleChangeinOTP = (value, index) => {
+    if (/^\d?$/.test(value)) {
+      const updatedOtp = [...otp];
+      updatedOtp[index] = value;
+      setOtp(updatedOtp);
+
+      // Move focus to next input
+      if (value && index < otp.length - 1) {
+        document.getElementById(`otp-${index + 1}`).focus();
+      }
+    }
+  };
+
   const handleProfileChange = (e: any) => {
     setProfileDataLocal({
       ...profileDataLocal,
       [e.target.name]: e.target.value,
     });
   };
+  useEffect(() => {
+    if (otp) {
+      setProfileDataLocal({
+        ...profileDataLocal,
+        otp: otp,
+      });
+    }
+  }, [otp]);
 
   // Handle Verification Email
   const handleVerificationEmail = () => {
@@ -107,6 +169,105 @@ const loading = false;
       severity: "success",
     });
   };
+  const getOtpNumber = async () => {
+    setOpenVerify(true);
+    sendOtp();
+  };
+  const getOtpEmail = async () => {
+    setOpenVerifyEmail(true);
+    let payload = { email: profileDataLocal.email };
+
+    sendOtp(payload);
+  };
+  const updateVerifyEmail = async () => {
+    let payload = {
+      otp: profileDataLocal.otp.join(""),
+      emailId: profileDataLocal.email,
+    };
+
+    const response = await dispatch(verifyOtpForProfileEmail(payload));
+
+    if (response?.payload.success == true) {
+      setOpenVerifyEmail(false);
+      setProfileDataLocal({
+        ...profileDataLocal,
+        otp: "", // Correctly sets the `otp` field
+      });
+      toast({
+        title: "Email updated successfully!",
+        className: "bg-green-600 text-white items-center relative z-50",
+      });
+    } else {
+      toast({
+        title: response?.data?.message,
+        className: "bg-red-600 text-white items-center relative z-50",
+      });
+    }
+  };
+  const sendOtp = async (payload) => {
+    const response = await dispatch(getOtpForProfile(payload));
+    console.log("response", response);
+
+    if (response?.payload?.success == true) {
+      toast({
+        title: response?.payload?.message,
+        className: "bg-green-600 text-white items-center relative z-50",
+      });
+    } else {
+      toast({
+        title: response?.data?.message,
+        className: "bg-red-600 text-white items-center relative z-50",
+      });
+    }
+  };
+  const updateName = async () => {
+    let payload = { fullname: profileDataLocal.userName };
+    const response = await dispatch(updateProfileName(payload));
+    console.log("response", response);
+
+    if (response?.payload?.success == true) {
+      toast({
+        title: response?.payload?.message,
+        className: "bg-green-600 text-white items-center relative z-50",
+      });
+    } else {
+      toast({
+        title: response?.payload?.message,
+        className: "bg-red-600 text-white items-center relative z-50",
+      });
+    }
+    getTheLatestProfile();
+  };
+  const getTheLatestProfile = async () => {
+    console.log("here");
+
+    const response = await dispatch(userDetailsForProfile());
+    console.log("response", response);
+    if (response?.payload?.data?.status == "success") {
+      let d1 = response.payload.data;
+      console.log("d1", d1);
+
+      setProfileDataogLocal({
+        userName: d1.data.name,
+        email: d1.data.email,
+        phone: d1.data.phone,
+      });
+    }
+  };
+  useEffect(() => {
+    // console.log("profileDataLocal", profileDataLocal);
+    // console.log("profileDataogLocal", profileDataogLocal);
+    if (profileDataLocal.phone == profileDataogLocal.phone) {
+      setPhoneVerify(true);
+    } else {
+      setPhoneVerify(false);
+    }
+    if (profileDataLocal.email == profileDataogLocal.email) {
+      setEmailVerify(true);
+    } else {
+      setEmailVerify(false);
+    }
+  }, [profileDataLocal]);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -141,10 +302,14 @@ const loading = false;
               </Grid>
               <Grid item xs>
                 <Typography variant="h5" gutterBottom>
-                  {profileDataLocal?.userName}
+                  {profileDataogLocal?.userName}
                 </Typography>
-                <Typography color="textSecondary">{profileDataLocal?.email}</Typography>
-                <Typography color="textSecondary">{profileDataLocal?.phone}</Typography>
+                <Typography color="textSecondary">
+                  {profileDataogLocal?.email}
+                </Typography>
+                <Typography color="textSecondary">
+                  {profileDataogLocal?.phone}
+                </Typography>
               </Grid>
               <Grid item>
                 <IconButton
@@ -218,26 +383,21 @@ const loading = false;
         </div>
       </StyledCard>
 
-      {/* Edit Profile Dialog */}
-      <Dialog open={openEditProfile} onClose={() => setOpenEditProfile(false)}>
+      {/* Verify OTP  Phone*/}
+      <Dialog
+        open={openEditProfile}
+        onClose={() => setOpenEditProfile(false)}
+        sx={{ zIndex: 10 }}
+      >
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
-            label="Name"
+            label="userName"
             fullWidth
-            name="name"
+            name="userName"
             value={profileDataLocal?.userName}
-            onChange={handleProfileChange}
-          />
-          <TextField
-            margin="dense"
-            label="Email"
-            type="email"
-            fullWidth
-            name="email"
-            value={profileDataLocal?.email}
             onChange={handleProfileChange}
           />
           <TextField
@@ -247,16 +407,165 @@ const loading = false;
             name="phone"
             value={profileDataLocal?.phone}
             onChange={handleProfileChange}
+            inputProps={{ "aria-label": "Enter Phone Number" }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button
+                    variant="text"
+                    // disabled={phoneVerify}
+                    disabled
+                    // onClick={() => {
+                    //   setOpenVerify(true);
+                    // }}
+                    onClick={() => {
+                      getOtpNumber();
+                    }}
+                  >
+                    Verify
+                  </Button>
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            margin="dense"
+            label="Email"
+            type="email"
+            fullWidth
+            name="email"
+            value={profileDataLocal?.email}
+            onChange={handleProfileChange}
+            placeholder="Search Google Maps"
+            inputProps={{ "aria-label": "Enter Email" }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button
+                    variant="text"
+                    // disabled={emailVerify}
+                    onClick={() => {
+                      getOtpEmail();
+                    }}
+                  >
+                    Verify
+                  </Button>
+                </InputAdornment>
+              ),
+            }}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenEditProfile(false)}>Cancel</Button>
-          <Button onClick={() => {}} variant="contained">
-            Save
+          <Button
+            disabled={editProfileLoading}
+            onClick={() => {
+              updateName();
+            }}
+            variant="contained"
+          >
+            {editProfileLoading ? "Please wait..." : "Submit"}
           </Button>
         </DialogActions>
       </Dialog>
-      <SetPassword open={openChangePassword} onClose={()=>setOpenChangePassword(false)} />
+      <Dialog
+        open={openVerify}
+        onClose={() => setOpenVerify(false)}
+        sx={{ zIndex: 10 }}
+      >
+        <DialogTitle>Verify OTP</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Phone"
+            fullWidth
+            name="phone"
+            value={profileDataLocal?.phone}
+            onChange={handleProfileChange}
+          />
+
+          <TextField
+            margin="dense"
+            label="OTP"
+            fullWidth
+            name="otp"
+            value={profileDataLocal?.otp}
+            onChange={handleProfileChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenVerify(false)}>Cancel</Button>
+          <Button variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openVerifyEmail}
+        onClose={() => setOpenVerifyEmail(false)}
+        sx={{ zIndex: 10 }}
+      >
+        <DialogTitle>Verify OTP</DialogTitle>
+        <DialogContent>
+          {/* {editProfileLoading && <FullPageLoading />} */}
+          {/* {editProfileLoading && <CircularProgress />} */}
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Email"
+            fullWidth
+            name="email"
+            value={profileDataLocal?.email}
+            onChange={handleProfileChange}
+          />
+          {/* <TextField
+            margin="dense"
+            label="OTP"
+            fullWidth
+            name="otp"
+            value={profileDataLocal?.otp}
+            onChange={handleProfileChange}
+          />{" "} */}
+          <Box
+            display="flex"
+            justifyContent="center"
+            gap={2}
+            sx={{ my: "10px" }}
+          >
+            {otp.map((digit, index) => (
+              <TextField
+                name="otp"
+                key={index}
+                id={`otp-${index}`}
+                value={digit}
+                onChange={(e) => handleChangeinOTP(e.target.value, index)}
+                inputProps={{
+                  maxLength: 1,
+                  style: { textAlign: "center", fontSize: "15px" },
+                }}
+                variant="outlined"
+              />
+            ))}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenVerifyEmail(false)}>Cancel</Button>
+          <Button
+            loading={editProfileLoading}
+            variant="contained"
+            loadingPosition="end"
+            onClick={() => {
+              updateVerifyEmail();
+            }}
+            disabled={editProfileLoading}
+          >
+            {editProfileLoading ? "Please wait..." : "Submit"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <SetPassword
+        open={openChangePassword}
+        onClose={() => setOpenChangePassword(false)}
+      />
     </Box>
   );
 };
