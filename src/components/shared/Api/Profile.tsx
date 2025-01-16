@@ -75,7 +75,7 @@ const ProfileComponent = () => {
   }, []);
 
   useEffect(() => {
-    console.log("profileDataogLocal has been updated:", profileDataogLocal);
+    // console.log("profileDataogLocal has been updated:", profileDataogLocal);
     setProfileDataLocal(profileDataogLocal);
   }, [profileDataogLocal]);
 
@@ -191,16 +191,18 @@ const ProfileComponent = () => {
   };
   const sendOtp = async (payload) => {
     const response = await dispatch(getOtpForProfile(payload));
-    console.log("response", response);
 
-    if (response?.payload?.data?.success == true) {
+    if (
+      response?.payload?.success == true ||
+      response?.payload?.status == 200
+    ) {
       toast({
         title: response?.payload?.data?.message,
         className: "bg-green-600 text-white items-center relative z-50",
       });
     } else {
       toast({
-        title: response?.data?.message,
+        title: response?.payload?.message,
         className: "bg-red-600 text-white items-center relative z-50",
       });
     }
@@ -208,7 +210,6 @@ const ProfileComponent = () => {
   const updateName = async () => {
     let payload = { fullname: profileDataLocal.userName };
     const response = await dispatch(updateProfileName(payload));
-    console.log("response", response);
 
     if (response?.payload?.success == true) {
       toast({
@@ -224,13 +225,9 @@ const ProfileComponent = () => {
     getTheLatestProfile();
   };
   const getTheLatestProfile = async () => {
-    console.log("here");
-
     const response = await dispatch(userDetailsForProfile());
-    console.log("response", response);
     if (response?.payload?.data?.status == "success") {
       let d1 = response.payload.data;
-      console.log("d1", d1);
 
       setProfileDataogLocal({
         userName: d1.data.name,
@@ -240,8 +237,6 @@ const ProfileComponent = () => {
     }
   };
   useEffect(() => {
-    // console.log("profileDataLocal", profileDataLocal);
-    // console.log("profileDataogLocal", profileDataogLocal);
     if (profileDataLocal.phone == profileDataogLocal.phone) {
       setPhoneVerify(true);
     } else {
@@ -371,8 +366,16 @@ const ProfileComponent = () => {
       {/* Verify OTP  Phone*/}
       <Dialog
         open={openEditProfile}
-        onClose={() => setOpenEditProfile(false)}
+        // onClose={() => setOpenEditProfile(false)}
         sx={{ zIndex: 10 }}
+        disableEscapeKeyDown
+        onClose={(event, reason) => {
+          // Disable closing for backdrop clicks or escape key
+          if (reason === "backdropClick" || reason === "escapeKeyDown") {
+            return;
+          }
+          setOpenEditProfile(false);
+        }}
       >
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogContent>
@@ -455,8 +458,16 @@ const ProfileComponent = () => {
       </Dialog>
       <Dialog
         open={openVerify}
-        onClose={() => setOpenVerify(false)}
+        // onClose={() => setOpenVerify(false)}
         sx={{ zIndex: 10 }}
+        disableEscapeKeyDown
+        onClose={(event, reason) => {
+          // Disable closing for backdrop clicks or escape key
+          if (reason === "backdropClick" || reason === "escapeKeyDown") {
+            return;
+          }
+          setOpenVerify(false);
+        }}
       >
         <DialogTitle>Verify OTP</DialogTitle>
         <DialogContent>
@@ -485,8 +496,16 @@ const ProfileComponent = () => {
         </DialogActions>
       </Dialog>
       <Dialog
+        onClose={(event, reason) => {
+          // Disable closing for backdrop clicks or escape key
+          if (reason === "backdropClick" || reason === "escapeKeyDown") {
+            return;
+          }
+          setOpenVerifyEmail(false);
+        }}
+        disableEscapeKeyDown
         open={openVerifyEmail}
-        onClose={() => setOpenVerifyEmail(false)}
+        // onClose={() => setOpenVerifyEmail(false)}
         sx={{ zIndex: 10 }}
       >
         <DialogTitle>Verify OTP</DialogTitle>
