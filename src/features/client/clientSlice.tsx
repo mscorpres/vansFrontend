@@ -552,12 +552,9 @@ export const getOtpForProfile = createAsyncThunk<any, payload>(
         newEmail: payload.email,
       });
 
-      return response.data;
+      return response;
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error("An unknown error occurred");
+      return error;
     }
   }
 );
@@ -574,10 +571,7 @@ export const verifyOtpForProfileEmail = createAsyncThunk<any, payload>(
 
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error("An unknown error occurred");
+      return error;
     }
   }
 );
@@ -605,10 +599,7 @@ export const userDetailsForProfile = createAsyncThunk<any>(
 
       return response;
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error("An unknown error occurred");
+      return error;
     }
   }
 );

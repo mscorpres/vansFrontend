@@ -71,22 +71,7 @@ const ProfileComponent = () => {
     (state) => state.client
   );
   useEffect(() => {
-    // Retrieve loggedInUser from localStorage
-    const loggedInUser = localStorage.getItem("loggedInUser");
-
-    if (loggedInUser) {
-      try {
-        const user = JSON.parse(loggedInUser);
-
-        // Update states with the user data
-        setProfileDataLocal(user);
-        setProfileDataogLocal(user);
-      } catch (error) {
-        console.error("Error parsing loggedInUser:", error);
-      }
-    } else {
-      console.log("No loggedInUser found in localStorage.");
-    }
+    getTheLatestProfile();
   }, []);
 
   useEffect(() => {
@@ -208,9 +193,9 @@ const ProfileComponent = () => {
     const response = await dispatch(getOtpForProfile(payload));
     console.log("response", response);
 
-    if (response?.payload?.success == true) {
+    if (response?.payload?.data?.success == true) {
       toast({
-        title: response?.payload?.message,
+        title: response?.payload?.data?.message,
         className: "bg-green-600 text-white items-center relative z-50",
       });
     } else {
@@ -282,7 +267,7 @@ const ProfileComponent = () => {
       )}
 
       <StyledCard>
-        {loading ? (
+        {loading || editProfileLoading ? (
           <div>
             {/* For other variants, adjust the size with `width` and `height` */}
             <Skeleton variant="circular" width={100} height={100} />
