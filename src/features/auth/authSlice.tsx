@@ -68,6 +68,15 @@ export const loginUserAsync = createAsyncThunk<
   return response;
 });
 
+export const changePassword = createAsyncThunk<AxiosResponse<LoginResponse>, LoginCredentials>(
+  'auth/changePassword',
+  async (loginCredential) => {
+    const response = await spigenAxios.post<LoginResponse>("profile/userChangePassword", loginCredential);
+    console.log(response)
+    return response;
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -112,6 +121,15 @@ const authSlice = createSlice({
       })
       .addCase(loginUserAsync.rejected, (state) => {
         state.loading = "failed";
+      })
+      .addCase(changePassword.pending, (state) => {
+        state.loading = 'loading';
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.loading = 'success';
+      })
+      .addCase(changePassword.rejected, (state) => {
+        state.loading = 'failed';
       });
   },
 });

@@ -1,15 +1,17 @@
 import { Input } from "@/components/ui/input";
-import { AppDispatch } from "@/store";
+import { AppDispatch, RootState } from "@/store";
 import { Label } from "@radix-ui/react-label";
 import { useState } from "react";
 import { IoEye, IoEyeOff } from "react-icons/io5";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CheckCircle } from "lucide-react"; // Import CheckCircle from lucide-react
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InputStyle, LableStyle } from "@/constants/themeContants";
 // import { changePassword } from "@/features/auth/authSlice";
 import { toast } from "@/components/ui/use-toast";
+import { changePassword } from "@/features/auth/authSlice";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const SetPassword = ({ open, onClose }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,50 +33,46 @@ const SetPassword = ({ open, onClose }: any) => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const { loading } = useSelector((state: RootState) => state.auth);
   const handleSubmit = (e: any) => {
     e.preventDefault();
     if (!oldPassword || !newPassword || !confirmPassword) {
-      setError('All fields are required.');
+      setError("All fields are required.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError('New password and confirm password do not match.');
+      setError("New password and confirm password do not match.");
       return;
     }
-    toast({
-      title: "Password Change not yet implemented",
-      className: "bg-blue-600 text-white items-center",
-    })
-    onClose();
-    // dispatch(changePassword(payload)).then((response:any) => {
-    //   console.log(response,response.data);
-    //   if (response.payload.data.code===200) {
-    //     setOldPassword("");
-    //     setNewPassword("");
-    //     setConfirmPassword("");
-    //     setPasswordStrength({ score: 0, label: "" });
-    //     setPasswordChecks({
-    //       hasUpperCase: false,
-    //       hasNumber: false,
-    //       hasSpecialChar: false,
-    //       isValidLength: false,
-    //     });
-    //     toast({
-    //       title: response?.payload?.message || "Password Changed Successfully",
-    //       className: "bg-green-600 text-white items-center",
-    //     });
-    //     onClose();
-    //     setError('');
-    //   }
-    // });
+    dispatch(changePassword(payload)).then((response: any) => {
+      console.log(response, response.data);
+      if (response.payload.data.code === 200|| response.payload.data.success) {
+        onClose();
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setPasswordStrength({ score: 0, label: "" });
+        setPasswordChecks({
+          hasUpperCase: false,
+          hasNumber: false,
+          hasSpecialChar: false,
+          isValidLength: false,
+        });
+        toast({
+          title:
+            response?.payload?.data?.message || "Password Changed Successfully",
+          className: "bg-green-600 text-white items-center",
+        });
+        setError("");
+      }
+    });
   };
 
   const payload: any = {
     oldpassword: oldPassword,
     newpassword: newPassword,
   };
-  const handleClose=()=>{
+  const handleClose = () => {
     setOldPassword("");
     setNewPassword("");
     setConfirmPassword("");
@@ -86,7 +84,7 @@ const SetPassword = ({ open, onClose }: any) => {
       isValidLength: false,
     });
     onClose();
-  }
+  };
 
   const checkPasswordStrength = (password: string) => {
     const checks = {
@@ -119,9 +117,9 @@ const SetPassword = ({ open, onClose }: any) => {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="w-full max-w-5xl h-fit p-8">
         {/* <Card className="rounded shadow bg-[#fff]"> */}
-      
-          {/* <CardHeader className="bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]"> */}
-          <Card >
+
+        {/* <CardHeader className="bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]"> */}
+        <Card>
           <CardHeader className="shadow-none">
             <h3 className="text-[17px] font-[600] text-slate-600">
               Set Your Password
@@ -164,7 +162,6 @@ const SetPassword = ({ open, onClose }: any) => {
                 <button
                   type="button"
                   className="eye-button absolute right-2 top-1/2 transform -translate-y-1/2"
-
                   onClick={() => setShowNewPassword(!showNewPassword)}
                 >
                   {showNewPassword ? <IoEyeOff /> : <IoEye />}
@@ -191,15 +188,17 @@ const SetPassword = ({ open, onClose }: any) => {
                 </div>
               </div>
 
-              <button
+              <LoadingButton
                 type="submit"
                 disabled={!isFormValid}
                 className={`py-5 text-white rounded-lg w-full ${
                   isFormValid ? "bg-teal-500" : "bg-gray-300 cursor-not-allowed"
                 }`}
+                variant="contained"
+                loading={loading === "loading"}
               >
                 Set Password
-              </button>
+              </LoadingButton>
             </form>
 
             <div className="w-1/2 pl-12 border-l border-gray-200">
