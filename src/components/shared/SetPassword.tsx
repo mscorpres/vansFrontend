@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InputStyle, LableStyle } from "@/constants/themeContants";
 // import { changePassword } from "@/features/auth/authSlice";
 import { toast } from "@/components/ui/use-toast";
-import { changePassword } from "@/features/auth/authSlice";
+import { changePassword, logout } from "@/features/auth/authSlice";
 import LoadingButton from "@mui/lab/LoadingButton";
 
 const SetPassword = ({ open, onClose }: any) => {
@@ -46,7 +46,7 @@ const SetPassword = ({ open, onClose }: any) => {
     }
     dispatch(changePassword(payload)).then((response: any) => {
       console.log(response, response.data);
-      if (response.payload.data.code === 200|| response.payload.data.success) {
+      if (response.payload.data.code === 200 || response.payload.data.success) {
         onClose();
         setOldPassword("");
         setNewPassword("");
@@ -64,6 +64,7 @@ const SetPassword = ({ open, onClose }: any) => {
           className: "bg-green-600 text-white items-center",
         });
         setError("");
+        dispatch(logout());
       }
     });
   };

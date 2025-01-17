@@ -18,7 +18,7 @@ import {
   Skeleton,
   InputAdornment,
 } from "@mui/material";
-import { styled } from "@mui/system";
+import { display, styled, width } from "@mui/system";
 import { FaEdit, FaKey, FaShieldAlt } from "react-icons/fa";
 import SetPassword from "@/components/shared/SetPassword";
 import { toast } from "@/components/ui/use-toast";
@@ -265,10 +265,29 @@ const ProfileComponent = () => {
         {loading || editProfileLoading ? (
           <div>
             {/* For other variants, adjust the size with `width` and `height` */}
-            <Skeleton variant="circular" width={100} height={100} />
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "space-between",
+              }}
+            >
+              <Skeleton variant="circular" width={100} height={100} />
+              <Skeleton
+                variant="circular"
+                width={25}
+                height={25}
+                sx={{ mt: "3.2rem", mr: "1.5rem" }}
+              />
+            </div>
             <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-            <Skeleton variant="rectangular" width={210} height={60} />
-            <Skeleton variant="rounded" width={210} height={60} />
+            <Skeleton variant="rectangular" width={310} height={60} />
+            <Skeleton
+              variant="rounded"
+              sx={{ mt: "5px" }}
+              width={210}
+              height={60}
+            />
           </div>
         ) : (
           <CardContent>
@@ -302,15 +321,6 @@ const ProfileComponent = () => {
             </Grid>
 
             <Box sx={{ mt: 4 }}>
-              {/* <Button
-                variant="outlined"
-                startIcon={<FaKey />}
-                onClick={() => setOpenChangePassword(true)}
-                sx={{ mr: 2 }}
-              >
-                Change Password
-              </Button> */}
-
               <Box sx={{ mt: 3 }}>
                 <Typography variant="h6" gutterBottom>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -320,6 +330,7 @@ const ProfileComponent = () => {
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Switch
+                    disabled
                     checked={twoFAEnabled}
                     onChange={() => {}}
                     color="primary"
@@ -366,7 +377,6 @@ const ProfileComponent = () => {
       {/* Verify OTP  Phone*/}
       <Dialog
         open={openEditProfile}
-        // onClose={() => setOpenEditProfile(false)}
         sx={{ zIndex: 10 }}
         disableEscapeKeyDown
         onClose={(event, reason) => {
@@ -403,9 +413,6 @@ const ProfileComponent = () => {
                     variant="text"
                     // disabled={phoneVerify}
                     disabled
-                    // onClick={() => {
-                    //   setOpenVerify(true);
-                    // }}
                     onClick={() => {
                       getOtpNumber();
                     }}
@@ -431,7 +438,7 @@ const ProfileComponent = () => {
                 <InputAdornment position="end">
                   <Button
                     variant="text"
-                    // disabled={emailVerify}
+                    disabled={emailVerify}
                     onClick={() => {
                       getOtpEmail();
                     }}
@@ -458,7 +465,6 @@ const ProfileComponent = () => {
       </Dialog>
       <Dialog
         open={openVerify}
-        // onClose={() => setOpenVerify(false)}
         sx={{ zIndex: 10 }}
         disableEscapeKeyDown
         onClose={(event, reason) => {
@@ -505,13 +511,10 @@ const ProfileComponent = () => {
         }}
         disableEscapeKeyDown
         open={openVerifyEmail}
-        // onClose={() => setOpenVerifyEmail(false)}
         sx={{ zIndex: 10 }}
       >
         <DialogTitle>Verify OTP</DialogTitle>
         <DialogContent>
-          {/* {editProfileLoading && <FullPageLoading />} */}
-          {/* {editProfileLoading && <CircularProgress />} */}
           <TextField
             autoFocus
             margin="dense"
@@ -521,14 +524,7 @@ const ProfileComponent = () => {
             value={profileDataLocal?.email}
             onChange={handleProfileChange}
           />
-          {/* <TextField
-            margin="dense"
-            label="OTP"
-            fullWidth
-            name="otp"
-            value={profileDataLocal?.otp}
-            onChange={handleProfileChange}
-          />{" "} */}
+
           <Box
             display="flex"
             justifyContent="center"
