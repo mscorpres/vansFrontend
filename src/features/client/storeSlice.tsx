@@ -221,7 +221,7 @@ export const fetchTransactionForApproval = createAsyncThunk<any>(
     }
   }
 );
-export const fetchComponentBoxes = createAsyncThunk<searchPayload>(
+export const fetchComponentBoxes = createAsyncThunk<searchPayload, payload>(
   "/minSettle/fetchComponentBoxes",
   async (payload) => {
     try {
@@ -540,7 +540,7 @@ export const getAllBox = createAsyncThunk<ResponseData>(
     }
   }
 );
-export const getPhysicalStockfromBox = createAsyncThunk<ResponseData>(
+export const getPhysicalStockfromBox = createAsyncThunk<ResponseData, payload>(
   "/physicalStock/getPhysical_stock", // Action type
   async (payload) => {
     try {
@@ -559,7 +559,7 @@ export const getPhysicalStockfromBox = createAsyncThunk<ResponseData>(
     }
   }
 );
-export const closingStock = createAsyncThunk<ResponseData>(
+export const closingStock = createAsyncThunk<ResponseData, payload>(
   "/physicalStock/closingStock", // Action type
   async (payload) => {
     try {

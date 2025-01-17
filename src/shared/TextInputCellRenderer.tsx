@@ -11,15 +11,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { fetchProductData } from "@/features/salesmodule/SalesSlice";
 import { AppDispatch, RootState } from "@/store";
 import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import { FaSortDown, FaTrash } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { DatePicker, Select, Typography } from "antd";
+import { DatePicker, Select } from "antd";
 import "ag-grid-enterprise";
-import { useParams } from "react-router-dom";
 import moment from "moment";
 import {
   transformCurrencyData,
@@ -28,7 +26,6 @@ import {
   transformOptionDataphy,
 } from "@/helper/transform";
 import { CommonModal } from "@/config/agGrid/registerModule/CommonModal";
-import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import {
   fetchComponentDetails,
   fetchCurrency,
@@ -36,13 +33,11 @@ import {
 } from "@/features/client/clientSlice";
 import {
   closingStock,
-  fetchAvailableStockBoxes,
   fetchComponentBoxes,
   getPhysicalStockfromBox,
 } from "@/features/client/storeSlice";
 import CurrencyRateDialog from "@/components/ui/CurrencyRateDialog";
 import { toast } from "@/components/ui/use-toast";
-import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import dayjs from "dayjs";
 
 const type = [
@@ -159,7 +154,7 @@ const bomStatusCat = [
 ];
 const TextInputCellRenderer = (props: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const params = useParams();
+  // const params = useParams();
   const [open, setOpen] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
@@ -169,7 +164,7 @@ const TextInputCellRenderer = (props: any) => {
     data,
     api,
     column,
-    materialList,
+    // materialList,
     // currency,
     setRowData,
   } = props;
@@ -177,7 +172,7 @@ const TextInputCellRenderer = (props: any) => {
     (state: RootState) => state.createSalesOrder
   );
 
-  const { hsnlist, getComponentData, costCenterList } = useSelector(
+  const { hsnlist, costCenterList } = useSelector(
     (state: RootState) => state.client
   );
 
@@ -192,7 +187,7 @@ const TextInputCellRenderer = (props: any) => {
   );
   const { product } = useSelector((state: RootState) => state.store);
   const [openCurrencyDialog, setOpenCurrencyDialog] = useState(false);
-  const [asyncOptions, setAsyncOptions] = useState([]);
+  // const [asyncOptions, setAsyncOptions] = useState([]);
   const handleDeleteRow = (rowIndex: number) => {
     setSelectedRowIndex(rowIndex);
     setShowConfirmDialog(true);
@@ -208,11 +203,11 @@ const TextInputCellRenderer = (props: any) => {
       });
 
       // Example payload for deleteProduct
-      const payload: any = {
-        item: data?.material?.id,
-        so_id: (params?.id as string)?.replace(/_/g, "/"),
-        updaterow: data?.updateid,
-      };
+      // const payload: any = {
+      //   item: data?.material?.id,
+      //   so_id: (params?.id as string)?.replace(/_/g, "/"),
+      //   updaterow: data?.updateid,
+      // };
       if (window.location.pathname.includes("update")) {
         // dispatch(deleteProduct(payload));
       }
@@ -247,7 +242,7 @@ const TextInputCellRenderer = (props: any) => {
         })
       ).then((res) => {
         if (res.payload) {
-          let data2 = res.payload;
+          let data2: any = res.payload;
           data["vendorName"] =
             data2?.ven_com?.comp_name + "/ Maker:" + data2.make;
           // data[
@@ -904,7 +899,7 @@ const TextInputCellRenderer = (props: any) => {
               filterOption={false}
               placeholder="Currency"
               defaultValue={{ value: "364907247", label: "₹" }}
-              options={transformCurrencyData(currencyList || [])}
+              // options={transformCurrencyData(currencyList || [])}
               onChange={(e) => handleCurrencyChange(e.value)}
               // value={value}
             />
@@ -930,8 +925,9 @@ const TextInputCellRenderer = (props: any) => {
                 className="w-[100%] justify-between  text-slate-600 items-center  border-slate-400 shadow-none"
               >
                 {value
-                  ? currency?.find((option) => option?.currency_id === value)
-                      ?.currency_symbol
+                  ? currency?.find(
+                      (option: any) => option?.currency_id === value
+                    )?.currency_symbol
                   : colDef.headerName}
                 <FaSortDown className="w-5 h-5 ml-2 mb-[5px] opacity-50 shrink-0" />
               </Button>
@@ -941,7 +937,7 @@ const TextInputCellRenderer = (props: any) => {
                 <CommandInput placeholder="Search..." />
                 <CommandEmpty>No {colDef.headerName} found.</CommandEmpty>
                 <CommandList className="max-h-[400px] overflow-y-auto">
-                  {currency?.map((framework) => (
+                  {currency?.map((framework: any) => (
                     <CommandItem
                       key={framework.currency_id}
                       value={framework.currency_id}

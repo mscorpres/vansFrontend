@@ -514,6 +514,8 @@ interface ClientState {
   vendorBillingList: null;
   vendorBillingDetails: null;
   uomlist: null;
+  costCenterList: null;
+  hsnlist: null;
 
   //   getComponentData: null;
   //   managePoList: null;
