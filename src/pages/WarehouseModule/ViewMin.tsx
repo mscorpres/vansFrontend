@@ -223,7 +223,7 @@ const ViewMin: React.FC = () => {
           return { ...r };
         });
 
-        setRowData(newRow);
+        setRowData(newRow || []);
       } else {
         toast({
           title: res.payload.message.msg,
@@ -234,7 +234,7 @@ const ViewMin: React.FC = () => {
     });
 
     if (managePoList) {
-      setRowData(managePoList);
+      setRowData(managePoList || []);
       // setLoading(false);
     }
     // setLoading(false);

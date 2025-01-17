@@ -542,6 +542,67 @@ export const updatePo = createAsyncThunk<uomPayload, payload>(
     }
   }
 );
+export const getOtpForProfile = createAsyncThunk<any, payload>(
+  "/profile/send-email-otp",
+  async (payload) => {
+    console.log("payload", payload);
+
+    try {
+      const response = await spigenAxios.post("/profile/send-email-otp", {
+        newEmail: payload.email,
+      });
+
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+);
+export const verifyOtpForProfileEmail = createAsyncThunk<any, payload>(
+  "/profile/verify-email-otp",
+  async (payload) => {
+    console.log("payload", payload);
+
+    try {
+      const response = await spigenAxios.put("/profile/verify-email-otp", {
+        otp: payload.otp,
+        emailId: payload.emailId,
+      });
+
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  }
+);
+export const updateProfileName = createAsyncThunk<any, payload>(
+  "/profile/userUpdate",
+  async (payload) => {
+    console.log("payload", payload);
+
+    try {
+      const response = await spigenAxios.post("/profile/userUpdate", {
+        fullname: payload.fullname,
+      });
+
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+);
+export const userDetailsForProfile = createAsyncThunk<any>(
+  "/profile/userDetails",
+  async () => {
+    try {
+      const response = await spigenAxios.get("/profile/userDetails");
+
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+);
 
 interface ClientState {
   data: any[];
@@ -572,6 +633,7 @@ const initialState: ClientState = {
   cancelPO: null,
   poMinList: null,
   editPoDetails: null,
+  editProfile: null,
   currencyList: null,
   creatematerial: null,
 };
@@ -933,6 +995,58 @@ const clientSlice = createSlice({
         state.editPoDetails = action.payload;
       })
       .addCase(printPO.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(getOtpForProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getOtpForProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.editProfile = action.payload;
+      })
+      .addCase(getOtpForProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(verifyOtpForProfileEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyOtpForProfileEmail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.editProfile = action.payload;
+      })
+      .addCase(verifyOtpForProfileEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(updateProfileName.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfileName.fulfilled, (state, action) => {
+        state.loading = false;
+        state.editProfile = action.payload;
+      })
+      .addCase(updateProfileName.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(userDetailsForProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(userDetailsForProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.editProfile = action.payload;
+      })
+      .addCase(userDetailsForProfile.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch Cost Center List";
