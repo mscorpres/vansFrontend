@@ -2,7 +2,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./App.css";
 import { Toaster } from "@/components/ui/toaster";
 import MainLayout from "./layouts/MainLayout";
-import AuthLayout from "./layouts/AuthLayout";
+// import AuthLayout from "./layouts/AuthLayout";
 import POLayout from "./layouts/POLayout";
 import SOLayout from "./layouts/SOLayout";
 import HomePage from "./pages/HomePage";

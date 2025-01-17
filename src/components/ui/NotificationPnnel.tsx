@@ -7,13 +7,12 @@ import {
   IconButton,
   MenuItem,
   MenuList,
-  Paper,
-  Stack,
 } from "@mui/material";
 import MuiTooltip from "../MuiTooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { getNotification } from "@/features/client/branchSlice";
 import { useToast } from "@/components/ui/use-toast";
+import { RootState } from "@/store";
 const NotificationPnnel: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
@@ -37,7 +36,7 @@ const NotificationPnnel: React.FC = () => {
     setAnchorEl(null);
   };
   const fetchNotification = async () => {
-    dispatch(getNotification()).then((response) => {
+    dispatch(getNotification()).then((response: any) => {
       if (response.payload.success == true) {
         toast({
           title: response.payload.message,

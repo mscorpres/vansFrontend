@@ -31,7 +31,7 @@
     "@mui/lab": "^6.0.0-beta.15",
     "@mui/material": "^6.1.10",
     "@mui/styled-engine-sc": "^6.1.10",
-    "@mui/x-data-grid": "^7.23.5",
+    "@mui/x-data-grid": "^7.23.6",
     "@nivo/line": "^0.87.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.0.5",

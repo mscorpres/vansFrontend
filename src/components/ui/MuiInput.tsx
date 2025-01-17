@@ -1,8 +1,22 @@
-import { OutlinedInput, TextField } from "@mui/material";
-import { set } from "lodash";
+import { TextField } from "@mui/material";
 import React from "react";
+interface Props {
+  fullWidth: any;
+  label: any;
+  name: any;
+  form: any;
+  type: any;
+  placeholder: any;
+}
 
-export const MuiInput = ({ fullWidth, label, form, name, type }) => {
+export const MuiInput: React.FC<Props> = ({
+  // fullWidth,
+  label,
+  form,
+  name,
+  type,
+  // placeholder,
+}) => {
   return (
     <TextField
       //   id="filled-basic"

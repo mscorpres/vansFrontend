@@ -507,6 +507,24 @@ interface ClientState {
   loading: boolean;
   error: string | null;
   creatematerial: null;
+  vendorBranchlist: null;
+  shippingPOList: null;
+  shippingPODetails: null;
+  vendorPODetails: null;
+  vendorBillingList: null;
+  vendorBillingDetails: null;
+  uomlist: null;
+
+  //   getComponentData: null;
+  //   managePoList: null;
+  //   minpoList: null;
+  //   approvePoList: null;
+  //   cpmPoList: null;
+  //   managePoViewComponentList: null;
+  //   cancelPO: null;
+  //   poMinList: null;
+  //   editPoDetails: null;
+  //   currencyList: null;
 }
 
 const initialState: ClientState = {
@@ -791,7 +809,7 @@ const clientSlice = createSlice({
       })
       .addCase(updatePo.fulfilled, (state, action) => {
         state.loading = false;
-      state.approvePoList = action.payload;
+        state.approvePoList = action.payload;
       })
       .addCase(updatePo.rejected, (state, action) => {
         state.loading = false;

@@ -1,8 +1,13 @@
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Autocomplete, TextField } from "@mui/material";
 import React from "react";
-
-export const MuiSelect = ({ options, label, name, form }) => {
+interface Props {
+  options: any;
+  label: any;
+  name: any;
+  form: any;
+}
+export const MuiSelect: React.FC<Props> = ({ options, label, name, form }) => {
   // Map options to the expected format
   const option = options.map((r) => ({
     label: r.label, // The label to display

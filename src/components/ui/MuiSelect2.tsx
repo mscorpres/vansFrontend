@@ -1,8 +1,20 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { Autocomplete, TextField } from "@mui/material";
-
-export const MuiSelect2 = ({ options, label, name, control }) => {
+interface Props {
+  fullWidth: any;
+  label: any;
+  name: any;
+  form: any;
+  options: any;
+  control: any;
+}
+export const MuiSelect2: React.FC<Props> = ({
+  options,
+  label,
+  name,
+  control,
+}) => {
   // Map options to the expected format if needed
   const option = options.map((r) => ({
     label: r.label, // The label to display

@@ -1,10 +1,10 @@
 import { ColDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { Filter } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { z } from "zod";
+
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
@@ -16,7 +16,6 @@ import useApi from "@/hooks/useApi";
 import { exportDatepace } from "@/components/shared/Options";
 import { MoreOutlined } from "@ant-design/icons";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
-import { useNavigate } from "react-router-dom";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -26,17 +25,16 @@ import {
 } from "@/features/client/storeSlice";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import { Button } from "@mui/material";
 import { Search } from "@/components/shared/Buttons";
 const ActionMenu: React.FC<ActionMenuProps> = ({
-  setViewMinPo,
-  setCancel,
-  setView,
+  // setViewMinPo,
+  // setCancel,
+  // setView,
   row,
   cancelTheSelectedPo,
 }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
+  // const dispatch = useDispatch<AppDispatch>();
+  // const navigate = useNavigate();
 
   const menu = (
     <Menu>
@@ -58,18 +56,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
     </>
   );
 };
-const FormSchema = z.object({
-  wise: z.string().optional(),
-  data: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-});
-const { RangePicker } = DatePicker;
-const dateFormat = "YYYY/MM/DD";
+
 const ViewMin: React.FC = () => {
   const { managePoList } = useSelector((state: RootState) => state.client);
   const { loading } = useSelector((state: RootState) => state.store);
@@ -78,15 +65,14 @@ const ViewMin: React.FC = () => {
   //   resolver: zodResolver(FormSchema),
   // });
   const [form] = Form.useForm();
-  const { execFun, loading: loading1 } = useApi();
+  // const { execFun, loading: loading1 } = useApi();
   // const rowdata = podetail;
-  const [wise, setWise] = useState("");
+  // const [wise, setWise] = useState("");
   const [rowData, setRowData] = useState([]);
-  const [date, setDate] = useState("");
-  const [asyncOptions, setAsyncOptions] = useState("");
+  // const [date, setDate] = useState("");
+  // const [asyncOptions, setAsyncOptions] = useState("");
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
-  const [remarkDescription, setRemarkDescription] = useState(false);
   // const [loading, setLoading] = useState(false);
   const [cancel, setCancel] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -102,8 +88,11 @@ const ViewMin: React.FC = () => {
       cellRenderer: (params: any) => (
         <ActionMenu
           setViewMinPo={setViewMinPo}
+          viewMinPo={viewMinPo}
           setView={setView}
+          view={view}
           setCancel={setCancel}
+          cancel={cancel}
           row={params.data}
           cancelTheSelectedPo={cancelTheSelectedPo}
         />
@@ -199,9 +188,9 @@ const ViewMin: React.FC = () => {
     },
   ];
   const cancelTheSelectedPo = async (row: any) => {
-    let payload = {
-      transaction: row?.transaction,
-    };
+    // let payload = {
+    //   transaction: row?.transaction,
+    // };
 
     dispatch(printSingleMin({ transaction: row?.transaction })).then(
       (res: any) => {
@@ -248,12 +237,12 @@ const ViewMin: React.FC = () => {
     }
     // setLoading(false);
   };
-  const defaultColDef = useMemo(() => {
-    return {
-      filter: "agTextColumnFilter",
-      floatingFilter: true,
-    };
-  }, []);
+  // const defaultColDef = useMemo(() => {
+  //   return {
+  //     filter: "agTextColumnFilter",
+  //     floatingFilter: true,
+  //   };
+  // }, []);
   useEffect(() => {
     form.setFieldValue("data", "");
   }, [selectedwise]);
@@ -295,7 +284,7 @@ const ViewMin: React.FC = () => {
                 <DatePicker
                   className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
                   // onChange={(e: any) => form.setFieldValue("data", e?.value)}
-                  onChange={(date, dateString) => {
+                  onChange={(date) => {
                     // Use `date` to get the Date object, or `dateString` for formatted value
                     form.setFieldValue("data", date ? date.toDate() : null);
                   }}

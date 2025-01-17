@@ -275,23 +275,23 @@ export const settleTransfer = createAsyncThunk<settleTransferPayload>(
     }
   }
 );
-export const fetchAvailableStockBoxes = createAsyncThunk<settleTransferPayload>(
-  "/backend/fetchAvailableStockBoxes",
-  async (payload) => {
-    try {
-      if (payload?.component?.length > 3) {
-        const response = await spigenAxios.get(
-          `backend/fetchAvailableStockBoxes?component=${payload?.component}&costcenter=${payload.c_center}`
-        );
+export const fetchAvailableStockBoxes = createAsyncThunk<
+  settleTransferPayload,
+  search
+>("/backend/fetchAvailableStockBoxes", async (payload) => {
+  try {
+    if (payload?.component?.length > 3) {
+      const response = await spigenAxios.get(
+        `backend/fetchAvailableStockBoxes?component=${payload?.component}&costcenter=${payload.c_center}`
+      );
 
-        return response?.data;
-      }
-    } catch (error) {
-      return error;
+      return response?.data;
     }
+  } catch (error) {
+    return error;
   }
-);
-export const stockOut = createAsyncThunk<settleTransferPayload>(
+});
+export const stockOut = createAsyncThunk<settleTransferPayload, payload>(
   "/backend/stockOut",
   async (payload) => {
     try {
@@ -345,7 +345,7 @@ export const getComponentsFromTransaction =
   );
 export const getMarkupID = createAsyncThunk<settleTransferPayload>(
   "/minSettle/getMarkupID",
-  async (payload) => {
+  async () => {
     try {
       const response = await spigenAxios.get(`/minSettle/getMarkupID`);
 
@@ -633,7 +633,7 @@ export const rejectedPhysical = createAsyncThunk<ResponseData>(
     }
   }
 );
-export const updateRejectphysical = createAsyncThunk<ResponseData>(
+export const updateRejectphysical = createAsyncThunk<ResponseData, payload>(
   "/physicalStock/updateRejectphysical_stock", // Action type
   async (payload) => {
     try {

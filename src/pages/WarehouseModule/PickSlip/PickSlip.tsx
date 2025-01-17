@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState, useMemo, useRef } from "react";
-import { z } from "zod";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
@@ -33,37 +32,25 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
 import { Refresh } from "@mui/icons-material";
-const FormSchema = z.object({
-  dateRange: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  soWise: z.string().optional(),
-  compCode: z.string().optional(),
-});
+import { RowSelectionOptions } from "ag-grid-community";
+import { StatusPanelDef } from "@ag-grid-community/core";
+import { RowData } from "@/data";
+import { AppDispatch, RootState } from "@/store";
 
 const PickSlip = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const [rowDataBoxes, setRowDataBoxes] = useState<RowData[]>([
+  const [rowDataBoxes, setRowDataBoxes] = useState([
     {
       isNew: true,
       qty: "",
       box_name: "",
     },
   ]);
-  const [asyncOptions, setAsyncOptions] = useState([]);
-  const [suomOtions, setSuomOtions] = useState([]);
-  const [grpOtions, setGrpOtions] = useState([]);
   const [sheetOpen, setSheetOpen] = useState([]);
   const [callreset, setCallReset] = useState(false);
   const [costCenter, setCostCenter] = useState("");
   const [search, setSearch] = useState("");
-  const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [formValues, setFormValues] = useState({ compCode: "" });
   const [totalQty, setTotalQty] = useState(0);
   const [finalrows, setFinalRows] = useState([]);
   const [boxName, setBoxName] = useState([]);
@@ -106,36 +93,16 @@ const PickSlip = () => {
   const [form] = Form.useForm();
   const isValue = Form.useWatch("partName", form);
   const selectedCC = Form.useWatch("costCenter", form);
-  const selectedCustomer = Form.useWatch("customerName", form);
+  // const selectedCustomer = Form.useWatch("customerName", form);
   console.log("isValue", isValue);
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
-  const typeOption = [
-    {
-      label: "Component",
-      value: "Component",
-    },
-    {
-      text: "Other",
-      value: "Other",
-    },
-  ];
-  const smtOption = [
-    {
-      label: "Yes",
-      value: "yes",
-    },
-    {
-      label: "No",
-      value: "no",
-    },
-  ];
 
-  const getTheListHSN = async (value) => {
+  const getTheListHSN = async (value: any) => {
     const response = await execFun(() => fetchHSN(value), "fetch");
     const { data } = response;
     if (data.success) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r: any, index: any) => {
         return {
           id: index + 1,
           //   ...r,
@@ -172,8 +139,13 @@ const PickSlip = () => {
           boxName={boxName}
           onCellValueChanged={onCellValueChanged}
           openDrawer={openDrawer}
-          totalQty={selectedRows.reduce((a, b) => a + Number(b?.qty), 0)}
-          selectedBox={selectedRows.map((item) => item?.box_name).join(",")}
+          totalQty={selectedRows.reduce(
+            (a: any, b: any) => a + Number(b?.qty),
+            0
+          )}
+          selectedBox={selectedRows
+            .map((item: any) => item?.box_name)
+            .join(",")}
           setCompKey={setCompKey}
           rowData={rowData}
         />
@@ -182,9 +154,9 @@ const PickSlip = () => {
     [finalrows]
   );
 
-  const onBtExport = useCallback(() => {
-    gridRef.current!.api.exportDataAsExcel();
-  }, []);
+  // const onBtExport = useCallback(() => {
+  //   gridRef.current!.api.exportDataAsExcel();
+  // }, []);
   const defaultColDef = useMemo<ColDef>(() => {
     return {
       floatingFilter: false,
@@ -209,7 +181,7 @@ const PickSlip = () => {
   }, [isValue]);
   useEffect(() => {
     if (availableStockBoxes?.data?.length > 0) {
-      let a = availableStockBoxes?.data?.map((r) => {
+      let a = availableStockBoxes?.data?.map((r: any) => {
         return {
           ...r,
           qty: r.stock,
@@ -223,9 +195,9 @@ const PickSlip = () => {
 
   const handleSubmit = async () => {
     setShowConfirmation(false);
-    const value = form.getFieldsValue();
+    // const value = form.getFieldsValue();
     const values = await form.validateFields();
-    let payload = {
+    let payload: any = {
       customer: values.customerName?.value,
       component: rowData.map((r) => r.pickmaterial.value),
       qty: rowData.map((r) => r.outQty),
@@ -255,8 +227,8 @@ const PickSlip = () => {
     });
   };
   useEffect(() => {
-    const boxNames = finalrows.map((item) => item?.box_name);
-    const boxQty = finalrows.map((item) => item?.qty);
+    const boxNames = finalrows.map((item: any) => item?.box_name);
+    const boxQty = finalrows.map((item: any) => item?.qty);
 
     setBoxQty(boxQty);
     setBoxName(boxNames);
@@ -328,12 +300,12 @@ const PickSlip = () => {
       minWidth: 200,
     },
   ];
-  const handleCheckboxChange = (e) => {
-    setRowDataBoxes((prevState) => ({
-      ...prevState,
-      checked: e.target.checked, // Update only the checked property
-    }));
-  };
+  // const handleCheckboxChange = (e: any) => {
+  //   setRowDataBoxes((prevState) => ({
+  //     ...prevState,
+  //     checked: e.target.checked, // Update only the checked property
+  //   }));
+  // };
   const columnBoxesDefs: ColDef<rowData>[] = [
     {
       headerCheckboxSelection: true, // To show a header checkbox
@@ -385,14 +357,14 @@ const PickSlip = () => {
       setCostCenter(selectedCC.value);
     }
   }, [selectedCC]);
-  const onSelectionChanged = (event) => {
+  const onSelectionChanged = (event: any) => {
     const selectedNodes = event.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
+    const selectedData = selectedNodes.map((node: any) => node.data);
     // Add the additional parameter to each selectedData item
-    const modifiedSelectedData = selectedData.map((item) => ({
-      ...item, // Keep existing properties
-      pickmaterialVal: sheetOpen, // Add the new parameter
-    }));
+    // const modifiedSelectedData = selectedData.map((item: any) => ({
+    //   ...item, // Keep existing properties
+    //   pickmaterialVal: sheetOpen, // Add the new parameter
+    // }));
 
     // Set the modified selected rows
     setSelectedRows(selectedData);
@@ -405,8 +377,8 @@ const PickSlip = () => {
     setTotalQty(0);
     setSheetOpen(false);
     setFinalRows(selectedRows);
-    let boxName = selectedRows.map((item) => item?.box_name);
-    let boxQty = selectedRows.map((item) => item?.qty);
+    let boxName = selectedRows.map((item: any) => item?.box_name);
+    // let boxQty = selectedRows.map((item: any) => item?.qty);
 
     setSelectedBox(boxName.join(","));
     // onSelectionChanged();
@@ -418,8 +390,8 @@ const PickSlip = () => {
         // If the pickmaterial matches the component, update the row with the correct box name and quantity
         if (pickMaterialValue === compValue) {
           console.log("here in update", selectedRows);
-          let boxNames = selectedRows.map((item) => item?.box_name);
-          let boxQtys = selectedRows.map((item) => item?.qty);
+          let boxNames = selectedRows.map((item: any) => item?.box_name);
+          let boxQtys = selectedRows.map((item: any) => item?.qty);
 
           setSelectedBox(boxNames.join(","));
           // Find the matching box name and quantity for the current pickmaterialValue
@@ -439,14 +411,14 @@ const PickSlip = () => {
   };
 
   console.log("rowData", rowData);
-  const openDrawer = (params) => {
+  const openDrawer = (params: any) => {
     // dispatch(fetchAvailableStockBoxes({ search: params.data.pickmaterial }));
     setSheetOpen(params);
-    let payload = {
+    let payload: any = {
       c_center: form.getFieldValue("costCenter").value,
       component: params,
     };
-    dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
+    dispatch(fetchAvailableStockBoxes(payload)).then((res: any) => {
       setCompKey(payload);
       // if (res?.payload.code == 500) {
       //   toast({
@@ -470,7 +442,7 @@ const PickSlip = () => {
     const updatedRow = event.data;
     const updatedRows = [...selectedRows];
     const rowIndex = updatedRows.findIndex(
-      (row) => row.box_name === updatedRow.box_name
+      (row: any) => row.box_name === updatedRow.box_name
     );
 
     if (rowIndex >= 0) {

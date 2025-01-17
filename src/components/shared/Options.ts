@@ -58,7 +58,7 @@ export const vendorTypeOptions = [
     label: "Customer Return",
   },
 ];
-export function removeHtmlTags(text) {
+export function removeHtmlTags(text: string) {
   return text.replace(/<[^>]*>/g, "");
 }
 

@@ -1,4 +1,4 @@
-import { Refresh, Save, Send } from "@mui/icons-material";
+import { Refresh,  Send } from "@mui/icons-material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { Button } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -8,8 +8,13 @@ import CheckIcon from "@mui/icons-material/Check";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { Plus } from "lucide-react";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
-
-export const Back = ({ text, onClick }) => {
+interface RegisterProps {
+  text: string;
+  disabled: any;
+  onClick: () => void;
+  variant?: "contained" | "outlined" | "text"; // You can adjust the possible values of 'variant' based on your use case
+}
+export const Back: React.FC<RegisterProps> = ({ onClick }) => {
   return (
     <Button
       sx={{ ml: 1 }}
@@ -22,7 +27,7 @@ export const Back = ({ text, onClick }) => {
     </Button>
   );
 };
-export const Reset = ({ text, onClick }) => {
+export const Reset: React.FC<RegisterProps> = ({ onClick }) => {
   return (
     <Button
       sx={{ ml: 1, color: "red" }}
@@ -35,7 +40,7 @@ export const Reset = ({ text, onClick }) => {
     </Button>
   );
 };
-export const Cancel = ({ text, onClick }) => {
+export const Cancel: React.FC<RegisterProps> = ({ onClick }) => {
   return (
     <Button
       sx={{ ml: 1 }}
@@ -48,7 +53,11 @@ export const Cancel = ({ text, onClick }) => {
     </Button>
   );
 };
-export const Submit = ({ text, onClick, disabled }) => {
+export const Submit: React.FC<RegisterProps> = ({
+  text,
+  onClick,
+  disabled,
+}) => {
   return (
     <Button
       sx={{ ml: 1 }}
@@ -62,7 +71,7 @@ export const Submit = ({ text, onClick, disabled }) => {
     </Button>
   );
 };
-export const Confirm = ({ text, onClick }) => {
+export const Confirm: React.FC<RegisterProps> = ({ text, onClick }) => {
   return (
     <Button
       sx={{ ml: 1 }}
@@ -75,7 +84,7 @@ export const Confirm = ({ text, onClick }) => {
     </Button>
   );
 };
-export const Upload = ({ text, onClick }) => {
+export const Upload: React.FC<RegisterProps> = ({ text, onClick }) => {
   return (
     <Button
       sx={{
@@ -92,7 +101,7 @@ export const Upload = ({ text, onClick }) => {
     </Button>
   );
 };
-export const AttachImage = ({ text, onClick }) => {
+export const AttachImage: React.FC<RegisterProps> = ({ text, onClick }) => {
   return (
     <Button
       sx={{ ml: 1, width: "250px" }}
@@ -105,7 +114,7 @@ export const AttachImage = ({ text, onClick }) => {
     </Button>
   );
 };
-export const Search = ({ text, onClick }) => {
+export const Search: React.FC<RegisterProps> = ({ onClick }) => {
   return (
     <Button
       sx={{ ml: 1, width: "250px" }}
@@ -118,7 +127,7 @@ export const Search = ({ text, onClick }) => {
     </Button>
   );
 };
-export const Next = ({ text, onClick }) => {
+export const Next: React.FC<RegisterProps> = ({ onClick }) => {
   return (
     <Button
       variant="contained"
@@ -130,7 +139,7 @@ export const Next = ({ text, onClick }) => {
     </Button>
   );
 };
-export const Add = ({ text, onClick, variant }) => {
+export const Add: React.FC<RegisterProps> = ({ text, onClick, variant }) => {
   return (
     <Button
       variant={variant ?? "contained"}
@@ -142,7 +151,11 @@ export const Add = ({ text, onClick, variant }) => {
     </Button>
   );
 };
-export const Register = ({ text, onClick, variant }) => {
+export const Register: React.FC<RegisterProps> = ({
+  text,
+  onClick,
+  variant,
+}) => {
   return (
     <Button
       variant={variant ?? "contained"}

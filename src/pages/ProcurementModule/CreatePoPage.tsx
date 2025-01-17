@@ -1,23 +1,15 @@
-import { FaArrowRightLong } from "react-icons/fa6";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  DatePickerStyle,
-  primartButtonStyle,
-  InputStyle,
-} from "@/constants/themeContants";
+import { DatePickerStyle } from "@/constants/themeContants";
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
 import Select from "react-select";
 import {
   transformCurrencyData,
   transformOptionData,
   transformOptionData2,
 } from "@/helper/transform";
-import { DatePicker, Divider, Form } from "antd";
+import { DatePicker, Form } from "antd";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,7 +27,6 @@ import {
   modelFixHeaderStyle,
 } from "@/constants/themeContants";
 import { useEffect, useState } from "react";
-import moment from "moment";
 import dayjs, { Dayjs } from "dayjs";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import {
@@ -58,16 +49,24 @@ import { ArrowLeftIcon } from "lucide-react";
 import { KeyboardBackspace, Save } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { Next } from "@/components/shared/Buttons";
+import { RootState } from "@/store";
 interface Props {
   setTab: string;
   setPayloadData: string;
   form: any;
   setFormVal: [];
   formVal: [];
+  selectedVendor: any;
+  setBillStateCode: any;
+  setShipStateCode: any;
+  currencyList: any;
+  setResetSure: any;
+  resetSure: any;
+  currencyval: any;
+  isApprove: any;
 }
 const CreatePoPage: React.FC<Props> = ({
   setTab,
-  setPayloadData,
   form,
   selectedVendor,
   setFormVal,
@@ -112,7 +111,7 @@ const CreatePoPage: React.FC<Props> = ({
   ];
 
   const selBranch = Form.useWatch("branch", form);
-  const dueDate = Form.useWatch("duedate", form);
+  // const dueDate = Form.useWatch("duedate", form);
   const selCostCenter = Form.useWatch("costCenter", form);
   const selShipping = Form.useWatch("shipId", form);
   const selBilling = Form.useWatch("billingId", form);
@@ -121,14 +120,14 @@ const CreatePoPage: React.FC<Props> = ({
 
   const [forms] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
-  const params = useParams();
+  // const params = useParams();
   const getStateList = async () => {
     // return;
     const response = await execFun(() => fetchState(), "fetch");
     // return;
     let { data } = response;
     if (response.status === 200) {
-      let arr = data.data.map((r, index) => {
+      let arr = data.data.map((r: any) => {
         return {
           label: r.name,
           value: r.code,
@@ -152,11 +151,7 @@ const CreatePoPage: React.FC<Props> = ({
     // return valuesOfFrom;
   };
 
-  const handleDateChange = (value: any) => {
-    const formattedDate = value ? moment(value).format("DD-MM-YYYY") : "";
-    setFieldValue("duedate", formattedDate); // Set value of 'duedate' in form state
-  };
-  const addVendor = async (data) => {
+  const addVendor = async () => {
     const values = forms.getFieldsValue();
 
     let p = {
@@ -196,7 +191,7 @@ const CreatePoPage: React.FC<Props> = ({
       });
     }
   };
-  const createNewBranch = async (data) => {
+  const createNewBranch = async () => {
     const values = forms.getFieldsValue();
 
     let p = {
@@ -235,7 +230,7 @@ const CreatePoPage: React.FC<Props> = ({
       });
     }
   };
-  const createCostCenter = async (data) => {
+  const createCostCenter = async () => {
     const values = forms.getFieldsValue();
     let p = {
       cost_center_id: values.costId,
@@ -544,7 +539,7 @@ const CreatePoPage: React.FC<Props> = ({
                     className=""
                     // rules={rules.terms}
                   >
-                    <MuiInput
+                    <MuiInput 
                       form={form}
                       name="terms"
                       placeholder="Terms & Condition"

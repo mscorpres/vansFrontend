@@ -1,15 +1,6 @@
 import React from "react";
 import { Dispatch, SetStateAction } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import { Button, Typography } from "@mui/material";
 interface Props {
   open: boolean;
@@ -48,7 +39,6 @@ const GoBackConfermationModel: React.FC<Props> = ({
             Reset
           </Button>
         </div>
-       
       </AlertDialogContent>
     </AlertDialog>
   );

@@ -3,9 +3,7 @@ import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Refresh, Send } from "@mui/icons-material";
 import { Cancel, Confirm } from "../shared/Buttons";
 
 const style = {
@@ -19,8 +17,15 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
+interface Props {
+  setOpen: any;
+  open: any;
+  form: any;
+  submit: any;
+  onClose: any;
+}
 
-export default function ConfirmModal({ open, setOpen, form, submit }) {
+const ConfirmModal: React.FC<Props> = ({ open, setOpen, form, submit }) => {
   //   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -88,4 +93,5 @@ export default function ConfirmModal({ open, setOpen, form, submit }) {
       </Modal>
     </div>
   );
-}
+};
+export default ConfirmModal;

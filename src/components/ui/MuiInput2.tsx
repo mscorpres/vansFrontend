@@ -1,8 +1,21 @@
 import { TextField } from "@mui/material";
 import { Controller } from "react-hook-form"; // Import Controller from react-hook-form
-import React from "react";
+interface Props {
+  fullWidth: any;
+  label: any;
+  name: any;
+  form: any;
+  type: any;
+  control: any;
+}
 
-export const MuiInput2 = ({ label, name, control, fullWidth = true, type }) => {
+export const MuiInput2: React.FC<Props> = ({
+  label,
+  name,
+  control,
+  fullWidth = true,
+  type,
+}) => {
   return (
     <Controller
       name={name} // Field name in the form

@@ -10,11 +10,12 @@ interface LoggedInUser {
 
 interface ErrorResponse {
   success?: boolean;
-  message?: string;
+  message?: any;
   data?: {
     logout?: boolean;
   };
   status?: string;
+  errors?: string;
 }
 
 interface OtherData {
@@ -32,7 +33,7 @@ const otherData: OtherData | null = JSON.parse(
 const spigenAxios = axios.create({
   baseURL: imsLink,
   headers: {
-    "authorization": loggedInUser?.token,
+    authorization: loggedInUser?.token,
   },
 });
 
@@ -64,7 +65,7 @@ spigenAxios.interceptors.response.use(
         window.location.reload();
         return Promise.reject(error);
       }
-   if (errorData.success === false || errorData?.status == "error") {
+      if (errorData.success === false || errorData?.status == "error") {
         if (errorData?.message?.msg) {
           toasts({
             title: errorData?.message?.msg,

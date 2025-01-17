@@ -1,9 +1,7 @@
 import { Input } from "@/components/ui/input";
-import { AppDispatch } from "@/store";
 import { Label } from "@radix-ui/react-label";
 import { useState } from "react";
 import { IoEye, IoEyeOff } from "react-icons/io5";
-import { useDispatch } from "react-redux";
 import { CheckCircle } from "lucide-react"; // Import CheckCircle from lucide-react
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -12,7 +10,6 @@ import { InputStyle, LableStyle } from "@/constants/themeContants";
 import { toast } from "@/components/ui/use-toast";
 
 const SetPassword = ({ open, onClose }: any) => {
-  const dispatch = useDispatch<AppDispatch>();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -70,10 +67,10 @@ const SetPassword = ({ open, onClose }: any) => {
     // });
   };
 
-  const payload: any = {
-    oldpassword: oldPassword,
-    newpassword: newPassword,
-  };
+  // const payload: any = {
+  //   oldpassword: oldPassword,
+  //   newpassword: newPassword,
+  // };
   const handleClose=()=>{
     setOldPassword("");
     setNewPassword("");
