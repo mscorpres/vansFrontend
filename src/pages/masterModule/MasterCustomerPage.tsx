@@ -1358,18 +1358,17 @@ const MasterCustomerPage: React.FC = () => {
                 </Form>
               </div>
               <div className={modelFixFooterStyle}>
-                <Button
-                  variant={"outline"}
-                  className="shadow-slate-300 mr-[10px] border-slate-400 border"
+                <Back
                   onClick={(e: any) => {
                     setOpenView(false);
                     e.preventDefault();
                   }}
-                >
-                  Back
-                </Button>
+                />
                 <Button
+                  startIcon={<SaveAsIcon />}
+                  sx={{ ml: 1 }}
                   type="submit"
+                  variant="contained"
                   className="bg-cyan-700 hover:bg-cyan-600"
                   onClick={() => updateSelectedBranch()}
                 >

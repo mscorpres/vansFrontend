@@ -77,6 +77,9 @@ const CreatePoPage: React.FC<Props> = ({
   resetSure,
   currencyval,
   isApprove,
+  setCodeType,
+  isImport,
+  setIsImport,
 }) => {
   const [searchData, setSearchData] = useState("");
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
@@ -109,7 +112,11 @@ const CreatePoPage: React.FC<Props> = ({
       value: "vendor",
     },
   ];
-
+  useEffect(() => {
+    if (currencyval?.value == "364907247") {
+      form.setFieldValue("exchange_rate", "1");
+    }
+  }, [currencyval]);
   const selBranch = Form.useWatch("branch", form);
   // const dueDate = Form.useWatch("duedate", form);
   const selCostCenter = Form.useWatch("costCenter", form);
@@ -156,9 +163,10 @@ const CreatePoPage: React.FC<Props> = ({
 
     let p = {
       vendor: {
-        vendorname: values.label,
-        panno: values.pan,
-        cinno: values.cin,
+        vendorname: data.label,
+        panno: data.pan,
+        cinno: data.cin,
+        payment_terms: data.paymentTerms,
       },
       branch: {
         branch: values.label,
@@ -267,12 +275,18 @@ const CreatePoPage: React.FC<Props> = ({
 
   useEffect(() => {
     if (selectedVendor && selBranch) {
+      if (vendorBranchlist) {
+        form.setFieldValue("paymentTerms", vendorBranchlist[0].payment_terms);
+      }
       dispatch(
         fetchVendorAddressDetails({
           vendorcode: selectedVendor?.value,
           branchcode: selBranch?.value,
         })
       );
+    } else {
+      form.setFieldValue("vendorGst", "");
+      form.setFieldValue("address", "");
     }
   }, [selectedVendor, selBranch]);
   useEffect(() => {
@@ -297,7 +311,7 @@ const CreatePoPage: React.FC<Props> = ({
   }, []);
   ///setting details from the shipping details
   useEffect(() => {
-    if (shippingPODetails && resetSure == false) {
+    if (shippingPODetails && resetSure == false && selShipping) {
       let arr = shippingPODetails;
       setShipStateCode(shippingPODetails.statecode);
       form.setFieldValue("shipgst", arr?.gstin);
@@ -308,26 +322,37 @@ const CreatePoPage: React.FC<Props> = ({
       form.setFieldValue("shippan", "");
       form.setFieldValue("shipAddress", "");
     }
-  }, [shippingPODetails]);
+  }, [shippingPODetails, resetSure, selShipping]);
   useEffect(() => {
-    if (vendorPODetails && resetSure == false) {
+    if (vendorPODetails && resetSure == false && selectedVendor && selBranch) {
       let arr = vendorPODetails;
 
       form.setFieldValue("vendorGst", arr?.gstid);
       form.setFieldValue("address", arr?.address);
+      if (arr.state == 100) {
+        setIsImport("Import");
+      } else {
+        setIsImport("");
+      }
     } else {
       form.setFieldValue("vendorGst", "");
       form.setFieldValue("address", "");
+      setIsImport("");
     }
   }, [vendorPODetails]);
   useEffect(() => {
     if (selBilling) {
       dispatch(fetchBillingListDetails({ billing_code: selBilling?.value }));
+    } else {
+      // console.log("ghere");
+      form.setFieldValue("pan", "");
+      form.setFieldValue("billgst", "");
+      form.setFieldValue("billAddress", "");
     }
   }, [selBilling]);
 
   useEffect(() => {
-    if (vendorBillingDetails && resetSure == false) {
+    if (vendorBillingDetails && resetSure == false && selBilling) {
       let arr = vendorBillingDetails;
       setBillStateCode(vendorBillingDetails.statecode);
       form.setFieldValue("pan", arr?.pan);
@@ -539,7 +564,7 @@ const CreatePoPage: React.FC<Props> = ({
                     className=""
                     // rules={rules.terms}
                   >
-                    <MuiInput 
+                    <MuiInput
                       form={form}
                       name="terms"
                       placeholder="Terms & Condition"
@@ -878,6 +903,18 @@ const CreatePoPage: React.FC<Props> = ({
                       label={"CIN"}
                     />
                   </Form.Item>
+                  <Form.Item
+                    name="pan"
+                    className=""
+                    // rules={rules.vendorGst}
+                  >
+                    <MuiInput
+                      form={forms}
+                      name="paymentTerms"
+                      placeholder="Payment Terms"
+                      label={"Payment Terms"}
+                    />
+                  </Form.Item>
                 </div>
                 {/* <Divider /> */}
                 <div className="grid grid-cols-2 gap-[20px]">
@@ -1098,6 +1135,19 @@ const CreatePoPage: React.FC<Props> = ({
                       name="fax"
                       placeholder="Fax"
                       label={"Fax"}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="paymentTerms"
+                    // className="my-[-20px]"
+                    // label="Payment Terms"
+                    // className="my-[25px]"
+                  >
+                    <MuiInput
+                      form={forms}
+                      name="paymentTerms"
+                      placeholder="Payment Terms"
+                      label={"Payment Terms"}
                     />
                   </Form.Item>
                 </div>

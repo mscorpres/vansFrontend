@@ -167,6 +167,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
         <SheetTitle>
           View Material List : {sellRequestDetails?.headerData?.invoiceNo} |{""}
           {shipmentIdextracted}
+          {shipmentIdextracted}
         </SheetTitle>
 
         <div className="ag-theme-quartz h-[calc(100vh-140px)] grid grid-cols-4 gap-4">
@@ -308,7 +309,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
             <div className="flex justify-end mb-4 gap-4">
               <Button
                 disabled={
-                data?.eInvoice === "Yes" || data?.invStatus === "PENDING"
+                  data?.eInvoice === "Yes" || data?.invStatus === "PENDING"
                 }
                 onClick={() => handleEwayClick("Invoice")}
                 variant={"outline"}

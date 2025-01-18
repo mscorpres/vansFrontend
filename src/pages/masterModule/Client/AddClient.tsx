@@ -1,8 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Select from "react-select";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import styled from "styled-components";
 import React, { useEffect, useState } from "react";
@@ -20,11 +18,7 @@ import {
 
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { Dispatch, SetStateAction } from "react";
-import {
-  InputStyle,
-  LableStyle,
-  primartButtonStyle,
-} from "@/constants/themeContants";
+import { primartButtonStyle } from "@/constants/themeContants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -307,10 +301,10 @@ const AddClient: React.FC<Props> = ({
                               <MuiInput2
                                 name="name"
                                 form={form}
-                                placeholder="Name"
+                                placeholder="Company Name"
                                 fullWidth={true}
                                 control={form.control} // Pass control here
-                                label="Name"
+                                label="Company Name"
                               />
                             </FormControl>
                           </FormItem>

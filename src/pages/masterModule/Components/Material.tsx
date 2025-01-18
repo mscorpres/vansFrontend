@@ -363,7 +363,7 @@ const Material = () => {
       maxWidth: 50,
       field: "delete",
     },
-    { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
+    { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 80 },
 
     {
       headerName: "HSN/SAC Code",

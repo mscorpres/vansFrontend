@@ -53,7 +53,7 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
   // Create shipment payload from selected items
   const handleCreateShipment = () => {
     const itemDetails = {
-      item: selectedItems.map((item) => item.item), 
+      item: selectedItems.map((item) => item.item),
       qty: selectedItems.map((item) => item.qty),
       rate: selectedItems.map((item) => item.rate),
       currency: selectedItems.map((item) => item.currency || "USD"),
@@ -68,7 +68,11 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
       comp_remark: form.getFieldValue("remark"),
       item_remark: selectedItems.map((item) => item.itemRemark),
     };
-    onCreateShipment({ itemDetails: { ...itemDetails }, so_id: row.req_id });
+    onCreateShipment({
+      itemDetails: { ...itemDetails },
+      so_id: row.req_id,
+      cost_center: selectedItems[0].so_costcenter,
+    });
     form.resetFields();
     setOpenConfirmDialog(false);
   };

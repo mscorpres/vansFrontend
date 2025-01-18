@@ -305,15 +305,13 @@ const R2 = () => {
                 name="search"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LableStyle}>
-                      Search
-                      <span className="pl-1 text-red-500 font-bold">*</span>
-                    </FormLabel>
                     <FormControl>
-                      <Input
-                        className={InputStyle}
-                        placeholder="Search"
-                        {...field}
+                      <MuiInput2
+                        form={form}
+                        name="search"
+                        placeholder="Enter search"
+                        control={form.control} // Pass control here
+                        label={"Search"}
                       />
                     </FormControl>
                     <FormMessage />

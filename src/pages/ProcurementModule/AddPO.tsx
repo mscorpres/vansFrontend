@@ -111,8 +111,10 @@ const AddPO: React.FC<Props> = ({
       procurementMaterial: "",
       remark: "",
       asinNumber: "B01N1SE4EP",
-      orderQty: 100,
-      rate: 50,
+      orderQty: 0,
+      currentStock: 0,
+      rate: 0,
+
       prevrate: "",
       // currency: "28567096",
       gstRate: 18,
@@ -164,6 +166,7 @@ const AddPO: React.FC<Props> = ({
           vendorCode={selectedVendor}
           currencyList={currencyList}
           roeIs={roeIs}
+          params={params}
           // componentDetails={hsnlist}
         />
       ),
@@ -207,7 +210,9 @@ const AddPO: React.FC<Props> = ({
       // original_po: null,
       // currency: arr.map((r: any) => r.currency),
       // exchange: arr.map((r: any) => r.exchange),
-      component: arr.map((r: any) => r?.procurementMaterial),
+      component: arr.map(
+        (r: any) => r?.procurementMaterial.value ?? r?.procurementMaterial
+      ),
       qty: arr.map((r: any) => r.orderQty),
       rate: arr.map((r: any) => r.rate),
       // duedate: arr.map((r: any) => formattedDate(r.dueDate)),
@@ -244,9 +249,11 @@ const AddPO: React.FC<Props> = ({
           // exchange_rate: arr.map((r: any) => r.exchange),
           currency: formVal?.currency.value,
           exchange: formVal?.exchange_rate,
+          component: arr.map(
+            (r: any) => r?.procurementMaterial.value ?? r?.componentKey
+          ),
           // original_po: null,
 
-          component: arr.map((r: any) => r?.componentKey),
           qty: arr.map((r: any) => r.orderQty),
           rate: arr.map((r: any) => r.rate),
           // date: arr.map((r: any) => r.dueDate),
@@ -342,7 +349,7 @@ const AddPO: React.FC<Props> = ({
       valueGetter: "node.rowIndex + 1",
       cellRenderer: "textInputCellRenderer",
       maxWidth: 100,
-      field: "delete",
+      field: "deletePo",
     },
     { headerName: "Index", valueGetter: "node.rowIndex + 1", maxWidth: 100 },
 
@@ -365,6 +372,14 @@ const AddPO: React.FC<Props> = ({
     {
       headerName: "Order Qty",
       field: "orderQty",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
+    {
+      headerName: "Stock Qty",
+      field: "currentStock",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -412,7 +427,7 @@ const AddPO: React.FC<Props> = ({
     },
     {
       headerName: "Local Value",
-      field: "localValue",
+      field: "foreignValue",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -420,7 +435,9 @@ const AddPO: React.FC<Props> = ({
     },
     {
       headerName: "Foreign Value",
-      field: "foreignValue",
+      field: "localValue",
+
+      // field: "foreignValue",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -467,7 +484,7 @@ const AddPO: React.FC<Props> = ({
       minWidth: 200,
     },
     {
-      headerName: "ITEM DESCRIPTION",
+      headerName: "Remark",
       field: "remark",
       editable: false,
       flex: 1,

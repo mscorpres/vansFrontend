@@ -103,7 +103,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       headerName: "Description",
       field: "materialDescription",
       sortable: true,
-      filter: true,
+      filter: true, //
       flex: 1,
       cellRenderer: "textInputCellRenderer",
       minWidth: 350,

@@ -239,6 +239,12 @@ const Q2 = () => {
       width: 190,
     },
     {
+      headerName: "Transaction Id",
+      field: "transaction",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
       headerName: "Cost Center",
       field: "cost_center",
       filter: "agTextColumnFilter",

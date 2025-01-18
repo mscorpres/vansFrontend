@@ -65,6 +65,7 @@ const BoxMarkup = () => {
   const [asyncOptions, setAsyncOptions] = useState([]);
   const [markupID, setMarkupID] = useState([]);
   const [minNum, setMinNum] = useState([]);
+  const [minId, setMinId] = useState(false);
   const [sheetOpenEdit, setSheetOpenEdit] = useState<boolean>(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [search, setSearch] = useState("");
@@ -162,7 +163,7 @@ const BoxMarkup = () => {
   }, []);
 
   useEffect(() => {
-    if (selMin?.value) {
+    if (selMin?.value || minId == true) {
       dispatch(
         getComponentsFromTransaction({ transaction: selMin?.value })
       ).then((res) => {
@@ -176,10 +177,11 @@ const BoxMarkup = () => {
             };
           });
           setRowData(arr);
+          setMinId(false);
         }
       });
     }
-  }, [selMin]);
+  }, [selMin, minId]);
 
   const columnDefs: ColDef<rowData>[] = [
     {
@@ -269,7 +271,7 @@ const BoxMarkup = () => {
     },
   ];
   useEffect(() => {
-    if (sheetOpen) {
+    if (sheetOpen || minId == true) {
       let markup;
       dispatch(getMarkupID()).then((res) => {
         if (res.payload.success) {
@@ -317,7 +319,7 @@ const BoxMarkup = () => {
       // return;
       setRowDataBoxes(arr);
     }
-  }, [sheetOpen]);
+  }, [sheetOpen, minId]);
   const submitMarkedBoxes = async () => {
     setShowConfirmation(false);
     let payload = {
@@ -334,6 +336,7 @@ const BoxMarkup = () => {
           className: "bg-green-600 text-white items-center",
         });
         setSheetOpen(false);
+        setMinId(true);
         // setRowData([]);
         // form.resetFields();
       } else {
@@ -374,7 +377,7 @@ const BoxMarkup = () => {
                   isSearchable={true}
                 /> */}
                 <ReusableAsyncSelect
-                  placeholder="MIN Txn ID"
+                  placeholder="MIN ID"
                   endpoint="/backend/getMinsTransaction4Markup"
                   transform={transformOptionData}
                   // onChange={(e) => handleChange(e.value)}

@@ -30,6 +30,7 @@ import {
   fetchComponentDetails,
   fetchCurrency,
   listOfCostCenter,
+  removePart,
 } from "@/features/client/clientSlice";
 import {
   closingStock,
@@ -214,6 +215,32 @@ const TextInputCellRenderer = (props: any) => {
     }
     setShowConfirmDialog(false);
   };
+  const handleDeleteRowDelete = () => {
+    // return;
+    if (selectedRowIndex !== null) {
+      const formData = new FormData();
+      formData.append("pocode", params?.id?.replaceAll("_", "/")); // Append the file to FormData
+      formData.append("partcode", data["componentKey"]); // Append the file to FormData
+      formData.append("updatecode", data["updateingId"]); // Append the file to FormData
+      setRowData((prevData: any) =>
+        prevData.filter((_: any, index: any) => index !== selectedRowIndex)
+      );
+      api.applyTransaction({
+        remove: [api.getDisplayedRowAtIndex(selectedRowIndex).data],
+      });
+      let payload = {
+        pocode: params?.id?.replaceAll("_", "/"),
+        partcode: data["componentKey"],
+        updatecode: data["updateingId"],
+      };
+      if (window.location.pathname.includes("edit")) {
+        dispatch(removePart(payload)).then((res) => {
+          // console.log("res", res);
+        });
+      }
+    }
+    setShowConfirmDialog(false);
+  };
   const updateData = (newData: any) => {
     api.applyTransaction({ update: [newData] });
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
@@ -234,24 +261,29 @@ const TextInputCellRenderer = (props: any) => {
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "procurementMaterial") {
-      data["procurementMaterial"] = data.procurementMaterial;
+      data["procurementMaterial"] = data?.procurementMaterial;
       dispatch(
         fetchComponentDetails({
-          component_code: data["procurementMaterial"],
+          component_code: data["procurementMaterial"]?.value,
           vencode: props?.vendorCode?.value,
         })
       ).then((res) => {
         if (res.payload) {
           let data2: any = res.payload;
+          let preRate = data2.last_rate.split(" ")[1];
           data["vendorName"] =
             data2?.ven_com?.comp_name + "/ Maker:" + data2.make;
           // data[
           //   "vendorName"
           // ] = `${getComponentData?.ven_com?.comp_name}/ Maker:${getComponentData.make}`;
-          data["orderQty"] = data2.closingQty;
+          // data["orderQty"] = data2.closingQty;
           // data["rate"] = data2.gstrate;
           data["hsnCode"] = data2.hsn;
-          data["prevrate"] = data2.rate;
+          data["rate"] = data2.rate;
+          data["prevrate"] = preRate;
+          data["gstRate"] = data2.gstrate?.value;
+          //get data
+          data["currentStock"] = data2.closingQty;
           if (colDef.field === "exchange_rate") {
             data["foreignValue"] = data["exchange_rate"];
           }
@@ -481,9 +513,10 @@ const TextInputCellRenderer = (props: any) => {
     data.dueDate = date ? date.format("DD-MM-YYYY") : ""; // Format the date for storage
     updateData(data); // Update the data
   };
+
   useEffect(() => {
     if (data["gstTypeForPO"]) {
-      data["gstRate"] = data["gstTypeForPO"];
+      data["gstType"] = data["gstTypeForPO"];
     }
   }, [data["gstTypeForPO"]]);
   useEffect(() => {
@@ -493,7 +526,6 @@ const TextInputCellRenderer = (props: any) => {
       // data["gstRate"] = data["gstTypeForPO"];
     }
   }, [data["currency"]]);
-
   const renderContent = () => {
     switch (colDef.field) {
       case "delete":
@@ -514,6 +546,30 @@ const TextInputCellRenderer = (props: any) => {
             <CommonModal
               isDialogVisible={showConfirmDialog}
               handleOk={(e: any) => handleConfirmDelete(e)}
+              handleCancel={() => setShowConfirmDialog(false)}
+              title="Reset Details"
+              description={"Are you sure you want to remove this entry?"}
+            />
+          </div>
+        );
+      case "deletePo":
+        return (
+          <div className="flex justify-center">
+            <button
+              onClick={() => handleDeleteRow(props.node.rowIndex)}
+              className={
+                api.getDisplayedRowCount() <= 1
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-red-500 hover:text-red-700 pt-3"
+              }
+              aria-label="Delete"
+              disabled={api.getDisplayedRowCount() <= 1}
+            >
+              <FaTrash />
+            </button>
+            <CommonModal
+              isDialogVisible={showConfirmDialog}
+              handleOk={(e: any) => handleDeleteRowDelete(e)}
               handleCancel={() => setShowConfirmDialog(false)}
               title="Reset Details"
               description={"Are you sure you want to remove this entry?"}
@@ -630,8 +686,10 @@ const TextInputCellRenderer = (props: any) => {
               }
             }}
             options={transformOptionData(componentDetails || [])}
-            onChange={(e) => handleChange(e.value)}
-            value={typeof value === "string" ? { value } : value?.text}
+            onChange={(e) => handleChange(e)}
+            value={
+              typeof value === "string" ? { value } : value?.text || value.label
+            }
             style={{ pointerEvents: "auto" }}
           />
         );
@@ -925,9 +983,8 @@ const TextInputCellRenderer = (props: any) => {
                 className="w-[100%] justify-between  text-slate-600 items-center  border-slate-400 shadow-none"
               >
                 {value
-                  ? currency?.find(
-                      (option: any) => option?.currency_id === value
-                    )?.currency_symbol
+                  ? currency?.find((option) => option?.currency_id === value)
+                      ?.currency_symbol
                   : colDef.headerName}
                 <FaSortDown className="w-5 h-5 ml-2 mb-[5px] opacity-50 shrink-0" />
               </Button>
@@ -937,7 +994,7 @@ const TextInputCellRenderer = (props: any) => {
                 <CommandInput placeholder="Search..." />
                 <CommandEmpty>No {colDef.headerName} found.</CommandEmpty>
                 <CommandList className="max-h-[400px] overflow-y-auto">
-                  {currency?.map((framework: any) => (
+                  {currency?.map((framework) => (
                     <CommandItem
                       key={framework.currency_id}
                       value={framework.currency_id}
@@ -1364,6 +1421,17 @@ const TextInputCellRenderer = (props: any) => {
         );
 
       case "cust_part_code":
+        return (
+          <Input
+            onChange={handleInputChange}
+            value={value}
+            disabled={true}
+            placeholder={colDef.headerName}
+            // type="number"
+            className="w-[100%]  text-slate-600  border-slate-400 shadow-none mt-[2px]"
+          />
+        );
+      case "currentStock":
         return (
           <Input
             onChange={handleInputChange}

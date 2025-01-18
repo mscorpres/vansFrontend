@@ -170,7 +170,7 @@ const Hsn = () => {
     },
     {
       headerName: "HSN/SAC Code",
-      field: "hsnSearch",
+      field: "hsnCode",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",

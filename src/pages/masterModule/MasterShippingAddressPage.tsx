@@ -194,8 +194,9 @@ const MasterShippingAddressPage: React.FC = () => {
         setOpen={setOpen}
         form={form}
         reset={resethandle}
+        goBack={setSheetOpen}
       />
-  
+
       <div className="h-[calc(100vh-100px)]">
         <div className="h-[50px] flex items-center justify-end px-[10px] bg-white gap-[10px]">
           <CustomTooltip
@@ -249,7 +250,6 @@ const MasterShippingAddressPage: React.FC = () => {
                           name="label"
                           render={({ field }) => (
                             <FormItem>
-                           
                               <FormControl>
                                 <MuiInput2
                                   name="label"
@@ -278,7 +278,7 @@ const MasterShippingAddressPage: React.FC = () => {
                                   label="Company Name"
                                 />
                               </FormControl>
-                              </FormItem>
+                            </FormItem>
                           )}
                         />
 

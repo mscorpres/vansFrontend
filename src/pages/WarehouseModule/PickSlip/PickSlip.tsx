@@ -357,17 +357,18 @@ const PickSlip = () => {
       setCostCenter(selectedCC.value);
     }
   }, [selectedCC]);
-  const onSelectionChanged = (event: any) => {
+  const onSelectionChanged = (event) => {
     const selectedNodes = event.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node: any) => node.data);
+    const selectedData = selectedNodes.map((node) => node.data);
+
     // Add the additional parameter to each selectedData item
-    // const modifiedSelectedData = selectedData.map((item: any) => ({
-    //   ...item, // Keep existing properties
-    //   pickmaterialVal: sheetOpen, // Add the new parameter
-    // }));
+    const modifiedSelectedData = selectedData.map((item) => ({
+      ...item, // Keep existing properties
+      pickmaterialVal: sheetOpen, // Add the new parameter
+    }));
 
     // Set the modified selected rows
-    setSelectedRows(selectedData);
+    setSelectedRows(modifiedSelectedData);
   };
   useEffect(() => {
     let sum = selectedRows.reduce((a, b) => a + Number(b?.qty), 0);
@@ -377,11 +378,7 @@ const PickSlip = () => {
     setTotalQty(0);
     setSheetOpen(false);
     setFinalRows(selectedRows);
-    let boxName = selectedRows.map((item: any) => item?.box_name);
-    // let boxQty = selectedRows.map((item: any) => item?.qty);
 
-    setSelectedBox(boxName.join(","));
-    // onSelectionChanged();
     setRowData((prevData) =>
       prevData.map((item) => {
         const pickMaterialValue = item.pickmaterial?.value; // Value of the current row's pickmaterial
@@ -390,8 +387,8 @@ const PickSlip = () => {
         // If the pickmaterial matches the component, update the row with the correct box name and quantity
         if (pickMaterialValue === compValue) {
           console.log("here in update", selectedRows);
-          let boxNames = selectedRows.map((item: any) => item?.box_name);
-          let boxQtys = selectedRows.map((item: any) => item?.qty);
+          let boxNames = selectedRows.map((item) => item?.box_name);
+          let boxQtys = selectedRows.map((item) => item?.qty);
 
           setSelectedBox(boxNames.join(","));
           // Find the matching box name and quantity for the current pickmaterialValue
@@ -409,16 +406,15 @@ const PickSlip = () => {
       })
     );
   };
-
   console.log("rowData", rowData);
   const openDrawer = (params: any) => {
     // dispatch(fetchAvailableStockBoxes({ search: params.data.pickmaterial }));
     setSheetOpen(params);
-    let payload: any = {
+    let payload = {
       c_center: form.getFieldValue("costCenter").value,
       component: params,
     };
-    dispatch(fetchAvailableStockBoxes(payload)).then((res: any) => {
+    dispatch(fetchAvailableStockBoxes(payload)).then((res) => {
       setCompKey(payload);
       // if (res?.payload.code == 500) {
       //   toast({
@@ -614,21 +610,17 @@ const PickSlip = () => {
             <AgGridReact
               ref={gridRef}
               rowData={rowDataBoxes}
-              columnDefs={columnBoxesDefs as (ColDef | ColGroupDef)[]}
-              defaultColDef={defaultColDef}
-              statusBar={statusBar}
-              components={components}
-              pagination={true}
-              paginationPageSize={10}
-              animateRows={true}
               gridOptions={commonAgGridConfig}
               //   suppressCellFocus={false}
               suppressRowClickSelection={false}
+              // onCellEditingStarted={(params) =>
+              // console.log("Cell editing started", params)
+              // // }
+              // onCellEditingStopped={handleCellValueChange}
+              // onCellValueChanged={handleCellValueChange} // Your existing change handler
               rowSelection="multiple"
               // checkboxSelection={true}
               onSelectionChanged={onSelectionChanged}
-              onCellEditingStopped={handleCellValueChange}
-              onCellValueChanged={handleCellValueChange} // Your existing change handler
             />
           </div>{" "}
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">

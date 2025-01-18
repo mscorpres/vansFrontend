@@ -5,7 +5,10 @@ import AddPO from "./AddPO";
 import { Form } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppDispatch } from "@/store";
-import { fetchDataPOEdit } from "@/features/client/clientSlice";
+import {
+  fetchComponentDetails,
+  fetchDataPOEdit,
+} from "@/features/client/clientSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
 import { toast } from "@/components/ui/use-toast";
@@ -21,8 +24,10 @@ const PoCreateTemplate = () => {
   const [roeIs, setRoeIs] = useState("");
   const [resetSure, setResetSure] = useState(false);
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const [PrevRowData, setPrevRowData] = useState<RowData[]>([]);
   const [bilStateCode, setBillStateCode] = useState("");
   const [shipStateCode, setShipStateCode] = useState("");
+  const [isImport, setIsImport] = useState("");
   const [codeType, setCodeType] = useState("");
   const currencyval = Form.useWatch("currency", form);
   const selectedVendor = Form.useWatch("vendorName", form);
@@ -37,6 +42,7 @@ const PoCreateTemplate = () => {
   const resetTheValues = () => {
     setResetSure(true);
     form.resetFields();
+    setIsImport("");
     setRowData([]);
     setTabvalue("create");
 
@@ -118,32 +124,109 @@ const PoCreateTemplate = () => {
             form.setFieldValue("shipgst", arr.ship?.shipgstid);
             form.setFieldValue("shipAddress", arr.ship?.shipaddress);
             let materials = res.payload.data?.materials;
-            let matLst = materials?.map((r) => {
-              return {
-                isNew: true,
-                procurementMaterial: r?.selectedComponent[0]?.text,
 
-                vendorName: r.make,
-                // currency: r.currency,
-                // currency: r.exchangerate,
-                orderQty: r.orderqty,
-                componentKey: r?.componentKey,
-                rate: r.rate,
-                gstRate: r.gstrate,
-                gstTypeForPO: r.gsttype[0].id,
-                materialDescription: r.remark,
-                hsnCode: r.hsncode,
-                dueDate: r.duedate,
-                localValue: r.taxablevalue,
-                foreignValue: r.exchangetaxablevalue,
-                igst: r.igst,
-                sgst: r.sgst,
-                cgst: r.cgst,
-                updateingId: r?.updateid,
-              };
-            });
+            const fetchData = async () => {
+              let matLst = await Promise.all(
+                materials.map(async (item) => {
+                  const componentKey = item.componentKey;
 
-            setRowData(matLst);
+                  if (componentKey) {
+                    try {
+                      // Dispatch the action and wait for the response
+                      const res = await dispatch(
+                        fetchComponentDetails({
+                          component_code: componentKey,
+                          vencode: form.getFieldValue("vendorName")?.value,
+                        })
+                      );
+
+                      if (res?.payload) {
+                        let data2 = res.payload;
+                        let preRate = data2?.last_rate.split(" ")[1];
+
+                        return {
+                          isNew: true,
+                          procurementMaterial: item.selectedComponent[0]?.text,
+                          vendorName:
+                            item.component_short + "/ Maker:" + item.make,
+                          orderQty: item.orderqty,
+                          componentKey: item.componentKey,
+                          rate: item.rate,
+                          gstRate: item.gstrate,
+                          gstTypeForPO: item.gsttype[0].id,
+                          materialDescription: item.remark,
+                          hsnCode: item.hsncode,
+                          dueDate: item.duedate,
+                          localValue: item.taxablevalue,
+                          foreignValue: item.exchangetaxablevalue,
+                          igst: item.igst,
+                          sgst: item.sgst,
+                          cgst: item.cgst,
+                          updateingId: item.updateid,
+                          currentStock: res?.payload?.closingQty,
+                          prevrate: preRate,
+                        };
+                      }
+                    } catch (error) {
+                      return {
+                        isNew: true,
+                        procurementMaterial: item.selectedComponent[0]?.text,
+                        vendorName:
+                          item.component_short + "/ Maker:" + item.make,
+                        orderQty: item.orderqty,
+                        componentKey: item.componentKey,
+                        rate: item.rate,
+                        gstRate: item.gstrate,
+                        gstTypeForPO: item.gsttype[0].id,
+                        materialDescription: item.remark,
+                        hsnCode: item.hsncode,
+                        dueDate: item.duedate,
+                        localValue: item.taxablevalue,
+                        foreignValue: item.exchangetaxablevalue,
+                        igst: item.igst,
+                        sgst: item.sgst,
+                        cgst: item.cgst,
+                        updateingId: item.updateid,
+                        // currentStock: res.payload.closingQty,
+                        // prevrate: preRate,
+                      };
+                    }
+                  } else {
+                    return {
+                      isNew: true,
+                      procurementMaterial: item.selectedComponent[0]?.text,
+                      vendorName: item.component_short + "/ Maker:" + item.make,
+                      orderQty: item.orderqty,
+                      componentKey: item.componentKey,
+                      rate: item.rate,
+                      gstRate: item.gstrate,
+                      gstTypeForPO: item.gsttype[0].id,
+                      materialDescription: item.remark,
+                      hsnCode: item.hsncode,
+                      dueDate: item.duedate,
+                      localValue: item.taxablevalue,
+                      foreignValue: item.exchangetaxablevalue,
+                      igst: item.igst,
+                      sgst: item.sgst,
+                      cgst: item.cgst,
+                      updateingId: item.updateid,
+                      // currentStock: res.payload.closingQty,
+                      // prevrate: preRate,
+                    };
+                  }
+
+                  // Return null if the componentKey doesn't exist or if an error occurs
+                  return null;
+                })
+              );
+
+              // Filter out null values, if any, and update the row data
+              matLst = matLst.filter((item) => item !== null);
+
+              setRowData(matLst);
+              console.log("b", matLst);
+            };
+            fetchData();
           } else {
             toast({
               title: "Something went wrong",
@@ -157,13 +240,17 @@ const PoCreateTemplate = () => {
   }, [params]);
   useEffect(() => {
     if (bilStateCode && shipStateCode) {
-      if (Number(shipStateCode) == Number(bilStateCode)) {
-        setCodeType("L");
+      if (isImport == "Import") {
+        setCodeType("0");
       } else {
-        setCodeType("I");
+        if (Number(shipStateCode) == Number(bilStateCode)) {
+          setCodeType("L");
+        } else {
+          setCodeType("I");
+        }
       }
     }
-  }, [shipStateCode, bilStateCode]);
+  }, [shipStateCode, bilStateCode, isImport]);
   useEffect(() => {
     dispatch(fetchCurrency());
   }, []);
@@ -192,6 +279,9 @@ const PoCreateTemplate = () => {
             resetSure={resetSure}
             isApprove={isApprove}
             currencyval={currencyval}
+            setCodeType={setCodeType}
+            isImport={isImport}
+            setIsImport={setIsImport}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">
@@ -217,8 +307,9 @@ const PoCreateTemplate = () => {
             resetTheValues={resetTheValues}
             setResetSure={setResetSure}
             resetSure={resetSure}
-            isApprove={isApprove}
             currencyval={currencyval}
+            isImport={isImport}
+            setIsImport={setIsImport}
           />
         </TabsContent>
       </Tabs>

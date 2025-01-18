@@ -274,7 +274,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClose={handleMaterialListModalClose}
         sellRequestDetails={shipmentMaterialList}
         row={{ req_id: row?.so_id }}
-        loading={loading2}
+        loading={loading2 || loading}
         setSubmitSuccess={setSubmitSuccess}
       />
       <MaterialListModal

@@ -40,7 +40,7 @@ const CreateSalesOrderPage = () => {
   });
   const billToStateCode = form.watch("billTo.state");
   const billFromStateCode = form.watch("billFrom.state");
-  const getCostCenter = form.watch("costcenter");
+  const getCostCenter = form.watch("customer_code");
   console.log("billToStateCode", billToStateCode);
   console.log("billFromStateCode", billFromStateCode);
   useEffect(() => {
@@ -318,6 +318,7 @@ const CreateSalesOrderPage = () => {
             setRowData={setRowData}
             form={form}
             setBackCreate={setBackCreate}
+            getCostCenter={getCostCenter}
           />
         </TabsContent>
       </Tabs>

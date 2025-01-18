@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import { DatePicker, Form } from "antd";
 import useApi from "@/hooks/useApi";
@@ -14,6 +11,7 @@ import {
 } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
+import SearchIcon from "@mui/icons-material/Search";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
@@ -22,6 +20,8 @@ import { IoIosRefresh } from "react-icons/io";
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
 import { InputStyle } from "@/constants/themeContants";
+import MuiInput from "@/components/ui/MuiInput";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -256,28 +256,40 @@ const R4 = () => {
   useEffect(() => {
     fetchQueryResults();
   }, []);
-
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff] ">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
         <div className="p-[10px] justify-center">
           <Form form={form} layout="vertical">
-            <Form.Item name="search" label="Search">
-              <Input
-                className={InputStyle}
-                placeholder="Enter Search"
+            <Form.Item name="search">
+              <MuiInput
+                form={form}
+                name="search"
+                label={"Search"}
+                // className={InputStyle}
+                // placeholder="Enter Search"
                 // {...field}
               />
             </Form.Item>
           </Form>
-          <div className="flex gap-[10px] w-full justify-space-between">
-            <Button
+          <div className="flex gap-[10px] w-full justify-end">
+            {/* <Button
               type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={() => {
+                fetchQueryResults();
+              }}
+            >
+              Search
+            </Button> */}{" "}
+            <Button
+              variant="contained"
+              type="submit"
+              startIcon={<SearchIcon />}
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               onClick={() => {
                 fetchQueryResults();
@@ -286,20 +298,20 @@ const R4 = () => {
               Search
             </Button>
             <Button
-              className=" bg-white text-black hover:bg-slate-200"
+              className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
               onClick={getRefreshed}
             >
               <IoIosRefresh />
             </Button>{" "}
             <Button
               // type="submit"
-              className=" bg-white text-black hover:bg-slate-200"
+              className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
+              // onClick={() => {}}
               disabled={rowData.length === 0}
               onClick={(e: any) => {
                 e.preventDefault();
                 handleDownloadExcel();
               }}
-              disabled={rowData.length == 0}
             >
               <IoMdDownload size={20} />
             </Button>

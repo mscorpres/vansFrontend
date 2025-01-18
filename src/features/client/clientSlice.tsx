@@ -30,6 +30,11 @@ interface uomPayload {
   id: string;
   value: string;
 }
+interface deletePart {
+  pocode: string;
+  partcode: string;
+  updatecode: string;
+}
 interface shippingAddressPayload {
   // id: string;
   statecode: string;
@@ -300,12 +305,46 @@ export const poMIN = createAsyncThunk<uomPayload>(
     }
   }
 );
+export const removePart = createAsyncThunk<deletePart>(
+  "/purchaseOrder/removePart",
+  async (payload) => {
+    // console.log("payload", payload);
+
+    try {
+      const response = await spigenAxios.delete<deletePart>(
+        `/purchaseOrder/removePart?pocode=${payload.pocode}&partcode=${payload.partcode}&updatecode=${payload.updatecode}`
+      );
+
+      return response;
+    } catch (error) {
+      return response;
+    }
+  }
+);
 export const poApprove = createAsyncThunk<uomPayload>(
   "/purchaseOrder/po_approve",
   async (payload) => {
     try {
       const response = await spigenAxios.put<uomPayload>(
         "/purchaseOrder/po_approve",
+        payload
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
+export const updateMapCustomer = createAsyncThunk<uomPayload>(
+  "/component/updateMapCustomer",
+  async (payload) => {
+    try {
+      const response = await spigenAxios.put<any>(
+        "/component/updateMapCustomer",
         payload
       );
 
@@ -775,6 +814,18 @@ const clientSlice = createSlice({
         state.approvePoList = action.payload;
       })
       .addCase(poApprove.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch Cost Center List";
+      })
+      .addCase(updateMapCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateMapCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(updateMapCustomer.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || "Failed to fetch Cost Center List";

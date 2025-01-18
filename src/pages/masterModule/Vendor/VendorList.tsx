@@ -73,6 +73,7 @@ const FormSchema = z.object({
   email: z.string().optional(),
   address: z.string().optional(),
   fax: z.string().optional(),
+  paymentTerms: z.string().optional(),
   vendorCode: z.string().optional(),
   addressCode: z.string().optional(),
   state: z.string().optional(),
@@ -340,6 +341,7 @@ const VendorList = () => {
       panno: data?.pan,
       vendorcode: data?.vendorCode,
       vendorname: data?.vendorName,
+      payment_terms: data?.paymentTerms,
     };
 
     const response = await execFun(() => vendorUpdateSave(p), "fetch");
@@ -398,6 +400,7 @@ const VendorList = () => {
         vendorname: data.label,
         panno: data.pan,
         cinno: data.cin,
+        payment_terms: data.paymentTerms,
       },
       branch: {
         branch: data.label,
@@ -442,12 +445,14 @@ const VendorList = () => {
         cin: arr.vendor_cin,
         cin: arr.vendor_cin,
         vendorCode: arr.vendor_code,
+        payment_terms: arr.payment_terms,
       };
 
       form.setValue("vendorName", obj.vendorName);
       form.setValue("pan", obj.pan);
       form.setValue("cin", obj.cin);
       form.setValue("vendorCode", obj.vendorCode);
+      form.setValue("paymentTerms", obj.payment_terms);
       // let a = arr.map((r) => {
       //   return {
       //     label: r.text,
@@ -563,7 +568,7 @@ const VendorList = () => {
                 <Plus className="h-[20px] w-[20px]" />
               </Button>
             </CustomTooltip> */}
-          </form>{" "}
+          </form>
         </Form>
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger></SheetTrigger>
@@ -599,7 +604,7 @@ const VendorList = () => {
                             </FormControl>
                           </FormItem>
                         )}
-                      />{" "}
+                      />
                       <FormField
                         control={form.control}
                         name="pan"
@@ -629,6 +634,24 @@ const VendorList = () => {
                                 name="cin"
                                 label="CIN Number"
                                 placeholder="CIN Number"
+                                className={InputStyle}
+                                control={form.control}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="paymentTerms"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <MuiInput2
+                                form={form}
+                                name="paymentTerms"
+                                label="Payment Terms"
+                                placeholder="Payment Terms"
                                 className={InputStyle}
                                 control={form.control}
                               />
@@ -710,7 +733,7 @@ const VendorList = () => {
                             </FormControl>
                           </FormItem>
                         )}
-                      />{" "}
+                      />
                       <FormField
                         control={form.control}
                         name="gstin"
@@ -823,7 +846,7 @@ const VendorList = () => {
                           </FormControl>
                         </FormItem>
                       )}
-                    />{" "}
+                    />
                   </div>
                   <div className={modelFixFooterStyle}>
                     <Button
@@ -973,7 +996,7 @@ const VendorList = () => {
                             </FormControl>
                           </FormItem>
                         )}
-                      />{" "}
+                      />
                       <FormField
                         control={form.control}
                         name="gstin"
@@ -1047,7 +1070,7 @@ const VendorList = () => {
                             </FormControl>
                           </FormItem>
                         )}
-                      />{" "}
+                      />
                       <FormField
                         control={form.control}
                         name="fax"
@@ -1084,7 +1107,7 @@ const VendorList = () => {
                           </FormControl>
                         </FormItem>
                       )}
-                    />{" "}
+                    />
                     <div className="grid grid-cols-2 gap-[20px]"></div>
                   </div>
                   <div className={modelFixFooterStyle}>
@@ -1130,7 +1153,6 @@ const VendorList = () => {
               </SheetTitle>
             </SheetHeader>
             <div>
-              {" "}
               {loading1("fetch") && <FullPageLoading />}
               <Form {...form}>
                 <form
@@ -1301,7 +1323,7 @@ const VendorList = () => {
                           </FormControl>
                         </FormItem>
                       )}
-                    />{" "}
+                    />
                     <div className="grid grid-cols-2 gap-[20px]">
                       <FormField
                         control={form.control}
@@ -1365,7 +1387,6 @@ const VendorList = () => {
               )}`}</SheetTitle>
             </SheetHeader>
             <div>
-              {" "}
               {loading1("fetch") && <FullPageLoading />}
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(updateVendor)} className="">
@@ -1389,7 +1410,6 @@ const VendorList = () => {
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="pan"
@@ -1419,6 +1439,24 @@ const VendorList = () => {
                               name="cin"
                               label="CIN Number"
                               placeholder="CIN Number"
+                              className={InputStyle}
+                              control={form.control}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="paymentTerms"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <MuiInput2
+                              form={form}
+                              name="paymentTerms"
+                              label="Payment Terms"
+                              placeholder="Payment Terms"
                               className={InputStyle}
                               control={form.control}
                             />

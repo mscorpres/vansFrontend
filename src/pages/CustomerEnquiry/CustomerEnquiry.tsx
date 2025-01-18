@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import styled from "styled-components";
 import { DatePicker, Form } from "antd";
 import useApi from "@/hooks/useApi";
@@ -23,6 +22,7 @@ import { IoIosRefresh } from "react-icons/io";
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
 import { InputStyle } from "@/constants/themeContants";
+import { Button } from "@mui/material";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -46,7 +46,6 @@ const CustomerEnquiry = () => {
   const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-
     const value = await form.validateFields();
     if (value.search && rowData) {
       setShowList(true);
@@ -206,7 +205,7 @@ const CustomerEnquiry = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff] ">
-        {" "}
+         
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -221,20 +220,10 @@ const CustomerEnquiry = () => {
               />
             </Form.Item>
           </Form>
-          <div className="flex gap-[10px] w-full justify-space-between">
-            <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={() => {
-                fetchQueryResults();
-              }}
-            >
-              Search
-            </Button>
-
+          <div className="flex gap-[10px] w-full justify-end">
             <Button
               // type="submit"
-              className=" bg-white text-black hover:bg-slate-200"
+              className="shadow shadow-slate-500 text-grey mt-[8px] w-[10px] h-[30px] "
               disabled={rowData.length === 0}
               onClick={(e: any) => {
                 e.preventDefault();
@@ -243,6 +232,16 @@ const CustomerEnquiry = () => {
               disabled={rowData.length == 0}
             >
               <IoMdDownload size={20} />
+            </Button> 
+            <Button
+              variant="contained"
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              onClick={() => {
+                fetchQueryResults();
+              }}
+            >
+              Search
             </Button>
             {/* <div>
               {showList && (
@@ -253,7 +252,7 @@ const CustomerEnquiry = () => {
         </div>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-50px)]">
-        {" "}
+         
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

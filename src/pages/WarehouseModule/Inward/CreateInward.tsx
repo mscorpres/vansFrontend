@@ -109,6 +109,7 @@ const CreateInward: React.FC<Props> = ({
         vendorname: values.label,
         panno: values.pan,
         cinno: values.cin,
+        payment_terms: data.paymentTerms,
       },
       branch: {
         branch: values.label,
@@ -491,6 +492,18 @@ const CreateInward: React.FC<Props> = ({
                       label={"CIN"}
                     />
                   </Form.Item>
+                  <Form.Item
+                    name="paymentTerm"
+                    className=""
+                    rules={rules.vendorGst}
+                  >
+                    <MuiInput
+                      form={forms}
+                      name="paymentTerm"
+                      placeholder="Payment Term"
+                      label={"Payment Term"}
+                    />
+                  </Form.Item>
                 </div>
                 {/* <Divider /> */}
                 <div className="grid grid-cols-2 gap-[20px]">
@@ -578,6 +591,14 @@ const CreateInward: React.FC<Props> = ({
                     name="address"
                     placeholder="Address"
                     label={"Address"}
+                  />
+                </Form.Item>
+                <Form.Item name="paymentTerms" rules={rules.vendorGst}>
+                  <MuiInput
+                    form={forms}
+                    name="paymentTerms"
+                    placeholder="paymentTerms"
+                    label={"paymentTerms"}
                   />
                 </Form.Item>
               </div>
