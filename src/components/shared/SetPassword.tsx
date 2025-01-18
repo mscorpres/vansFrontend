@@ -12,6 +12,7 @@ import { InputStyle, LableStyle } from "@/constants/themeContants";
 import { toast } from "@/components/ui/use-toast";
 import { changePassword, logout } from "@/features/auth/authSlice";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { Typography } from "@mui/material";
 
 const SetPassword = ({ open, onClose }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -203,14 +204,14 @@ const SetPassword = ({ open, onClose }: any) => {
             </form>
 
             <div className="w-1/2 pl-12 border-l border-gray-200">
-              <h3 className="text-2xl font-semibold mb-6 text-gray-700">
+              <h3 className="text-2xl font-semibold mb-4 text-gray-500">
                 Password Requirements
               </h3>
-              <ul className="space-y-5 text-gray-600 text-lg">
+              <ul className="space-y-2 text-gray-600 text-lg">
                 <li
                   className={`flex items-center ${
                     passwordChecks.hasUpperCase
-                      ? "text-green-600"
+                      ? "text-green-800"
                       : "text-gray-500"
                   }`}
                 >
@@ -219,12 +220,14 @@ const SetPassword = ({ open, onClose }: any) => {
                   ) : (
                     <div className="h-8 w-8 text-gray-500 mr-4" />
                   )}
-                  <span>At least one uppercase letter</span>
+                  <Typography variant="body1" className="text-[4px]">
+                    At least one uppercase letter
+                  </Typography>
                 </li>
                 <li
                   className={`flex items-center ${
                     passwordChecks.hasNumber
-                      ? "text-green-600"
+                      ? "text-green-800"
                       : "text-gray-500"
                   }`}
                 >
@@ -233,12 +236,14 @@ const SetPassword = ({ open, onClose }: any) => {
                   ) : (
                     <div className="h-8 w-8 text-gray-500 mr-4" />
                   )}
-                  <span>At least one number</span>
+                  <Typography variant="body1" className="text-[4px]">
+                    At least one number
+                  </Typography>
                 </li>
                 <li
                   className={`flex items-center ${
                     passwordChecks.hasSpecialChar
-                      ? "text-green-600"
+                      ? "text-green-800"
                       : "text-gray-500"
                   }`}
                 >
@@ -247,12 +252,14 @@ const SetPassword = ({ open, onClose }: any) => {
                   ) : (
                     <div className="h-8 w-8 text-gray-500 mr-4" />
                   )}
-                  <span>At least one special character</span>
+                  <Typography variant="body1" className="text-[4px]">
+                    At least one special character
+                  </Typography>
                 </li>
                 <li
                   className={`flex items-center ${
                     passwordChecks.isValidLength
-                      ? "text-green-600"
+                      ? "text-green-800"
                       : "text-gray-500"
                   }`}
                 >
@@ -261,7 +268,9 @@ const SetPassword = ({ open, onClose }: any) => {
                   ) : (
                     <div className="h-8 w-8 text-gray-500 mr-4" />
                   )}
-                  <span>8-16 characters in length</span>
+                  <Typography variant="body1" className="text-[4px]">
+                    8-16 characters in length
+                  </Typography>
                 </li>
               </ul>
               <div className="mt-8">
@@ -284,7 +293,7 @@ const SetPassword = ({ open, onClose }: any) => {
                   <span
                     className={`${
                       passwordStrength.label === "Strong"
-                        ? "text-green-600"
+                        ? "text-green-800"
                         : passwordStrength.label === "Medium"
                         ? "text-yellow-600"
                         : "text-red-600"
