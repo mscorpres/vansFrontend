@@ -95,7 +95,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           shipment_id: row?.shipment_id,
         };
         dispatch(cancelShipment(payload)).then((response: any) => {
-          console.log(response);
           if (response?.payload?.code == 200 || response?.payload?.success) {
             form.resetFields(); // Clear the form fields after submission
             dispatch(

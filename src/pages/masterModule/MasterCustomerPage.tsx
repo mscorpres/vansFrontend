@@ -355,7 +355,6 @@ const MasterCustomerPage: React.FC = () => {
   };
   const createNewBranch = async () => {
     const value = await form.validateFields();
-    console.log("value", value);
 
     let payload = {
       client: addBranch?.code,
@@ -379,10 +378,8 @@ const MasterCustomerPage: React.FC = () => {
       shipToAddress2: value.shipAddress1,
       same_shipping_addres: samebilling,
     };
-    console.log("payload", payload);
 
     const response = await execFun(() => addbranchToClient(payload), "fetch");
-    console.log("response", response);
 
     if (response?.data?.success) {
       toast({

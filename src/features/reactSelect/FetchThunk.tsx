@@ -42,7 +42,6 @@ export const fetchData = createAsyncThunk<ApiResponse<any[]>, FetchDataArgs>(
         response = await spigenAxios.get(`${endpoint}?name=${query}`);
         return response.data;
       } else if (query2) {
-        // console.log("query2", query2);
 
         // Fetching option data with payload
         response = await spigenAxios.get(`${endpoint}/${query2}`);

@@ -107,7 +107,6 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
   ];
   const data = sellRequestDetails?.headerData;
   const shipmentIdextracted = data?.shipmentId;
-  // console.log("shipmentIdextracted", shipmentIdextracted) ;
 
   const itemCGSTs = sellRequestDetails?.materialData?.map(
     (item) => parseFloat(item?.cgstRate) || 0
@@ -124,7 +123,6 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
       (acc, item) => acc + (item.rate ?? 0) * (item.qty ?? 0),
       0
     ) ?? 0;
-  console.log("sellRequestDetails", sellRequestDetails);
 
   const totalCGST = itemCGSTs?.reduce((acc, value) => acc + value, 0);
   const totalSGST = itemSGSTs?.reduce((acc, value) => acc + value, 0);
@@ -145,7 +143,6 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
       `width=${width},height=${height},top=${top},left=${left},status=1,scrollbars=1,location=0,resizable=yes`
     );
   }
-  console.log("data", data);
 
   const handleEwayClick = (module: string) => {
     const shipmentId = sellRequestDetails?.headerData?.invoiceNo || "";

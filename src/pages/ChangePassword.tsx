@@ -34,7 +34,6 @@ function ChangePassword() {
 
   const handleResetPassword = (data) => {
     // Here, implement your password reset logic (e.g., API call)
-    console.log("Password Reset Data:", data);
     setSnackbarMessage("Password reset successfully!");
     setSnackbarSeverity("success");
     setOpenSnackbar(true);

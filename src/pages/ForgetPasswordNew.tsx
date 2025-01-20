@@ -114,7 +114,6 @@ const ForgetPasswordNew = () => {
         //   password: formData.confirmPassword                                                                       
         // }
         // dispatch(verifyOtp(payload as any)).then((res: any) => {
-        //     console.log(res)
         //     if(res?.payload?.success){
         //       setStep(3);
         //     }

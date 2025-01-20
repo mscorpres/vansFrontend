@@ -233,7 +233,6 @@ export const fetchSalesOrderShipmentList = createAsyncThunk<
   ApiResponse<SellShipmentRequest[]>,
   FetchSellShipmentPayload
 >("sellRequest/fetchSalesOrderShipmentList", async (payload) => {
-  console.log(payload);
 
   const response = await spigenAxios.get(
     `salesOrder/shipmentDetails?data=${payload.data}&type=${payload.type}`,

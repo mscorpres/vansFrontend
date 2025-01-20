@@ -137,7 +137,6 @@ function PrintMinLabel() {
       }
     }
   }, [selMin]);
-  console.log("selType", selType);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white ">

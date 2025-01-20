@@ -487,12 +487,10 @@ const sellRequestSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchSellRequestList.fulfilled, (state, action) => {
-        console.log("Data received in slice:", action.payload.data);
         state.data = action.payload.data;
         state.loading = false;
       })
       .addCase(fetchSellRequestList.rejected, (state, action) => {
-        console.error("Fetch failed:", action.error);
         state.error = action.error?.message || null;
         state.loading = false;
       });

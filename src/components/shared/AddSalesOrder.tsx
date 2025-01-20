@@ -65,7 +65,6 @@ const AddSalesOrder = ({
     resetModel,
     setResetModel,
   };
-  console.log("derivedType", derivedType);
 
   const addNewRow = () => {
     const newRow: RowData = {
@@ -145,7 +144,6 @@ const AddSalesOrder = ({
     rowData?.length === 0 && addNewRow();
   }, []);
 
-  console.log(rowData);
   const materials = {
     item: rowData?.map((component: RowData) =>
       typeof component.material === "object" && component.material !== null

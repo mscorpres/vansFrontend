@@ -308,7 +308,6 @@ export const poMIN = createAsyncThunk<uomPayload>(
 export const removePart = createAsyncThunk<deletePart>(
   "/purchaseOrder/removePart",
   async (payload) => {
-    // console.log("payload", payload);
 
     try {
       const response = await spigenAxios.delete<deletePart>(

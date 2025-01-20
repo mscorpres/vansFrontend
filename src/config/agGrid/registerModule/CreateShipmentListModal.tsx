@@ -166,7 +166,6 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
       //     // Apply transaction to update the data grid
       //     api.applyTransaction({ update: [data] });
       //   };
-      //   console.log(data, "data");
 
       //   return (
       //     <input

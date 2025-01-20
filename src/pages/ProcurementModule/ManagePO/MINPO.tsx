@@ -256,7 +256,6 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const handleSubmit = async () => {
     setShowConfirmation(false);
     let arr = rowData;
-    console.log("arr", arr);
 
     let payload = {
       poid: viewMinPo?.po_transaction,
@@ -278,7 +277,6 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       igst: arr.map((r: any) => r.igst),
       remark: arr.map((r: any) => r.remark),
     };
-    console.log("payload",payload)
 
     // return;
     try {

@@ -223,8 +223,6 @@ const PickSlip = () => {
     setShowConfirmation(false);
     // const value = form.getFieldsValue();
     const values = await form.validateFields();
-    console.log("values", values);
-    console.log("rowData", rowData);
 
     let payload = {
       customer: values.customerName?.value,
@@ -367,9 +365,6 @@ const PickSlip = () => {
   //   const { oldValue, newValue, colDef, data } = params;
 
   //   if (oldValue !== newValue) {
-  //     // console.log(
-  //     //   `${colDef.headerName} changed from ${oldValue} to ${newValue}`
-  //     // );
   //     // Handle additional logic if needed, e.g., API calls, updating local state, etc.
   //     // Here, we log the change.
   //   }
@@ -415,7 +410,6 @@ const PickSlip = () => {
 
         // If the pickmaterial matches the component, update the row with the correct box name and quantity
         if (pickMaterialValue === compValue) {
-          console.log("here in update", selectedRows);
           let boxNames = selectedRows.map((item) => item?.box_name);
           let boxQtys = selectedRows.map((item) => item?.qty);
 
@@ -641,7 +635,6 @@ const PickSlip = () => {
               //   suppressCellFocus={false}
               suppressRowClickSelection={false}
               // onCellEditingStarted={(params) =>
-              // console.log("Cell editing started", params)
               // // }
               // onCellEditingStopped={handleCellValueChange}
               // onCellValueChanged={handleCellValueChange} // Your existing change handler

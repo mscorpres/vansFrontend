@@ -431,7 +431,6 @@ export const getComponentDetailsForServices = async (payload: any) => {
   return response;
 };
 export const getProductDetailsForEdit = async (payload: any) => {
-  // console.log("payload", payload);
 
   const response = await spigenAxios.get(
     `/products/getProductForUpdate/${payload}`

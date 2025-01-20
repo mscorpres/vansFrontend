@@ -44,7 +44,6 @@ const MinRegister = () => {
   const fetchQueryResults = async () => {
     let value = await form.validateFields();
     // let { date, search } = formData;
-    console.log("value", value);
 
     let dataString = "";
     if (value?.data) {
@@ -56,7 +55,6 @@ const MinRegister = () => {
       min_types: value.types.value,
       data: dataString,
     };
-    console.log("payload", payload);
 
     const response = await execFun(
       () => fetchListOfMINRegister(payload),
