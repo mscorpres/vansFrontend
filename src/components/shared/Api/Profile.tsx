@@ -183,7 +183,7 @@ const ProfileComponent = () => {
       });
     } else {
       toast({
-        title: response?.data?.message,
+        title: response?.payload?.message,
         className: "bg-red-600 text-white items-center relative z-50",
       });
     }
