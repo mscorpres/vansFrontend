@@ -242,6 +242,7 @@ const Q2 = () => {
       headerName: "Transaction Id",
       field: "transaction",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -323,18 +324,21 @@ const Q2 = () => {
       headerName: "Part Number",
       field: "PART",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: " Part Name",
       field: "NAME",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Description",
       field: "SPECIFICATION",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -354,6 +358,7 @@ const Q2 = () => {
       headerName: "Balance Qty",
       field: "CLOSING_QUANTITY",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -367,24 +372,28 @@ const Q2 = () => {
       headerName: "Amount (FXC)",
       field: "AMOUNT_FC",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Amount (LC)",
       field: "AMOUNT_LC",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "MIN No.",
       field: "MIN_NO",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Physical Stock",
       field: "PHYSICAL_STOCK",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -397,6 +406,7 @@ const Q2 = () => {
       headerName: "Remark",
       field: "REMARK",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 190,
     },
   ];

@@ -234,8 +234,7 @@ const TextInputCellRenderer = (props: any) => {
         updatecode: data["updateingId"],
       };
       if (window.location.pathname.includes("edit")) {
-        dispatch(removePart(payload)).then((res) => {
-        });
+        dispatch(removePart(payload)).then((res) => {});
       }
     }
     setShowConfirmDialog(false);
@@ -337,7 +336,6 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "hsnSearch") {
-
       data["hsnSearch"] = data.hsnSearch;
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
@@ -367,7 +365,12 @@ const TextInputCellRenderer = (props: any) => {
           });
           //  data["boxPartName"] = r?.payload.data;
         } else {
-          data["orderQty"] = r?.payload.data.data[0].closingqty;
+          data["orderQty"] = r?.payload.data.data[0]?.closingqty;
+          data["phyqty"] = r?.payload.data.data[0]?.inward;
+          data["remark"] = r?.payload.data.data[0]?.remark;
+          api.refreshCells({ rowNodes: [props.node], columns: [column] });
+          api.applyTransaction({ update: [data] });
+          updateData(data);
         }
       });
     }
