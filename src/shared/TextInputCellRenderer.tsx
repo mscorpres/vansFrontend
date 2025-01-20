@@ -377,7 +377,13 @@ const TextInputCellRenderer = (props: any) => {
           });
           //  data["boxPartName"] = r?.payload.data;
         } else {
-          data["orderQty"] = r?.payload.data.data[0].closingqty;
+        
+          data["orderQty"] = r?.payload.data.data[0]?.closingqty;
+          data["phyqty"] = r?.payload.data.data[0]?.inward;
+          data["remark"] = r?.payload.data.data[0]?.remark;
+          api.refreshCells({ rowNodes: [props.node], columns: [column] });
+          api.applyTransaction({ update: [data] });
+          updateData(data);
         }
       });
     }
