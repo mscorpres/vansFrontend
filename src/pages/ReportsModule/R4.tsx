@@ -80,7 +80,6 @@ const R4 = () => {
   };
   const getRefreshed = async () => {
     const response = await execFun(() => fetchR4refreshed(), "fetch");
-    console.log("response", response);
     let { data } = response;
     if (data.success) {
       let arr = data.data.map((r, index) => {

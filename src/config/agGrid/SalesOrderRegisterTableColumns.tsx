@@ -102,7 +102,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           so_id: row?.so_id,
         };
         dispatch(rejectSo(payload) as any).then((response: any) => {
-          console.log(response);
           if (response?.payload?.code == 200 || response?.payload?.success) {
             form.resetFields();
             dispatch(
@@ -129,7 +128,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           so_id: row?.so_id,
         };
         dispatch(cancelSalesOrder(payload)).then((response: any) => {
-          console.log(response);
           if (response?.payload?.code == 200 || response?.payload?.success) {
             form.resetFields(); // Clear the form fields after submission
             toast({
@@ -161,7 +159,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const onCreateShipment = (payload: any) => {
     dispatch(createShipment(payload)).then((response: any) => {
-      console.log(response);
       if (response?.payload?.success) {
         toast({
           className: "bg-green-600 text-white items-center",

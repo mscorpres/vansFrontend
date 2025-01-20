@@ -97,7 +97,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           shipment_id: row?.shipment_id,
         };
         dispatch(cancelShipment(payload)).then((response: any) => {
-          console.log(response);
           if (response?.payload?.code == 200 || response?.payload?.success) {
             toast({
               className: "bg-green-600 text-white items-center",

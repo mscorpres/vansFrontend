@@ -94,7 +94,6 @@ const PickSlip = () => {
   const isValue = Form.useWatch("partName", form);
   const selectedCC = Form.useWatch("costCenter", form);
   // const selectedCustomer = Form.useWatch("customerName", form);
-  console.log("isValue", isValue);
 
   const gridRef = useRef<AgGridReact<RowData>>(null);
 
@@ -276,7 +275,6 @@ const PickSlip = () => {
       minWidth: 300,
       width: 300,
       cellRenderer: (params: any) => {
-        // console.log("params", params);
 
         return (
           <div
@@ -386,7 +384,6 @@ const PickSlip = () => {
 
         // If the pickmaterial matches the component, update the row with the correct box name and quantity
         if (pickMaterialValue === compValue) {
-          console.log("here in update", selectedRows);
           let boxNames = selectedRows.map((item) => item?.box_name);
           let boxQtys = selectedRows.map((item) => item?.qty);
 
@@ -406,7 +403,6 @@ const PickSlip = () => {
       })
     );
   };
-  console.log("rowData", rowData);
   const openDrawer = (params: any) => {
     // dispatch(fetchAvailableStockBoxes({ search: params.data.pickmaterial }));
     setSheetOpen(params);
@@ -614,8 +610,7 @@ const PickSlip = () => {
               //   suppressCellFocus={false}
               suppressRowClickSelection={false}
               // onCellEditingStarted={(params) =>
-              // console.log("Cell editing started", params)
-              // // }
+
               // onCellEditingStopped={handleCellValueChange}
               // onCellValueChanged={handleCellValueChange} // Your existing change handler
               rowSelection="multiple"

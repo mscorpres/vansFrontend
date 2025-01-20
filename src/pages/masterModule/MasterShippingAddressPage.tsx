@@ -171,7 +171,6 @@ const MasterShippingAddressPage: React.FC = () => {
     downloadCSV(rowData, columnDefs, "Master Shipping Address");
   };
   const resethandle = () => {
-    console.log("reset");
 
     form.reset({
       label: "",

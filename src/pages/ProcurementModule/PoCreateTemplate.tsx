@@ -224,7 +224,6 @@ const PoCreateTemplate = () => {
               matLst = matLst.filter((item) => item !== null);
 
               setRowData(matLst);
-              console.log("b", matLst);
             };
             fetchData();
           } else {

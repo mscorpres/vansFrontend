@@ -45,7 +45,6 @@ const SetPassword = ({ open, onClose }: any) => {
     })
     onClose();
     // dispatch(changePassword(payload)).then((response:any) => {
-    //   console.log(response,response.data);
     //   if (response.payload.data.code===200) {
     //     setOldPassword("");
     //     setNewPassword("");

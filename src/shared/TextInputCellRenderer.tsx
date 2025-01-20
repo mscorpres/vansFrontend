@@ -235,7 +235,6 @@ const TextInputCellRenderer = (props: any) => {
       };
       if (window.location.pathname.includes("edit")) {
         dispatch(removePart(payload)).then((res) => {
-          // console.log("res", res);
         });
       }
     }
@@ -256,8 +255,6 @@ const TextInputCellRenderer = (props: any) => {
   };
   const handleChange = (value: string) => {
     const newValue = value;
-    // console.log("newValue", newValue);
-
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "procurementMaterial") {
@@ -340,7 +337,6 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "hsnSearch") {
-      console.log("hsnSearch", data);
 
       data["hsnSearch"] = data.hsnSearch;
 
@@ -520,7 +516,6 @@ const TextInputCellRenderer = (props: any) => {
     }
   }, [data["gstTypeForPO"]]);
   useEffect(() => {
-    console.log(data["currency"], data["currency"]);
     if (data["currency"] == "364907247") {
       data["exchange_rate"] = "1";
       // data["gstRate"] = data["gstTypeForPO"];

@@ -382,7 +382,6 @@ const MasterCustomerPage: React.FC = () => {
     // }
 
     const response = await execFun(() => addbranchToClient(payload), "fetch");
-    console.log("Response", response);
 
     if (response?.data?.success) {
       toast({

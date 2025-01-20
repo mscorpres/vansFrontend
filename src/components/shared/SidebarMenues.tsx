@@ -53,7 +53,6 @@ const renderMenu = (menu: any, setSidemenu: any) => {
   // const toggleFavorite = (item: any) => {
   //   // Check if the item is already in the list of favorites
   //   const isFavorited = favoriteItems.some((fav) => fav.name === item.name);
-  //   console.log("isFavorited", isFavorited);
 
   //   if (isFavorited) {
   //     // Remove the item from the favorites list if it's already there

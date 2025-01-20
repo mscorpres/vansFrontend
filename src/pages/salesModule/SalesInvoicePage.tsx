@@ -64,7 +64,6 @@ const SalesInvoicePage: React.FC = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-  console.log(isSearchPerformed);
   const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
     const { dateRange, soinvid_wise } = formData;
 

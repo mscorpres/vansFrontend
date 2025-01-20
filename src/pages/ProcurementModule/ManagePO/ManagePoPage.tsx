@@ -309,7 +309,6 @@ const ManagePoPage: React.FC = () => {
   useEffect(() => {
     form.setFieldValue("data", "");
   }, [selectedwise]);
-  console.log("sheetOpen", sheetOpen);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
