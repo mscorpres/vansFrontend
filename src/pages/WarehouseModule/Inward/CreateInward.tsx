@@ -208,7 +208,7 @@ const CreateInward: React.FC<Props> = ({
   }, [searchData]);
 
   useEffect(() => {
-    if (vendorPODetails && resetSure == false) {
+    if (vendorPODetails && resetSure == false && selvenName) {
       let arr = vendorPODetails;
 
       form.setFieldValue("vendorGst", arr?.gstid);
