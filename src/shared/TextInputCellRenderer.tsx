@@ -241,9 +241,7 @@ const TextInputCellRenderer = (props: any) => {
         updatecode: data["updateingId"],
       };
       if (window.location.pathname.includes("edit")) {
-        dispatch(removePart(payload)).then((res) => {
-          // console.log("res", res);
-        });
+        dispatch(removePart(payload)).then((res) => {});
       }
     }
     setShowConfirmDialog(false);
@@ -263,7 +261,6 @@ const TextInputCellRenderer = (props: any) => {
   };
   const handleChange = (value: string) => {
     const newValue = value;
-    // console.log("newValue", newValue);
 
     api.refreshCells({ rowNodes: [props.node], columns: [column] });
     data[colDef.field] = value; // Save ID in the data
@@ -279,7 +276,6 @@ const TextInputCellRenderer = (props: any) => {
         if (res.payload) {
           let data2 = res.payload;
           let preRate = data2.last_rate.split(" ")[1];
-          // console.log("preRate", preRate);
 
           data["vendorName"] =
             data2?.ven_com?.comp_name + "/ Maker:" + data2.make;
@@ -351,8 +347,6 @@ const TextInputCellRenderer = (props: any) => {
       updateData(data);
     }
     if (colDef.field === "hsnSearch") {
-      console.log("hsnSearch", data);
-
       data["hsnSearch"] = data.hsnSearch;
 
       api.refreshCells({ rowNodes: [props.node], columns: [column] });
@@ -530,7 +524,6 @@ const TextInputCellRenderer = (props: any) => {
     }
   }, [data["gstTypeForPO"]]);
   useEffect(() => {
-    console.log(data["currency"], data["currency"]);
     if (data["currency"] == "364907247") {
       data["exchange_rate"] = "1";
       // data["gstRate"] = data["gstTypeForPO"];

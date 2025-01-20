@@ -725,7 +725,6 @@ export const getCustomerStock = createAsyncThunk<ResponseData>(
     try {
       // Make sure your axios instance is correctly set up
       const response = await spigenAxios.get("/customer/cust_stock");
-      console.log("response", response);
 
       return response; // Return the response data to Redux
     } catch (error) {
@@ -739,7 +738,6 @@ export const getallItemClosingStock = createAsyncThunk<ResponseData>(
     try {
       // Make sure your axios instance is correctly set up
       const response = await spigenAxios.get("/customer/allItemClosingStock");
-      console.log("response", response);
 
       return response; // Return the response data to Redux
     } catch (error) {

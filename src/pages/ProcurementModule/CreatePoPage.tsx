@@ -341,7 +341,6 @@ const CreatePoPage: React.FC<Props> = ({
     if (selBilling) {
     dispatch(fetchBillingListDetails({ billing_code: selBilling?.value }));
     } else {
-      // console.log("ghere");
       form.setFieldValue("pan", "");
       form.setFieldValue("billgst", "");
       form.setFieldValue("billAddress", "");

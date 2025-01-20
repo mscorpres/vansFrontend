@@ -156,7 +156,6 @@ const MasterBillingAddressPage: React.FC = () => {
     const response = await execFun(() => fetchBillingAddess(), "fetch");
 
     let { data } = response;
-    console.log("response", response);
 
     if (data.success) {
       let arr = data.data.map((r: any, index: any) => {

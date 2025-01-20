@@ -412,7 +412,6 @@ const PickSlip = () => {
 
         // If the pickmaterial matches the component, update the row with the correct box name and quantity
         if (pickMaterialValue === compValue) {
-          console.log("here in update", selectedRows);
           let boxNames = selectedRows.map((item) => item?.box_name);
           let boxQtys = selectedRows.map((item) => item?.qty);
 

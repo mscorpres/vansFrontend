@@ -178,7 +178,6 @@ const AddPO: React.FC<Props> = ({
   const handleSubmit = async () => {
     setShowConfirmation(false);
     let arr = rowData;
-    console.log(arr);
 
     let payload = {
       vendorname: formVal.vendorName.value,
@@ -264,7 +263,6 @@ const AddPO: React.FC<Props> = ({
           remark: arr.map((r: any) => r.remark),
           updaterow: arr.map((r: any) => r.updateingId),
         };
-        console.log("payload2", payload2);
 
         dispatch(updatePo(payload2)).then((response: any) => {
           if (response?.payload.success) {

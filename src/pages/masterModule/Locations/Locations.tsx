@@ -243,7 +243,6 @@ const Locations = () => {
                     isClearable={true}
                     isSearchable={true}
                     options={asyncOptions}
-                    //   onChange={(e) => console.log(e)}
                     //   value={
                     //     data.clientDetails
                     //       ? {

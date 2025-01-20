@@ -75,7 +75,6 @@ const ProfileComponent = () => {
   }, []);
 
   useEffect(() => {
-    // console.log("profileDataogLocal has been updated:", profileDataogLocal);
     setProfileDataLocal(profileDataogLocal);
   }, [profileDataogLocal]);
 

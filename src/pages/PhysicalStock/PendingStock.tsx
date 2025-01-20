@@ -134,7 +134,6 @@ const PendingStock = () => {
             {/* <Button className=" bg-red-700 hover:bg-red-600 rounded h-[25px] w-[25px] felx justify-center items-center p-0 hover:bg-red-600"> */}
             <FaTimesCircle
               className="h-[15px] w-[15px] text-red-700 pointer-cursor  "
-              // onClick={() => console.log(params)}
               onClick={(e) => setConfirmReject(params)}
             />
             {/* </Button>{" "} */}

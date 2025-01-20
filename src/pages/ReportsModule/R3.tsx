@@ -281,7 +281,6 @@ const R3 = () => {
                       isSearchable={true}
                       options={asyncOptions}
                       onChange={(e) => form.setValue("bom", e?.value)}
-                      // onChange={(e) => console.log(e)}
                       // value={
                       //   data.clientDetails
                       //     ? {

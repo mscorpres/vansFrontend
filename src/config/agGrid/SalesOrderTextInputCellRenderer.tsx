@@ -144,7 +144,6 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       ).then((response: any) => {
         if (response.meta.requestStatus === "fulfilled") {
           const componentData = response.payload;
-          console.log(componentData);
           data["stock"] = componentData?.closingQty;
           data["hsnCode"] = componentData?.hsn;
           data["gstRate"] = componentData?.gstrate;

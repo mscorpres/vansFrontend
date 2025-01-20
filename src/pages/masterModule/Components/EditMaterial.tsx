@@ -503,7 +503,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isClearable={true}
                             isSearchable={true}
                             options={isEnabledOptions}
-                            //   onChange={(e) => console.log(e)}
                             //   value={
                             //     data.clientDetails
                             //       ? {
@@ -536,7 +535,6 @@ const EditMaterial = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                             isSearchable={true}
                             options={isqcOptions}
                             //   options={asyncOptions}
-                            //   onChange={(e) => console.log(e)}
                             //   value={
                             //     data.clientDetails
                             //       ? {

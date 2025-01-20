@@ -308,7 +308,6 @@ export const poMIN = createAsyncThunk<uomPayload>(
 export const removePart = createAsyncThunk<deletePart>(
   "/purchaseOrder/removePart",
   async (payload) => {
-    // console.log("payload", payload);
 
     try {
       const response = await spigenAxios.delete<deletePart>(
@@ -545,7 +544,6 @@ export const updatePo = createAsyncThunk<uomPayload, payload>(
 export const getOtpForProfile = createAsyncThunk<any, payload>(
   "/profile/send-email-otp",
   async (payload) => {
-    console.log("payload", payload);
 
     try {
       const response = await spigenAxios.post("/profile/send-email-otp", {
@@ -561,7 +559,6 @@ export const getOtpForProfile = createAsyncThunk<any, payload>(
 export const verifyOtpForProfileEmail = createAsyncThunk<any, payload>(
   "/profile/verify-email-otp",
   async (payload) => {
-    console.log("payload", payload);
 
     try {
       const response = await spigenAxios.put("/profile/verify-email-otp", {
@@ -578,7 +575,6 @@ export const verifyOtpForProfileEmail = createAsyncThunk<any, payload>(
 export const updateProfileName = createAsyncThunk<any, payload>(
   "/profile/userUpdate",
   async (payload) => {
-    console.log("payload", payload);
 
     try {
       const response = await spigenAxios.post("/profile/userUpdate", {
