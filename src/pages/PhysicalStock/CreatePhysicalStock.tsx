@@ -142,8 +142,8 @@ const CreatePhysicalStock = () => {
     let payload = {
       boxname: rowData.map((r) => r.boxName),
       componentname: rowData.map((r) => r.boxPartName),
-      c_qty: rowData.map((r) => r.orderQty),
-      update_physicalStock: rowData.map((r) => r.phyqty),
+      c_qty: rowData.map((r) => r.orderQty.toString()),
+      update_physicalStock: rowData.map((r) => r.phyqty.toString()),
       remark: rowData.map((r) => r.remark),
     };
 
@@ -298,7 +298,6 @@ const CreatePhysicalStock = () => {
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-       
             <Reset
               onClick={() => setCallReset(true)}
               disabled={rowData.length == 0}
