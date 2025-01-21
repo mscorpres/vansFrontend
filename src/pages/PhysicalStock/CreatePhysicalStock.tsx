@@ -140,8 +140,8 @@ const CreatePhysicalStock = () => {
     let payload = {
       boxname: rowData.map((r) => r.boxName),
       componentname: rowData.map((r) => r.boxPartName),
-      c_qty: rowData.map((r) => r.orderQty),
-      update_physicalStock: rowData.map((r) => r.phyqty),
+      c_qty: rowData.map((r) => String(r.orderQty)),
+      update_physicalStock: rowData.map((r) => String(r.phyqty)),
       remark: rowData.map((r) => r.remark),
     };
 
