@@ -8,11 +8,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { TruncateCellRenderer } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { Button } from "@mui/material";
 
 interface MaterialListModalProps {
   visible: boolean;
@@ -95,21 +95,25 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
         </div>
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
           <Button
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+            variant="outlined"
+            // className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={onClose}
           >
             Back
           </Button>
           {title.includes("Sales Order") && (
             <Button
-              className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
+              variant="contained"
+              sx={{ backgroundColor: "red", color: "white" }}
+              // className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={handleReject}
             >
               Reject
             </Button>
           )}
           <Button
-            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+            variant="contained"
+            // className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={handleSubmit}
           >
             {submitText}

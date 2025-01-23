@@ -171,12 +171,12 @@ const CreatePhysicalStock = () => {
     //   filter: "agNumberColumnFilter",
     //   width: 90,
     // },
-    {
+    {         
       headerName: "",
       valueGetter: "node.rowIndex + 1",
       cellRenderer: "textInputCellRenderer",
       maxWidth: 100,
-      field: "delete",
+      field: "delete",      
     },
     {
       headerName: " Box Name",

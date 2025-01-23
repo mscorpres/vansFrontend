@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -11,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Form,
   FormControl,
@@ -33,6 +33,8 @@ import { rangePresets } from "@/General";
 import { setDateRange } from "@/features/salesmodule/SalesSlice";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Input } from "@/components/ui/input";
+import { Button } from "@mui/material";
+import { IoMdDownload } from "react-icons/io";
 
 const { RangePicker } = DatePicker;
 const dateFormat = "DD-MM-YYYY";
@@ -192,20 +194,23 @@ const SalesInvoicePage: React.FC = () => {
               />
             )}
             <div className="flex space-x-2 float-end pr-2">
-              {isSearchPerformed && ( // Only show the download button if search is performed
-                <Button
-                  type="button"
-                  onClick={onBtExport}
-                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                >
-                  <Download />
-                </Button>
-              )}
               <Button
+                variant="outlined"
+                type="button"
+                disabled={rowData.length == 0}
+                onClick={onBtExport}
+                // className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              >
+                <IoMdDownload size={20} />
+              </Button>
+              {/* ) */}
+              <Button
+                variant="contained"
                 type="submit"
+                startIcon={<SearchIcon />}
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               >
-                Submit
+                search
               </Button>
             </div>
           </form>

@@ -344,8 +344,9 @@ const TransferBox = () => {
           />
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
+              sx={{ ml: 1, color: "red" }}
               startIcon={<Refresh />}
-              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px]"
+              className="rounded-md shadow  shadow-slate-500 max-w-max px-[30px] "
               onClick={() => setCallReset(true)}
             >
               Reset

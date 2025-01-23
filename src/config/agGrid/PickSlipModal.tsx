@@ -8,10 +8,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import { TruncateCellRenderer } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import BoxesListSheet from "@/config/agGrid/shipmentModule/BoxesListSheet";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -20,6 +20,7 @@ import {
   stockOut,
 } from "@/features/salesmodule/salesShipmentSlice";
 import { toast } from "@/components/ui/use-toast";
+import { Button } from "@mui/material";
 
 interface PickSlipModalProps {
   visible: boolean;
@@ -270,13 +271,16 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
 
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
           <Button
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+            startIcon={<KeyboardBackspaceIcon />}
+            variant="outlined"
+            className="rounded-md shadow text-white-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={onClose}
           >
             Back
           </Button>
           <Button
-            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+            variant="contained"
+            // className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={onSubmit}
           >
             Pick Slip & Material Out

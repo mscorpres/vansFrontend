@@ -15,7 +15,7 @@ import { AppDispatch } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 
 interface Props {
@@ -87,20 +87,21 @@ const POCancel: React.FC<Props> = ({
               Write <span className="font-[600] text-red-800">cancel</span>{" "}
               inside input box
             </Label>
-            <Input
-              className={InputStyle}
-              value={cancelInput}
-              onChange={(e) => setCancelInput(e.target.value)}
-            />
           </div>
-          <div>
+          <TextField
+            // className={InputStyle}
+            value={cancelInput}
+            onChange={(e) => setCancelInput(e.target.value)}
+          />
+          {/* <div>
             <Label className={LableStyle}>Remark</Label>
-            <Textarea
-              className={InputStyle}
-              value={remarkDescription == false ? "" : remarkDescription}
-              onChange={(e) => setRemarkDescription(e.target.value)}
-            />
-          </div>
+          </div> */}
+          <TextField
+            label={"Remark"}
+            // className={InputStyle}
+            value={remarkDescription == false ? "" : remarkDescription}
+            onChange={(e) => setRemarkDescription(e.target.value)}
+          />
         </div>
         <div className="flex items-center gap-[10px] justify-end mt-[10px]">
           <Button

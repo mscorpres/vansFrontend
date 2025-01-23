@@ -8,7 +8,8 @@ import {
 import { ColDef, RowSelectionOptions } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import { Button } from "@/components/ui/button";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { Button } from "@mui/material";
 
 const BoxesListSheet = ({ open, close, data, onSelect, loading }: any) => {
   const [selectedRows, setSelectedRows] = useState<any[]>([]); // Track selected rows (boxes with qty)
@@ -132,13 +133,16 @@ const BoxesListSheet = ({ open, close, data, onSelect, loading }: any) => {
 
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+              variant="outlined"
+              // className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={close}
+              startIcon={<KeyboardBackspaceIcon />}
             >
               Back
             </Button>
             <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+              variant="contained"
+              // className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={handleOkClose}
             >
               OK & Close

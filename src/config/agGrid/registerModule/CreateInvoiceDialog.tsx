@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Form, Input } from "antd";
 import { FormInstance } from "antd/lib/form";
 import {
   Dialog,
@@ -7,7 +7,9 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"; // Ensure this path is correct
+import { Button } from "@mui/material";
 
+import CheckIcon from "@mui/icons-material/Check";
 interface CreateInvoiceDialogProps {
   isDialogVisible: boolean;
   handleOk: () => void;
@@ -54,13 +56,18 @@ export function CreateInvoiceDialog({
               </Form.Item>
             </Form>
             <DialogFooter>
-              <Button type="default" onClick={handleCancel} className="mr-2">
+              <Button
+                variant="outlined"
+                onClick={handleCancel}
+                className="mr-2"
+              >
                 Cancel
               </Button>
               <Button
-                type="primary"
+                startIcon={<CheckIcon />}
+                variant="contained"
                 onClick={handleOk}
-                className="bg-teal-500 hover:bg-teal-600 text-white"
+                // className="bg-teal-500 hover:bg-teal-600 text-white"
               >
                 Confirm
               </Button>

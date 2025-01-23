@@ -109,7 +109,7 @@ const CreateInward: React.FC<Props> = ({
         vendorname: values.label,
         panno: values.pan,
         cinno: values.cin,
-        payment_terms: data.paymentTerms,
+        payment_terms: values.paymentTerm,
       },
       branch: {
         branch: values.label,
@@ -123,7 +123,6 @@ const CreateInward: React.FC<Props> = ({
         gstin: values.gstin,
       },
     };
-
     // return;
 
     const response = await execFun(() => vendoradd(p), "fetch");
@@ -591,14 +590,6 @@ const CreateInward: React.FC<Props> = ({
                     name="address"
                     placeholder="Address"
                     label={"Address"}
-                  />
-                </Form.Item>
-                <Form.Item name="paymentTerms" rules={rules.vendorGst}>
-                  <MuiInput
-                    form={forms}
-                    name="paymentTerms"
-                    placeholder="paymentTerms"
-                    label={"paymentTerms"}
                   />
                 </Form.Item>
               </div>

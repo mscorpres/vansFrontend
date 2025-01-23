@@ -77,7 +77,6 @@ const ViewPhysicalStock = () => {
       headerName: "ID",
       field: "id",
       filter: "agNumberColumnFilter",
-      cellRenderer: CopyCellRenderer,
       width: 90,
     },
     {

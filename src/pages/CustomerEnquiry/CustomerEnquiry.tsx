@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
 import { InputStyle } from "@/constants/themeContants";
 import { Button } from "@mui/material";
+import MuiInput from "@/components/ui/MuiInput";
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -205,18 +206,18 @@ const CustomerEnquiry = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       <div className="bg-[#fff] ">
-         
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
         <div className="p-[10px] justify-center">
           <Form form={form} layout="vertical">
-            <Form.Item name="search" label="Search">
-              <Input
-                className={InputStyle}
-                placeholder="Enter Search"
-                // {...field}
+            <Form.Item name="search">
+              <MuiInput
+                form={form}
+                name="search"
+                placeholder="Search"
+                label={"Search"}
               />
             </Form.Item>
           </Form>
@@ -232,7 +233,7 @@ const CustomerEnquiry = () => {
               disabled={rowData.length == 0}
             >
               <IoMdDownload size={20} />
-            </Button> 
+            </Button>
             <Button
               variant="contained"
               type="submit"
@@ -252,7 +253,6 @@ const CustomerEnquiry = () => {
         </div>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-50px)]">
-         
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
           //   loadingCellRenderer={loadingCellRenderer}

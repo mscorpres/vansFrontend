@@ -141,6 +141,7 @@ const PrintPickSlip: React.FC = () => {
       field: "transaction",
       headerName: "Transaction",
       flex: 1,
+      cellRenderer: CopyCellRenderer,
       filter: "agDateColumnFilter",
       filterParams: {
         floatingFilterComponentParams: {

@@ -41,6 +41,7 @@ import { createSalesFormSchema } from "@/schema/salesorder/createsalesordeschema
 import { stateOptions } from "@/General";
 import { DatePicker, Space } from "antd";
 import { toast } from "@/components/ui/use-toast";
+import MuiInput2 from "../ui/MuiInput2";
 interface Props {
   setTab: Dispatch<SetStateAction<string>>;
   setPayloadData: Dispatch<SetStateAction<any>>;
@@ -191,7 +192,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 styles={customStyles}
                                 components={{ DropdownIndicator }}
                                 placeholder="Branch"
-                                className="border-0 basic-single"
+                                className="border-0 basic-single  z-20 relative"
                                 classNamePrefix="select border-0"
                                 isDisabled={false}
                                 isClearable={true}
@@ -230,13 +231,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="billTo.pincode"
+                                form={form}
                                 placeholder="PIN Code"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="PIN Code"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -254,13 +258,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="billTo.gst"
+                                form={form}
                                 placeholder="GST / UIN"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="GST / UIN"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -320,13 +327,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                             </span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              className={InputStyle}
+                            <MuiInput2
+                              name="billTo.address1"
+                              form={form}
                               placeholder="Address Line 1"
-                              {...field}
+                              fullWidth={true}
+                              control={form.control} // Pass control here
+                              label="Address Line 1"
                             />
                           </FormControl>
-                          <FormMessage />
+                          {/* <FormMessage /> */}
                         </FormItem>
                       )}
                     />
@@ -346,13 +356,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                             </span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              className={InputStyle}
+                            <MuiInput2
+                              name="billTo.address2"
+                              form={form}
                               placeholder="Address Line 2"
-                              {...field}
+                              fullWidth={true}
+                              control={form.control} // Pass control here
+                              label="Address Line 2"
                             />
                           </FormControl>
-                          <FormMessage />
+                          {/* <FormMessage /> */}
                         </FormItem>
                       )}
                     />
@@ -384,13 +397,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="shipTo.company"
+                                form={form}
                                 placeholder="Company"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Company"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -408,13 +424,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="shipTo.panno"
+                                form={form}
                                 placeholder="Pan No."
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Pan No."
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -432,13 +451,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="shipTo.gst"
+                                form={form}
                                 placeholder="GSTIN / UIN"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="GSTIN / UIN"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -497,13 +519,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="shipTo.pincode"
+                                form={form}
                                 placeholder="Pincode"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Pincode"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -522,13 +547,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                             </span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              className={InputStyle}
+                            <MuiInput2
+                              name="shipTo.address1"
+                              form={form}
                               placeholder="Address Line 1"
-                              {...field}
+                              fullWidth={true}
+                              control={form.control} // Pass control here
+                              label="Address Line 1"
                             />
                           </FormControl>
-                          <FormMessage />
+                          {/* <FormMessage /> */}
                         </FormItem>
                       )}
                     />
@@ -546,13 +574,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                             </span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              className={InputStyle}
+                            <MuiInput2
+                              name="shipTo.address2"
+                              form={form}
                               placeholder="Address Line 2"
-                              {...field}
+                              fullWidth={true}
+                              control={form.control} // Pass control here
+                              label="Address Line 2"
                             />
                           </FormControl>
-                          <FormMessage />
+                          {/* <FormMessage /> */}
                         </FormItem>
                       )}
                     />
@@ -583,13 +614,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="po_number"
+                                form={form}
                                 placeholder="PO Number"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="PO Number"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -649,13 +683,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="reference_no"
+                                form={form}
                                 placeholder="Reference Number"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Reference Number"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -757,14 +794,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="currency.exchange_rate"
+                                form={form}
                                 placeholder="Exchange Rate"
-                                min={1}
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Exchange Rate"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -821,13 +860,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               Supply City
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="supply_city"
+                                form={form}
                                 placeholder="Supply City"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Supply City"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -842,13 +884,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               Other Ref
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="other_ref"
+                                form={form}
                                 placeholder="Other Ref"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Other Ref"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -863,13 +908,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               Terms of Delivery
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="terms_of_delivery"
+                                form={form}
                                 placeholder="Terms of Delivery"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Terms of Delivery"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -884,13 +932,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               Terms and Conditions
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="termscondition"
+                                form={form}
                                 placeholder="Terms and Conditions"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Terms and Conditions"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -905,13 +956,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               Quotation
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="quotationdetail"
+                                form={form}
                                 placeholder="Quotation"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Quotation"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -926,13 +980,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               Payment Terms
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="paymentterms"
+                                form={form}
                                 placeholder="Payment Terms"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Payment Terms"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -947,13 +1004,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               Project
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="project_name"
+                                form={form}
                                 placeholder="Project"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Project"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -968,13 +1028,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               Comments (If any)
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="so_comment"
+                                form={form}
                                 placeholder="Comments"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Comments"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -1084,13 +1147,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="billFrom.pan"
+                                form={form}
                                 placeholder="Pan No."
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="Pan No."
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -1108,13 +1174,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
+                              <MuiInput2
+                                name="billFrom.gstin"
+                                form={form}
                                 placeholder="GSTIN / UIN"
-                                {...field}
+                                fullWidth={true}
+                                control={form.control} // Pass control here
+                                label="GSTIN / UIN"
                               />
                             </FormControl>
-                            <FormMessage />
+                            {/* <FormMessage /> */}
                           </FormItem>
                         )}
                       />
@@ -1133,13 +1202,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                             </span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              className={InputStyle}
+                            <MuiInput2
+                              name="billFrom.address1"
+                              form={form}
                               placeholder="Address Line 1"
-                              {...field}
+                              fullWidth={true}
+                              control={form.control} // Pass control here
+                              label="Address Line 1"
                             />
                           </FormControl>
-                          <FormMessage />
+                          {/* <FormMessage /> */}
                         </FormItem>
                       )}
                     />
@@ -1159,13 +1231,16 @@ const CreateSalesOrder: React.FC<Props> = ({
                             </span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              className={InputStyle}
+                            <MuiInput2
+                              name="billFrom.address2"
+                              form={form}
                               placeholder="Address Line 2"
-                              {...field}
+                              fullWidth={true}
+                              control={form.control} // Pass control here
+                              label="Address Line 2"
                             />
                           </FormControl>
-                          <FormMessage />
+                          {/* <FormMessage /> */}
                         </FormItem>
                       )}
                     />

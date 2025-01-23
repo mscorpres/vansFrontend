@@ -9,7 +9,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
+import SearchIcon from "@mui/icons-material/Search";
 import { Download, Filter } from "lucide-react";
 import styled from "styled-components";
 import { columnDefs } from "@/config/agGrid/SalesOrderShippingTableColumn";
@@ -41,6 +41,8 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { fetchSalesOrderShipmentList } from "@/features/salesmodule/salesShipmentSlice";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { Button } from "@mui/material";
+import { IoMdDownload } from "react-icons/io";
 
 const { RangePicker } = DatePicker;
 const dateFormat = "DD/MM/YYYY";
@@ -208,20 +210,23 @@ const SalesShipmentPage: React.FC = () => {
               />
             )}
             <div className="flex space-x-2 float-end pr-2">
-              {isSearchPerformed && ( // Only show the download button if search is performed
-                <Button
-                  type="button"
-                  onClick={onBtExport}
-                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                >
-                  <Download />
-                </Button>
-              )}
               <Button
+                variant="outlined"
+                type="button"
+                disabled={rowData.length == 0}
+                onClick={onBtExport}
+                // className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              >
+                <IoMdDownload size={20} />
+              </Button>
+              {/* ) */}
+              <Button
+                variant="contained"
                 type="submit"
+                startIcon={<SearchIcon />}
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               >
-                Submit
+                search
               </Button>
             </div>
           </form>

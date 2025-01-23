@@ -198,10 +198,7 @@ export const createFgOut = createAsyncThunk<any>(
 
       return response;
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error("An unknown error occurred");
+      return error;
     }
   }
 );

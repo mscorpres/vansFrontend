@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"; // Ensure this path is correct
+import CheckIcon from "@mui/icons-material/Check";
 import {
   Select,
   SelectTrigger,
@@ -14,7 +15,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"; // Adjust import based on your component structure
-import { Button } from "@/components/ui/button";
+import { Button } from "@mui/material";
 
 interface ConfirmCancellationDialogProps {
   isDialogVisible: boolean;
@@ -51,15 +52,14 @@ export function ConfirmCancellationDialog({
   row,
   form,
   module,
-  loading=false,
+  loading = false,
   type,
   setType,
 }: ConfirmCancellationDialogProps) {
-
   return (
     <Dialog open={isDialogVisible} onOpenChange={handleCancel}>
       <DialogContent
-        className="min-w-[800px]"
+        className="min-w-[700px]"
         onInteractOutside={(e) => e.preventDefault()}
       >
         {loading ? (
@@ -98,11 +98,13 @@ export function ConfirmCancellationDialog({
                           <SelectValue placeholder="Select a reason" />
                         </SelectTrigger>
                         <SelectContent>
-                          {(module === "E-Invoice" ? types : eWayBillTypes).map((item) => (
-                            <SelectItem key={item.value} value={item.value}>
-                              {item.label}
-                            </SelectItem>
-                          ))}
+                          {(module === "E-Invoice" ? types : eWayBillTypes).map(
+                            (item) => (
+                              <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            )
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -124,7 +126,7 @@ export function ConfirmCancellationDialog({
               )}
               {module !== "E-Invoice" && (
                 <Form.Item
-                  name="remark" 
+                  name="remark"
                   label="Remarks"
                   rules={[{ required: true, message: "Please enter remarks!" }]}
                 >
@@ -137,8 +139,7 @@ export function ConfirmCancellationDialog({
               )}
             </Form>
             <DialogFooter>
-              <Button onClick={handleCancel} className="mr-2" variant="outline" >
-                      
+              {/* <Button onClick={handleCancel} className="mr-2" variant="outline">
                 Cancel
               </Button>
               <Button
@@ -147,6 +148,22 @@ export function ConfirmCancellationDialog({
                 // className="bg-teal-500 hover:bg-teal-600"
               >
                 Confirm
+              </Button>{" "} */}
+              <Button
+                className="mr-2"
+                variant="outlined"
+                onClick={handleCancel}
+                className="shadow-slate-300"
+              >
+                No
+              </Button>
+              <Button
+                startIcon={<CheckIcon />}
+                variant="contained"
+                onClick={handleOk}
+                // disabled={!isCancelInputValid} // Disable the button if the input is not "cancel"
+              >
+                Yes
               </Button>
             </DialogFooter>
           </>
