@@ -1241,7 +1241,7 @@ const MasterCustomerPage: React.FC = () => {
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              options={countryList}
+                              options={stateList}
                               onChange={(value: any) =>
                                 form.setFieldValue("shipState", value)
                               }

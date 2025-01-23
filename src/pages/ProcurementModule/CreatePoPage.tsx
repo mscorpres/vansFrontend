@@ -158,15 +158,15 @@ const CreatePoPage: React.FC<Props> = ({
     // return valuesOfFrom;
   };
 
-  const addVendor = async () => {
+  const addVendor = async (data) => {
     const values = forms.getFieldsValue();
 
     let p = {
       vendor: {
-        vendorname: data.label,
-        panno: data.pan,
-        cinno: data.cin,
-        payment_terms: data.paymentTerms,
+        vendorname: values.label,
+        panno: values.pan,
+        cinno: values.cin,
+        payment_terms: values.paymentTerms,
       },
       branch: {
         branch: values.label,
@@ -903,7 +903,7 @@ const CreatePoPage: React.FC<Props> = ({
                     />
                   </Form.Item>
                   <Form.Item
-                    name="pan"
+                    name="paymentTerms"
                     className=""
                     // rules={rules.vendorGst}
                   >

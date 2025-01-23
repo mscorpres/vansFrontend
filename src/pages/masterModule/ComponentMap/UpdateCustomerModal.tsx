@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Form, Row } from "antd";
 import { Input } from "@/components/ui/input";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +16,7 @@ import {
 import { updateMapCustomer } from "@/features/client/clientSlice";
 import { componentMapListCustomers } from "@/components/shared/Api/masterApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import { Button } from "@mui/material";
 
 interface Props {
   open: boolean;
@@ -141,12 +141,13 @@ const UpdateCustomerModal: React.FC<Props> = (props: Props) => {
             </div>
             <Row justify="space-between">
               <Button
+                variant="contained"
                 type="submit"
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
                 onClick={() => onSubmit(form.getFieldsValue())}
               >
                 Submit
-              </Button>{" "}
+              </Button>
             </Row>
           </Form>
         </div>
