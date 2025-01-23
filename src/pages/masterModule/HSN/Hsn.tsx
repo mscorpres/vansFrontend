@@ -170,7 +170,7 @@ const Hsn = () => {
     },
     {
       headerName: "HSN/SAC Code",
-      field: "hsnCode",
+      field: "hsnSearch",
       editable: false,
       flex: 1,
       cellRenderer: "textInputCellRenderer",
@@ -225,11 +225,11 @@ const Hsn = () => {
       <div className="h-[calc(100vh-80px)] bg-white ">
         <div className="flex items-center w-full gap-[20px] h-[50px] px-[10px] justify-between">
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={() => {
               addNewRow();
             }}
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+            className="rounded-md shadow bshadow-slate-500 max-w-max"
           >
             <Plus className="font-[600]" /> Add Item
           </Button>
