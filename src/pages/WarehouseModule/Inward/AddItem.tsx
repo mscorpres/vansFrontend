@@ -227,7 +227,9 @@ const AddPO: React.FC<Props> = ({
       costcenter: formVal.costCenter.value,
       currency: ["364907247"],
       exchange: ["1"],
-      component: arr.map((r) => r?.procurementMaterial),
+      component: arr.map(
+        (r) => r?.procurementMaterial.value ?? r?.procurementMaterial.valu
+      ),
       qty: arr.map((r) => r.orderQty),
       rate: arr.map((r) => r.rate),
       hsncode: arr.map((r) => r.hsnCode),
