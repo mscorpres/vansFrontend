@@ -225,9 +225,11 @@ const AddPO: React.FC<Props> = ({
       vendorbranch: formVal.branch.value,
       address: formVal.address,
       costcenter: formVal.costCenter.value,
-      currency: ["364907247"],
-      exchange: ["1"],
-      component: arr.map((r) => r?.procurementMaterial),
+      currency: formVal?.currency?.value,
+      exchange: formVal?.exchange_rate,
+      component: arr.map(
+        (r) => r?.procurementMaterial?.value ?? r?.procurementMaterial
+      ),
       qty: arr.map((r) => r.orderQty),
       rate: arr.map((r) => r.rate),
       hsncode: arr.map((r) => r.hsnCode),
@@ -240,6 +242,7 @@ const AddPO: React.FC<Props> = ({
       remark: arr.map((r) => r.remark),
       attachment: attachmentFile,
     };
+
     dispatch(minTransaction(payload)).then((res) => {
       if (res?.payload?.success) {
         toast({
