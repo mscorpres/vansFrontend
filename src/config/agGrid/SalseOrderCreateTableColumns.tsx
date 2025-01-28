@@ -137,6 +137,14 @@ export const columnDefs = [
     minWidth: 200,
   },
   {
+    headerName: "Due Date",
+    field: "dueDate",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
     headerName: "Remark",
     field: "remark",
     editable: false,

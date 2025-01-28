@@ -339,7 +339,7 @@ const CreatePoPage: React.FC<Props> = ({
   }, [vendorPODetails]);
   useEffect(() => {
     if (selBilling) {
-    dispatch(fetchBillingListDetails({ billing_code: selBilling?.value }));
+      dispatch(fetchBillingListDetails({ billing_code: selBilling?.value }));
     } else {
       form.setFieldValue("pan", "");
       form.setFieldValue("billgst", "");
@@ -680,7 +680,7 @@ const CreatePoPage: React.FC<Props> = ({
                     />
                   </Form.Item>
 
-                  <Form.Item
+                  {/* <Form.Item
                     name="duedate"
                     label="Due Date"
                     className=""
@@ -708,7 +708,7 @@ const CreatePoPage: React.FC<Props> = ({
                         );
                       }}
                     />
-                  </Form.Item>
+                  </Form.Item> */}
                 </div>
               </CardContent>
             </Card>

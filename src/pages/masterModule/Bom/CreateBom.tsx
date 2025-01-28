@@ -17,6 +17,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { RowData } from "@/data";
 import { ColDef } from "ag-grid-community";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 
 const CreateBom = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -112,6 +113,7 @@ const CreateBom = () => {
       headerName: "BOM Name & SKU",
       field: "subject_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 200,
     },
     {
@@ -122,6 +124,7 @@ const CreateBom = () => {
     },
     {
       headerName: "Customer Code",
+      cellRenderer: CopyCellRenderer,
       field: "client_code",
       filter: "agTextColumnFilter",
       width: 250,
