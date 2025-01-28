@@ -168,6 +168,7 @@ const AddSalesOrder = ({
     sgst_rate: rowData?.map((component: RowData) => component.sgst || 0),
     igst_rate: rowData?.map((component: RowData) => component.igst || 0),
     updaterow: rowData?.map((component: RowData) => component.updateid || 0),
+    due_date: rowData?.map((component: RowData) => component.dueDate),
   };
   const soId = (params.id as string)?.replace(/_/g, "/");
 
@@ -178,6 +179,8 @@ const AddSalesOrder = ({
       header: { ...form.getValues(), so_id: soId },
       itemDetails: materials,
     };
+    // console.log("payloadData2", payloadData2);
+
     if (window.location.pathname.includes("update")) {
       dispatch(updateSalesOrderRequest(payloadData2)).then((response: any) => {
         if (response.payload.success) {

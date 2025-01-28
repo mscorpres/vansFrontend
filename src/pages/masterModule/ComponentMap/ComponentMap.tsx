@@ -215,6 +215,7 @@ const columnDefs: ColDef<rowData>[] = [
     headerName: "Part Code",
     field: "part_no",
     filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
     width: 120,
   },
   {
