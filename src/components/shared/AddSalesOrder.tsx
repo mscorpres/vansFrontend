@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Plus, Upload } from "lucide-react";
 import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
@@ -35,6 +34,12 @@ const AddSalesOrder = ({
   rowData,
   setBackCreate,
   getCostCenter,
+  bilStateCode,
+  setBillStateCode,
+  shipStateCode,
+  setShipStateCode,
+  isImport,
+  setIsImport,
 }: {
   setTab: React.Dispatch<React.SetStateAction<string>>;
   payloadData: any;
@@ -188,6 +193,9 @@ const AddSalesOrder = ({
             description:
               response.payload.message || "Sales Order created successfully",
           });
+          setBillStateCode("");
+          setShipStateCode("");
+          setIsImport("");
           form.reset(); // Reset the form
           setRowData([]);
           navigate("/sales/order/register");
@@ -201,6 +209,9 @@ const AddSalesOrder = ({
             description:
               response.payload.message || "Sales Order updated successfully",
           });
+          setBillStateCode("");
+          setShipStateCode("");
+          setIsImport("");
           form.reset(); // Reset the form
           setRowData([]);
           navigate("/sales/order/register");

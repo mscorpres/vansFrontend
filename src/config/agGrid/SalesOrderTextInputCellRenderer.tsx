@@ -88,6 +88,10 @@ const gstType = [
     value: "L",
     label: "INTRA STATE",
   },
+  {
+    value: "0",
+    label: "Import",
+  },
 ];
 const SalesOrderTextInputCellRenderer = (props: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -182,7 +186,15 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       data.cgst = cgst.toFixed(2);
       data.sgst = sgst.toFixed(2);
       data.igst = igst.toFixed(2);
-    }
+    }   else if (data.gstType === "0") {
+      // Export
+      cgst = 0;
+      sgst = 0;
+      igst = 0;
+      data.cgst = cgst.toFixed(2);
+      data.sgst = sgst.toFixed(2);
+      data.igst = igst.toFixed(2);
+      data["gstRate"] = "0";
     // setDisplayText(text);
     data[colDef.field] = newValue; // update the data
     api.refreshCells({ rowNodes: [props.node], columns: [column] }); // refresh the cell to show the new value
@@ -230,7 +242,16 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
         igst = calculation;
         cgst = 0;
         sgst = 0;
-      }
+     } else if (data.gstType === "0") {
+        // Export
+        cgst = 0;
+        sgst = 0;
+        igst = 0;
+        data.cgst = cgst.toFixed(2);
+        data.sgst = sgst.toFixed(2);
+        data.igst = igst.toFixed(2);
+        data["gstRate"] = "0"
+     }
 
       // Update the GST fields
       data["cgst"] = cgst.toFixed(2);

@@ -31,6 +31,10 @@ const CreateSalesOrderPage = () => {
   const [backCreate, setBackCreate] = useState(false);
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [derivedType, setDerivedType] = useState<any>(null);
+  const [codeType, setCodeType] = useState("");
+  const [bilStateCode, setBillStateCode] = useState("");
+  const [shipStateCode, setShipStateCode] = useState("");
+  const [isImport, setIsImport] = useState("");
   const { updateData, loading, currency } = useSelector(
     (state: RootState) => state.createSalesOrder
   );
@@ -114,10 +118,12 @@ const CreateSalesOrderPage = () => {
       form.setValue("costcenter_name", header.costcenter?.name);
       form.setValue("billIdName", header.bill_from?.billing?.name);
       form.setValue("billFrom.billFromId", header?.bill_from?.billing?.code);
-      if (header?.customer?.state?.code == header?.bill_from?.state?.code) {
-        setDerivedType("L");
+      setShipStateCode(header?.bill_from?.state?.code);
+      setBillStateCode(header?.customer?.state?.code);
+      if (header?.customer?.state?.code == 100) {
+        setIsImport("Import");
       } else {
-        setDerivedType("I");
+        setIsImport("");
       }
 
       const data: RowData[] = updateData?.items?.map((material: any) => ({
@@ -132,7 +138,7 @@ const CreateSalesOrderPage = () => {
         sgst: parseFloat(material.sgstRate) || 0,
         igst: parseFloat(material.igstRate) || 0,
         currency: material.currency || "364907247",
-        gstType: material.gst_type || "I",
+        gstType: material.gst_type[0]?.id,
         dueDate: material.due_date || "",
         hsnCode: material.hsnCode || "",
         remark: material.itemRemark || "",
@@ -184,6 +190,12 @@ const CreateSalesOrderPage = () => {
           shouldValidate: true,
           shouldDirty: true,
         });
+        setBillStateCode(billingAddress.state?.stateCode);
+        if (billingAddress.state?.stateCode == 100) {
+          setIsImport("Import");
+        } else {
+          setIsImport("");
+        }
         form.setValue("billTo.pincode", billingAddress.pinCode, {
           shouldValidate: true,
           shouldDirty: true,
@@ -275,17 +287,26 @@ const CreateSalesOrderPage = () => {
         shouldValidate: true,
         shouldDirty: true,
       });
-      if (form.getValues("billTo.state") == form.getValues("billFrom.state")) {
-        setDerivedType("L");
-      } else {
-        setDerivedType("I");
-      }
+      setShipStateCode(data.statecode);
     });
   };
 
   const searchCustomerList = (e: any) => {
     const response = dispatch(fetchCustomerDetail({ search: e }));
   };
+  useEffect(() => {
+    if (bilStateCode && shipStateCode) {
+      if (isImport == "Import") {
+        setDerivedType("0");
+      } else {
+        if (Number(shipStateCode) == Number(bilStateCode)) {
+          setDerivedType("L");
+        } else {
+          setDerivedType("I");
+        }
+      }
+    }
+  }, [shipStateCode, bilStateCode, isImport]);
 
   return (
     <div>
@@ -305,6 +326,12 @@ const CreateSalesOrderPage = () => {
             searchCustomerList={searchCustomerList}
             backCreate={backCreate}
             getCostCenter={getCostCenter}
+            bilStateCode={bilStateCode}
+            setBillStateCode={setBillStateCode}
+            shipStateCode={shipStateCode}
+            setShipStateCode={setShipStateCode}
+            isImport={isImport}
+            setIsImport={setIsImport}
           />
         </TabsContent>
         <TabsContent value="add" className="p-0 m-0">
@@ -317,6 +344,12 @@ const CreateSalesOrderPage = () => {
             form={form}
             setBackCreate={setBackCreate}
             getCostCenter={getCostCenter}
+            bilStateCode={bilStateCode}
+            setBillStateCode={setBillStateCode}
+            shipStateCode={shipStateCode}
+            setShipStateCode={setShipStateCode}
+            isImport={isImport}
+            setIsImport={setIsImport}
           />
         </TabsContent>
       </Tabs>
