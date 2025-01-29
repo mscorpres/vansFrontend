@@ -169,6 +169,7 @@ const AddSalesOrder = ({
     sgst_rate: rowData?.map((component: RowData) => component.sgst || 0),
     igst_rate: rowData?.map((component: RowData) => component.igst || 0),
     updaterow: rowData?.map((component: RowData) => component.updateid || 0),
+    due_date: rowData?.map((component: RowData) => component.dueDate),
   };
   const soId = (params.id as string)?.replace(/_/g, "/");
 

@@ -18,6 +18,7 @@ import { ColDef } from "ag-grid-community";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Button } from "@mui/material";
 import { Search } from "@/components/shared/Buttons";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 
 const CreateBom = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -113,6 +114,7 @@ const CreateBom = () => {
       headerName: "BOM Name & SKU",
       field: "subject_name",
       filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
       width: 200,
     },
     {
@@ -124,6 +126,7 @@ const CreateBom = () => {
     {
       headerName: "Customer Code",
       field: "client_code",
+      cellRenderer: CopyCellRenderer,
       filter: "agTextColumnFilter",
       width: 250,
     },

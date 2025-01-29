@@ -374,7 +374,7 @@ export const columnDefs: ColDef<any>[] = [
   },
   {
     headerName: "Approved By",
-    field: "approve_by",
+    field: "approveBy",
     filter: "agTextColumnFilter",
   },
   {
@@ -395,8 +395,8 @@ const materialListColumnDefs: ColDef[] = [
   {
     headerName: "Item",
     field: "item",
+    cellRenderer: CopyCellRenderer,
     width: 200,
-    cellRenderer: "truncateCellRenderer",
   },
   {
     headerName: "Item Name",
@@ -407,14 +407,18 @@ const materialListColumnDefs: ColDef[] = [
   {
     headerName: "Item Specification",
     field: "itemSpecification",
-    cellRenderer: "truncateCellRenderer",
+    cellRenderer: CopyCellRenderer,
   },
-  { headerName: "Part No.", field: "itemPartNo" },
+  {
+    headerName: "Part No.",
+    field: "itemPartNo",
+    cellRenderer: CopyCellRenderer,
+  },
   {
     headerName: "Customer Part No.",
     field: "customer_part_no",
     width: 200,
-    cellRenderer: "truncateCellRenderer",
+    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Due Date",

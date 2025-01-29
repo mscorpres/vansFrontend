@@ -124,7 +124,7 @@ const AddPO: React.FC<Props> = ({
       cgst: 9,
       sgst: 9,
       igst: 0,
-      dueDate: "2024-07-25",
+      dueDate: "",
       hsnCode: "",
       isNew: true,
     };
@@ -206,7 +206,7 @@ const AddPO: React.FC<Props> = ({
       currency: formVal?.currency.value,
       exchange:
         formVal?.currency.value == "364907247" ? "1" : formVal?.exchange_rate,
-      duedate: exportDatepace(formVal?.duedate),
+      // duedate: exportDatepace(formVal?.duedate),
       // original_po: null,
       // currency: arr.map((r: any) => r.currency),
       // exchange: arr.map((r: any) => r.exchange),
@@ -215,6 +215,7 @@ const AddPO: React.FC<Props> = ({
       ),
       qty: arr.map((r: any) => r.orderQty),
       rate: arr.map((r: any) => r.rate),
+      duedate: arr.map((r: any) => r.dueDate),
       // duedate: arr.map((r: any) => formattedDate(r.dueDate)),
       hsncode: arr.map((r: any) => r.hsnCode),
       gsttype: arr.map((r: any) => r.gstTypeForPO),
@@ -244,7 +245,7 @@ const AddPO: React.FC<Props> = ({
           pocomment: formVal.comment,
           pocreatetype: formVal?.poType.value ?? formVal?.poType,
           poid: params.id.replaceAll("_", "/"),
-          date: exportDatepace(formVal?.duedate),
+          // date: exportDatepace(formVal?.duedate),
           // currency: arr.map((r: any) => r.currency),
           // exchange_rate: arr.map((r: any) => r.exchange),
           currency: formVal?.currency.value,
@@ -256,6 +257,7 @@ const AddPO: React.FC<Props> = ({
 
           qty: arr.map((r: any) => r.orderQty),
           rate: arr.map((r: any) => r.rate),
+          duedate: arr.map((r: any) => r.dueDate),
           // date: arr.map((r: any) => r.dueDate),
           hsn: arr.map((r: any) => r.hsnCode),
           gsttype: arr.map((r: any) => r.gstTypeForPO),
@@ -475,6 +477,14 @@ const AddPO: React.FC<Props> = ({
     //   cellRenderer: "textInputCellRenderer",
     //   minWidth: 200,
     // },
+    {
+      headerName: "Due Date",
+      field: "dueDate",
+      editable: false,
+      flex: 1,
+      cellRenderer: "textInputCellRenderer",
+      minWidth: 200,
+    },
     {
       headerName: "HSN Code",
       field: "hsnCode",

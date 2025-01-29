@@ -135,6 +135,9 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     const newValue = value;
     data[colDef.field] = value; // Save ID in the data
     if (colDef.field === "material") {
+      console.log("props", props);
+      console.log("value", value);
+
       dispatch(
         fetchComponentDetailByCode({
           component_code: value,

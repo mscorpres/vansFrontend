@@ -22,15 +22,7 @@ export interface RowData {
   updateid?: string;
 }
 
-
 export const columnDefs = [
-  {
-    headerName: "",
-    valueGetter: "node.rowIndex + 1",
-    cellRenderer: "textInputCellRenderer",
-    maxWidth: 100,
-    field: "delete",
-  },
   {
     headerName: "",
     valueGetter: "node.rowIndex + 1",
@@ -139,6 +131,14 @@ export const columnDefs = [
   {
     headerName: "HSN Code",
     field: "hsnCode",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "Due Date",
+    field: "dueDate",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",

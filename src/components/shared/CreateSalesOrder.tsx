@@ -78,6 +78,32 @@ const CreateSalesOrder: React.FC<Props> = ({
       console.error("Data is null or undefined");
     }
   };
+  const paymentOptions = [
+    // {
+    //   label: "Advance",
+    //   value: "Advance",
+    // },
+    {
+      label: "30 days",
+      value: "30 days",
+    },
+    {
+      label: "100%",
+      value: "100%",
+    },
+    {
+      label: "60 days",
+      value: "60 days",
+    },
+    {
+      label: "90 days",
+      value: "90 days",
+    },
+    {
+      label: "Other",
+      value: "Other",
+    },
+  ];
 
   const customerOptions = [
     {
@@ -679,7 +705,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormLabel className={LableStyle}>
                               Reference Number
                               <span className="pl-1 text-red-500 font-bold">
-                                *
+                                {/* * */}
                               </span>
                             </FormLabel>
                             <FormControl>
@@ -706,7 +732,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                             <FormLabel className={LableStyle}>
                               Reference Date
                               <span className="pl-1 text-red-500 font-bold">
-                                *
+                                {/* * */}
                               </span>
                             </FormLabel>
                             <FormControl>
@@ -808,7 +834,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                         )}
                       />
                     </div>
-                    <div className="w-full">
+                    {/* <div className="w-full">
                       <FormField
                         control={form.control}
                         name="due_date"
@@ -849,7 +875,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                           </FormItem>
                         )}
                       />
-                    </div>
+                    </div> */}
                     <div className="">
                       <FormField
                         control={form.control}
@@ -980,13 +1006,23 @@ const CreateSalesOrder: React.FC<Props> = ({
                               Payment Terms
                             </FormLabel>
                             <FormControl>
-                              <MuiInput2
-                                name="paymentterms"
-                                form={form}
+                              <Select
+                                styles={customStyles}
+                                components={{ DropdownIndicator }}
                                 placeholder="Payment Terms"
-                                fullWidth={true}
-                                control={form.control} // Pass control here
-                                label="Payment Terms"
+                                className="border-0 basic-single"
+                                classNamePrefix="select border-0"
+                                isDisabled={false}
+                                isClearable={true}
+                                isSearchable={true}
+                                options={paymentOptions}
+                                menuPlacement="top"
+                                onChange={(e: any) =>
+                                  form.setValue("paymentterms", e.value, {
+                                    shouldValidate: true,
+                                    shouldDirty: true,
+                                  })
+                                }
                               />
                             </FormControl>
                             {/* <FormMessage /> */}

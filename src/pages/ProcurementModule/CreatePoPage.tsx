@@ -703,7 +703,7 @@ const CreatePoPage: React.FC<Props> = ({
                     />
                   </Form.Item>
 
-                  <Form.Item
+                  {/* <Form.Item
                     name="duedate"
                     // label="Due Date"
                     className=""
@@ -731,7 +731,7 @@ const CreatePoPage: React.FC<Props> = ({
                         );
                       }}
                     />
-                  </Form.Item>
+                  </Form.Item> */}
                 </div>
               </CardContent>
             </Card>

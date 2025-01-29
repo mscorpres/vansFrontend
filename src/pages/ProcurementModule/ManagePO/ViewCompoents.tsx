@@ -15,6 +15,7 @@ import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { minWidth, width } from "@mui/system";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -137,6 +138,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
       field: "po_component",
       headerName: "Component Name/Part No.",
       flex: 1,
+      cellRenderer: CopyCellRenderer,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -146,6 +148,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     },
     {
       field: "vendor_part_codes",
+      cellRenderer: CopyCellRenderer,
       headerName: "	Vendor Component Name / Part No.",
       flex: 2,
       filterParams: {
