@@ -429,6 +429,25 @@ export const printsticker2 = createAsyncThunk<ResponseData, FormData>(
     }
   }
 );
+export const printstickerTransfer = createAsyncThunk<ResponseData, FormData>(
+  "/backend/printTransfersticker", // Action type
+  async (payload: FormData) => {
+    try {
+      // Make sure your axios instance is correctly set up
+      const response = await spigenAxios.post(
+        "/backend/printTransfersticker",
+        payload
+      );
+
+      return response.data; // Return the response data to Redux
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message); // Throw an error if any occurs
+      }
+      throw new Error("An unknown error occurred");
+    }
+  }
+);
 export const fetchPrintPickSetelement = createAsyncThunk<ResponseData>(
   "/minSettle/fetchPrintPickSetelement", // Action type
   async (payload) => {
@@ -1096,6 +1115,18 @@ const storeSlice = createSlice({
         state.aproveStock = action.payload;
       })
       .addCase(printsticker2.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch clients";
+      })
+      .addCase(printstickerTransfer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(printstickerTransfer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.aproveStock = action.payload;
+      })
+      .addCase(printstickerTransfer.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch clients";
       })
