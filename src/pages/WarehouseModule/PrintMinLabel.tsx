@@ -9,7 +9,11 @@ import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { useDispatch, useSelector } from "react-redux";
-import { printsticker2, qrPrint } from "@/features/client/storeSlice";
+import {
+  printsticker2,
+  printstickerTransfer,
+  qrPrint,
+} from "@/features/client/storeSlice";
 import { spigenAxios } from "@/axiosIntercepter";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import Print from "@/assets/Print.jpg";
@@ -72,9 +76,20 @@ function PrintMinLabel() {
       "/backend/getTransferminBox",
       formData
     );
+    if (response.data.status == "success") {
+      let { data } = response;
+      let arr = data.data.map((r) => {
+        return {
+          label: r.loc_in,
+          value: r.loc_in,
+        };
+      });
+      setRowData(arr);
+    }
   };
   const onsubmit = async () => {
     const value = await form.validateFields();
+
     let payload = {
       type: "MIN",
       min_no: selMin.value,
@@ -89,6 +104,29 @@ function PrintMinLabel() {
 
       dispatch(printsticker2(payload)).then((res) => {
         if (res.payload.success) {
+          downloadFunction(
+            res.payload.data.buffer.data,
+            res.payload.data.filename
+          );
+        } else {
+          toast({
+            title: res.payload.message,
+            className: "bg-red-600 text-white items-center",
+          });
+        }
+      });
+    } else if (selType == "Transfer" || selType.value == "Transfer") {
+      let payload = {
+        type: "MIN",
+        min_no: selMin.value,
+        box: value.box.value,
+      };
+
+      // return;
+
+      dispatch(printstickerTransfer(payload)).then((res) => {
+
+        if (res.payload.code == 200) {
           downloadFunction(
             res.payload.data.buffer.data,
             res.payload.data.filename
@@ -121,6 +159,7 @@ function PrintMinLabel() {
       form.setFieldValue("box", "");
     }
   }, [selMin]);
+
   useEffect(() => {
     if (selMin) {
       let payload = {
@@ -136,7 +175,13 @@ function PrintMinLabel() {
         getData(payload);
       }
     }
-  }, [selMin]);
+  }, [selMin, selType]);
+  useEffect(() => {
+    if (selType) {
+      form.setFieldValue("box", "");
+      form.setFieldValue("min", "");
+    }
+  }, [selType]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] overflow-hidden bg-white ">
@@ -221,6 +266,26 @@ function PrintMinLabel() {
                 </>
               ) : (
                 ""
+              )}
+              {selType?.value == "Transfer" && (
+                <Form.Item
+                  className="w-full"
+                  name="box"
+                  rules={[{ required: true }]}
+                >
+                  <Select
+                    styles={customStyles}
+                    components={{ DropdownIndicator }}
+                    placeholder="Select Boxes"
+                    className="border-0 basic-single"
+                    classNamePrefix="select border-0"
+                    isDisabled={false}
+                    isClearable={true}
+                    isSearchable={true}
+                    isMulti={false}
+                    options={rowData}
+                  />
+                </Form.Item>
               )}
             </div>
 
