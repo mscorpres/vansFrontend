@@ -80,8 +80,8 @@ function PrintMinLabel() {
       let { data } = response;
       let arr = data.data.map((r) => {
         return {
-          label: r.loc_in,
-          value: r.loc_in,
+          label: r.loc_in + " - " + r?.component?.label,
+          value: r.component.id,
         };
       });
       setRowData(arr);
@@ -116,16 +116,19 @@ function PrintMinLabel() {
         }
       });
     } else if (selType == "Transfer" || selType.value == "Transfer") {
+      // console.log("value", value.box.label.split(" ")[0]);
+
       let payload = {
-        type: "MIN",
+        type: "TRN",
         min_no: selMin.value,
-        box: value.box.value,
+        box: value.box.label.split(" ")[0],
+        component_id: value.box.value,
       };
+      // console.log("payload", payload);
 
       // return;
 
       dispatch(printstickerTransfer(payload)).then((res) => {
-
         if (res.payload.code == 200) {
           downloadFunction(
             res.payload.data.buffer.data,
@@ -170,6 +173,10 @@ function PrintMinLabel() {
       // formData.append("type", "MIN");
       // formData.append("min_no", selMin.value);
       if (selType.value == "Transfer" || selType == "Transfer") {
+        let payload = {
+          type: "TRN",
+          min_no: selMin.value,
+        };
         getDataBox(payload);
       } else {
         getData(payload);
