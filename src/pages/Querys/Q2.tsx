@@ -429,7 +429,7 @@ const Q2 = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(fetchQueryResults)}
-            className="space-y-6 overflow-hidden p-[10px] h-[500px]"
+            className="space-y-6 overflow-hidden p-[10px] h-[550px]"
           >
             <FormField
               control={form.control}
@@ -484,6 +484,8 @@ const Q2 = () => {
                     <p className="text-[14px]">{stockInfo?.lasttIN}</p>
                     <h3 className="font-[500]">Last Rate: </h3>
                     <p className="text-[14px]">{stockInfo?.lastRate}</p>
+                    <h3 className="font-[500]">Make: </h3>
+                    <p className="text-[14px]">{stockInfo?.cmake}</p>
                   </CardContent>
                 </Card>
               </div>
