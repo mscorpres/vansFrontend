@@ -254,12 +254,15 @@ const PoCreateTemplate = () => {
 
   useEffect(() => {
     dispatch(fetchCurrency());
+    form.setFieldValue("poType", "N");
+    form.setFieldValue("vendorType", "vendor");
   }, []);
   useEffect(() => {
     if (exchangingRate) {
       setRoeIs(exchangingRate);
     }
   }, [exchangingRate]);
+
   return (
     <div>
       <Tabs value={tabvalue} onValueChange={setTabvalue}>

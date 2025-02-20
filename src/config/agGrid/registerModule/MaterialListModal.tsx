@@ -28,6 +28,7 @@ interface MaterialListModalProps {
   submitText: string;
   handleSubmit: () => void;
   handleReject?: () => void;
+  disableStatus?:boolean;
 }
 
 const MaterialListModal: React.FC<MaterialListModalProps> = ({
@@ -41,6 +42,7 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
   submitText,
   handleSubmit,
   handleReject,
+  disableStatus,
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
 
@@ -104,6 +106,7 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
             <Button
               className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={handleReject}
+              disabled={disableStatus}
             >
               Reject
             </Button>
@@ -111,6 +114,7 @@ const MaterialListModal: React.FC<MaterialListModalProps> = ({
           <Button
             className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
             onClick={handleSubmit}
+            disabled={disableStatus}
           >
             {submitText}
           </Button>

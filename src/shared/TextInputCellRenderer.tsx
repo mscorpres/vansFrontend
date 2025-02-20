@@ -437,20 +437,20 @@ const TextInputCellRenderer = (props: any) => {
     data[colDef.field] = newValue; // Update the data object
     // Update localValue if the rate is changed
     if (colDef.field === "rate") {
-      data["localValue"] = newValue * parseFloat(data.orderQty);
+      data["localValue"] = (newValue * parseFloat(data.orderQty)).toFixed(2);
     }
     if (colDef.field === "orderQty") {
-      data["localValue"] = newValue * parseFloat(data.rate);
+      data["localValue"] = (newValue * parseFloat(data.rate)).toFixed(2);
     }
     if (data["exchange_rate"]) {
-      data["foreignValue"] = data["exchange_rate"] * data["localValue"];
+      data["foreignValue"] = (data["exchange_rate"] * data["localValue"]).toFixed(2);
       if (props.roeIs) {
-        data["foreignValue"] = props.roeIs * data["localValue"];
+        data["foreignValue"] = (props.roeIs * data["localValue"]).toFixed(2);
       }
     }
     ///foreign value calucaltion in case of exchanged rate is passed
     if (props.roeIs) {
-      data["foreignValue"] = props.roeIs * data["localValue"];
+      data["foreignValue"] = (props.roeIs * data["localValue"]).toFixed(2);
     }
     // Calculate GST based on the updated values
     const gstRate = parseFloat(data.gstRate) || 0;
@@ -501,7 +501,7 @@ const TextInputCellRenderer = (props: any) => {
       data["igst"] = igst.toFixed(2);
       // data["gstRate"] = "0";
       if (data["exchange_rate"]) {
-        data["foreignValue"] = data["exchange_rate"] * data["localValue"];
+        data["foreignValue"] = (data["exchange_rate"] * data["localValue"]).toFixed(2);
       }
     }
 

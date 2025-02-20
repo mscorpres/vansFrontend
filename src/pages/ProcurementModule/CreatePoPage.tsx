@@ -392,6 +392,7 @@ const CreatePoPage: React.FC<Props> = ({
                       name="color"
                       options={poTypeOptions}
                       value={poTypeOptions[0]}
+                      defaultInputValue={"New"}
                     />
                     {/* <p>error message</p> */}
                   </Form.Item>
@@ -428,6 +429,7 @@ const CreatePoPage: React.FC<Props> = ({
                       isSearchable={true}
                       name="color"
                       options={poVendorOptions}
+                      defaultInputValue="Vendor"
                     />
                     {/* <p>error message</p> */}
                   </Form.Item>

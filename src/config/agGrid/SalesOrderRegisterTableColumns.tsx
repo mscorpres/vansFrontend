@@ -284,6 +284,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         submitText="Approve"
         handleSubmit={confirmApprove}
         handleReject={() => setShowRejectModal(true)}
+        disableStatus={row?.approveStatus === "Approved"||row?.approveStatus === "Rejected"}
       />
       <CreateInvoiceDialog
         isDialogVisible={showHandleCloseModal}
