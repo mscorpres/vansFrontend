@@ -31,7 +31,6 @@ const CreateSalesOrderPage = () => {
   const [backCreate, setBackCreate] = useState(false);
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [derivedType, setDerivedType] = useState<any>(null);
-  const [codeType, setCodeType] = useState("");
   const [bilStateCode, setBillStateCode] = useState("");
   const [shipStateCode, setShipStateCode] = useState("");
   const [isImport, setIsImport] = useState("");
@@ -56,6 +55,9 @@ const CreateSalesOrderPage = () => {
 
   useEffect(() => {
     dispatch(fetchCurrency());
+    form.setValue("currency.currency","364907247" );
+    form.setValue("currency.exchange_rate", "1");
+
   }, []);
 
   useEffect(() => {
@@ -132,6 +134,7 @@ const CreateSalesOrderPage = () => {
         partno: material?.item?.partNo || "",
         orderQty: material.qty || 1,
         material: material?.item || "",
+        materialName: material?.item?.name || "",
         rate: parseFloat(material.rate) || 0,
         localValue: material?.taxableValue,
         foreignValue: material?.exchangeTaxableValue,

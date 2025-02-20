@@ -149,6 +149,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
         if (response.meta.requestStatus === "fulfilled") {
           const componentData = response.payload;
           data["stock"] = componentData?.closingQty;
+          data["materialName"]= componentDetails?.find((item: any) => item.id === value)?.text;
           data["hsnCode"] = componentData?.hsn;
           data["gstRate"] = componentData?.gstrate;
           data["rate"] = componentData?.rate;
@@ -164,7 +165,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
     let igst = 0;
     const calculation = (localValue * data.gstRate) / 100;
     if (props.exRate?.currency !== "364907247") {
-      data["foreignValue"] = localValue * props.exRate?.exchange_rate;
+      data["foreignValue"] = (localValue * props.exRate?.exchange_rate).toFixed(2);
     }
 
     if (data.gstType === "L") {
@@ -208,14 +209,14 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
 
     // Update localValue if the rate or orderQty is changed
     if (colDef.field === "rate") {
-      data["localValue"] = newValue * parseFloat(data.orderQty);
+      data["localValue"] = (newValue * parseFloat(data.orderQty)).toFixed(2); 
     }
     if (colDef.field === "orderQty") {
-      data["localValue"] = newValue * parseFloat(data.rate);
+      data["localValue"] = (newValue * parseFloat(data.rate)).toFixed(2);
     }
     const localValue = parseFloat(data.localValue) || 0; // Ensure localValue is a number
     if (props.exRate?.currency !== "364907247") {
-      data["foreignValue"] = localValue * props.exRate?.exchange_rate;
+      data["foreignValue"] = (localValue * props.exRate?.exchange_rate).toFixed(2);
     }
     // Calculate GST based on the updated values
     const gstRate = parseFloat(data.gstRate) || 0;
@@ -315,7 +316,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
             }}
             options={transformOptionData(componentDetails || [])}
             onChange={(e) => handleChange(e.value)}
-            value={typeof value === "string" ? { value } : value?.name}
+            value={data.materialName ? { value: data.materialName } : value}
           />
         );
       case "partno":

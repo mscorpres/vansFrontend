@@ -11,7 +11,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import {
   transformCurrencyData,
-  transformOptionData,
   transformOptionData2,
   transformOptions,
   transformOptionsData,
@@ -752,13 +751,14 @@ const CreateSalesOrder: React.FC<Props> = ({
                               value={
                                 // Find the corresponding option based on field.value
                                 transformCurrencyData(currencyList)?.find(
-                                  (option) => option.value === field.value
+                                  (option) => option.value === (field.value||"364907247")
                                 ) || null
                               }
                               onChange={(selectedOption) => {
                                 // Update the form value with the selected option's value
                                 field.onChange(selectedOption?.value); // Use field.onChange to update the form value
                               }}
+                              
                             />
                           </FormControl>
                           <FormMessage />
@@ -783,6 +783,7 @@ const CreateSalesOrder: React.FC<Props> = ({
                                 className={InputStyle}
                                 placeholder="Exchange Rate"
                                 min={1}
+                                defaultValue={1}
                                 {...field}
                               />
                             </FormControl>
