@@ -279,7 +279,8 @@ const TextInputCellRenderer = (props: any) => {
           let preRate = data2.last_rate.split(" ")[1];
 
           data["vendorName"] =
-            data2?.ven_com?.comp_name + "/ Maker:" + data2.make;
+          // data2?.ven_com?.comp_name + "/ Maker:" + data2.make;
+          data2.make;
           // data[
           //   "vendorName"
           // ] = `${getComponentData?.ven_com?.comp_name}/ Maker:${getComponentData.make}`;

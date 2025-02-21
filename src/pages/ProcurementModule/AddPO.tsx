@@ -361,7 +361,7 @@ const AddPO: React.FC<Props> = ({
       minWidth: 300,
     },
     {
-      headerName: "Ven C. Part / Part",
+      headerName: "Make",
       field: "vendorName",
       editable: false,
       flex: 1,
