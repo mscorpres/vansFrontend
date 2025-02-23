@@ -54,7 +54,7 @@ const LogningV2: React.FC = () => {
   function onSubmit(data: z.infer<typeof formSchema>) {
     if (!recaptchaValue) {
       showToast("Please verify the reCAPTCHA", "error");
-      // return;
+      return;
     }
     dispatch(loginUserAsync(data)).then((response: any) => {
 
