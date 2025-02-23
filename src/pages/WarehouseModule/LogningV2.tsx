@@ -269,7 +269,7 @@ const LogningV2: React.FC = () => {
                 </Link>
               </div>
               <div className=" flex justify-center">
-              <ReCAPTCHA sitekey="6LeQ4t8qAAAAAL7_pa6TmjIvaqHgXVooZK9evg2a" onChange={handleRecaptchaChange} />
+              <ReCAPTCHA sitekey="6Lcg8N8qAAAAAPBlPUssamaVv6yLzeA9nPXmUlT_" onChange={handleRecaptchaChange} />
             </div>
               <LoadingButton
                 loading={loading}
