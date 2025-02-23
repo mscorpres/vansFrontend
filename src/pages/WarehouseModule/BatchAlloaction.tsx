@@ -284,6 +284,7 @@ const BatchAlloaction = () => {
           paginationPageSize={10}
           paginationAutoPageSize={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
       </div>
     </Wrapper>

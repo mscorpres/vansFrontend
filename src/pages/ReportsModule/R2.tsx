@@ -385,6 +385,7 @@ const R2 = () => {
           paginationAutoPageSize={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
+          enableCellTextSelection = {true}
         />
       </div>
     </Wrapper>

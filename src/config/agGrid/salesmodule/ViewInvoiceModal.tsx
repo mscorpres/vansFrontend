@@ -387,6 +387,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                   truncateCellRenderer: TruncateCellRenderer,
                 }}
                 overlayNoRowsTemplate={OverlayNoRowsTemplate}
+                enableCellTextSelection = {true}
               />
             </div>
           </div>

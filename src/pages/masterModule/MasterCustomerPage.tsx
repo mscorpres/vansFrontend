@@ -1371,6 +1371,7 @@ const MasterCustomerPage: React.FC = () => {
             paginationAutoPageSize={true}
             suppressCellFocus={true}
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
+            enableCellTextSelection = {true}
           />
         ) : (
           <AgGridReact
@@ -1383,6 +1384,7 @@ const MasterCustomerPage: React.FC = () => {
             paginationAutoPageSize={true}
             suppressCellFocus={true}
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
+            enableCellTextSelection = {true}
           />
         )}
       </div>

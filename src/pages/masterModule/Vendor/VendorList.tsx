@@ -1480,6 +1480,7 @@ const VendorList = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
       </div>
     </Wrapper>

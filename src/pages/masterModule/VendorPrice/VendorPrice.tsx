@@ -232,6 +232,7 @@ const VendorPrice = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
         <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
           <Button

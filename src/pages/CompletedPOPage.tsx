@@ -329,6 +329,7 @@ const CompletedPOPage: React.FC = () => {
           paginationPageSizeSelector={[10, 25, 50]}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
+          enableCellTextSelection = {true}
         />
       </div>{" "}
       <ViewCompoents

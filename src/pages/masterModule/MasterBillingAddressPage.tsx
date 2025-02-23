@@ -465,6 +465,7 @@ const MasterBillingAddressPage: React.FC = () => {
             paginationAutoPageSize={true}
             suppressCellFocus={true}
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
+            enableCellTextSelection = {true}
           />
         </div>
       </div>

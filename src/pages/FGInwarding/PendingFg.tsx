@@ -406,6 +406,7 @@ const PendingFg = () => {
           paginationAutoPageSize={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
+          enableCellTextSelection = {true}
         />
       </div>
     </Wrapper>

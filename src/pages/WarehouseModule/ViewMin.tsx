@@ -343,6 +343,7 @@ const ViewMin: React.FC = () => {
           paginationPageSizeSelector={[10, 25, 50]}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
       </div>{" "}
       {/* <ViewCompoents

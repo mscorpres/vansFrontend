@@ -216,6 +216,7 @@ const ApproveList: React.FC = () => {
           onSelectionChanged={onSelectionChanged}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
       </div>{" "}
       <ConfirmationModal

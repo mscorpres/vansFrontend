@@ -251,6 +251,7 @@ const RejectedStock = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
       </div>
       <Sheet open={sheetOpenView} onOpenChange={setSheetOpenView}>

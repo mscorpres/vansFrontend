@@ -319,6 +319,7 @@ const Product = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
       </div>
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>

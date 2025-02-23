@@ -791,6 +791,7 @@ const EditBom = () => {
                 paginationPageSize={10}
                 paginationAutoPageSize={true}
                 overlayNoRowsTemplate={OverlayNoRowsTemplate}
+                enableCellTextSelection = {true}
               />
             </div>
           </div>
@@ -885,6 +886,7 @@ const EditBom = () => {
                 paginationAutoPageSize={true}
                 suppressCellFocus={true}
                 overlayNoRowsTemplate={OverlayNoRowsTemplate}
+                enableCellTextSelection = {true}
               />
             </div>
           </div>{" "}

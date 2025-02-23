@@ -313,6 +313,7 @@ const PendingMr: React.FC = () => {
           suppressCellFocus={true}
           paginationPageSizeSelector={[10, 25, 50]}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
       </div>{" "}
       {/* <ViewCompoents

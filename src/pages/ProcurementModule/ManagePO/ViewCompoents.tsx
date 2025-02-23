@@ -1,5 +1,5 @@
 import { Props } from "@/types/salesmodule/salesShipmentTypes";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -9,23 +9,16 @@ import {
 import { modelFixHeaderStyle } from "@/constants/themeContants";
 
 import { AgGridReact } from "ag-grid-react";
-import SalesShipmentUpadetTextCellrender from "@/config/agGrid/cellRenders.tsx/SalesShipmentUpadetTextCellrender";
 import { fetchViewComponentsOfManage } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import { minWidth, width } from "@mui/system";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { execFun, loading: loading1 } = useApi();
-  const components = useMemo(
-    () => ({
-      salesShipmentTextCellRender: SalesShipmentUpadetTextCellrender,
-    }),
-    []
-  );
+  const { execFun} = useApi();
+
   const [columnDefs] = useState<ColDef[]>([
     {
       field: "id",
@@ -49,32 +42,49 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     //     },
     //   },
     // },
+    // {
+    //   field: "po_component",
+    //   headerName: "Component Name/Part No.",
+    //   cellRenderer: CopyCellRenderer,
+    //   minWidth: 350,
+    //   flex: 1,
+    //   filterParams: {
+    //     floatingFilterComponentParams: {
+    //       suppressFilterButton: true,
+    //       placeholder: "Filter Cost Center...",
+    //     },
+    //   },
+    // },
     {
-      field: "po_component",
-      headerName: "Component Name/Part No.",
-      cellRenderer: CopyCellRenderer,
-      minWidth: 350,
+      field:"componentPartID",
+      headerName: "Part No",
       flex: 1,
-      filterParams: {
-        floatingFilterComponentParams: {
-          suppressFilterButton: true,
-          placeholder: "Filter Cost Center...",
-        },
-      },
     },
     {
-      field: "vendor_part_codes",
-      headerName: "	Vendor Component Name / Part No.",
-      cellRenderer: CopyCellRenderer,
-      flex: 2,
-      minWidth: 250,
-      filterParams: {
-        floatingFilterComponentParams: {
-          suppressFilterButton: true,
-          placeholder: "Filter Vendor & Narration...",
-        },
-      },
+      field:"po_components",
+      headerName: "PO Component",
+      flex: 1,
     },
+    {
+      field:"componentDesc",
+      headerName: "Description",
+      flex: 1,
+      width: 400,
+    },
+
+    // {
+    //   field: "vendor_part_codes",
+    //   headerName: "	Vendor Component Name / Part No.",
+    //   cellRenderer: CopyCellRenderer,
+    //   flex: 2,
+    //   minWidth: 250,
+    //   filterParams: {
+    //     floatingFilterComponentParams: {
+    //       suppressFilterButton: true,
+    //       placeholder: "Filter Vendor & Narration...",
+    //     },
+    //   },
+    // },
     // {
     //   field: "c_brand",
     //   headerName: "Make (Brand)",
@@ -230,6 +240,8 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
         return {
           id: id + 1,
           vendor_part_codes: r.vendor_part_code + " /" + r.vendor_part_desc,
+          description:r.componentDesc,
+
           po_component:
             r.po_components + "/" + r.componentPartID + " /" + r.componentDesc,
           ...r,
@@ -271,6 +283,7 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
             paginationAutoPageSize={true}
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
             suppressCellFocus={true}
+            enableCellTextSelection = {true}
           />
         </div>
       </SheetContent>

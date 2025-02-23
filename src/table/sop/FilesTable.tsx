@@ -192,6 +192,7 @@ const FilesTable: React.FC<Props> = ({ rowdata, refreshfile }) => {
           pagination={true}
           paginationPageSize={50}
           loadingCellRenderer="customLoadingCellRenderer"
+          enableCellTextSelection = {true}
         />
       </div>
     </Wrapper>

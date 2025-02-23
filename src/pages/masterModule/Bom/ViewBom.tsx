@@ -77,6 +77,7 @@ const ViewBom = ({ openView, setSheetOpenView }) => {
               paginationAutoPageSize={true}
               suppressCellFocus={true}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
+              enableCellTextSelection = {true}
             />
           </div>
         </SheetContent>

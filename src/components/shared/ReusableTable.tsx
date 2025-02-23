@@ -68,6 +68,7 @@ const ReusableTable: React.FC<GridTableProps> = ({ endpoint, columns, payload, t
           paginationPageSize={20}
           paginationPageSizeSelector={[10, 20, 30, 50, 100]}
           suppressCellFocus={true}
+          enableCellTextSelection = {true}
         />
       </div>
     </div>

@@ -124,6 +124,7 @@ const BoxesListSheet = ({ open, close, data, onSelect, loading }: any) => {
               onSelectionChanged={onSelectionChanged} // Listen for row selection change
               onCellValueChanged={onCellValueChanged} // Listen for cell value change
               loading={loading}
+              enableCellTextSelection = {true}
             />
           </div>
 

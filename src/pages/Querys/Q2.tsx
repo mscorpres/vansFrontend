@@ -505,6 +505,7 @@ const Q2 = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
       </div>
       <Sheet open={openView == true} onOpenChange={setSheetOpenView}>
@@ -531,6 +532,7 @@ const Q2 = () => {
               paginationAutoPageSize={true}
               suppressCellFocus={true}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
+              enableCellTextSelection = {true}
             />
           </div>
         </SheetContent>
@@ -574,6 +576,7 @@ const Q2 = () => {
               paginationAutoPageSize={true}
               suppressCellFocus={true}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
+              enableCellTextSelection = {true}
             />
           </div>
         </SheetContent>

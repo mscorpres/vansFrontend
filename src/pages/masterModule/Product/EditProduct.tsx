@@ -878,6 +878,7 @@ const EditProduct = ({ sheetOpenEdit, setSheetOpenEdit }) => {
                 paginationAutoPageSize={true}
                 suppressCellFocus={true}
                 overlayNoRowsTemplate={OverlayNoRowsTemplate}
+                enableCellTextSelection = {true}
               />
             </div>
           </div>{" "}

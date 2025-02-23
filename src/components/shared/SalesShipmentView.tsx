@@ -46,6 +46,7 @@ const SalesShipmentView: React.FC<Props> = ({ uiState }) => {
               animateRows={true}
               suppressCellFocus={true}
               suppressRowClickSelection={false}
+              enableCellTextSelection = {true}
             />
           </div>
           </div>

@@ -224,6 +224,7 @@ const SalesInvoicePage: React.FC = () => {
           paginationAutoPageSize={true}
           loadingOverlayComponent={OverlayNoRowsTemplate}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
+          enableCellTextSelection = {true}
         />
       </div>
     </Wrapper>

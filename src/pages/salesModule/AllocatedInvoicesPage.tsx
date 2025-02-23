@@ -149,7 +149,7 @@ const AllocatedInvoicesPage: React.FC = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        <AgGridReact gridOptions={gridOptions} rowData={rowData} columnDefs={columnDefs} defaultColDef={{ filter: true, sortable: true }} pagination={true} paginationPageSize={10} paginationAutoPageSize={true} />
+        <AgGridReact gridOptions={gridOptions} rowData={rowData} columnDefs={columnDefs} defaultColDef={{ filter: true, sortable: true }} pagination={true} paginationPageSize={10} paginationAutoPageSize={true} enableCellTextSelection = {true}/>
       </div>
     </Wrapper>
   );

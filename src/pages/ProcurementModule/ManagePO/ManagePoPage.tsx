@@ -429,6 +429,7 @@ const ManagePoPage: React.FC = () => {
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           // gridOptions={commonAgGridConfig}
+          enableCellTextSelection = {true}
         />
       </div>{" "}
       <ViewCompoents

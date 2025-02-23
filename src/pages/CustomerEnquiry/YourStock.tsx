@@ -447,6 +447,7 @@ const YourStock = () => {
           checkboxSelection={true}
           rowSelection={"multiple"}
           onSelectionChanged={onSelectionChanged}
+          enableCellTextSelection = {true}
         />
       </div>{" "}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -472,6 +473,7 @@ const YourStock = () => {
               components={components}
               suppressCellFocus={true}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
+              enableCellTextSelection = {true}
             />{" "}
           </div>{" "}
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
