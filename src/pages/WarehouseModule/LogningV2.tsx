@@ -27,9 +27,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { loginUserAsync } from "@/features/auth/authSlice";
 import { z } from "zod";
-import React from "react";
+import React, { useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import { showToast } from "@/General";
+
 const LogningV2: React.FC = () => {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
+  const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const data = useSelector((state: RootState) => state.auth);
   const formSchema = z.object({
@@ -48,6 +52,10 @@ const LogningV2: React.FC = () => {
   } = useForm<any>();
   const loading = data.loading === "loading";
   function onSubmit(data: z.infer<typeof formSchema>) {
+    if (!recaptchaValue) {
+      showToast("Please verify the reCAPTCHA", "error");
+      // return;
+    }
     dispatch(loginUserAsync(data)).then((response: any) => {
 
       if (response.payload.data.success) {
@@ -59,6 +67,10 @@ const LogningV2: React.FC = () => {
       }
     });
   }
+
+  const handleRecaptchaChange = (value: string | null) => {
+    setRecaptchaValue(value);
+  };
 
   return (
     <div className="h-[100vh]  w-full grid grid-cols-2">
@@ -256,6 +268,9 @@ const LogningV2: React.FC = () => {
                   Forgot Password
                 </Link>
               </div>
+              <div className=" flex justify-center">
+              <ReCAPTCHA sitekey="6Le5398qAAAAAMcXVSYRIVfbUArHN_HbJU8GhM38" onChange={handleRecaptchaChange} />
+            </div>
               <LoadingButton
                 loading={loading}
                 size="large"
