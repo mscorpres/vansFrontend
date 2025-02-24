@@ -5,13 +5,9 @@ import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import styled from "styled-components";
-import { DatePicker, Form } from "antd";
+import { DatePicker, Form, Tooltip } from "antd";
 import useApi from "@/hooks/useApi";
-import {
-  fetchCloseStock,
-  fetchR4,
-  fetchR4refreshed,
-} from "@/components/shared/Api/masterApi";
+import { fetchCloseStock, fetchR4, fetchR4refreshed } from "@/components/shared/Api/masterApi";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -35,6 +31,7 @@ const FormSchema = z.object({
 
 const R4 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const [originalRowData, setOriginalRowData] = useState<RowData[]>([]); // Store original data
   const [showList, setShowList] = useState(false);
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
@@ -48,16 +45,11 @@ const R4 = () => {
     const value = await form.validateFields();
     if (value.search && rowData) {
       setShowList(true);
-      let a = rowData.filter((item) =>
-        Object.values(item)
-          .join(" ")
-          .toLowerCase()
-          .includes(value?.search?.toLowerCase())
-      );
+      let a = rowData.filter((item) => Object.values(item).join(" ").toLowerCase().includes(value?.search?.toLowerCase()));
       setRowData(a);
     } else {
       const response = await execFun(() => fetchR4(), "fetch");
-      setRowData([]);
+
       let { data } = response;
       if (data.success) {
         let arr = data.data.map((r, index) => {
@@ -68,6 +60,7 @@ const R4 = () => {
         });
 
         setRowData(arr);
+        setOriginalRowData(arr); // Store the original data
         setShowList(false);
       } else {
         toast({
@@ -75,6 +68,19 @@ const R4 = () => {
           className: "bg-red-700 text-white",
         });
       }
+    }
+  };
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+
+    if (searchValue === "") {
+      // If search input is empty, reset to original data
+      setRowData(originalRowData);
+    } else {
+      // Filter the data based on the search input
+      const filteredData = originalRowData.filter((item) => Object.values(item).join(" ").toLowerCase().includes(searchValue));
+      setRowData(filteredData);
     }
   };
   const getRefreshed = async () => {
@@ -98,10 +104,7 @@ const R4 = () => {
       });
     }
   };
-  const searchData = (query: string) =>
-    rowData.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(query.toLowerCase())
-    );
+  const searchData = (query: string) => rowData.filter((item) => Object.values(item).join(" ").toLowerCase().includes(query.toLowerCase()));
   const handleClick = async (id, params) => {
     setIsAnimating(id);
 
@@ -110,10 +113,7 @@ const R4 = () => {
       setIsAnimating(null);
     }, 500);
 
-    const response = await execFun(
-      () => fetchCloseStock(params.data.component_key),
-      "fetch"
-    );
+    const response = await execFun(() => fetchCloseStock(params.data.component_key), "fetch");
     if (response.data.success) {
       setRowData((prevData) =>
         prevData.map((item) =>
@@ -264,16 +264,17 @@ const R4 = () => {
         </div>
         <div className="p-[10px] justify-center">
           <Form form={form} layout="vertical">
-            <Form.Item name="search" label="Search">
+            <Form.Item name="search">
               <Input
                 className={InputStyle}
                 placeholder="Enter Search"
+                onChange={handleSearchChange}
                 // {...field}
               />
             </Form.Item>
           </Form>
           <div className="flex gap-[10px] w-full justify-space-between">
-            <Button
+            {/* <Button
               type="submit"
               className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               onClick={() => {
@@ -281,13 +282,12 @@ const R4 = () => {
               }}
             >
               Search
-            </Button>
-            <Button
-              className=" bg-white text-black hover:bg-slate-200"
-              onClick={getRefreshed}
-            >
-              <IoIosRefresh />
-            </Button>{" "}
+            </Button> */}
+            <Tooltip title="Stock Refresh">
+              <Button className="bg-white text-black hover:bg-slate-200" onClick={getRefreshed}>
+                <IoIosRefresh />
+              </Button>
+            </Tooltip>
             <Button
               // type="submit"
               className=" bg-white text-black hover:bg-slate-200"
@@ -321,7 +321,6 @@ const R4 = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
-          enableCellTextSelection = {true}
         />
       </div>
     </Wrapper>
