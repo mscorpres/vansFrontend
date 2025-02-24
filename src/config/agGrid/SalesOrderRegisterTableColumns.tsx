@@ -355,12 +355,14 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Customer Name",
     field: "clintname",
     filter: "agTextColumnFilter",
+    width: 400,
     cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Supplier Name",
     field: "supplierName",
     filter: "agTextColumnFilter",
+    width: 300,
     cellRenderer: CopyCellRenderer,
   },
   {
@@ -388,25 +390,27 @@ const materialListColumnDefs: ColDef[] = [
   //   field: "so_id",
   //   width: 150,
   // },
+  {
+    headerName: "Part No.",
+    field: "itemPartNo",
+    cellRenderer: CopyCellRenderer,
+  },
 
   {
-    headerName: "Item Name",
+    headerName: "Name",
     field: "itemName",
     width: 300,
     // cellRenderer: "truncateCellRenderer",
     cellRenderer: CopyCellRenderer,
   },
   {
-    headerName: "Item Specification",
+    headerName: "Specification",
     field: "itemSpecification",
+    width: 350,
 
     cellRenderer: CopyCellRenderer,
   },
-  {
-    headerName: "Part No.",
-    field: "itemPartNo",
-    cellRenderer: CopyCellRenderer,
-  },
+  
   {
     headerName: "Customer Part No.",
     cellRenderer: CopyCellRenderer,

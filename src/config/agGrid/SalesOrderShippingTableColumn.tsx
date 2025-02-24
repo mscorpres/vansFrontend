@@ -170,20 +170,20 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const materialListColumns: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
-
+    { headerName: "Part No.", field: "itemPartNo" },
     {
-      headerName: "Item Name",
+      headerName: "Name",
       field: "itemName",
       width: 200,
       cellRenderer: TruncateCellRenderer,
     },
     {
-      headerName: "Item Description",
+      headerName: "Description",
       field: "itemSpecification",
       autoHeight: true,
       width: 300,
     },
-    { headerName: "Item Part Number", field: "itemPartNo" },
+   
     {
       headerName: "Customer Part Number",
       field: "customer_part_no",

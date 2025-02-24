@@ -162,6 +162,7 @@ export const columnDefs: ColDef<RowData>[] = [
     headerName: "Customer Name",
     field: "custName",
     filter: "agDateColumnFilter",
+    width:300,
     cellRenderer: CopyCellRenderer,
   },
   {
