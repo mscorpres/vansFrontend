@@ -85,18 +85,18 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     //     },
     //   },
     // },
-    // {
-    //   field: "c_brand",
-    //   headerName: "Make (Brand)",
-    //   flex: 1,
-    //   filter: "agDateColumnFilter",
-    //   filterParams: {
-    //     floatingFilterComponentParams: {
-    //       suppressFilterButton: true,
-    //       placeholder: "Filter PO Reg. Date...",
-    //     },
-    //   },
-    // },
+    {
+      field: "c_brand",
+      headerName: "Make (Brand)",
+      flex: 1,
+      filter: "agDateColumnFilter",
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter PO Reg. Date...",
+        },
+      },
+    },
     {
       field: "ordered_qty",
       headerName: "Ordered Qty",
@@ -125,6 +125,18 @@ const ViewCompoents: React.FC<Props> = ({ view, setView }) => {
     {
       field: "po_order_rate",
       headerName: "Rate",
+      flex: 1,
+      filter: "agDateColumnFilter",
+      filterParams: {
+        floatingFilterComponentParams: {
+          suppressFilterButton: true,
+          placeholder: "Filter PO Reg. Date...",
+        },
+      },
+    },
+    {
+      field: "po_remark",
+      headerName: "Remark",
       flex: 1,
       filter: "agDateColumnFilter",
       filterParams: {

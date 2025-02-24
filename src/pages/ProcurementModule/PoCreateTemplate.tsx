@@ -148,7 +148,8 @@ const PoCreateTemplate = () => {
                           isNew: true,
                           procurementMaterial: item.selectedComponent[0]?.text,
                           vendorName:
-                            item.component_short + "/ Maker:" + item.make,
+                            // item.component_short + "/ Maker:" + item.make,
+                            item.make,
                           orderQty: item.orderqty,
                           componentKey: item.componentKey,
                           rate: item.rate,
@@ -172,7 +173,8 @@ const PoCreateTemplate = () => {
                         isNew: true,
                         procurementMaterial: item.selectedComponent[0]?.text,
                         vendorName:
-                          item.component_short + "/ Maker:" + item.make,
+                         // item.component_short + "/ Maker:" + item.make,
+                         item.make,
                         orderQty: item.orderqty,
                         componentKey: item.componentKey,
                         rate: item.rate,
