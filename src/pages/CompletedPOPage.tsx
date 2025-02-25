@@ -21,7 +21,6 @@ import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { downloadFunction } from "@/components/shared/PrintFunctions";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 import { transformOptionData, transformOptionData2 } from "@/helper/transform";
-import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { toast } from "@/components/ui/use-toast";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { rangePresets } from "@/General";
@@ -93,7 +92,7 @@ const CompletedPOPage: React.FC = () => {
       field: "po_transaction_code",
       headerName: "PO ID",
       flex: 1,
-      cellRenderer: CopyCellRenderer,
+       
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -105,7 +104,7 @@ const CompletedPOPage: React.FC = () => {
       field: "cost_center",
       headerName: "Cost Center",
       flex: 1,
-      cellRenderer: CopyCellRenderer,
+       
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,

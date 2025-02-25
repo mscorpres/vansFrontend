@@ -12,7 +12,6 @@ import {
 import { AppDispatch, RootState } from "@/store";
 import { useState } from "react";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
-import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import ViewInvoiceModal from "@/config/agGrid/salesmodule/ViewInvoiceModal";
 import { printFunction } from "@/components/shared/PrintFunctions";
 
@@ -145,13 +144,13 @@ export const columnDefs: ColDef<RowData>[] = [
     headerName: "SO Invoice ID",
     field: "invoiceNo",
     filter: "agNumberColumnFilter",
-    cellRenderer: CopyCellRenderer,
+     
   },
   {
     headerName: "Shipment ID",
     field: "shipmentId",
     filter: "agNumberColumnFilter",
-    cellRenderer: CopyCellRenderer,
+     
   },
   {
     headerName: "Invoice Status",
@@ -163,13 +162,12 @@ export const columnDefs: ColDef<RowData>[] = [
     field: "custName",
     filter: "agDateColumnFilter",
     width:300,
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Supplier Name",
     field: "supplier",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
+     
   },
 
   {
@@ -186,7 +184,7 @@ export const columnDefs: ColDef<RowData>[] = [
     headerName: "Create Date",
     field: "createDate",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
+     
   },
   {
     headerName: "Create By",

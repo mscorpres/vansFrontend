@@ -323,7 +323,6 @@ const SalesETransactionRegisterPage: React.FC = () => {
           suppressCellFocus={true}
           components={{
             truncateCellRenderer: TruncateCellRenderer,
-            copyCellRenderer: CopyCellRenderer,
           }}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
         />

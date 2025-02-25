@@ -162,7 +162,6 @@ const ManagePoPage: React.FC = () => {
       field: "po_transaction",
       headerName: "PO Id ",
       width: "220",
-      cellRenderer: CopyCellRenderer,
       filterParams: {
         floatingFilterComponentParams: {
           suppressFilterButton: true,
@@ -184,7 +183,7 @@ const ManagePoPage: React.FC = () => {
     {
       field: "vendor_name",
       headerName: "Vendor & Narration",
-      cellRenderer: CopyCellRenderer,
+      // cellRenderer: CopyCellRenderer,
       flex: 2,
       filterParams: {
         floatingFilterComponentParams: {

@@ -22,7 +22,6 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { IoIosRefresh } from "react-icons/io";
 import { Input } from "@/components/ui/input";
@@ -226,7 +225,7 @@ const YourStock = () => {
       headerName: "Part Code",
       field: "part_no",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      
       width: 140,
       editable: false,
     },
@@ -234,7 +233,7 @@ const YourStock = () => {
       headerName: "Part Name",
       field: "name",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      
       width: 250,
       editable: false,
     },
@@ -242,7 +241,7 @@ const YourStock = () => {
       headerName: "Customer Part Code",
       field: "cust_part_code",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      
       width: 190,
       editable: false,
     },
@@ -250,7 +249,7 @@ const YourStock = () => {
       headerName: "Customer Part Name",
       field: "cust_comp",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      
       width: 210,
       editable: false,
     },

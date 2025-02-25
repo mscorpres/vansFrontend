@@ -20,7 +20,6 @@ import {
 } from "@/features/salesmodule/salesShipmentSlice";
 import { TruncateCellRenderer } from "@/General";
 import PickSlipModal from "@/config/agGrid/PickSlipModal";
-import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { toast } from "react-toastify";
 
 interface ActionMenuProps {
@@ -314,7 +313,7 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Pickslip ID",
     field: "pickslip_id",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
+     
   },
   {
     headerName: "Approval Status",

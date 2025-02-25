@@ -287,7 +287,7 @@ const LogningV2: React.FC = () => {
                 Policy and Terms of Service apply. For more info, please visit
                 <Link
                   sx={{ ml: "4px" }}
-                  href="www.mscorpres.com"
+                 href="https://www.mscorpres.com"
                   target="_blank"
                 >
                   www.mscorpres.com

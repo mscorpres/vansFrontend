@@ -187,7 +187,6 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Invoice Number",
     field: "invoiceNo",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Bill To Name",
@@ -206,7 +205,6 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Ack No",
     field: "eInvoiceNo",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Ack Date",
@@ -218,7 +216,6 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "IRN Number",
     field: "irnno",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Bill From Address",
@@ -254,7 +251,6 @@ export const EwayBillColumnDefs: ColDef<any>[] = [
     headerName: "SO ID",
     field: "so_no",
     filter: "agDateColumnFilter",
-    cellRenderer: CopyCellRenderer,
     maxWidth: 150,
   },
   {
@@ -267,7 +263,6 @@ export const EwayBillColumnDefs: ColDef<any>[] = [
     headerName: "Invoice Number",
     field: "invoiceNo",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Supply Type",
@@ -279,7 +274,6 @@ export const EwayBillColumnDefs: ColDef<any>[] = [
     headerName: "E-way Bill Number",
     field: "ewaybillno",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Doc Type",
@@ -298,7 +292,6 @@ export const EwayBillColumnDefs: ColDef<any>[] = [
     field: "billTo",
     filter: "agTextColumnFilter",
     width: 400,
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Bill From Address",
@@ -312,6 +305,5 @@ export const EwayBillColumnDefs: ColDef<any>[] = [
     field: "shippingaddress2",
     filter: "agDateColumnFilter",
     width: 400,
-    cellRenderer: CopyCellRenderer,
   },
 ];

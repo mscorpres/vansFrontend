@@ -116,7 +116,7 @@ const CompeletedFg = () => {
       headerName: "Req Id",
       field: "mfg_transaction",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      
       width: 120,
     },
     {
@@ -135,14 +135,14 @@ const CompeletedFg = () => {
       headerName: "SKU",
       field: "ppr_sku",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      
       width: 110,
     },
     {
       headerName: "Product",
       field: "sku_name",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      
       flex: 1,
       width: 190,
     },
@@ -150,7 +150,7 @@ const CompeletedFg = () => {
       headerName: "MFG /Stin Qty",
       field: "completed_qty",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      
       width: 190,
     },
   ];

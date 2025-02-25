@@ -8,7 +8,6 @@ import { useMemo, useState } from "react";
 import CreateShipmentListModal from "@/config/agGrid/registerModule/CreateShipmentListModal";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
-import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import {
   approveSo,
   cancelSalesOrder,
@@ -326,7 +325,7 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "SO ID",
     field: "so_id",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
+     
   },
   {
     headerName: "Approve Status",
@@ -342,7 +341,7 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "PO ID",
     field: "po_number",
     filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
+     
   },
   {
     headerName: "PO Date",
@@ -356,14 +355,12 @@ export const columnDefs: ColDef<any>[] = [
     field: "clintname",
     filter: "agTextColumnFilter",
     width: 400,
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Supplier Name",
     field: "supplierName",
     filter: "agTextColumnFilter",
     width: 300,
-    cellRenderer: CopyCellRenderer,
   },
   {
     headerName: "Created By",
@@ -393,7 +390,6 @@ const materialListColumnDefs: ColDef[] = [
   {
     headerName: "Part No.",
     field: "itemPartNo",
-    cellRenderer: CopyCellRenderer,
   },
 
   {
@@ -401,19 +397,19 @@ const materialListColumnDefs: ColDef[] = [
     field: "itemName",
     width: 300,
     // cellRenderer: "truncateCellRenderer",
-    cellRenderer: CopyCellRenderer,
+     
   },
   {
     headerName: "Specification",
     field: "itemSpecification",
     width: 350,
 
-    cellRenderer: CopyCellRenderer,
+     
   },
   
   {
     headerName: "Customer Part No.",
-    cellRenderer: CopyCellRenderer,
+     
     field: "customer_part_no",
     width: 200,
     // cellRenderer: "truncateCellRenderer",
