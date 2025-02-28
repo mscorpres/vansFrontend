@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { spigenAxios } from "@/axiosIntercepter";
 import { AxiosResponse } from "axios";
+import { showToast } from "@/General";
 
 interface LoginCredentials {
   username: string;
@@ -48,6 +49,8 @@ interface AuthState {
   authStatus: boolean;
   loading: "idle" | "loading" | "success" | "failed";
   token: string | null;
+  qrCodeLoading: boolean;
+  qrStatus: any;
 }
 
 const initialState: AuthState = {
@@ -55,6 +58,8 @@ const initialState: AuthState = {
   authStatus: false,
   loading: "idle",
   token: null,
+  qrCodeLoading: false,
+  qrStatus: null,
 };
 
 export const loginUserAsync = createAsyncThunk<
@@ -65,6 +70,27 @@ export const loginUserAsync = createAsyncThunk<
     "auth/signin",
     loginCredential
   );
+  return response;
+});
+
+export const recoveryAccount = createAsyncThunk<AxiosResponse<{ success: boolean; message: string }>, { email: string }>("auth/verifyPasswordOtpAsync", async (paylaod) => {
+  const response = await spigenAxios.get(`auth/reacative-login?email=${paylaod.email}`);
+  return response;
+});
+
+export const getQRStatus = createAsyncThunk<
+  AxiosResponse<{ success: boolean; message: string }>,
+  { crnId: string }
+>("auth/getQRStatus", async () => {
+  const response = await spigenAxios.get(`auth/qrCode`);
+  return response;
+});
+
+export const verifyOtpAsync = createAsyncThunk<
+  AxiosResponse<{ success: boolean; message: string }>,
+  { otp: string; secret: string }
+>("auth/verifyOtpAsync", async (paylaod) => {
+  const response = await spigenAxios.post("/auth/verify", paylaod);
   return response;
 });
 
@@ -86,6 +112,53 @@ const authSlice = createSlice({
         state.loading = "loading";
       })
       .addCase(loginUserAsync.fulfilled, (state, action) => {
+        const data = action.payload.data.data;
+        if (!data) {
+          state.qrStatus = action.payload.data;
+          const userObj = {
+            token: action.payload.data.token,
+          };
+          localStorage.setItem("loggedInUser", JSON.stringify(userObj));
+          state.user = action.payload.data;
+          state.authStatus = true;
+          state.loading = "success";
+          state.token = action.payload.data.token;
+          return;
+        }
+        if (data) {
+          const userObj = {
+            email: data?.crn_email,
+            phone: data?.crn_mobile,
+            userName: data?.username,
+            token: data?.token,
+            // favPages: JSON.parse(data.fav_pages),
+            type: data?.crn_type,
+            // mobileConfirmed: data?.other.m_v,
+            // emailConfirmed: data?.other.e_v,
+            // passwordChanged: data?.other.c_p ?? "C",
+            id: data?.crn_id,
+            showLegal: data?.department === "legal",
+            session: "24-25",
+          };
+
+          localStorage.setItem("loggedInUser", JSON.stringify(userObj));
+
+          state.user = data;
+          state.authStatus = true;
+          state.loading = "success";
+          state.token = data.token;
+        }
+      })
+      .addCase(loginUserAsync.rejected, (state) => {
+        state.loading = "failed";
+      })
+      .addCase(verifyOtpAsync.pending, (state) => {
+        state.qrCodeLoading = true;
+      })
+      .addCase(verifyOtpAsync.fulfilled, (state, action: any) => {
+        if(action.payload.data.success){
+          showToast(action.payload.data.message, "success");
+        }
         const data = action.payload.data.data;
 
         const userObj = {
@@ -109,9 +182,10 @@ const authSlice = createSlice({
         state.authStatus = true;
         state.loading = "success";
         state.token = data.token;
+        state.qrCodeLoading = false;
       })
-      .addCase(loginUserAsync.rejected, (state) => {
-        state.loading = "failed";
+      .addCase(verifyOtpAsync.rejected, (state) => {
+        state.qrCodeLoading = false;
       });
   },
 });

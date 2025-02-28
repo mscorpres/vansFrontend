@@ -264,9 +264,14 @@ const LogningV2: React.FC = () => {
                     </FormHelperText>
                   )}
                 </FormControl>
+                <div className="flex gap-[20px]">
                 <Link href="/forgot-password" fontSize={12} className="">
                   Forgot Password
                 </Link>
+                <Link href="/password-recovery" fontSize={12} className="">
+                   Lock and Unlock User
+                </Link>
+                </div>
               </div>
               <div className=" flex justify-center">
               <ReCAPTCHA sitekey="6Lcg8N8qAAAAAPBlPUssamaVv6yLzeA9nPXmUlT_" onChange={handleRecaptchaChange} />
