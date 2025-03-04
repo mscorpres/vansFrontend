@@ -15,9 +15,9 @@ import { styled } from "@mui/system";
 import { IoMdMail } from "react-icons/io";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { MdSecurity } from "react-icons/md";
-// import { AppDispatch } from "@/store";
-// import { useDispatch } from "react-redux";
-// import { getPasswordOtp, verifyOtp } from "@/features/authentication/authSlice";
+import { AppDispatch } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
+import { getPasswordOtp, updatePassword } from "@/features/auth/authSlice";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -58,9 +58,10 @@ const SecurityImage = styled(Box)({
 
 const ForgetPasswordNew = () => {
   const theme = useTheme();
-  // const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [loading, setLoading] = useState(false);
+  const {otpLoading} = useSelector((state: any) => state.auth);
   const [formData, setFormData] = useState({
     email: "",
     verificationCode: "",
@@ -98,26 +99,23 @@ const ForgetPasswordNew = () => {
     setLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
       if (step === 1) {
-        // dispatch(getPasswordOtp(formData.email)).then((res: any) => {
-        //   if (res?.payload?.success) {
-        //     setStep(2);
-        //   } 
-        // });
-        setStep(2);
+        dispatch(getPasswordOtp({emailId:formData.email})).then((res: any) => {
+          if (res?.payload?.success) {
+            setStep(2);
+          } 
+        });
       } else if (step === 2) {
-        // const payload = {
-        //   emailId: formData.email,
-        //   otp: formData.verificationCode, 
-        //   password: formData.confirmPassword                                                                       
-        // }
-        // dispatch(verifyOtp(payload as any)).then((res: any) => {
-        //     if(res?.payload?.success){
-        //       setStep(3);
-        //     }
-        // })
+        const payload = {
+          emailId: formData.email,
+          otp: formData.verificationCode, 
+          password: formData.confirmPassword                                                                       
+        }
+        dispatch(updatePassword(payload as any)).then((res: any) => {
+            if(res?.payload?.success){
+              setStep(3);
+            }
+        })
       }
     } catch (error) {
       console.error("Error:", error);
@@ -235,7 +233,7 @@ const ForgetPasswordNew = () => {
                   type="submit"
                   variant="contained"
                   size="large"
-                  disabled={loading}
+                  disabled={loading||otpLoading}
                   sx={{
                     borderRadius: 2,
                     py: 1.5,

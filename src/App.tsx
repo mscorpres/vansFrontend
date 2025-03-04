@@ -1206,6 +1206,7 @@ const router = createBrowserRouter([
 function App() {
   const [isOffline, setIsOffline] = useState<boolean>(false);
   const { qrStatus } = useSelector((state) => state.auth);
+  const showOtpPage = localStorage.getItem("showOtpPage");
 
   useEffect(() => {
     const handleOffline = () => {
@@ -1231,7 +1232,7 @@ function App() {
     };
   }, []);
   
-  if (qrStatus?.isTwoStep === "Y")
+  if (qrStatus?.isTwoStep === "Y"||showOtpPage === "Y"){
     return (
       <>
         <InternetStatusBar />
@@ -1239,6 +1240,8 @@ function App() {
         <OtpPage />
       </>
     );
+  }
+  else{
   return (
     <>
       <InternetStatusBar />
@@ -1253,6 +1256,7 @@ function App() {
       </div>
     </>
   );
+}
 }
 
 export default App;

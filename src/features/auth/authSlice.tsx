@@ -51,6 +51,7 @@ interface AuthState {
   token: string | null;
   qrCodeLoading: boolean;
   qrStatus: any;
+  otpLoading: boolean;
 }
 
 const initialState: AuthState = {
@@ -60,6 +61,7 @@ const initialState: AuthState = {
   token: null,
   qrCodeLoading: false,
   qrStatus: null,
+  otpLoading: false,
 };
 
 export const loginUserAsync = createAsyncThunk<
@@ -94,6 +96,23 @@ export const verifyOtpAsync = createAsyncThunk<
   return response;
 });
 
+export const getPasswordOtp = createAsyncThunk<AxiosResponse<{ success: boolean; message: string }>, { emailId: string }>(
+  "auth/getPasswordOtp", 
+  async (payload) => {
+    const response = await spigenAxios.get("/user/get-password-otp/", {
+      params: {
+        emailId: payload.emailId, // Send emailId as a query param
+      }
+    });
+    return response;
+  }
+);
+
+export const updatePassword = createAsyncThunk<AxiosResponse<{ success: boolean; message: string }>, any>("auth/updatePassword", async (paylaod) => {
+  const response = await spigenAxios.put("/user/update-password", paylaod);
+  return response;
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -115,6 +134,7 @@ const authSlice = createSlice({
         const data = action.payload.data.data;
         if (!data) {
           state.qrStatus = action.payload.data;
+          localStorage.setItem("showOtpPage",action.payload.data?.isTwoStep);
           const userObj = {
             token: action.payload.data.token,
           };
@@ -175,7 +195,7 @@ const authSlice = createSlice({
           showLegal: data?.department === "legal",
           session: "24-25",
         };
-
+        localStorage.setItem("showOtpPage", "");
         localStorage.setItem("loggedInUser", JSON.stringify(userObj));
 
         state.user = data;
@@ -186,6 +206,30 @@ const authSlice = createSlice({
       })
       .addCase(verifyOtpAsync.rejected, (state) => {
         state.qrCodeLoading = false;
+      })
+      .addCase(getPasswordOtp.pending, (state) => {
+        state.otpLoading = true;
+      })
+      .addCase(getPasswordOtp.fulfilled, (state, action) => {
+        state.otpLoading = false;
+        if (action.payload.data.success) {
+          showToast(action.payload.data.message, "success");
+        }
+      })
+      .addCase(getPasswordOtp.rejected, (state) => {
+        state.otpLoading = false;
+      })
+      .addCase(updatePassword.pending, (state) => {
+        state.otpLoading = true;
+      })
+      .addCase(updatePassword.fulfilled, (state, action) => {
+        state.otpLoading = false;
+        if (action.payload.data.success) {
+          showToast(action.payload.data.message, "success");
+        }
+      })
+      .addCase(updatePassword.rejected, (state) => {
+        state.otpLoading = false;
       });
   },
 });
