@@ -33,7 +33,9 @@ import { showToast } from "@/General";
 
 const LogningV2: React.FC = () => {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
-  const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
+  const [recaptchaValue, setRecaptchaValue] = React.useState<string | null>(null);
+  const [recaptchaKey, setRecaptchaKey] = React.useState(Math.random());
+
   const dispatch = useDispatch<AppDispatch>();
   const data = useSelector((state: RootState) => state.auth);
   const formSchema = z.object({
@@ -58,12 +60,16 @@ const LogningV2: React.FC = () => {
     }
     dispatch(loginUserAsync(data)).then((response: any) => {
 
-      if (response.payload.data.success) {
+      if (response?.payload?.data?.success) {
         toast({
           title: "Welcome to Vans IMS Portal",
           description: "Now you can start your work",
           className: "bg-green-600 text-white items-center",
         });
+      }
+      else{
+        setRecaptchaValue(null);
+        setRecaptchaKey(Math.random());
       }
     });
   }
@@ -274,7 +280,7 @@ const LogningV2: React.FC = () => {
                 </div>
               </div>
               <div className=" flex justify-center">
-              <ReCAPTCHA sitekey="6Lcg8N8qAAAAAPBlPUssamaVv6yLzeA9nPXmUlT_" onChange={handleRecaptchaChange} />
+              <ReCAPTCHA sitekey="6Lcg8N8qAAAAAPBlPUssamaVv6yLzeA9nPXmUlT_" onChange={handleRecaptchaChange} key={recaptchaKey}/>
             </div>
               <LoadingButton
                 loading={loading}
