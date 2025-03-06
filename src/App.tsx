@@ -109,6 +109,9 @@ import CustomerLayout from "./layouts/CustomerLayout";
 import YourStock from "./pages/CustomerEnquiry/YourStock";
 import AllItemStock from "./pages/CustomerEnquiry/AllItemStock";
 import Profile from "@/components/shared/Api/Profile";
+import { useSelector } from "react-redux";
+import OtpPage from "@/pages/otpPage";
+import RecoveryPassword from "@/pages/RecoveryPassword";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -1173,6 +1176,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    element: (
+      <Protected authentication={false}>
+        <RecoveryPassword />
+      </Protected>
+    ),
+    path: "/password-recovery",
+  },
+  {
     path: "/change-password",
     element: (
       <MainLayout>
@@ -1194,6 +1205,9 @@ const router = createBrowserRouter([
 
 function App() {
   const [isOffline, setIsOffline] = useState<boolean>(false);
+  const { qrStatus } = useSelector((state) => state.auth);
+  const showOtpPage = localStorage.getItem("showOtpPage");
+
   useEffect(() => {
     const handleOffline = () => {
       setIsOffline(true); // User is offline, apply blur effect
@@ -1217,6 +1231,17 @@ function App() {
       window.removeEventListener("online", handleOnline);
     };
   }, []);
+  
+  if (qrStatus?.isTwoStep === "Y"||showOtpPage === "Y"){
+    return (
+      <>
+        <InternetStatusBar />
+        <Toaster />
+        <OtpPage />
+      </>
+    );
+  }
+  else{
   return (
     <>
       <InternetStatusBar />
@@ -1231,6 +1256,7 @@ function App() {
       </div>
     </>
   );
+}
 }
 
 export default App;

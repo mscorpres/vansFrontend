@@ -7,7 +7,8 @@ import {
     Fish,
     Rabbit,
     Turtle,
-    Building2
+    Building2,
+    LogOut,
   } from "lucide-react";
   
   export const Icons = {
@@ -19,6 +20,7 @@ import {
     rabbit: Rabbit,
     turtle: Turtle,
     building:Building2,
+    logout:LogOut,
     gitHub: ({ ...props }: LucideProps) => (
       <svg
         aria-hidden="true"

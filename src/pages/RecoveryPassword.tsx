@@ -13,11 +13,11 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { IoMdMail } from "react-icons/io";
-import { RiLockPasswordLine } from "react-icons/ri";
-import { MdSecurity } from "react-icons/md";
-import { AppDispatch } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
-import { getPasswordOtp, updatePassword } from "@/features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
+import { AppDispatch} from "@/store";
+import { recoveryAccount } from "@/features/auth/authSlice";
+import { showToast } from "@/General";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -56,12 +56,12 @@ const SecurityImage = styled(Box)({
   borderRadius: 16,
 });
 
-const ForgetPasswordNew = () => {
+const RecoveryPassword = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [loading, setLoading] = useState(false);
-  const {otpLoading} = useSelector((state: any) => state.auth);
+  const {recoveryLoading} = useSelector((state:any) => state.auth);
   const [formData, setFormData] = useState({
     email: "",
     verificationCode: "",
@@ -69,7 +69,6 @@ const ForgetPasswordNew = () => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<any>({});
-  const [step, setStep] = useState(1);
 
   const validateEmail = (email:string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -96,32 +95,17 @@ const ForgetPasswordNew = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setLoading(true);
+    // setLoading(true);
 
     try {
-      if (step === 1) {
-        dispatch(getPasswordOtp({emailId:formData.email})).then((res: any) => {
-          if (res?.payload?.success) {
-            setStep(2);
-          } 
+        dispatch(recoveryAccount({ email:formData.email })).then((res: any) => { 
+          if (res?.payload?.data?.success) {
+            showToast(res?.payload?.data?.message, "success");
+            navigate("/login");          } 
         });
-      } else if (step === 2) {
-        const payload = {
-          emailId: formData.email,
-          otp: formData.verificationCode, 
-          password: formData.confirmPassword                                                                       
-        }
-        dispatch(updatePassword(payload as any)).then((res: any) => {
-            if(res?.payload?.success){
-              setStep(3);
-            }
-        })
-      }
     } catch (error) {
       console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   return (
@@ -143,19 +127,15 @@ const ForgetPasswordNew = () => {
               gutterBottom
               sx={{ fontWeight: 600, color: theme.palette.primary.main }}
             >
-              Password Recovery
+              Account Recovery
             </Typography>
             <Typography variant="body1" color="text.secondary" paragraph>
-              {step === 1
-                ? "Enter your email address to receive a verification code."
-                : step === 2
-                ? "Enter the verification code sent to your email and Create your new password."
-                : ""}
+            
+          Enter your email address to receive a verification code.
             </Typography>
 
             <form onSubmit={handleSubmit}>
               <FormContainer>
-                {step === 1 && (
                   <StyledTextField
                     fullWidth
                     label="Email Address"
@@ -173,67 +153,13 @@ const ForgetPasswordNew = () => {
                         </InputAdornment>
                       ),
                     }}
-                  />
-                )}
-
-                {step === 2 && (
-                  <>
-                  <StyledTextField
-                    fullWidth
-                    label="Verification Code"
-                    value={formData.verificationCode}
-                    onChange={handleChange("verificationCode")}
-                    required
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <MdSecurity />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                    <StyledTextField
-                      fullWidth
-                      label="New Password"
-                      type="password"
-                      value={formData.newPassword}
-                      onChange={handleChange("newPassword")}
-                      required
-                      autoComplete="new-password"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <RiLockPasswordLine />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                    <StyledTextField
-                      fullWidth
-                      label="Confirm Password"
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange("confirmPassword")}
-                      error={Boolean(errors.confirmPassword)}
-                      helperText={errors.confirmPassword}
-                      required
-                      autoComplete="new-password"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <RiLockPasswordLine />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </>
-                )}
+                  />               
 
                 <Button
                   type="submit"
                   variant="contained"
                   size="large"
-                  disabled={loading||otpLoading}
+                  disabled={recoveryLoading}
                   sx={{
                     borderRadius: 2,
                     py: 1.5,
@@ -244,26 +170,12 @@ const ForgetPasswordNew = () => {
                     transition: "all 0.3s ease",
                   }}
                 >
-                  {loading ? (
+                  {recoveryLoading ? (
                     <CircularProgress size={24} color="inherit" />
-                  ) : step === 1 ? (
-                    "Send Verification Code"
-                  ) : step === 2 ? (
+                  ) :(
                     "Submit"
-                  ) : (
-                    "Reset Password"
                   )}
                 </Button>
-
-                {step > 1 && (
-                  <Button
-                    variant="text"
-                    onClick={() => setStep(step - 1)}
-                    sx={{ mt: 1 }}
-                  >
-                    Go Back
-                  </Button>
-                )}
               </FormContainer>
             </form>
           </StyledPaper>
@@ -279,4 +191,4 @@ const ForgetPasswordNew = () => {
   );
 };
 
-export default ForgetPasswordNew;
+export default RecoveryPassword;

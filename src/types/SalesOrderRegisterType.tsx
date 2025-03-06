@@ -8,6 +8,7 @@ export interface RowData {
     soInvoiceStatus: string;
     soStatus: string;
     so_id: string;
+    costcenter: string;
     supplierName:string;
     shipment_id:string
     material_status:string,
