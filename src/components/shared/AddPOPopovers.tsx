@@ -103,7 +103,7 @@ const AddPOPopovers: React.FC<Props> = ({
       return {
         partno: item.item.partNo || "", // Ensure partNo is available
         orderQty: parseFloat(item.qty) || 1, // Default to 1 if qty is missing or invalid
-        material: item?.item || "", // Ensure the material data is included
+        material: item?.item.name || "", // Ensure the material data is included
         rate: parseFloat(item.rate) || 0, // Ensure rate is numeric
         localValue: localValue, // Taxable value in the local currency
         // foreignValue: foreignValue, // Exchange taxable value (if applicable)

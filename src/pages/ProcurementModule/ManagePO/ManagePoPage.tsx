@@ -47,6 +47,7 @@ import { rangePresets } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { uploadAttachmentForPO } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
+
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
   setCancel,
@@ -104,12 +105,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   return (
     <>
       <Dropdown overlay={menu} trigger={["click"]}>
-        {/* <Button icon={<Badge />} /> */}
         <MoreOutlined />
       </Dropdown>
     </>
   );
 };
+
 const FormSchema = z.object({
   wise: z.string().optional(),
   data: z
@@ -120,8 +121,10 @@ const FormSchema = z.object({
       message: "Please select a valid date range.",
     }),
 });
+
 const { RangePicker } = DatePicker;
 const dateFormat = "YYYY/MM/DD";
+
 const ManagePoPage: React.FC = () => {
   const { loading } = useSelector((state: RootState) => state.client);
 
@@ -146,7 +149,6 @@ const ManagePoPage: React.FC = () => {
       field: "action",
       headerName: "",
       width: 40,
-
       cellRenderer: (params: any) => (
         <ActionMenu
           setViewMinPo={setViewMinPo}
@@ -183,7 +185,6 @@ const ManagePoPage: React.FC = () => {
     {
       field: "vendor_name",
       headerName: "Vendor & Narration",
-      // cellRenderer: CopyCellRenderer,
       flex: 2,
       filterParams: {
         floatingFilterComponentParams: {
@@ -210,6 +211,7 @@ const ManagePoPage: React.FC = () => {
       width: "190",
     },
   ]);
+
   const type = [
     {
       label: "Date Wise ",
@@ -224,6 +226,7 @@ const ManagePoPage: React.FC = () => {
       value: "vendorwise",
     },
   ];
+
   const cancelTheSelectedPo = async (row: any) => {
     let payload = {
       poId: row?.po_transaction,
@@ -236,6 +239,7 @@ const ManagePoPage: React.FC = () => {
       }
     });
   };
+
   const dispatch = useDispatch<AppDispatch>();
 
   const fetchManageList = async () => {
@@ -263,9 +267,11 @@ const ManagePoPage: React.FC = () => {
       }
     });
   };
+
   const handleFileChange = (newFiles: File[] | null) => {
     setFiles(newFiles);
   };
+
   const uploadDocs = async () => {
     const formData = new FormData();
     files.map((comp) => {
@@ -280,7 +286,6 @@ const ManagePoPage: React.FC = () => {
     );
 
     if (response?.success || response.data?.success) {
-      // toast
       toast({
         title: "Doc Uploaded successfully",
         className: "bg-green-600 text-white items-center",
@@ -298,139 +303,111 @@ const ManagePoPage: React.FC = () => {
     }
     setLoadingPage(false);
   };
+
   const defaultColDef = useMemo(() => {
     return {
       filter: "agTextColumnFilter",
       floatingFilter: true,
     };
   }, []);
+
   useEffect(() => {
     form.setFieldValue("data", "");
   }, [selectedwise]);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      <div className="bg-[#fff]">
-        {" "}
-        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
-          <Filter className="h-[20px] w-[20px]" />
-          Filter
-        </div>
-        <div className="p-[10px]"></div>
-        <Form
-          form={form}
-          className="space-y-6 overflow-hidden p-[10px] h-[470px]  "
-        >
-          {/* <form
-            onSubmit={form.handleSubmit(fetchManageList)}
-            className="space-y-6 overflow-hidden p-[10px] h-[370px]"
-          > */}
-          <Form.Item
-            className="w-full"
-            name="wise"
-            rules={[{ required: true }]}
-          >
-            <Select
-              styles={customStyles}
-              components={{ DropdownIndicator }}
-              placeholder="Select Type"
-              className="border-0 basic-single"
-              classNamePrefix="select border-0"
-              isDisabled={false}
-              isClearable={true}
-              isSearchable={true}
-              options={type}
-            />
-          </Form.Item>
-          {selectedwise?.value === "datewise" ? (
+    <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
+      {/* Filter Section */}
+      <div className="bg-white p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Form form={form} className="flex items-center gap-4">
             <Form.Item
-              className="w-full"
-              name="data"
+              className="w-[300px] m-0"
+              name="wise"
               rules={[{ required: true }]}
             >
-              <Space direction="vertical" size={12} className="w-full">
-                <RangePicker
-                  className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                  // onChange={(e: any) => form.setFieldValue("data", e?.value)}
-                  onChange={(value) =>
-                    form.setFieldValue(
-                      "data",
-                      value ? value.map((date) => date!.toDate()) : []
-                    )
-                  }
-                  format={dateFormat}
-                  presets={rangePresets}
-                />
-              </Space>
-            </Form.Item>
-          ) : selectedwise?.value === "vendorwise" ? (
-            <Form.Item
-              className="w-full"
-              name="data"
-              rules={[{ required: true }]}
-            >
-              <ReusableAsyncSelect
-                placeholder="Vendor Name"
-                endpoint="/backend/vendorList"
-                transform={transformOptionData2}
-                onChange={(e) => form.setFieldValue("data", e)}
-                // value={selectedCustomer}
-                fetchOptionWith="query2"
+              <Select
+                styles={customStyles}
+                components={{ DropdownIndicator }}
+                placeholder="Select Type"
+                className="border-0 basic-single"
+                classNamePrefix="select border-0"
+                isDisabled={false}
+                isClearable={true}
+                isSearchable={true}
+                options={type}
               />
             </Form.Item>
-          ) : (
-            <Form.Item
-              className="w-full"
-              name="data"
-              rules={[{ required: true }]}
-            >
-              <Input placeholder="PO number" />
-            </Form.Item>
-          )}
-          <div className="w-full flex justify-end">
+            {selectedwise?.value === "datewise" ? (
+              <Form.Item
+                className="w-[300px] m-0"
+                name="data"
+                rules={[{ required: true }]}
+              >
+                <Space direction="vertical" size={12} className="w-full">
+                  <RangePicker
+                    className="border shadow-sm border-gray-300 py-[7px] hover:border-gray-400 w-full"
+                    onChange={(value) =>
+                      form.setFieldValue(
+                        "data",
+                        value ? value.map((date) => date!.toDate()) : []
+                      )
+                    }
+                    format={dateFormat}
+                    presets={rangePresets}
+                  />
+                </Space>
+              </Form.Item>
+            ) : selectedwise?.value === "vendorwise" ? (
+              <Form.Item
+                className="w-[300px] m-0"
+                name="data"
+                rules={[{ required: true }]}
+              >
+                <ReusableAsyncSelect
+                  placeholder="Vendor Name"
+                  endpoint="/backend/vendorList"
+                  transform={transformOptionData2}
+                  onChange={(e) => form.setFieldValue("data", e)}
+                  fetchOptionWith="query2"
+                />
+              </Form.Item>
+            ) : (
+              <Form.Item
+                className="w-[300px] m-0"
+                name="data"
+                rules={[{ required: true }]}
+              >
+                <Input placeholder="PO number" />
+              </Form.Item>
+            )}
             <Button
               type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500  flex justify-right items-right w-20"
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
               onClick={fetchManageList}
             >
               Search
-            </Button>{" "}
-          </div>{" "}
-          {/* <CustomTooltip
-              message="Add Address"
-              side="top"
-              className="bg-yellow-700"
-            >
-              <Button
-                onClick={() => {
-                  setSheetOpen(true);
-                }}
-                className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
-              >
-                <Plus className="h-[20px] w-[20px]" />
-              </Button>
-            </CustomTooltip> */}
-          {/* </form>{" "} */}
-        </Form>
-        <Divider />
+            </Button>
+          </Form>
+        </div>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+
+      {/* Grid Section */}
+      <div className="ag-theme-quartz flex-1">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={{ filter: true, sortable: true }}
-          // rowSelection="multiple"
-          // suppressRowClickSelection={true}
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
-          // gridOptions={commonAgGridConfig}
-          enableCellTextSelection = {true}
+          enableCellTextSelection={true}
         />
-      </div>{" "}
+      </div>
+
       <ViewCompoents
         view={view}
         setView={setView}
@@ -441,18 +418,17 @@ const ManagePoPage: React.FC = () => {
       <POCancel
         cancel={cancel}
         setCancel={setCancel}
-        // handleCancelPO={handleCancelPO}
         remarkDescription={remarkDescription}
         setRemarkDescription={setRemarkDescription}
-      />{" "}
+      />
       <MINPO viewMinPo={viewMinPo} setViewMinPo={setViewMinPo} />
       <ConfirmationModal
+      
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}
-        // onOkay={handleCancelPO}
         title="Confirm Submit!"
         description="Are you sure to submit details of all components of this Purchase Order?"
-      />{" "}
+      />
       <Sheet open={sheetOpen?.po_transaction} onOpenChange={setSheetOpen}>
         <SheetContent
           className="min-w-[35%] p-0"
@@ -460,7 +436,6 @@ const ManagePoPage: React.FC = () => {
             e.preventDefault();
           }}
         >
-          {/* {loading == true && <FullPageLoading />} */}
           <SheetHeader className={modelFixHeaderStyle}>
             <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
           </SheetHeader>
@@ -480,11 +455,9 @@ const ManagePoPage: React.FC = () => {
             >
               <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
                 <h2 className="text-xl font-semibold text-center mb-4">
-                  <div className=" text-center w-full justify-center flex">
-                    {" "}
+                  <div className="text-center w-full justify-center flex">
                     <div>Upload Your Files</div>
                     <div>
-                      {" "}
                       <IoCloudUpload
                         className="text-cyan-700 ml-5 h-[20]"
                         size={"1.5rem"}
@@ -496,9 +469,9 @@ const ManagePoPage: React.FC = () => {
                   <span className="text-slate-500 text-sm text-center w-full justify-center flex">
                     Drag and drop files here, or click to select files
                   </span>
-                </FileInput>{" "}
-              </div>{" "}
-              <div className=" m-[20px]">
+                </FileInput>
+              </div>
+              <div className="m-[20px]">
                 <FileUploaderContent>
                   {files?.map((file, index) => (
                     <FileUploaderItem key={index} index={index}>
@@ -507,7 +480,7 @@ const ManagePoPage: React.FC = () => {
                   ))}
                 </FileUploaderContent>
               </div>
-            </FileUploader>{" "}
+            </FileUploader>
             <div className="w-full flex justify-center">
               <div className="w-[80%] flex justify-center">
                 <Input
@@ -517,28 +490,27 @@ const ManagePoPage: React.FC = () => {
                 />
               </div>
             </div>
-          </div>{" "}
+          </div>
           <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
             <Button
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={() => setSheetOpen(false)}
             >
               Back
-            </Button>{" "}
+            </Button>
             <Button
               className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
               onClick={uploadDocs}
-              // loading={laoding}
             >
-              {/* {isApprove ? "Approve" : "Submit"} */}
               Upload
             </Button>
-          </div>{" "}
+          </div>
         </SheetContent>
-      </Sheet>{" "}
+      </Sheet>
     </Wrapper>
   );
 };
+
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;

@@ -121,6 +121,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           shipment_id: row?.shipment_id,
           remark: values.remark,
           so_id: row?.so_id,
+          costcenter:row?.costcenter,
+
         };
         dispatch(createInvoice(payload)).then((resultAction: any) => {
           if (
@@ -255,7 +257,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         form={invoiceForm}
         loading={loading}
         heading="Create Invoice"
-        description={`Are you sure you want to create an invoice for SO ${row.so_id} and shipment ${row.shipment_id}?`}
+        description={`Are you sure you want to create an invoice for SO ${row.so_id} and shipment ${row.shipment_id}? and cost center ${row.costcenter} ?`}
       />
       <PickSlipModal
         visible={isMaterialListModalVisible}

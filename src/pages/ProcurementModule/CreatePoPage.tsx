@@ -4,19 +4,11 @@ import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import {
-  DatePickerStyle,
-  primartButtonStyle,
-  InputStyle,
-} from "@/constants/themeContants";
+import { DatePickerStyle, primartButtonStyle, InputStyle } from "@/constants/themeContants";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
-import {
-  transformCurrencyData,
-  transformOptionData,
-  transformOptionData2,
-} from "@/helper/transform";
+import { transformCurrencyData, transformOptionData, transformOptionData2 } from "@/helper/transform";
 import { Button, DatePicker, Divider, Form } from "antd";
 
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
@@ -30,29 +22,17 @@ import {
   listOfCostCenter,
   listOfVendorBranchList,
 } from "@/features/client/clientSlice";
-import {
-  modelFixFooterStyle,
-  modelFixHeaderStyle,
-} from "@/constants/themeContants";
+import { modelFixFooterStyle, modelFixHeaderStyle } from "@/constants/themeContants";
 import { useEffect, useState } from "react";
 import moment from "moment";
 import dayjs, { Dayjs } from "dayjs";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import useApi from "@/hooks/useApi";
-import {
-  addVendorBranch,
-  costCenterCreate,
-  fetchState,
-  vendoradd,
-} from "@/components/shared/Api/masterApi";
+import { addVendorBranch, costCenterCreate, fetchState, vendoradd } from "@/components/shared/Api/masterApi";
 import { toast } from "@/components/ui/use-toast";
+import { FaTrash } from "react-icons/fa";
+import ConfirmationModal from "@/components/shared/ConfirmationModal";
 interface Props {
   setTab: string;
   setPayloadData: string;
@@ -82,32 +62,10 @@ const CreatePoPage: React.FC<Props> = ({
   const [sheetOpenBranch, setSheetOpenBranch] = useState<boolean>(false);
   const [sheetOpenCC, setSheetOpenCC] = useState<boolean>(false);
   const [stateList, setStateList] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
-  const {
-    vendorBranchlist,
-    shippingPOList,
-    shippingPODetails,
-    vendorPODetails,
-    vendorBillingList,
-    vendorBillingDetails,
-    loading,
-  } = useSelector((state: RootState) => state.client);
-  const poTypeOptions = [
-    {
-      label: "New",
-      value: "N",
-    },
-    {
-      label: "Supplementary",
-      value: "S",
-    },
-  ];
-  const poVendorOptions = [
-    {
-      label: "Vendor",
-      value: "vendor",
-    },
-  ];
+  const { vendorBranchlist, shippingPOList, shippingPODetails, vendorPODetails, vendorBillingList, vendorBillingDetails, loading } = useSelector((state: RootState) => state.client);
+
   useEffect(() => {
     if (currencyval?.value == "364907247") {
       form.setFieldValue("exchange_rate", "1");
@@ -148,10 +106,33 @@ const CreatePoPage: React.FC<Props> = ({
     setFormVal(valuesOfFrom);
     // return valuesOfFrom;
   };
+  const resetForm = async () => {
+    try {
+      await form.resetFields(); // Reset the form fields
+      
+      setFormVal({}); 
+    } catch (error) {
+      console.error("Error resetting form:", error);
+    }
+  };
+  const handleResetClick = () => {
+    setIsModalOpen(true); // Show the confirmation modal
+  };
+
+  // Function to handle modal confirmation
+  const handleModalConfirm = () => {
+    resetForm(); // Call the reset function if confirmed
+    setIsModalOpen(false); // Close the modal
+  };
+
+  // Function to handle modal cancellation
+  const handleModalClose = () => {
+    setIsModalOpen(false); // Close the modal without resetting
+  };
 
   const handleDateChange = (value: any) => {
     const formattedDate = value ? moment(value).format("DD-MM-YYYY") : "";
-    setFieldValue("duedate", formattedDate); // Set value of 'duedate' in form state
+    setFieldValue("duedate", formattedDate); 
   };
   const addVendor = async (data) => {
     const values = forms.getFieldsValue();
@@ -296,9 +277,7 @@ const CreatePoPage: React.FC<Props> = ({
   }, [selCostCenter]);
   useEffect(() => {
     if (selShipping) {
-      dispatch(
-        fetchShippingAddressDetails({ shipping_code: selShipping?.value })
-      );
+      dispatch(fetchShippingAddressDetails({ shipping_code: selShipping?.value }));
     }
   }, [selShipping]);
   useEffect(() => {
@@ -362,81 +341,17 @@ const CreatePoPage: React.FC<Props> = ({
   }, [vendorBillingDetails]);
 
   return (
-    <div className="h-[calc(100vh-100px)]">
+    <div className="h-[calc(100vh-150px)]">
       {loading && <FullPageLoading />}
       <Form form={form} layout="vertical">
-        <div className="rounded p-[30px] shadow bg-[#fff] max-h-[calc(100vh-180px)] overflow-y-auto">
+        <div className="rounded p-[30px] shadow bg-[#fff] h-[calc(100vh-150px)] overflow-y-auto">
           <div className="grid grid-cols-2 gap-[30px]">
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                <h3 className="text-[17px] font-[600] text-slate-600">
-                  Vendor Details
-                </h3>
-                <p className="text-slate-600 text-[13px]">
-                  {/* Type Name or Code of the vendor */}
-                </p>
+                <h3 className="text-[17px] font-[600] text-slate-600">Vendor Details</h3>
+                <p className="text-slate-600 text-[13px]">{/* Type Name or Code of the vendor */}</p>
               </CardHeader>
               <CardContent className="mt-[10px]">
-                <div className="mt-[30px] grid grid-cols-2 gap-[40px]">
-                  <Form.Item name="poType" label="PO Type" rules={rules.poType}>
-                    <Select
-                      styles={customStyles}
-                      placeholder="PO type"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      components={{ DropdownIndicator }}
-                      isDisabled={false}
-                      //isLoading={true}
-                      isClearable={true}
-                      isSearchable={true}
-                      name="color"
-                      options={poTypeOptions}
-                      value={poTypeOptions[0]}
-                      defaultInputValue={"New"}
-                    />
-                    {/* <p>error message</p> */}
-                  </Form.Item>
-                  {selPoType?.value == "S" && (
-                    <Form.Item
-                      name="originalPO"
-                      label="Original PO"
-                      rules={rules.vendorType}
-                    >
-                      <ReusableAsyncSelect
-                        placeholder="Original PO"
-                        endpoint="/backend/searchPoByPoNo"
-                        transform={transformOptionData}
-                        onChange={(e) => form.setFieldValue("originalPO", e)}
-                        // value={selectedCustomer}
-                        fetchOptionWith="search"
-                      />
-                    </Form.Item>
-                  )}
-                  <Form.Item
-                    name="vendorType"
-                    label="Vendor Type"
-                    rules={rules.vendorType}
-                  >
-                    <Select
-                      styles={customStyles}
-                      placeholder="Vendor type"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      components={{ DropdownIndicator }}
-                      isDisabled={false}
-                      //isLoading={true}
-                      isClearable={true}
-                      isSearchable={true}
-                      name="color"
-                      options={poVendorOptions}
-                      defaultInputValue="Vendor"
-                    />
-                    {/* <p>error message</p> */}
-                  </Form.Item>
-                  {/* <div> */}
-
-                  {/* <p>error message</p> */}
-                </div>
                 <Form.Item
                   name="vendorName"
                   label="Vendor Name"
@@ -446,7 +361,7 @@ const CreatePoPage: React.FC<Props> = ({
                         fontSize: window.innerWidth < 1600 && "0.9rem",
                         display: "flex",
                         justifyContent: "space-between",
-                        width: 350,
+                        width: 620,
                       }}
                     >
                       Vendor Name
@@ -514,36 +429,18 @@ const CreatePoPage: React.FC<Props> = ({
                       options={transformOptionData(vendorBranchlist)}
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="vendorGst"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="GSTIN / UIN"
-                    />
+                  <Form.Item name="vendorGst" label="GSTIN" className="" rules={rules.vendorGst}>
+                    <Input placeholder="GSTIN / UIN" />
                   </Form.Item>
                 </div>{" "}
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  className=""
-                  rules={rules.address}
-                >
-                  <Textarea
-                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                    placeholder="Address"
-                  />
+                <Form.Item name="address" label="Address" className="" rules={rules.address}>
+                  <Textarea  placeholder="Address" />
                 </Form.Item>
               </CardContent>
             </Card>
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                <h3 className="text-[17px] font-[600] text-slate-600">
-                  PO Terms & Other
-                </h3>
+                <h3 className="text-[17px] font-[600] text-slate-600">PO Terms & Other</h3>
                 <p className="text-slate-600 text-[13px]"></p>
               </CardHeader>
 
@@ -555,10 +452,7 @@ const CreatePoPage: React.FC<Props> = ({
                     className=""
                     // rules={rules.terms}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                      placeholder="Terms & Condition"
-                    />
+                    <Input  placeholder="Terms & Condition" />
                   </Form.Item>
                   <Form.Item
                     name="quotation"
@@ -566,20 +460,10 @@ const CreatePoPage: React.FC<Props> = ({
                     className=""
                     // rules={rules.quotation}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Quotation"
-                    />
+                    <Input  placeholder="Quotation" />
                   </Form.Item>
-                  <Form.Item
-                    name="paymentTerms"
-                    label="Payment Terms"
-                    className=""
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Payment Terms"
-                    />
+                  <Form.Item name="paymentTerms" label="Payment Terms" className="">
+                    <Input  placeholder="Payment Terms" />
                   </Form.Item>
                   <Form.Item
                     name="costCenter"
@@ -608,12 +492,7 @@ const CreatePoPage: React.FC<Props> = ({
                     }
                     rules={rules.costCenter}
                   >
-                    <ReusableAsyncSelect
-                      placeholder="Cost Center"
-                      endpoint="/backend/costCenter"
-                      transform={transformOptionData2}
-                      fetchOptionWith="query2"
-                    />
+                    <ReusableAsyncSelect placeholder="Cost Center" endpoint="/backend/costCenter" transform={transformOptionData2} fetchOptionWith="query2" />
                     {/* <p>error message</p> */}
                   </Form.Item>
                   <Form.Item
@@ -622,10 +501,7 @@ const CreatePoPage: React.FC<Props> = ({
                     className=""
                     // rules={rules.project}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Project"
-                    />
+                    <Input  placeholder="Project" />
                   </Form.Item>
                   <Form.Item
                     name="comment"
@@ -633,17 +509,9 @@ const CreatePoPage: React.FC<Props> = ({
                     className=""
                     // rules={rules.comment}
                   >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Comment (If any)"
-                    />
+                    <Input  placeholder="Comment (If any)" />
                   </Form.Item>
-                  <Form.Item
-                    name="currency"
-                    label="Currency"
-                    className=""
-                    rules={rules.currency}
-                  >
+                  <Form.Item name="currency" label="Currency" className="" rules={rules.currency}>
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
@@ -669,17 +537,8 @@ const CreatePoPage: React.FC<Props> = ({
                       // }}
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="exchange_rate"
-                    label="Exchange Rate"
-                    className=""
-                    rules={rules.exchange_rate}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="Exchange Rate"
-                      min={1}
-                    />
+                  <Form.Item name="exchange_rate" label="Exchange Rate" className="" rules={rules.exchange_rate}>
+                    <Input  placeholder="Exchange Rate" min={1} />
                   </Form.Item>
 
                   {/* <Form.Item
@@ -716,17 +575,11 @@ const CreatePoPage: React.FC<Props> = ({
             </Card>
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                <h3 className="text-[17px] font-[600] text-slate-600">
-                  Invoicing Details
-                </h3>
+                <h3 className="text-[17px] font-[600] text-slate-600">Invoicing Details</h3>
                 {/* <p className="text-slate-600 text-[13px]">Bill To -</p> */}
               </CardHeader>
               <CardContent className="mt-[30px]">
-                <Form.Item
-                  name="billingId"
-                  label="Billing ID"
-                  rules={rules.billingId}
-                >
+                <Form.Item name="billingId" label="Billing ID" rules={rules.billingId}>
                   <Select
                     styles={customStyles}
                     components={{ DropdownIndicator }}
@@ -744,48 +597,22 @@ const CreatePoPage: React.FC<Props> = ({
                   />
                 </Form.Item>
                 <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                  <Form.Item
-                    name="pan"
-                    label="PAN"
-                    className=""
-                    rules={rules.pan}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                      placeholder="Billing PAN"
-                    />
+                  <Form.Item name="pan" label="PAN" className="" rules={rules.pan}>
+                    <Input  placeholder="Billing PAN" />
                   </Form.Item>
 
-                  <Form.Item
-                    name="billgst"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.billgst}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                      placeholder="Billing GSTIN"
-                    />
+                  <Form.Item name="billgst" label="GSTIN" className="" rules={rules.billgst}>
+                    <Input  placeholder="Billing GSTIN" />
                   </Form.Item>
                 </div>
-                <Form.Item
-                  name="billAddress"
-                  label="Address"
-                  className="mt-[40px]"
-                  rules={rules.billAddress}
-                >
-                  <Textarea
-                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                    placeholder="Billing Address"
-                  />
+                <Form.Item name="billAddress" label="Address" className="mt-[40px]" rules={rules.billAddress}>
+                  <Textarea  placeholder="Billing Address" />
                 </Form.Item>
               </CardContent>
             </Card>
             <Card className="rounded shadow bg-[#fff]">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                <h3 className="text-[17px] font-[600] text-slate-600">
-                  Shipping Details
-                </h3>
+                <h3 className="text-[17px] font-[600] text-slate-600">Shipping Details</h3>
                 {/* <p className="text-slate-600 text-[13px]">Ship To -</p> */}
               </CardHeader>
               <CardContent className="mt-[30px]">
@@ -807,55 +634,54 @@ const CreatePoPage: React.FC<Props> = ({
                   />
                 </Form.Item>
                 <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
-                  <Form.Item
-                    name="shippan"
-                    label="PAN"
-                    className=""
-                    rules={rules.shippan}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                      placeholder="Shipping PAN"
-                    />
+                  <Form.Item name="shippan" label="PAN" className="" rules={rules.shippan}>
+                    <Input  placeholder="Shipping PAN" />
                   </Form.Item>
 
-                  <Form.Item
-                    name="shipgst"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.shipgst}
-                  >
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0 "
-                      placeholder=" Shipping GSTIN"
-                    />
+                  <Form.Item name="shipgst" label="GSTIN" className="" rules={rules.shipgst}>
+                    <Input  placeholder=" Shipping GSTIN" />
                   </Form.Item>
                 </div>
-                <Form.Item
-                  rules={rules.shipAddress}
-                  name="shipAddress"
-                  label="Address"
-                  className="mt-[40px]"
-                >
-                  <Textarea
-                    className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
-                    placeholder="Shipping Address"
-                  />
+                <Form.Item rules={rules.shipAddress} name="shipAddress" label="Address" className="mt-[40px]">
+                  <Textarea  placeholder="Shipping Address" />
                 </Form.Item>
               </CardContent>
             </Card>
           </div>
         </div>
-        <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300 text-white">
+
+        <div className="h-[50px] w-full flex justify-end items-center px-[20px] bg-white shadow-md border-t border-slate-300">
+        <div className="flex gap-[15px]">
+          {/* Reset Button */}
+          <Button
+            onClick={handleResetClick} // Show modal on click
+            className="flex items-center gap-[10px] text-red-500 border border-red-500 px-4 py-2 rounded-md hover:bg-red-500 hover:bg-opacity-20 transition-colors"
+            type="button" // Changed to "button" since this isn't submitting a form
+          >
+            <FaTrash />
+            Reset
+          </Button>
+          {/* Next Button */}
           <Button
             onClick={getValues}
-            className={`${primartButtonStyle} flex gap-[10px] text-white`}
+            className="flex items-center gap-[10px] text-green-500 border border-green-500 px-4 py-2 rounded-md hover:bg-green-600 hover:bg-opacity-20 transition-colors"
             type="submit"
           >
             Next
-            <FaArrowRightLong className="" />
+            <FaArrowRightLong />
           </Button>
         </div>
+      </div>
+      <ConfirmationModal
+        open={isModalOpen}
+        onClose={handleModalClose}
+        onOkay={handleModalConfirm}
+        title="Confirm Reset"
+        description="Are you sure you want to reset the form? All entered data will be lost."
+        submitText="Yes, Reset"
+        cancelText="Cancel"
+      />
+      
       </Form>
       {/* ///add Branch */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -876,10 +702,7 @@ const CreatePoPage: React.FC<Props> = ({
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
                 <div className="grid grid-cols-2 gap-[20px]">
                   <Form.Item name="label" label=" Address label">
-                    <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                      placeholder="GSTIN / UIN"
-                    />
+                    <Input  placeholder="GSTIN / UIN" />
                   </Form.Item>{" "}
                   <Form.Item
                     name="pan"
@@ -889,31 +712,21 @@ const CreatePoPage: React.FC<Props> = ({
                   >
                     <Input
                       className={InputStyle}
-                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // 
                       // placeholder="GSTIN / UIN"
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="cin"
-                    label="CIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="cin" label="CIN" className="" rules={rules.vendorGst}>
                     <Input
                       className={InputStyle}
-                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // 
                       // placeholder="GSTIN / UIN"
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="paymentTerm"
-                    label="Payment Term"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="paymentTerm" label="Payment Term" className="" rules={rules.vendorGst}>
                     <Input
                       className={InputStyle}
-                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // 
                       // placeholder="GSTIN / UIN"
                     />
                   </Form.Item>
@@ -921,23 +734,13 @@ const CreatePoPage: React.FC<Props> = ({
                 <Divider />
                 <div className="grid grid-cols-2 gap-[20px]">
                   {" "}
-                  <Form.Item
-                    name="company"
-                    label="Company Name"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="company" label="Company Name" className="" rules={rules.vendorGst}>
                     <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      
                       // placeholder="GSTIN / UIN"
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="state"
-                    label="state"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="state" label="state" className="" rules={rules.vendorGst}>
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
@@ -949,67 +752,30 @@ const CreatePoPage: React.FC<Props> = ({
                       isSearchable={false} // Disable search if not needed
                       name="state" // Ensure this name aligns with the form field
                       options={stateList}
-                      onChange={(e: any) =>
-                        form.setFieldValue("state", e?.value)
-                      }
+                      onChange={(e: any) => form.setFieldValue("state", e?.value)}
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="city"
-                    label="City"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="city" label="City" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter City" />
                   </Form.Item>
-                  <Form.Item
-                    name="gstin"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="gstin" label="GSTIN" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter City" />
                   </Form.Item>
-                  <Form.Item
-                    name="pin"
-                    label="Pin No."
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="pin" label="Pin No." className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter City" />
                   </Form.Item>
-                  <Form.Item
-                    name="email"
-                    label="Email"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="email" label="Email" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter Email" />
                   </Form.Item>
-                  <Form.Item
-                    name="mobile"
-                    label="Mobile"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="mobile" label="Mobile" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter mobile" />
                   </Form.Item>
-                  <Form.Item
-                    name="fax"
-                    label="Fax"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="fax" label="Fax" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter fax" />
                   </Form.Item>
                 </div>{" "}
                 <div className="grid grid-cols-2 gap-[20px]"></div>
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  className=""
-                  rules={rules.vendorGst}
-                >
+                <Form.Item name="address" label="Address" className="" rules={rules.vendorGst}>
                   <Input className={InputStyle} placeholder="Enter address" />
                 </Form.Item>
               </div>
@@ -1024,11 +790,7 @@ const CreatePoPage: React.FC<Props> = ({
                 >
                   Back
                 </Button>
-                <Button
-                  type="submit"
-                  onClick={addVendor}
-                  className="bg-cyan-700 hover:bg-cyan-600 text-white"
-                >
+                <Button type="submit" onClick={addVendor} className="bg-cyan-700 hover:bg-cyan-600 text-white">
                   Register
                 </Button>
               </div>
@@ -1055,10 +817,7 @@ const CreatePoPage: React.FC<Props> = ({
               {/* <form onSubmit={form.handleSubmit(createNewBranch)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
                 <Form.Item name="label" label=" Address label" className="">
-                  <Input
-                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                    placeholder="GSTIN / UIN"
-                  />
+                  <Input  placeholder="GSTIN / UIN" />
                 </Form.Item>{" "}
                 <div className="grid grid-cols-2 gap-[20px]">
                   {/* <FormField
@@ -1080,12 +839,7 @@ const CreatePoPage: React.FC<Props> = ({
                           </FormItem>
                         )}
                       /> */}{" "}
-                  <Form.Item
-                    name="state"
-                    label="state"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="state" label="state" className="" rules={rules.vendorGst}>
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
@@ -1097,78 +851,33 @@ const CreatePoPage: React.FC<Props> = ({
                       isSearchable={false} // Disable search if not needed
                       name="state" // Ensure this name aligns with the form field
                       options={stateList}
-                      onChange={(e: any) =>
-                        form.setFieldValue("state", e?.value)
-                      }
+                      onChange={(e: any) => form.setFieldValue("state", e?.value)}
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="city"
-                    label="City"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="city" label="City" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter City" />
                   </Form.Item>
-                  <Form.Item
-                    name="gstin"
-                    label="GSTIN"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="gstin" label="GSTIN" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter City" />
                   </Form.Item>
-                  <Form.Item
-                    name="pin"
-                    label="Pin No."
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="pin" label="Pin No." className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter City" />
                   </Form.Item>
-                  <Form.Item
-                    name="email"
-                    label="Email"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="email" label="Email" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter Email" />
                   </Form.Item>
-                  <Form.Item
-                    name="mobile"
-                    label="Mobile"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="mobile" label="Mobile" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Enter mobile" />
                   </Form.Item>
                 </div>
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  className=""
-                  rules={rules.vendorGst}
-                >
+                <Form.Item name="address" label="Address" className="" rules={rules.vendorGst}>
                   <Input className={InputStyle} placeholder="Enter address" />
                 </Form.Item>
                 <div className="grid grid-cols-2 gap-[20px]">
-                  <Form.Item
-                    name="fax"
-                    label="Fax"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
-                    <Input
-                      className={InputStyle}
-                      placeholder="Enter Payment Terms"
-                    />
+                  <Form.Item name="fax" label="Fax" className="" rules={rules.vendorGst}>
+                    <Input className={InputStyle} placeholder="Enter Payment Terms" />
                   </Form.Item>
-                  <Form.Item
-                    name="paymentTerms"
-                    label="Payment Terms"
-                    className=""
-                    rules={rules.vendorGst}
-                  >
+                  <Form.Item name="paymentTerms" label="Payment Terms" className="" rules={rules.vendorGst}>
                     <Input className={InputStyle} placeholder="Payment Terms" />
                   </Form.Item>
                 </div>
@@ -1184,11 +893,7 @@ const CreatePoPage: React.FC<Props> = ({
                 >
                   Back
                 </Button>
-                <Button
-                  type="submit"
-                  onClick={createNewBranch}
-                  className="bg-cyan-700 hover:bg-cyan-600 text-white"
-                >
+                <Button type="submit" onClick={createNewBranch} className="bg-cyan-700 hover:bg-cyan-600 text-white">
                   Register
                 </Button>
               </div>
@@ -1214,16 +919,10 @@ const CreatePoPage: React.FC<Props> = ({
               {/* <form onSubmit={form.handleSubmit(createNewBranch)} className=""> */}
               <div className="space-y-8 p-[20px] h-[calc(100vh-100px)] overflow-y-auto">
                 <Form.Item name="costId" label="Cost Center Id" className="">
-                  <Input
-                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                    placeholder="Cost Center Id"
-                  />
+                  <Input  placeholder="Cost Center Id" />
                 </Form.Item>{" "}
                 <Form.Item name="name" label="Cost Center Namel" className="">
-                  <Input
-                    className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
-                    placeholder="Cost Center Name"
-                  />
+                  <Input  placeholder="Cost Center Name" />
                 </Form.Item>{" "}
               </div>
               <div className={modelFixFooterStyle}>
@@ -1237,11 +936,7 @@ const CreatePoPage: React.FC<Props> = ({
                 >
                   Back
                 </Button>
-                <Button
-                  type="submit"
-                  onClick={createCostCenter}
-                  className="bg-cyan-700 hover:bg-cyan-600 text-white"
-                >
+                <Button type="submit" onClick={createCostCenter} className="bg-cyan-700 hover:bg-cyan-600 text-white">
                   Add
                 </Button>
               </div>

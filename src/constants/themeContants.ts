@@ -1,6 +1,8 @@
 // style constants
-export const InputStyle = "border-0 border-b-2 border-b-[#cbd5e1] rounded-none shadow-none focus-visible:ring-0";
-export const DatePickerStyle = "border-0 border-b-2 rounded-none shadow-none border-b-[#cbd5e1] focus-visible:ring-0 w-full pt-5 hover:border-b-[#8d9196]";
+// export const InputStyle = "border-0 border-b-2 border-b-[#cbd5e1] rounded-none shadow-none focus-visible:ring-0";
+export const InputStyle = "";
+// export const DatePickerStyle = "border-0 border-b-2 rounded-none shadow-none border-b-[#cbd5e1] focus-visible:ring-0 w-full pt-5 hover:border-b-[#8d9196]";
+export const DatePickerStyle = " w-full mt-2 py-2";
 export const LableStyle = "text-slate-600 ml-[10px]";
 export const navLinkStyle = "h-[50px] text-[14px] px-[20px] flex items-center text-center hover:bg-hbg";
 export const navlinkActiveStyle = "bg-hbg  border-b-[4px] border-cyan-700";
