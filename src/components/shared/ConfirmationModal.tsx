@@ -13,7 +13,7 @@ interface ConfirmationModalProps {
   cancelText?: string;
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ open, onClose, onOkay, title, description, submitText = "Yes, Cancel", cancelText = "No" }) => {
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ open, onClose, onOkay, title, description, submitText = "Yes,Proceed", cancelText = "No" }) => {
   return (
     <Dialog open={open} onOpenChange={() => onClose(false)}>
       <DialogContent
