@@ -136,8 +136,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
   };
 
   const handleChange = (value: string) => {
-    const newValue = value;
-    data[colDef.field] = value; // Save ID in the data
+    data[colDef.field] = value; // Set material to the ID (e.g., "1678606649092")
     if (colDef.field === "material") {
       dispatch(
         fetchComponentDetailByCode({
@@ -148,8 +147,11 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       ).then((response: any) => {
         if (response.meta.requestStatus === "fulfilled") {
           const componentData = response.payload;
+          const selectedComponent = componentDetails?.find(
+            (item: any) => item.id === value
+          );
           data["stock"] = componentData?.closingQty;
-          data["materialName"]= componentDetails?.find((item: any) => item.id === value)?.text;
+          data["materialName"] = selectedComponent?.text || data.materialName; // Preserve existing materialName if not found
           data["hsnCode"] = componentData?.hsn;
           data["gstRate"] = componentData?.gstrate;
           data["rate"] = componentData?.rate;
@@ -300,7 +302,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
             />
           </div>
         );
-      case "material":
+     case "material":
         return (
           <Select
             className="w-full"
@@ -316,7 +318,11 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
             }}
             options={transformOptionData(componentDetails || [])}
             onChange={(e) => handleChange(e.value)}
-            value={data.materialName ? { value: data.materialName } : value}
+            value={
+              data.material
+                ? { value: data.material, label: data.materialName || "" }
+                : null
+            }
           />
         );
       case "partno":
