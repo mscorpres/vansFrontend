@@ -36,6 +36,7 @@ import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import { rangePresets } from "@/General";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -56,7 +57,6 @@ const R3 = () => {
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
-  //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
 
   const dateFormat = "YYYY/MM/DD";
@@ -72,7 +72,6 @@ const R3 = () => {
       subject: formData.bom,
       date: dataString,
     };
-    // return;
     const response = await execFun(() => fetchR3(payload), "fetch");
     let { data } = response;
     if (data.success) {
@@ -138,14 +137,12 @@ const R3 = () => {
       cellRenderer: CopyCellRenderer,
       width: 220,
     },
-
     {
       headerName: "Category",
       field: "category1",
       filter: "agTextColumnFilter",
       width: 190,
     },
-
     {
       headerName: "Status",
       field: "status1",
@@ -170,7 +167,6 @@ const R3 = () => {
       filter: "agTextColumnFilter",
       width: 220,
     },
-
     {
       headerName: "Opening",
       field: "opening",
@@ -178,7 +174,6 @@ const R3 = () => {
       filter: "agTextColumnFilter",
       width: 220,
     },
-
     {
       headerName: "Inward",
       field: "inward",
@@ -231,125 +226,106 @@ const R3 = () => {
     downloadCSV(rowData, columnDefs, "R3 BOM Wise Report");
   };
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      <div className="bg-[#fff]">
-        {" "}
-        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
-          <Filter className="h-[20px] w-[20px]" />
-          Filter
-        </div>
-        <div className="p-[10px]"></div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(fetchQueryResults)}
-            className="space-y-6 overflow-hidden p-[10px] h-[470px]"
-          >
-            <FormField
-              control={form.control}
-              name="part"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <ReusableAsyncSelect
-                      placeholder="Part Name"
-                      endpoint="/backend/fetchProduct"
-                      transform={transformOptionData}
-                      onChange={(e) => form.setValue("part", e?.value)}
-                      // value={selectedCustomer}
-                      fetchOptionWith="querySearchTerm"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />{" "}
-            <FormField
-              control={form.control}
-              name="bom"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={LableStyle}>BOM</FormLabel>
-                  <FormControl>
-                    <Select
-                      styles={customStyles}
-                      components={{ DropdownIndicator }}
-                      placeholder="BOM"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
-                      options={asyncOptions}
-                      onChange={(e) => form.setValue("bom", e?.value)}
-                      // value={
-                      //   data.clientDetails
-                      //     ? {
-                      //         label: data.clientDetails.city.name,
-                      //         value: data.clientDetails.city.name,
-                      //       }
-                      //     : null
-                      // }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Space direction="vertical" size={12} className="w-full">
-                      <RangePicker
-                        className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                        onChange={(value) =>
-                          field.onChange(
-                            value ? value.map((date) => date!.toDate()) : []
-                          )
-                        }
-                        format={dateFormat}
-                        presets={rangePresets}
+    <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
+      {/* Filter Section */}
+      <div className="bg-white p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(fetchQueryResults)}
+              className="flex items-center gap-4"
+            >
+              <FormField
+                control={form.control}
+                name="part"
+                render={({ field }) => (
+                  <FormItem className="w-[300px] m-0">
+                    <FormControl>
+                      <ReusableAsyncSelect
+                        placeholder="Part Name"
+                        endpoint="/backend/fetchProduct"
+                        transform={transformOptionData}
+                        onChange={(e) => form.setValue("part", e?.value)}
+                        fetchOptionWith="querySearchTerm"
                       />
-                    </Space>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* )} */}{" "}
-            <div className="flex gap-[10px] justify-end  px-[5px]">
-              <Button
-                type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                //   onClick={() => {
-                //     fetchBOMList();
-                //   }}
-              >
-                Search
-              </Button>
-              <Button
-                // type="submit"
-                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
-                // onClick={() => {}}
-                disabled={rowData.length === 0}
-                onClick={(e: any) => {
-                  e.preventDefault();
-                  handleDownloadExcel();
-                }}
-              >
-                <IoMdDownload size={20} />
-              </Button>
-            </div>
-          </form>
-        </Form>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="bom"
+                render={({ field }) => (
+                  <FormItem className="w-[300px] m-0">
+                    <FormControl>
+                      <Select
+                        styles={customStyles}
+                        components={{ DropdownIndicator }}
+                        placeholder="BOM"
+                        className="border-0 basic-single"
+                        classNamePrefix="select border-0"
+                        isDisabled={false}
+                        isClearable={true}
+                        isSearchable={true}
+                        options={asyncOptions}
+                        onChange={(e) => form.setValue("bom", e?.value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="w-[300px] m-0">
+                    <FormControl>
+                      <Space direction="vertical" size={12} className="w-full">
+                        <RangePicker
+                          className="border shadow-sm border-gray-300 py-[7px] hover:border-gray-400 w-full"
+                          onChange={(value) =>
+                            field.onChange(
+                              value ? value.map((date) => date!.toDate()) : []
+                            )
+                          }
+                          format={dateFormat}
+                          presets={rangePresets}
+                        />
+                      </Space>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex gap-2">
+                <Button
+                  type="submit"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
+                >
+                  Search
+                </Button>
+                <Button
+                  className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded"
+                  disabled={rowData.length === 0}
+                  onClick={(e: any) => {
+                    e.preventDefault();
+                    handleDownloadExcel();
+                  }}
+                >
+                  <IoMdDownload size={20} />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
+
+      {/* Grid Section */}
+      <div className="ag-theme-quartz flex-1">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
-          //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={{ filter: true, sortable: true }}
@@ -358,7 +334,7 @@ const R3 = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
-          enableCellTextSelection = {true}
+          enableCellTextSelection={true}
         />
       </div>
     </Wrapper>
@@ -366,6 +342,7 @@ const R3 = () => {
 };
 
 export default R3;
+
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;

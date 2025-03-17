@@ -29,7 +29,6 @@ interface PickSlipModalProps {
   };
   loading: boolean;
   setSubmitSuccess: any;
-  //   handleSubmit: () => void;
 }
 
 const PickSlipModal: React.FC<PickSlipModalProps> = ({
@@ -38,7 +37,6 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   sellRequestDetails,
   loading,
   setSubmitSuccess,
-  //   handleSubmit,
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -48,6 +46,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   }>({});
   const [box, setBox] = useState<string[]>([]);
   const [qty, setQty] = useState<string[]>([]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]); // Track selected rows
   const dispatch = useDispatch();
   const { availableStock } = useSelector(
     (state: RootState) => state.sellShipment
@@ -82,8 +81,22 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     setSheetOpen(false); // Close the sheet after selection
   };
 
+  // Handle checkbox selection
+  const handleRowSelection = (params: any) => {
+    const selectedNodes = params.api.getSelectedNodes();
+    const selectedIds = selectedNodes.map((node: any) => node.data.item);
+    setSelectedRows(selectedIds);
+  };
+
   // Column definitions for the grid
   const columnDefs: ColDef[] = [
+    {
+      headerName: "Select",
+      field: "select",
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
+      maxWidth: 80,
+    },
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
     {
       headerName: "Item Name",
@@ -157,20 +170,34 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
         : [],
     [sellRequestDetails?.items]
   );
+
   // Submit function to gather all the selected boxes and quantities
   const onSubmit = () => {
+    // Filter items based on selected rows
+    const selectedItems = sellRequestDetails?.items?.filter((item: any) =>
+      selectedRows.includes(item.item)
+    );
+
+    if (selectedRows.length === 0) {
+      toast({
+        title: "Please select at least one item to stock out",
+        className: "bg-red-600 text-white items-center",
+      });
+      return;
+    }
+
     const payload = {
       shipment_id: sellRequestDetails?.header?.shipment_id,
       customer: sellRequestDetails?.header?.customer_name?.customer_code,
-      component: sellRequestDetails?.items?.map((item: any) => item?.item),
-      qty: sellRequestDetails?.items?.map((item: any) => item?.qty),
-      remark: sellRequestDetails?.items?.map((item: any) => item?.itemRemark),
+      component: selectedItems.map((item: any) => item?.item),
+      qty: selectedItems.map((item: any) => item?.qty),
+      remark: selectedItems.map((item: any) => item?.itemRemark),
       costcenter: sellRequestDetails?.header?.costcenter?.code,
-      box: Object.values(selectedBoxes).map((boxData) =>
-        boxData.boxes.join(",")
+      box: selectedRows.map((rowId) =>
+        selectedBoxes[rowId]?.boxes?.join(",") || ""
       ),
-      boxqty: Object.values(selectedBoxes).map((boxData) =>
-        boxData.qty.join(",")
+      boxqty: selectedRows.map((rowId) =>
+        selectedBoxes[rowId]?.qty?.join(",") || ""
       ),
     };
 
@@ -255,6 +282,9 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
             }}
             overlayNoRowsTemplate={OverlayNoRowsTemplate}
             loading={loading}
+            rowSelection="multiple" // Enable multiple row selection
+            onSelectionChanged={handleRowSelection} // Handle selection changes
+            suppressRowClickSelection={true} // Require checkbox for selection
           />
         </div>
 

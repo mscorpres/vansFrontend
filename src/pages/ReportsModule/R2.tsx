@@ -39,6 +39,7 @@ import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { rangePresets } from "@/General";
+
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -57,7 +58,6 @@ const R2 = () => {
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
-  //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
 
   const dateFormat = "YYYY/MM/DD";
@@ -126,7 +126,6 @@ const R2 = () => {
       cellRenderer: CopyCellRenderer,
       width: 220,
     },
-
     {
       headerName: "Part No.",
       field: "part_no",
@@ -134,7 +133,6 @@ const R2 = () => {
       cellRenderer: CopyCellRenderer,
       width: 190,
     },
-
     {
       headerName: "Compenent",
       field: "component_name",
@@ -143,22 +141,12 @@ const R2 = () => {
       minWidth: 190,
       flex: 1,
     },
-    // {
-    //   headerName: "Vendor Component Code/Description",
-    //   field: "vendorDes",
-    //   filter: "agTextColumnFilter",
-    //   minWidth: 320,
-    //   cellRenderer: CopyCellRenderer,
-    //   flex: 2,
-    // },
-
     {
       headerName: "UoM",
       field: "unit_name",
       filter: "agTextColumnFilter",
       width: 120,
     },
-
     {
       headerName: "Qty",
       field: "ordered_qty",
@@ -189,7 +177,6 @@ const R2 = () => {
       filter: "agTextColumnFilter",
       width: 150,
     },
-
     {
       headerName: "Vendor Code",
       field: "vendor_code",
@@ -229,12 +216,6 @@ const R2 = () => {
       filter: "agTextColumnFilter",
       width: 150,
     },
-    // {
-    //   headerName: "Make",
-    //   field: "make",
-    //   filter: "agTextColumnFilter",
-    //   width: 150,
-    // },
     {
       headerName: "Description",
       field: "description",
@@ -263,120 +244,107 @@ const R2 = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      <div className="bg-[#fff]">
-        {" "}
-        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
-          <Filter className="h-[20px] w-[20px]" />
-          Filter
-        </div>
-        <div className="p-[10px]"></div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(fetchQueryResults)}
-            className="space-y-6 overflow-hidden p-[10px] h-[370px]"
-          >
-            <FormField
-              control={form.control}
-              name="types"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Select
-                      styles={customStyles}
-                      components={{ DropdownIndicator }}
-                      placeholder=" Enter Type"
-                      className="border-0 basic-single"
-                      classNamePrefix="select border-0"
-                      isDisabled={false}
-                      isClearable={true}
-                      isSearchable={true}
-                      options={type}
-                      onChange={(e: any) => form.setValue("types", e.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {theType === "PROJECT" ? (
+    <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
+      {/* Filter Section */}
+      <div className="bg-white p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(fetchQueryResults)}
+              className="flex items-center gap-4"
+            >
               <FormField
                 control={form.control}
-                name="search"
+                name="types"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LableStyle}>
-                      Search
-                      <span className="pl-1 text-red-500 font-bold">*</span>
-                    </FormLabel>
+                  <FormItem className="w-[300px] m-0">
                     <FormControl>
-                      <Input
-                        className={InputStyle}
-                        placeholder="Search"
-                        {...field}
+                      <Select
+                        styles={customStyles}
+                        components={{ DropdownIndicator }}
+                        placeholder=" Enter Type"
+                        className="border-0 basic-single"
+                        classNamePrefix="select border-0"
+                        isDisabled={false}
+                        isClearable={true}
+                        isSearchable={true}
+                        options={type}
+                        onChange={(e: any) => form.setValue("types", e.value)}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            ) : (
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Space direction="vertical" size={12} className="w-full">
-                        <RangePicker
-                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                          onChange={(value) =>
-                            field.onChange(
-                              value ? value.map((date) => date!.toDate()) : []
-                            )
-                          }
-                          format={"DD/MM/YYYY"}
-                          presets={rangePresets}
+              {theType === "PROJECT" ? (
+                <FormField
+                  control={form.control}
+                  name="search"
+                  render={({ field }) => (
+                    <FormItem className="w-[300px] m-0">
+                      <FormControl>
+                        <Input
+                          className={InputStyle}
+                          placeholder="Search"
+                          {...field}
                         />
-                      </Space>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            <div className="flex gap-[10px] justify-end  px-[5px]">
-              <Button
-                type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                //   onClick={() => {
-                //     fetchBOMList();
-                //   }}
-              >
-                Search
-              </Button>{" "}
-              <Button
-                // type="submit"
-                className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
-                // onClick={() => {}}
-                disabled={rowData.length === 0}
-                onClick={(e: any) => {
-                  e.preventDefault();
-                  handleDownloadExcel();
-                }}
-              >
-                <IoMdDownload size={20} />
-              </Button>
-            </div>
-          </form>
-        </Form>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem className="w-[300px] m-0">
+                      <FormControl>
+                        <Space direction="vertical" size={12} className="w-full">
+                          <RangePicker
+                            className="border shadow-sm border-gray-300 py-[7px] hover:border-gray-400 w-full"
+                            onChange={(value) =>
+                              field.onChange(
+                                value ? value.map((date) => date!.toDate()) : []
+                              )
+                            }
+                            format={"DD/MM/YYYY"}
+                            presets={rangePresets}
+                          />
+                        </Space>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              <div className="flex gap-2">
+                <Button
+                  type="submit"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
+                >
+                  Search
+                </Button>
+                <Button
+                  className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded"
+                  disabled={rowData.length === 0}
+                  onClick={(e: any) => {
+                    e.preventDefault();
+                    handleDownloadExcel();
+                  }}
+                >
+                  <IoMdDownload size={20} />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
+
+      {/* Grid Section */}
+      <div className="ag-theme-quartz flex-1">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
-          //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={{ filter: true, sortable: true }}
@@ -385,7 +353,7 @@ const R2 = () => {
           paginationAutoPageSize={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           suppressCellFocus={true}
-          enableCellTextSelection = {true}
+          enableCellTextSelection={true}
         />
       </div>
     </Wrapper>
@@ -393,6 +361,7 @@ const R2 = () => {
 };
 
 export default R2;
+
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;

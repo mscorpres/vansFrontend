@@ -65,3 +65,10 @@
 .MuiLoadingButton-root{
   background-color: #0891b2 !important;
 }
+
+.bg-yellow-300 { background-color: #fde047; }
+.text-black { color: #000000; }
+.text-xs { font-size: 0.75rem; }
+.rounded { border-radius: 0.25rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
