@@ -229,14 +229,14 @@ const Material = () => {
       headerName: "Part Code",
       field: "c_part_no",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      // cellRenderer: CopyCellRenderer,
       width: 150,
     },
     {
       headerName: "Component",
       field: "c_name",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      // cellRenderer: CopyCellRenderer,
       width: 200,
     },
     {
