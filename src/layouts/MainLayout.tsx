@@ -113,6 +113,12 @@ function MainLayout(props: { children: React.ReactNode }) {
                   <SelectValue placeholder="Session" value="2024-2025" />
                 </SelectTrigger>
                 <SelectContent className="bg-white " value="2024-2025">
+                <SelectItem
+                    value="2025-2026"
+                    className="text-slate-700 focus:text-white focus:bg-cyan-600"
+                  >
+                    2025-2026
+                  </SelectItem>
                   <SelectItem
                     value="2024-2025"
                     className="text-slate-700 focus:text-white focus:bg-cyan-600"
