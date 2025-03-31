@@ -131,6 +131,7 @@ const authSlice = createSlice({
         state.loading = "loading";
       })
       .addCase(loginUserAsync.fulfilled, (state, action) => {
+        const savedSession = JSON.parse(localStorage.getItem("loggedInUser") || '{}')?.session || "24-25";
         const data = action.payload.data.data;
         if (!data) {
           state.qrStatus = action.payload.data;
@@ -158,7 +159,7 @@ const authSlice = createSlice({
             // passwordChanged: data?.other.c_p ?? "C",
             id: data?.crn_id,
             showLegal: data?.department === "legal",
-            session: "24-25",
+            session: savedSession,
           };
 
           localStorage.setItem("loggedInUser", JSON.stringify(userObj));
@@ -180,6 +181,7 @@ const authSlice = createSlice({
           showToast(action.payload.data.message, "success");
         }
         const data = action.payload.data.data;
+        const savedSession = JSON.parse(localStorage.getItem("loggedInUser") || '{}')?.session || "24-25";
 
         const userObj = {
           email: data?.crn_email,
@@ -193,7 +195,7 @@ const authSlice = createSlice({
           // passwordChanged: data?.other.c_p ?? "C",
           id: data?.crn_id,
           showLegal: data?.department === "legal",
-          session: "24-25",
+          session: savedSession,
         };
         localStorage.setItem("showOtpPage", "");
         localStorage.setItem("loggedInUser", JSON.stringify(userObj));
