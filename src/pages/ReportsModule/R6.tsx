@@ -32,17 +32,22 @@ import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { IoMdDownload } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { rangePresets } from "@/General";
-const FormSchema = z.object({
-  date: z
-    .array(z.date())
-    .length(2)
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  types: z.string().refine((data) => data !== undefined && data.length > 0, {
-    message: "Please select a valid types.",
+
+// Updated Zod Schema with discriminated union
+const FormSchema = z.discriminatedUnion("types", [
+  z.object({
+    types: z.literal("P"),
+    date: z.array(z.date()).length(2, { message: "Please select a valid date range." }),
   }),
-});
+  z.object({
+    types: z.literal("PROJECT"),
+    component: z
+      .string()
+      .refine((val) => val !== undefined && val.length > 0, {
+        message: "Please select a valid part name.",
+      }),
+  }),
+]);
 
 const R6 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
@@ -50,47 +55,60 @@ const R6 = () => {
     label: string;
     value: string;
   } | null>(null);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      types: "",
+    },
   });
+
   const { execFun, loading: loading1 } = useApi();
   const { RangePicker } = DatePicker;
   const theWise = form.watch("types");
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
-    let { date } = formData;
-    let dataString = "";
-    if (date) {
-      dataString = exportDateRangespace(date);
+    let payload;
+
+    if (formData.types === "P") {
+      const { date } = formData;
+      const dataString = exportDateRangespace(date);
+      payload = {
+        searchValues: formData.types,
+        searchData: dataString,
+      };
+    } else if (formData.types === "PROJECT") {
+      payload = {
+        searchValues: formData.types,
+        searchData: formData.component,
+      };
     }
-    let payload = {
-      searchValues: theWise,
-      searchData: dataString || selectedCustomer?.value,
-    };
+
     setRowData([]);
-
     const response = await execFun(() => fetchR6(payload), "fetch");
-    let { data } = response;
-    if (data.success) {
-      let arr = data.data.map((r, index) => {
-        return {
-          id: index + 1,
-          ...r,
-        };
-      });
+    const { data } = response;
 
+    if (data.success) {
+      const arr = data.data.map((r: any, index: number) => ({
+        id: index + 1,
+        ...r,
+      }));
       setRowData(arr);
     } else {
+      // Handle error case if needed
     }
   };
+
   const handleCompChange = (e: any) => {
     setSelectedCustomer(e);
+    form.setValue("component", e?.value || ""); // Sync with form state
   };
+
   const handleDownloadExcel = () => {
     downloadCSV(rowData, columnDefs, "R6 BOX Rate Report");
   };
 
-  const columnDefs: ColDef<rowData>[] = [
+  const columnDefs: ColDef<RowData>[] = [
     {
       headerName: "ID",
       field: "id",
@@ -124,14 +142,12 @@ const R6 = () => {
       filter: "agTextColumnFilter",
       width: 220,
     },
-
     {
       headerName: "Qty",
       field: "QTY",
       filter: "agTextColumnFilter",
       width: 190,
     },
-
     {
       headerName: "Rate",
       field: "RATE",
@@ -144,14 +160,12 @@ const R6 = () => {
       filter: "agTextColumnFilter",
       width: 190,
     },
-
     {
       headerName: "Amount FC",
       field: "AMOUNT_FC",
       filter: "agTextColumnFilter",
       width: 220,
     },
-
     {
       headerName: "Cost Center",
       field: "cost_center",
@@ -159,7 +173,7 @@ const R6 = () => {
       width: 220,
     },
     {
-      headerName: " Insert Date",
+      headerName: "Insert Date",
       field: "insert_date",
       filter: "agTextColumnFilter",
       width: 220,
@@ -171,6 +185,7 @@ const R6 = () => {
       width: 220,
     },
   ];
+
   const type = [
     {
       label: "Date Wise",
@@ -185,7 +200,6 @@ const R6 = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[500px_1fr]">
       <div className="bg-[#fff]">
-        {" "}
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
@@ -205,21 +219,21 @@ const R6 = () => {
                     <Select
                       styles={customStyles}
                       components={{ DropdownIndicator }}
-                      placeholder=" Enter Type"
+                      placeholder="Enter Type"
                       className="border-0 basic-single"
                       classNamePrefix="select border-0"
                       isDisabled={false}
                       isClearable={true}
                       isSearchable={true}
                       options={type}
-                      onChange={(e: any) => form.setValue("types", e.value)}
+                      onChange={(e: any) => field.onChange(e?.value || "")}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {theWise === "P" ? (
+            {theWise === "P" && (
               <FormField
                 control={form.control}
                 name="date"
@@ -243,11 +257,12 @@ const R6 = () => {
                   </FormItem>
                 )}
               />
-            ) : (
+            )}
+            {theWise === "PROJECT" && (
               <FormField
                 control={form.control}
                 name="component"
-                render={() => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LableStyle}>Part Name</FormLabel>
                     <FormControl>
@@ -255,7 +270,10 @@ const R6 = () => {
                         placeholder="Part Name"
                         endpoint="/rate/getcomponents"
                         transform={transformOptionData}
-                        onChange={handleCompChange}
+                        onChange={(e: any) => {
+                          setSelectedCustomer(e);
+                          field.onChange(e?.value || "");
+                        }}
                         value={selectedCustomer}
                         fetchOptionWith="payload"
                       />
@@ -265,21 +283,15 @@ const R6 = () => {
                 )}
               />
             )}
-            {/* )} */}{" "}
-            <div className="flex gap-[10px] justify-end  px-[5px]">
+            <div className="flex gap-[10px] justify-end px-[5px]">
               <Button
                 type="submit"
                 className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-                //   onClick={() => {
-                //     fetchBOMList();
-                //   }}
               >
                 Search
               </Button>
               <Button
-                // type="submit"
                 className="shadow bg-grey-700 hover:bg-grey-600 shadow-slate-500 text-grey"
-                // onClick={() => {}}
                 disabled={rowData.length === 0}
                 onClick={(e: any) => {
                   e.preventDefault();
@@ -293,10 +305,8 @@ const R6 = () => {
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
-          //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={{ filter: true, sortable: true }}
@@ -305,7 +315,7 @@ const R6 = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
-          enableCellTextSelection = {true}
+          enableCellTextSelection={true}
         />
       </div>
     </Wrapper>
@@ -313,6 +323,7 @@ const R6 = () => {
 };
 
 export default R6;
+
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;

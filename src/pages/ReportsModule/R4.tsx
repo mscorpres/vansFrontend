@@ -18,6 +18,7 @@ import { IoIosRefresh } from "react-icons/io";
 import { Input } from "@/components/ui/input";
 import { Filter } from "lucide-react";
 import { InputStyle } from "@/constants/themeContants";
+
 const FormSchema = z.object({
   date: z
     .array(z.date())
@@ -36,7 +37,6 @@ const R4 = () => {
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const [isAnimating, setIsAnimating] = useState(false);
-  //   const { addToast } = useToastContainer()
   const { RangePicker } = DatePicker;
 
   const dateFormat = "YYYY/MM/DD";
@@ -142,14 +142,14 @@ const R4 = () => {
       headerName: "Part Code",
       field: "part_no",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      // cellRenderer: CopyCellRenderer,
       width: 140,
     },
     {
       headerName: "Part Name",
       field: "name",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
+      // cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -158,37 +158,12 @@ const R4 = () => {
       filter: "agTextColumnFilter",
       width: 320,
     },
-
     {
       headerName: "Total Stock",
       field: "stock",
       filter: "agTextColumnFilter",
       width: 150,
     },
-    // {
-    //   headerName: "Refresh Stock",
-    //   field: "Refresh",
-    //   filter: "agTextColumnFilter",
-    //   width: 150,
-    //   cellRenderer: (params) => {
-    //     // Assume you have a unique row id like params.data.id or params.rowIndex
-    //     const uniqueId = params.data.id || params.rowIndex;
-
-    //     return (
-    //       <div>
-    //         <IoIosRefresh
-    //           color="#3b82f6"
-    //           onClick={() => handleClick(uniqueId, params)}
-    //           className={`transition-transform duration-100 ${
-    //             isAnimating === uniqueId ? "rotate-180" : ""
-    //           }`}
-    //           style={{ cursor: "pointer" }}
-    //         />{" "}
-    //       </div>
-    //     );
-    //   },
-    // },
-
     {
       headerName: "Navs Stock",
       field: "navStock",
@@ -255,64 +230,41 @@ const R4 = () => {
   }, []);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      <div className="bg-[#fff] ">
-        {" "}
-        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
-          <Filter className="h-[20px] w-[20px]" />
-          Filter
-        </div>
-        <div className="p-[10px] justify-center">
-          <Form form={form} layout="vertical">
-            <Form.Item name="search">
-              <Input
-                className={InputStyle}
-                placeholder="Enter Search"
-                onChange={handleSearchChange}
-                // {...field}
-              />
-            </Form.Item>
-          </Form>
-          <div className="flex gap-[10px] w-full justify-space-between">
-            {/* <Button
-              type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
-              onClick={() => {
-                fetchQueryResults();
-              }}
-            >
-              Search
-            </Button> */}
-            <Tooltip title="Stock Refresh">
-              <Button className="bg-white text-black hover:bg-slate-200" onClick={getRefreshed}>
-                <IoIosRefresh />
-              </Button>
-            </Tooltip>
-            <Button
-              // type="submit"
-              className=" bg-white text-black hover:bg-slate-200"
-              disabled={rowData.length === 0}
-              onClick={(e: any) => {
-                e.preventDefault();
-                handleDownloadExcel();
-              }}
-              disabled={rowData.length == 0}
-            >
-              <IoMdDownload size={20} />
+    <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
+      {/* Filter Section */}
+      <div className="bg-white p-4 border-b border-gray-200 flex items-center gap-4">
+        <Form form={form} layout="vertical">
+          <Form.Item name="search" className="mb-0">
+            <Input
+              className={InputStyle}
+              placeholder="Enter Search"
+              onChange={handleSearchChange}
+            />
+          </Form.Item>
+        </Form>
+        <div className="flex items-center gap-2">
+          <Tooltip title="Stock Refresh">
+            <Button className="bg-white text-black hover:bg-slate-200" onClick={getRefreshed}>
+              <IoIosRefresh />
             </Button>
-            {/* <div>
-              {showList && (
-                <a className="cursor-pointer p-[40px] mt-[50px]">Show List</a>
-              )}
-            </div> */}
-          </div>
+          </Tooltip>
+          <Button
+            className="bg-white text-black hover:bg-slate-200"
+            disabled={rowData.length === 0}
+            onClick={(e: any) => {
+              e.preventDefault();
+              handleDownloadExcel();
+            }}
+          >
+            <IoMdDownload size={20} />
+          </Button>
         </div>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        {" "}
+
+      {/* Grid Section */}
+      <div className="ag-theme-quartz flex-1">
         {loading1("fetch") && <FullPageLoading />}
         <AgGridReact
-          //   loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={{ filter: true, sortable: true }}
@@ -321,7 +273,7 @@ const R4 = () => {
           paginationAutoPageSize={true}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
-          enableCellTextSelection = {true}
+          enableCellTextSelection={true}
         />
       </div>
     </Wrapper>
@@ -329,6 +281,7 @@ const R4 = () => {
 };
 
 export default R4;
+
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;

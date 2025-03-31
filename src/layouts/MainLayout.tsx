@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaLightbulb } from "react-icons/fa";
 import { FaCircleUser } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa6";
@@ -33,6 +33,7 @@ import { IconButton } from "@mui/material";
 import { SiSocketdotio } from "react-icons/si";
 import socket from "@/components/shared/socket";
 function MainLayout(props: { children: React.ReactNode }) {
+  const [selectedSession, setSelectedSession] = useState("2024-2025");
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
   const [sheet2Open, setSheet2Open] = useState<boolean>(false);
   const [favoriteSheet, setFavoriteSheet] = useState<boolean>(false);
@@ -77,6 +78,25 @@ function MainLayout(props: { children: React.ReactNode }) {
     setSocketConnect(false);
   });
 
+  useEffect(() => {
+    // Retrieve loggedInUser from local storage
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (loggedInUser) {
+      const user = JSON.parse(loggedInUser);
+      setSelectedSession(user.session); // Set the session from the parsed object
+    }
+  }, []);
+
+  const handleSessionChange = (value: string) => {
+    setSelectedSession(value);
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (loggedInUser) {
+      const user = JSON.parse(loggedInUser);
+      user.session = value; // Update the session in the user object
+      localStorage.setItem("loggedInUser", JSON.stringify(user)); // Save back to local storage
+    }
+  };
+
   return (
     <Wrapper className="">
       <HelpAndSupportModel uiState={uiState} />
@@ -107,32 +127,46 @@ function MainLayout(props: { children: React.ReactNode }) {
         >
           <div className="flex gap-[20px] items-center">
             <div className="text-slate-700 font-[600] logo">VANS</div>
-            <div className="date">
-              <Select value="2024-2025">
-                <SelectTrigger className="w-[180px] bg-white border-0 text-slate-700">
-                  <SelectValue placeholder="Session" value="2024-2025" />
-                </SelectTrigger>
-                <SelectContent className="bg-white " value="2024-2025">
-                  <SelectItem
-                    value="2024-2025"
-                    className="text-slate-700 focus:text-white focus:bg-cyan-600"
-                  >
-                    2024-2025
-                  </SelectItem>
-                  <SelectItem
-                    value="2023-2024"
-                    className="text-slate-700 focus:text-white focus:bg-cyan-600"
-                  >
-                    2023-2024
-                  </SelectItem>
-                  <SelectItem
-                    value="2022-2023"
-                    className="text-slate-700 focus:text-white focus:bg-cyan-600"
-                  >
-                    2022-2023
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex gap-[20px] items-center">
+              <div className="date">
+                <Select
+                  value={selectedSession}
+                  onValueChange={handleSessionChange}
+                >
+                  <SelectTrigger className="w-[180px] bg-white border-0 text-slate-700">
+                    <SelectValue
+                      placeholder="Session"
+                      value={selectedSession}
+                    />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white" value={selectedSession}>
+                    <SelectItem
+                      value="25-26"
+                      className="text-slate-700 focus:text-white focus:bg-cyan-600"
+                    >
+                      2025-2026
+                    </SelectItem>
+                    <SelectItem
+                      value="24-25"
+                      className="text-slate-700 focus:text-white focus:bg-cyan-600"
+                    >
+                      2024-2025
+                    </SelectItem>
+                    <SelectItem
+                      value="23-24"
+                      className="text-slate-700 focus:text-white focus:bg-cyan-600"
+                    >
+                      2023-2024
+                    </SelectItem>
+                    <SelectItem
+                      value="22-23"
+                      className="text-slate-700 focus:text-white focus:bg-cyan-600"
+                    >
+                      2022-2023
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-[20px]">

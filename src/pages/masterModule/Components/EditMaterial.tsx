@@ -1054,12 +1054,7 @@ const rules = {
       message: "Please provide Description!",
     },
   ],
-  taxTypes: [
-    {
-      required: true,
-      message: "Please provide Tax Types!",
-    },
-  ],
+ 
   gstTaxRate: [
     {
       required: true,

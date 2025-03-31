@@ -83,16 +83,14 @@ const FormSchema = z.object({
   }),
   email: z
     .string()
-    .email({ message: "Please enter a valid email" })
-    .refine((data) => data !== undefined && data.length > 0, {
-      message: "Email is required.",
-    }),
+    .email().optional(),
+    
   website: z
     .string()
     // .url({ message: "Please enter a valid website URL" })
     .refine((data) => data !== undefined && data.length > 0, {
       message: "Website is required.",
-    }),
+    }).optional(),
   country: z
     .union([z.string(), z.number()])
     .optional()
