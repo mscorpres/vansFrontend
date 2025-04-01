@@ -33,7 +33,7 @@ import { IconButton } from "@mui/material";
 import { SiSocketdotio } from "react-icons/si";
 import socket from "@/components/shared/socket";
 function MainLayout(props: { children: React.ReactNode }) {
-  const [selectedSession, setSelectedSession] = useState("2024-2025");
+  const [selectedSession, setSelectedSession] = useState("25-26");
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
   const [sheet2Open, setSheet2Open] = useState<boolean>(false);
   const [favoriteSheet, setFavoriteSheet] = useState<boolean>(false);
