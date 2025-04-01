@@ -131,7 +131,7 @@ const authSlice = createSlice({
         state.loading = "loading";
       })
       .addCase(loginUserAsync.fulfilled, (state, action) => {
-        const savedSession = JSON.parse(localStorage.getItem("loggedInUser") || '{}')?.session || "24-25";
+        const savedSession = JSON.parse(localStorage.getItem("loggedInUser") || '{}')?.session || "25-26";
         const data = action.payload.data.data;
         if (!data) {
           state.qrStatus = action.payload.data;
@@ -181,7 +181,7 @@ const authSlice = createSlice({
           showToast(action.payload.data.message, "success");
         }
         const data = action.payload.data.data;
-        const savedSession = JSON.parse(localStorage.getItem("loggedInUser") || '{}')?.session || "24-25";
+        const savedSession = JSON.parse(localStorage.getItem("loggedInUser") || '{}')?.session || "25-26";
 
         const userObj = {
           email: data?.crn_email,
