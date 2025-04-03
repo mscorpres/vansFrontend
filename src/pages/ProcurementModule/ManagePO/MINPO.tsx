@@ -259,7 +259,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
 
     let payload = {
       poid: viewMinPo?.po_transaction,
-      currency: arr.map((r: any) => r.currency),
+      currency: arr[0]?.currency,
       exchange_rate: arr.map((r: any) => r.exchange_rate),
       component: arr.map((r: any) => r?.componentKey),
       access_code: arr.map((r: any) => r.access_code),
