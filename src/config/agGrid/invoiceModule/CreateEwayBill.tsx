@@ -114,6 +114,7 @@ export default function CreateEwayBill() {
         form.setValue("dispatchFrom.pan", data?.ship_from?.pan);
         form.setValue("dispatchFrom.addressLine1", data?.ship_from?.address1);
         form.setValue("dispatchFrom.addressLine2", data?.ship_from?.address2);
+        form.setValue("dispatchFrom.location", data?.ship_from?.location);
 
         form.setValue("shipTo.legalName", data?.ship_to?.company);
         form.setValue("shipTo.pincode", data?.ship_to?.pincode);
@@ -122,6 +123,7 @@ export default function CreateEwayBill() {
         form.setValue("shipTo.state", data?.ship_to?.state?.state_code);
         form.setValue("shipTo.addressLine1", data?.ship_to?.address1);
         form.setValue("shipTo.addressLine2", data?.ship_to?.address2);
+        form.setValue("shipTo.location", data?.ship_to?.location);
       }
     });
   }, [params]);
@@ -1075,6 +1077,30 @@ export default function CreateEwayBill() {
                           )}
                         />
                       </div>
+                  
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="dispatchFrom.location"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Location
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Place of Supply"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />  </div>
                     </div>
                     <div className="mt-[40px]">
                       <FormField
@@ -1262,6 +1288,30 @@ export default function CreateEwayBill() {
                           )}
                         />
                       </div>
+                   
+                    <div className="">
+                      <FormField
+                        control={form.control}
+                        name="shipTo.location"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Location
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Place of Supply"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      /> </div>
                     </div>
                     <div className="mt-[40px]">
                       <FormField

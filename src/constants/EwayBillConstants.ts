@@ -184,6 +184,7 @@ const dispatchFrom = z.object({
   //   message: "State is required",
   // }),ui
   pan: z.string({ required_error: "Pincode is reqred" }),
+  location: z.string({ required_error: "Location is required" }),
 });
 
 const shipTo = z.object({
@@ -191,7 +192,7 @@ const shipTo = z.object({
   legalName: z.string({ required_error: "Legal Name is required" }),
   addressLine1: z.string({ required_error: "Address Line 1 is required" }),
   addressLine2: z.string().optional(),
-  // location: z.string({ required_error: "Location is required" }),
+  location: z.string({ required_error: "Location is required" }),
   state: z.string({ required_error: "State is required" }),
   pincode: z.string({ required_error: "Pincode is required" }),
 });
