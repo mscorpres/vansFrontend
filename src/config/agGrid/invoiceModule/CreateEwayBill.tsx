@@ -115,6 +115,7 @@ export default function CreateEwayBill() {
         form.setValue("dispatchFrom.addressLine1", data?.ship_from?.address1);
         form.setValue("dispatchFrom.addressLine2", data?.ship_from?.address2);
         form.setValue("dispatchFrom.location", data?.ship_from?.location);
+        form.setValue("dispatchFrom.pincode", data?.ship_from?.pincode);
 
         form.setValue("shipTo.legalName", data?.ship_to?.company);
         form.setValue("shipTo.pincode", data?.ship_to?.pincode);
@@ -1101,6 +1102,30 @@ export default function CreateEwayBill() {
                           </FormItem>
                         )}
                       />  </div>
+                      <div className="">
+                      <FormField
+                        control={form.control}
+                        name="dispatchFrom.pincode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Pincode
+                              <span className="pl-1 text-red-500 font-bold">
+                                *
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className={InputStyle}
+                                placeholder="Pincode"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     </div>
                     <div className="mt-[40px]">
                       <FormField

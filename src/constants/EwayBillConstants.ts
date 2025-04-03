@@ -185,6 +185,7 @@ const dispatchFrom = z.object({
   // }),ui
   pan: z.string({ required_error: "Pincode is reqred" }),
   location: z.string({ required_error: "Location is required" }),
+  pincode: z.string({ required_error: "Pincode is required" }),
 });
 
 const shipTo = z.object({
