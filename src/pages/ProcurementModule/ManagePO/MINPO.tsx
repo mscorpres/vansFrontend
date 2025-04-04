@@ -32,6 +32,8 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { removeHtmlTags } from "@/components/shared/Options";
 import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
 import dayjs from "dayjs";
+import moment from "moment";
+
 const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [rowData, setRowData] = useState([]);
   const [search, setSearch] = useState("");
@@ -256,7 +258,6 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const handleSubmit = async () => {
     setShowConfirmation(false);
     let arr = rowData;
-
     let payload = {
       poid: viewMinPo?.po_transaction,
       currency: arr[0]?.currency,
@@ -265,8 +266,32 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       access_code: arr.map((r: any) => r.access_code),
       qty: arr.map((r: any) => r.orderQty),
       rate: arr.map((r: any) => r.rate),
-      // invoiceDate: arr.map((r: any) => formattedDate(r.dueDate)),
-      invoiceDate: arr.map((r: any) => dayjs(r.dueDate).format("DD-MM-YYYY")),
+      invoiceDate: arr.map((r: any) => {
+        if (!r.dueDate) return null;
+        try {
+          // If it's a dayjs object
+          if (r.dueDate.format) {
+            return r.dueDate.format("DD-MM-YYYY");
+          }
+          // If it's a string date
+          if (typeof r.dueDate === "string") {
+            // Try parsing with moment first
+            const momentDate = moment(r.dueDate, ["DD-MM-YYYY", "YYYY-MM-DD"]);
+            if (momentDate.isValid()) {
+              return momentDate.format("DD-MM-YYYY");
+            }
+            // If moment fails, try dayjs
+            const dayjsDate = dayjs(r.dueDate);
+            if (dayjsDate.isValid()) {
+              return dayjsDate.format("DD-MM-YYYY");
+            }
+          }
+          return null;
+        } catch (error) {
+          console.error("Error formatting date:", error);
+          return null;
+        }
+      }),
       invoice: arr.map((r: any) => r.invoice),
       invoices: attachmentFile,
       hsncode: arr.map((r: any) => r.hsnCode),
