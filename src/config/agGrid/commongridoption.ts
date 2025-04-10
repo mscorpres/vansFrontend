@@ -7,6 +7,7 @@ export const commonAgGridConfig: GridOptions = {
   headerHeight: 50,
   defaultColDef: {
     cellClass: "centered-cell flex justify-center items-center",
+    singleClickEdit: true,
   },
   // other global configurations...
 };

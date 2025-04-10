@@ -614,8 +614,8 @@ const AddPO: React.FC<Props> = ({
     <Wrapper>
       {(loading || loading1) && <FullPageLoading />}
       <AddPOPopovers uiState={uiState} />
-      <div className="h-[calc(100vh-150px)] grid grid-cols-[400px_1fr]">
-        <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
+      <div className="h-[calc(100vh-150px)]">
+        {/* <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
           <Card className="rounded-sm shadow-sm shadow-slate-500">
             <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
               <CardTitle className="font-[550] text-slate-600">
@@ -623,7 +623,7 @@ const AddPO: React.FC<Props> = ({
               </CardTitle>
             </CardHeader>
             <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
-              {/* //detais of client */}
+           
               <h3 className="font-[500]">Name</h3>
               <p className="text-[14px]">{vendorNameis?.label}</p>
               <h3 className="font-[500]">Address</h3>
@@ -700,7 +700,7 @@ const AddPO: React.FC<Props> = ({
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto bg-white">
           <div className="flex items-center w-full gap-[20px] h-[60px] px-[10px] justify-between">
             <Button
@@ -750,7 +750,7 @@ const AddPO: React.FC<Props> = ({
               gridOptions={commonAgGridConfig}
               suppressRowClickSelection={false}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
-              suppressCellFocus={true}
+              suppressCellFocus={false}
             />
           </div>
         </div>
