@@ -4,6 +4,7 @@ import { Button, Dropdown, Form } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addfreight,
   cancelInvoice,
   fetchInvoiceDetail,
   fetchSalesOrderInvoiceList,
@@ -14,11 +15,13 @@ import { useState } from "react";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import ViewInvoiceModal from "@/config/agGrid/salesmodule/ViewInvoiceModal";
 import { printFunction } from "@/components/shared/PrintFunctions";
+import AddFreightModal from "./salesmodule/AddFreightModal"; 
 
 const ActionMenu: React.FC<any> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [viewInvoice, setViewInvoice] = useState(false);
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
+  const [addFreightModalVisible, setAddFreightModalVisible] = useState(false); // New state for freight modal
   const [form] = Form.useForm();
   const { challanDetails, loading }: any = useSelector(
     (state: RootState) => state.sellInvoice
@@ -30,6 +33,10 @@ const ActionMenu: React.FC<any> = ({ row }) => {
   const handleViewInvoice = (row: any) => {
     setViewInvoice(true);
     dispatch(fetchInvoiceDetail({ invoiceNo: row.invoiceNo }));
+  };
+
+  const handleAddFreight = (so_inv_id: string, freight: string) => {
+    dispatch(addfreight({ so_inv_id, freight }));
   };
 
   const handlePrintInvoice = async (orderId: string, printInvType: string) => {
@@ -71,6 +78,12 @@ const ActionMenu: React.FC<any> = ({ row }) => {
   const isDisabled = row.invStatus === "Cancelled";
 
   const menuItems = [
+    {
+      key: "AddFreight",
+      label: (
+        <div onClick={() => setAddFreightModalVisible(true)}>Add Freight</div>
+      ), 
+    },
     {
       key: "view",
       label: <div onClick={() => handleViewInvoice(row)}>View</div>,
@@ -119,6 +132,11 @@ const ActionMenu: React.FC<any> = ({ row }) => {
         module="Invoice"
         loading={loading}
       />
+      <AddFreightModal
+        visible={addFreightModalVisible}
+        onClose={() => setAddFreightModalVisible(false)}
+        invoiceNo={row.invoiceNo}
+      />
     </>
   );
 };
@@ -133,7 +151,6 @@ export const columnDefs: ColDef<RowData>[] = [
       return <ActionMenu row={params.data} />;
     },
   },
-
   {
     headerName: "#",
     valueGetter: "node.rowIndex + 1",
@@ -144,13 +161,11 @@ export const columnDefs: ColDef<RowData>[] = [
     headerName: "SO Invoice ID",
     field: "invoiceNo",
     filter: "agNumberColumnFilter",
-     
   },
   {
     headerName: "Shipment ID",
     field: "shipmentId",
     filter: "agNumberColumnFilter",
-     
   },
   {
     headerName: "Invoice Status",
@@ -161,15 +176,13 @@ export const columnDefs: ColDef<RowData>[] = [
     headerName: "Customer Name",
     field: "custName",
     filter: "agDateColumnFilter",
-    width:300,
+    width: 300,
   },
   {
     headerName: "Supplier Name",
     field: "supplier",
     filter: "agTextColumnFilter",
-     
   },
-
   {
     headerName: "e-wayBill Created",
     field: "ewaybill",
@@ -184,7 +197,6 @@ export const columnDefs: ColDef<RowData>[] = [
     headerName: "Create Date",
     field: "createDate",
     filter: "agTextColumnFilter",
-     
   },
   {
     headerName: "Create By",

@@ -207,7 +207,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClick={() => {
           handleUpdate(row);
         }}
-        disabled={isDisabled}
+        // disabled={isDisabled}
       >
         Update
       </Menu.Item>

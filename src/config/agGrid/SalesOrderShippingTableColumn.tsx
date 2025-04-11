@@ -21,6 +21,7 @@ import {
 import { TruncateCellRenderer } from "@/General";
 import PickSlipModal from "@/config/agGrid/PickSlipModal";
 import { toast } from "react-toastify";
+import { InvoiceModal } from "./registerModule/InvoiceModal";
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -120,6 +121,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         const payload: any = {
           shipment_id: row?.shipment_id,
           remark: values.remark,
+          boxes: values.boxes,
           so_id: row?.so_id,
           costcenter:row?.costcenter,
 
@@ -250,14 +252,14 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         loading={loading}
         module="Shipment "
       />
-      <CreateInvoiceDialog
+      <InvoiceModal
         isDialogVisible={isInvoiceModalVisible}
         handleOk={handleInvoiceModalOk}
         handleCancel={handleInvoiceModalCancel}
         form={invoiceForm}
         loading={loading}
         heading="Create Invoice"
-        description={`Are you sure you want to create an invoice for SO ${row.so_id} and shipment ${row.shipment_id}? and cost center ${row.costcenter} ?`}
+        description={`Are you sure you want to create an invoice for  ${row.so_id} and shipment ${row.shipment_id}? and cost center ${row.costcenter} ?`}
       />
       <PickSlipModal
         visible={isMaterialListModalVisible}

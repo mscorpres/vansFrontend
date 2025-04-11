@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { spigenAxios } from "@/axiosIntercepter";
 import { toast } from "@/components/ui/use-toast";
+import { create } from "lodash";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -82,6 +83,29 @@ export const printSellInvoice = createAsyncThunk(
     }
   }
 );
+export const addfreight=createAsyncThunk(
+  "client/addfreight",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = await spigenAxios.post<any>(
+        "/salesOrder/addFreightToInvoice",
+        payload
+      );
+
+      if (!response.data) {
+        throw new Error("No data received");
+      }
+      // Return the entire response as expected by the fulfilled case
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle error using rejectWithValue
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+)
 export const fetchDataForEwayBill = createAsyncThunk(
   "so_challan_shipment/fetchDataForEwayBill",
   async ({ shipment_id }: { shipment_id: string }, { rejectWithValue }) => {
@@ -227,6 +251,16 @@ const sellInvoiceSlice = createSlice({
         state.loading = false;
       })
       .addCase(printSellInvoice.rejected, (state, action) => {
+        state.error = action.error?.message || null;
+        state.loading = false;
+      })
+      .addCase(addfreight.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addfreight.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(addfreight.rejected, (state, action) => {
         state.error = action.error?.message || null;
         state.loading = false;
       })
