@@ -17,6 +17,7 @@ import {
 import { Edit2, Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Divider, Space } from "antd";
+import dayjs from "dayjs"; // Added dayjs import
 
 import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
@@ -46,6 +47,9 @@ const R1 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      date: new Date(), // Set default value to today's date
+    },
   });
   const { execFun, loading: loading1 } = useApi();
 
@@ -178,6 +182,7 @@ const R1 = () => {
                       <Space direction="vertical" size={12} className="w-full">
                         <DatePicker
                           format="DD-MM-YYYY" // Set the format to dd-mm-yyyy
+                          defaultValue={dayjs()} // Set today's date as default
                           onChange={(date, dateString) => {
                             form.setValue("date", date ? date.toDate() : null);
                           }}
@@ -193,7 +198,7 @@ const R1 = () => {
                 type="submit"
                 className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
               >
-                Search
+                Download
               </Button>
             </form>
           </Form>

@@ -106,6 +106,12 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
       cellRenderer: "truncateCellRenderer",
     },
     {
+      headerName: "Due Date",
+      field: "dueDate",
+      width: 300,
+      cellRenderer: "truncateCellRenderer",
+    },
+    {
       headerName: "Item Specification",
       field: "itemSpecification",
       width: 300,
