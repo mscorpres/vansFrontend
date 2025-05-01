@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
+import { DatePicker, Dropdown, Form, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
@@ -20,12 +20,14 @@ import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import MINPO from "./ProcurementModule/ManagePO/MINPO";
 import { useNavigate } from "react-router-dom";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
-import { transformOptionData, transformOptionData2 } from "@/helper/transform";
+import { transformOptionData2 } from "@/helper/transform";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { rangePresets } from "@/General";
 import { ColGroupDef } from "ag-grid-community";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import dayjs from "dayjs";
+
 const ActionMenu: React.FC<ActionMenuProp> = ({ row }) => {
   const navigate = useNavigate();
 
@@ -37,7 +39,7 @@ const ActionMenu: React.FC<ActionMenuProp> = ({ row }) => {
           navigate(
             `/create-po/approve/${row?.po_transaction?.replaceAll("/", "_")}`
           )
-        } // disabled={isDisabled}
+        }
       >
         View Components
       </Menu.Item>
@@ -47,7 +49,6 @@ const ActionMenu: React.FC<ActionMenuProp> = ({ row }) => {
   return (
     <>
       <Dropdown overlay={menu} trigger={["click"]}>
-        {/* <Button icon={<Badge />} /> */}
         <MoreOutlined />
       </Dropdown>
     </>
@@ -55,12 +56,11 @@ const ActionMenu: React.FC<ActionMenuProp> = ({ row }) => {
 };
 
 const { RangePicker } = DatePicker;
-// const dateFormat = "DD/MM/YYYY";
+
 const ApprovePOPage: React.FC = () => {
   const { loading } = useSelector((state: RootState) => state.client);
 
   const [form] = Form.useForm();
-
   const [rowData, setRowData] = useState([]);
   const [view, setView] = useState(false);
   const [viewMinPo, setViewMinPo] = useState(false);
@@ -69,12 +69,17 @@ const ApprovePOPage: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
 
+  // State for default date range
+  const [defaultDateRange] = useState<Date[]>([
+    dayjs().subtract(3, "month").toDate(),
+    dayjs().toDate(),
+  ]);
+
   const [columnDefs] = useState<ColDef[]>([
     {
       field: "action",
       headerName: "",
       width: 40,
-
       cellRenderer: (params: any) => (
         <ActionMenu
           setViewMinPo={setViewMinPo}
@@ -130,12 +135,8 @@ const ApprovePOPage: React.FC = () => {
         },
       },
     },
-    // {
-    //   field: "po_approval_status",
-    //   headerName: "APPROVED STATUS",
-    //   flex: 1,
-    // },
   ]);
+
   const type = [
     {
       label: "Date Wise ",
@@ -154,159 +155,178 @@ const ApprovePOPage: React.FC = () => {
       value: "projectwise",
     },
   ];
+
   const cancelTheSelectedPo = async (row: any) => {
     let payload: any = {
       poId: row?.po_transaction,
     };
     dispatch(printPO(payload)).then((res: any) => {});
   };
+
   const dispatch = useDispatch<AppDispatch>();
 
   const fetchManageList = async () => {
-    setRowData([]);
-    const values = await form.validateFields();
-    let data;
-    if (values.wise.value === "datewise") {
-      data = exportDateRangespace(values.data);
-    } else if (values.wise.value === "vendorwise") {
-      data = values.data.value;
-    } else {
-      data = values.data;
-    }
-
-    let payload = { data: data, wise: values.wise.value };
-
-    dispatch(fetchneededApprovalPO(payload)).then((res: any) => {
-      if (res.payload.success) {
-        let arr = res.payload.data;
-
-        arr.map((r: any) => {
-          return { ...r };
-        });
-        setRowData(arr);
+    try {
+      setRowData([]);
+      const values = await form.validateFields();
+      let data;
+      if (values.wise.value === "datewise") {
+        data = exportDateRangespace(values.data);
+      } else if (values.wise.value === "vendorwise") {
+        data = values.data.value;
       } else {
-        toast({
-          title: res.payload.message,
-          className: "bg-red-700 text-white",
-        });
+        data = values.data;
       }
-    });
 
-    // if (managePoList) {
-    //   setRowData(managePoList);
-    // }
+      let payload = { data: data, wise: values.wise.value };
+
+      dispatch(fetchneededApprovalPO(payload)).then((res: any) => {
+        if (res.payload.success) {
+          let arr = res.payload.data;
+          arr.map((r: any) => {
+            return { ...r };
+          });
+          setRowData(arr);
+        } else {
+          toast({
+            title: "Error",
+            description: res.payload.message,
+            className: "bg-red-700 text-white",
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Validation error:", error);
+    }
   };
 
   useEffect(() => {
-    form.setFieldValue("data", "");
-  }, [selectedwise]);
+    // Set default form values: "Date Wise" and last 3 months date range
+    form.setFieldsValue({
+      wise: { label: "Date Wise ", value: "datewise" },
+      data: defaultDateRange,
+    });
+  }, [form, defaultDateRange]);
+
+  useEffect(() => {
+    // Set data field based on filter type
+    if (selectedwise?.value) {
+      if (selectedwise.value === "datewise") {
+        form.setFieldsValue({ data: defaultDateRange });
+      } else {
+        form.setFieldsValue({ data: "" });
+      }
+    }
+  }, [selectedwise, form, defaultDateRange]);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      <div className="bg-[#fff]">
-        {" "}
-        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px] p-[10px]">
-          <Filter className="h-[20px] w-[20px]" />
-          Filter
-        </div>
-        <div className="p-[10px]"></div>
-        <Form
-          form={form}
-          className="space-y-6 overflow-hidden p-[10px] h-[470px]"
-        >
-          {/* <form
-            onSubmit={form.handleSubmit(fetchManageList)}
-            className="space-y-6 overflow-hidden p-[10px] h-[370px]"
-          > */}
-          <Form.Item className="w-full" name="wise">
-            <Select
-              styles={customStyles}
-              components={{ DropdownIndicator }}
-              placeholder="Select Type"
-              className="border-0 basic-single"
-              classNamePrefix="select border-0"
-              isDisabled={false}
-              isClearable={true}
-              isSearchable={true}
-              options={type}
-            />
-          </Form.Item>
-          {selectedwise?.value === "datewise" ? (
-            <Form.Item className="w-full" name="data">
-              <Space direction="vertical" size={12} className="w-full">
-                <RangePicker
-                  className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                  // onChange={(e: any) => form.setFieldValue("data", e?.value)}
-                  onChange={(value) =>
-                    form.setFieldValue(
-                      "data",
-                      value ? value.map((date) => date!.toDate()) : []
-                    )
-                  }
-                  format={"DD/MM/YYYY"}
-                  presets={rangePresets}
-                />
-              </Space>
-            </Form.Item>
-          ) : selectedwise?.value === "vendorwise" ? (
-            <Form.Item className="w-full" name="data">
-              <ReusableAsyncSelect
-                placeholder="Vendor Name"
-                endpoint="/backend/vendorList"
-                transform={transformOptionData2}
-                // onChange={(e) => form.setFieldValue("vendorName", e)}
-                // value={selectedCustomer}
-                fetchOptionWith="query2"
+    <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
+      {/* Filter Section */}
+      <div className="bg-white p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Form form={form} className="flex items-center gap-4">
+            <Form.Item
+              className="w-[300px] m-0"
+              name="wise"
+              rules={[{ required: true, message: "Filter type is required" }]}
+            >
+              <Select
+                styles={customStyles}
+                components={{ DropdownIndicator }}
+                placeholder="Select Type"
+                className="border-0 basic-single"
+                classNamePrefix="select border-0"
+                isDisabled={false}
+                isClearable={true}
+                isSearchable={true}
+                options={type}
               />
             </Form.Item>
-          ) : (
-            <Form.Item className="w-full" name="data">
-              <Input placeholder="Type here" />
-            </Form.Item>
-          )}
-          <div className="w-full flex justify-end">
+            {selectedwise?.value === "datewise" ? (
+              <Form.Item
+                className="w-[300px] m-0"
+                name="data"
+                rules={[{ required: true, message: "Date range is required" }]}
+              >
+                <Space direction="vertical" size={12} className="w-full">
+                  <RangePicker
+                    className="border shadow-sm border-gray-300 py-[7px] hover:border-gray-400 w-full"
+                    value={
+                      form.getFieldValue("data") &&
+                      Array.isArray(form.getFieldValue("data")) &&
+                      form.getFieldValue("data").every((date: any) =>
+                        dayjs(date).isValid()
+                      )
+                        ? [
+                            dayjs(form.getFieldValue("data")[0]),
+                            dayjs(form.getFieldValue("data")[1]),
+                          ]
+                        : undefined
+                    }
+                    onChange={(value) =>
+                      form.setFieldsValue({
+                        data: value ? value.map((date) => date!.toDate()) : [],
+                      })
+                    }
+                    format="DD/MM/YYYY"
+                    presets={rangePresets}
+                    defaultValue={[
+                      dayjs(defaultDateRange[0]),
+                      dayjs(defaultDateRange[1]),
+                    ]}
+                  />
+                </Space>
+              </Form.Item>
+            ) : selectedwise?.value === "vendorwise" ? (
+              <Form.Item
+                className="w-[300px] m-0"
+                name="data"
+                rules={[{ required: true, message: "Vendor is required" }]}
+              >
+                <ReusableAsyncSelect
+                  placeholder="Vendor Name"
+                  endpoint="/backend/vendorList"
+                  transform={transformOptionData2}
+                  onChange={(e) => form.setFieldsValue({ data: e })}
+                  fetchOptionWith="query2"
+                />
+              </Form.Item>
+            ) : (
+              <Form.Item
+                className="w-[300px] m-0"
+                name="data"
+                rules={[{ required: true, message: "Type is required" }]}
+              >
+                <Input placeholder="Type here" />
+              </Form.Item>
+            )}
             <Button
               type="submit"
-              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
               onClick={fetchManageList}
             >
               Search
-            </Button>{" "}
-          </div>
-          {/* <CustomTooltip
-              message="Add Address"
-              side="top"
-              className="bg-yellow-700"
-            >
-              <Button
-                onClick={() => {
-                  setSheetOpen(true);
-                }}
-                className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
-              >
-                <Plus className="h-[20px] w-[20px]" />
-              </Button>
-            </CustomTooltip> */}
-          {/* </form>{" "} */}
-        </Form>
-        <Divider />
+            </Button>
+          </Form>
+        </div>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+
+      {/* Grid Section */}
+      <div className="ag-theme-quartz flex-1">
         {loading && <FullPageLoading />}
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs as (ColDef | ColGroupDef)[]}
           defaultColDef={{ filter: true, sortable: true }}
-          // rowSelection="multiple"
-          // suppressRowClickSelection={false}
           pagination={true}
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 25, 50]}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
-          enableCellTextSelection = {true}
+          enableCellTextSelection={true}
         />
-      </div>{" "}
+      </div>
+
       <ViewCompoents
         view={view}
         setView={setView}
@@ -316,21 +336,20 @@ const ApprovePOPage: React.FC = () => {
       <POCancel
         cancel={cancel}
         setCancel={setCancel}
-        // handleCancelPO={handleCancelPO}
         remarkDescription={remarkDescription}
         setRemarkDescription={setRemarkDescription}
-      />{" "}
+      />
       <MINPO viewMinPo={viewMinPo} setViewMinPo={setViewMinPo} />
       <ConfirmationModal
         open={showConfirmation}
         onClose={() => setShowConfirmation(false)}
-        // onOkay={handleCancelPO}
         title="Confirm Submit!"
         description="Are you sure to submit details of all components of this Purchase Order?"
       />
     </Wrapper>
   );
 };
+
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;

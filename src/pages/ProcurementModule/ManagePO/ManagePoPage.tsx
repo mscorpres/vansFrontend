@@ -47,6 +47,7 @@ import { rangePresets } from "@/General";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { uploadAttachmentForPO } from "@/components/shared/Api/masterApi";
 import useApi from "@/hooks/useApi";
+import dayjs from "dayjs";
 
 const ActionMenu: React.FC<ActionMenuProps> = ({
   setViewMinPo,
@@ -141,6 +142,12 @@ const ManagePoPage: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const selectedwise = Form.useWatch("wise", form);
   const dateFormat = "DD/MM/YYYY";
+
+  // State to manage default date range 
+  const [defaultDateRange] = useState<Date[]>([
+    dayjs().subtract(3, "month").toDate(),
+    dayjs().toDate(),
+  ]);
 
   const { execFun, loading: loading1 } = useApi();
   const gridRef = useRef<AgGridReact<RowData>>(null);
@@ -312,8 +319,19 @@ const ManagePoPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    form.setFieldValue("data", "");
-  }, [selectedwise]);
+    // Set default form values: "Date Wise" and last 3 months date range
+    form.setFieldsValue({
+      wise: { label: "Date Wise ", value: "datewise" },
+      data: defaultDateRange,
+    });
+  }, [form, defaultDateRange]);
+
+  useEffect(() => {
+    // Clear data field only when filter type is explicitly changed to non-datewise
+    if (selectedwise?.value && selectedwise.value !== "datewise") {
+      form.setFieldsValue({ data: "" });
+    }
+  }, [selectedwise, form]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
@@ -345,8 +363,16 @@ const ManagePoPage: React.FC = () => {
                 rules={[{ required: true }]}
               >
                 <Space direction="vertical" size={12} className="w-full">
-                  <RangePicker
+                <RangePicker
                     className="border shadow-sm border-gray-300 py-[7px] hover:border-gray-400 w-full"
+                    value={
+                      form.getFieldValue("data")
+                        ? [
+                            dayjs(form.getFieldValue("data")[0]),
+                            dayjs(form.getFieldValue("data")[1]),
+                          ]
+                        : undefined
+                    }
                     onChange={(value) =>
                       form.setFieldValue(
                         "data",
@@ -355,6 +381,10 @@ const ManagePoPage: React.FC = () => {
                     }
                     format={dateFormat}
                     presets={rangePresets}
+                    defaultValue={[
+                      dayjs(defaultDateRange[0]),
+                      dayjs(defaultDateRange[1]),
+                    ]}
                   />
                 </Space>
               </Form.Item>
