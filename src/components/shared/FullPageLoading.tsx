@@ -38,7 +38,7 @@ const FullPageLoading = () => {
         </div>
       </div>
       <div className="text-slate-600 text-lg mt-4 font-mono tracking-wide">
-        Powering Up...
+        Loading...
       </div>
       {isTakingLonger && (
         <div className="text-slate-500 text-sm mt-2 font-mono tracking-wide">
