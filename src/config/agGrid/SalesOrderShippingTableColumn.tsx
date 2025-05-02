@@ -5,9 +5,7 @@ import { Button, Menu, Dropdown, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { useEffect, useState } from "react";
-// import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
-import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
 import { printShipment } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
@@ -21,10 +19,10 @@ import {
 import { TruncateCellRenderer } from "@/General";
 import PickSlipModal from "@/config/agGrid/PickSlipModal";
 import { toast } from "react-toastify";
-import { InvoiceModal } from "./registerModule/InvoiceModal";
+import ViewAndCreateInvModal from "@/config/agGrid/salesmodule/ViewandCreateInvModal";
 
 interface ActionMenuProps {
-  row: RowData; // Use the RowData type here
+  row: RowData;
 }
 
 const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
@@ -33,19 +31,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isInvoiceModalVisible, setIsInvoiceModalVisible] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
-    useState(false);
+  const [isMaterialListModalVisible, setIsMaterialListModalVisible] = useState(false);
   const [form] = Form.useForm();
-  const [invoiceForm] = Form.useForm(); // Form instance for the invoice modal
+  const [invoiceForm] = Form.useForm();
   const { loading } = useSelector((state: RootState) => state.sellRequest);
-
   const { shipmentMaterialList, loading: loading2 } = useSelector(
     (state: RootState) => state.sellShipment
   );
 
-  const dateRange = useSelector(
-    (state: RootState) => state.sellRequest.dateRange
-  );
+  const dateRange = useSelector((state: RootState) => state.sellRequest.dateRange);
 
   const showCancelModal = () => {
     setIsModalVisible(true);
@@ -55,8 +49,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     setIsModalVisible(false);
   };
 
-  const handleMaterialListModalClose = () =>
-    setIsMaterialListModalVisible(false);
+  const handleMaterialListModalClose = () => setIsMaterialListModalVisible(false);
 
   const handleshowMaterialList = (row: RowData) => {
     dispatch(fetchMaterialList({ shipment_id: row?.shipment_id }));
@@ -69,20 +62,17 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const confirmApprove = () => {
-    dispatch(approveShipment({ so_id: row?.shipment_id })).then(
-      (response: any) => {
-
-        if (response?.payload?.code == 200 || response?.payload?.success) {
-          toast.success(response?.payload?.message);
-          dispatch(
-            fetchSalesOrderShipmentList({
-              type: "date_wise",
-              data: dateRange,
-            }) as any
-          );
-        }
+    dispatch(approveShipment({ so_id: row?.shipment_id })).then((response: any) => {
+      if (response?.payload?.code === 200 || response?.payload?.success) {
+        toast.success(response?.payload?.message);
+        dispatch(
+          fetchSalesOrderShipmentList({
+            type: "date_wise",
+            data: dateRange,
+          }) as any
+        );
       }
-    );
+    });
     setShowConfirmationModal(false);
   };
 
@@ -95,8 +85,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           shipment_id: row?.shipment_id,
         };
         dispatch(cancelShipment(payload)).then((response: any) => {
-          if (response?.payload?.code == 200 || response?.payload?.success) {
-            form.resetFields(); // Clear the form fields after submission
+          if (response?.payload?.code === 200 || response?.payload?.success) {
+            form.resetFields();
             dispatch(
               fetchSalesOrderShipmentList({
                 type: "date_wise",
@@ -111,41 +101,108 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         console.error("Validation Failed:", errorInfo);
       });
   };
+
   const showInvoiceModal = () => {
-    setIsInvoiceModalVisible(true);
-  };
-  const handleInvoiceModalOk = () => {
-    invoiceForm
-      .validateFields()
-      .then((values) => {
-        const payload: any = {
-          shipment_id: row?.shipment_id,
-          remark: values.remark,
-          boxes: values.boxes,
-          so_id: row?.so_id,
-          costcenter:row?.costcenter,
-
+    dispatch(fetchMaterialList({ shipment_id: row?.shipment_id })).then((response: any) => {
+      if (response?.payload?.success && response?.payload?.data) {
+        const fetchedData = response.payload.data;
+        const sellRequestDetails = {
+          headerData: {
+            soId: row?.so_id, // Still using row.so_id as it may be needed
+            invoiceNo: fetchedData.header.shipment_id,
+            billTo: {
+              custName: fetchedData.header.customer_name.customer_name,
+              pincode: fetchedData.header.bill_to.pincode,
+              panno: fetchedData.header.bill_to.panno,
+              gst: fetchedData.header.bill_to.gstno,
+              address1: fetchedData.header.bill_to.address,
+              address2: "",
+            },
+            shipTo: {
+              company: fetchedData.header.ship_to.company,
+              panno: fetchedData.header.ship_to.panno,
+              gst: fetchedData.header.ship_to.gstno,
+              pincode: fetchedData.header.ship_to.pincode,
+              address1: fetchedData.header.ship_to.address1,
+              address2: fetchedData.header.ship_to.address2,
+            },
+            billFrom: {
+              pan: fetchedData.header.bill_from.panno,
+              gstin: fetchedData.header.bill_from.gstno,
+              address1: fetchedData.header.bill_from.address1,
+              address2: fetchedData.header.bill_from.address2,
+            },
+            ewaybill: "No",
+            eInvoice: "No",
+            invStatus: row?.shipment_status === "Y" ? "Active" : "Pending", // Still using row.shipment_status
+            createDate: row?.shipment_date, // Still using row.shipment_date
+          },
+          materialData: fetchedData.items || [],
         };
-        dispatch(createInvoice(payload)).then((resultAction: any) => {
-          if (
-            resultAction.payload?.code == 200 ||
-            resultAction.payload?.success
-          ) {
-            setIsInvoiceModalVisible(false);
-            dispatch(
-              fetchSalesOrderShipmentList({
-                type: "date_wise",
-                data: dateRange,
-              }) as any
-            );
-          }
-        });
+        console.log("sellRequestDetails:", sellRequestDetails);
+        setIsInvoiceModalVisible(true);
+        // Store sellRequestDetails in state to pass to modal
+        setInvoiceModalData(sellRequestDetails);
+      } else {
+        toast.error("Failed to fetch material list.");
+      }
+    });
+  };
 
+  const [invoiceModalData, setInvoiceModalData] = useState<any>(null);
+
+  const handleInvoiceModalOk = (values: any) => {
+    const payload = {
+      shipment_id: row?.shipment_id,
+      so_id: row?.so_id,
+      costcenter: row?.costcenter,
+      boxes: values.boxes,
+      remark: values.remark,
+      freightCharges: values.freightCharges,
+      gstRateFreight: values.gstRateFreight,
+      documentType: values.documentType,
+      supplyType: values.supplyType,
+      transactionType: values.transactionType,
+      reverseCharge: values.reverseCharge,
+      igstOnIntra: values.igstOnIntra,
+      billFromLocation: values.billFromLocation,
+      billToLocation: values.billToLocation,
+      dispatchFromLocation: values.dispatchFromLocation,
+      shipToLocation: values.shipToLocation,
+      dispatchDocNo: values.dispatchDocNo,
+      dispatchThrough: values.dispatchThrough,
+      deliveryNote: values.deliveryNote,
+      deliveryDate: values.deliveryDate,
+    };
+
+    dispatch(createInvoice(payload)).then((resultAction: any) => {
+      if (resultAction.payload?.code === 200 || resultAction.payload?.success) {
+        setIsInvoiceModalVisible(false);
+        dispatch(
+          fetchSalesOrderShipmentList({
+            type: "date_wise",
+            data: dateRange,
+          }) as any
+        );
         invoiceForm.resetFields();
-      })
-      .catch((errorInfo) => {
-        console.error("Validation Failed:", errorInfo);
-      });
+        toast.success("Invoice created successfully!");
+      } else {
+        toast.error("Failed to create invoice.");
+      }
+    });
+  };
+
+  const handleInvoiceModalCancel = () => {
+    setIsInvoiceModalVisible(false);
+    invoiceForm.resetFields();
+  };
+
+  const handlePrintInvoice = (invoiceNo: string, printType: string) => {
+    dispatch(printShipment({ shipment_id: row?.shipment_id })).then((response: any) => {
+      if (response?.payload?.success) {
+        printFunction(response?.payload?.data.buffer.data);
+      }
+    });
   };
 
   useEffect(() => {
@@ -158,18 +215,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       );
     }
   }, [submitSuccess]);
-
-  const handleInvoiceModalCancel = () => {
-    setIsInvoiceModalVisible(false);
-  };
-
-  const handlePrintOrder = async (orderId: string) => {
-    dispatch(printShipment({ shipment_id: orderId })).then((response: any) => {
-      if (response?.payload?.success) {
-        printFunction(response?.payload?.data.buffer.data);
-      }
-    });
-  };
 
   const materialListColumns: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
@@ -186,7 +231,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       autoHeight: true,
       width: 300,
     },
-   
     {
       headerName: "Customer Part Number",
       field: "customer_part_no",
@@ -218,9 +262,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       </Menu.Item>
       <Menu.Item
         key="update"
-        onClick={() => {
-          handleshowMaterialList(row);
-        }}
+        onClick={() => handleshowMaterialList(row)}
         disabled={row?.approval_status === "P" || row?.material_status === "Y"}
       >
         PickSlip
@@ -228,11 +270,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item
         key="createInvoice"
         onClick={showInvoiceModal}
-        disabled={isDisabled || row?.material_status !== "Y"}
+        // disabled={isDisabled || row?.material_status !== "Y"}
       >
         Create Invoice
       </Menu.Item>
-      <Menu.Item key="print" onClick={() => handlePrintOrder(row?.shipment_id)}>
+      <Menu.Item key="print" onClick={() => handlePrintInvoice(row?.shipment_id, "Original")}>
         Print
       </Menu.Item>
     </Menu>
@@ -250,16 +292,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         row={{ req_id: row?.so_id }}
         form={form}
         loading={loading}
-        module="Shipment "
+        module="Shipment"
       />
-      <InvoiceModal
-        isDialogVisible={isInvoiceModalVisible}
-        handleOk={handleInvoiceModalOk}
-        handleCancel={handleInvoiceModalCancel}
+      <ViewAndCreateInvModal
+        visible={isInvoiceModalVisible}
+        onClose={handleInvoiceModalCancel}
+        sellRequestDetails={invoiceModalData}
+        loading={loading || loading2}
         form={invoiceForm}
-        loading={loading}
-        heading="Create Invoice"
-        description={`Are you sure you want to create an invoice for  ${row.so_id} and shipment ${row.shipment_id}? and cost center ${row.costcenter} ?`}
+        onSave={handleInvoiceModalOk}
       />
       <PickSlipModal
         visible={isMaterialListModalVisible}
@@ -317,7 +358,6 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Pickslip ID",
     field: "pickslip_id",
     filter: "agTextColumnFilter",
-     
   },
   {
     headerName: "Approval Status",
