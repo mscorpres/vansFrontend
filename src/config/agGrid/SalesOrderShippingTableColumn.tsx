@@ -263,14 +263,14 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item
         key="update"
         onClick={() => handleshowMaterialList(row)}
-        disabled={row?.approval_status === "P" || row?.material_status === "Y"}
+        // disabled={row?.approval_status === "P" || row?.material_status === "Y"}
       >
         PickSlip
       </Menu.Item>
       <Menu.Item
         key="createInvoice"
         onClick={showInvoiceModal}
-        // disabled={isDisabled || row?.material_status !== "Y"}
+        disabled={isDisabled || row?.material_status !== "Y"}
       >
         Create Invoice
       </Menu.Item>
