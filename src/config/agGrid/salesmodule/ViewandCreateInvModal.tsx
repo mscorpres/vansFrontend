@@ -75,7 +75,7 @@ interface ViewAndCreateInvModalProps {
 }
 
 // Define options
-const subType = [
+const supplyType = [
   { code: "B2B", desc: "Business to Business" },
   { code: "SEZWP", desc: "SEZ with payment" },
   { code: "SEZWOP", desc: "SEZ without payment" },
@@ -99,10 +99,10 @@ const transactionType = [
   { code: "4", desc: "Combination of 2 and 3" },
 ];
 
-const supplyType = [
-  { code: "O", desc: "Outward" },
-  { code: "I", desc: "Inward" },
-];
+// const supplyType = [
+//   { code: "O", desc: "Outward" },
+//   { code: "I", desc: "Inward" },
+// ];
 
 const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
   visible,
@@ -168,10 +168,9 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
 
   const handleSave = () => {
     form.validateFields().then((values) => {
-      onSave(values);
-      onClose();
+      onSave(values); // Call onSave but don't close the dialog here
     }).catch((info) => {
-      console.log("Validation Failed:", info);
+      console.log("Validation Failed:", info); // Log validation errors, dialog stays open
     });
   };
 
@@ -356,7 +355,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
                           ))}
                         </Select>
                       </Form.Item>
-                      <Form.Item
+                      {/* <Form.Item
                         name="subType"
                         label="Sub Type"
                         rules={[{ required: true, message: "Please select sub type" }]}
@@ -372,7 +371,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
                             </Select.Option>
                           ))}
                         </Select>
-                      </Form.Item>
+                      </Form.Item> */}
                       <Form.Item
                         name="transactionType"
                         label="Transaction Type"

@@ -193,11 +193,11 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       qty: selectedItems.map((item: any) => item?.qty),
       remark: selectedItems.map((item: any) => item?.itemRemark),
       costcenter: sellRequestDetails?.header?.costcenter?.code,
-      box: selectedRows.map((rowId) =>
-        selectedBoxes[rowId]?.boxes?.join(",") || ""
+      box: selectedItems.map((item: any) =>
+        selectedBoxes[item.item]?.boxes?.join(",") || ""
       ),
-      boxqty: selectedRows.map((rowId) =>
-        selectedBoxes[rowId]?.qty?.join(",") || ""
+      boxqty: selectedItems.map((item: any) =>
+        selectedBoxes[item.item]?.qty?.join(",") || ""
       ),
     };
 

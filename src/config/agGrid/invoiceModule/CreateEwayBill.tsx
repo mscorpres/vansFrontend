@@ -84,16 +84,35 @@ export default function CreateEwayBill() {
     dispatch(action({ shipment_id: shipId })).then((res: any) => {
       if (res.payload?.success) {
         var data = res.payload?.data;
+        console.log("data", data);
         setTotalSum(data?.total_amount);
         form.setValue("header.documentNo", data?.documentNo);
+        form.setValue("header.documentType", data?.documentType);
+        form.setValue("header.documentDate", dayjs().format("DD-MM-YYYY"));
+        form.setValue("header.dispatch_doc_no", data?.dispatchDocNo);
+        form.setValue("header.dispatch_through", data?.dispatchThrough);
+        form.setValue("header.transactionType", data?.transactionType);
+        form.setValue("header.delivery_note", data?.deliveryNote);
+        //in repsoen the delivery date comign is yyyy-mm-dd i want to dd-mm-yyyy here
+        form.setValue("header.delivery_date", dayjs(data?.deliveryDate).format("DD-MM-YYYY"));
+        form.setValue("header.supplyType", data?.supplyType);
+        // form.setValue("header.subSupplyType", data?.subSupplyType);
+        form.setValue("billFrom.location", data?.billFromLocation);
+        form.setValue("billTo.location", data?.billToLocation);
+        form.setValue("shipTo.location", data?.shipToLocation);
+        form.setValue("dispatchFrom.location", data?.dispatchFromLocation);
+        
+      
+        
+        
         setOrderId(data?.documentNo);
-        form.setValue(
-          "header.documentDate",
-          data?.documentDetail?.documentDate
-        );
+        // form.setValue(
+        //   "header.documentDate",
+        //   data?.documentDetail?.documentDate
+        // );
         form.setValue("billFrom.legalName", data?.bill_from?.legalName);
         form.setValue("billFrom.state", data?.bill_from?.state?.state_code);
-        form.setValue("billFrom.location", data?.bill_from?.location);
+        // form.setValue("billFrom.location", data?.bill_from?.location);
         form.setValue("billFrom.gstin", data?.bill_from?.gstin);
         form.setValue("billFrom.pincode", data?.bill_from?.pincode);
         form.setValue("billFrom.pan", data?.bill_from?.pan);
@@ -102,7 +121,7 @@ export default function CreateEwayBill() {
 
         form.setValue("billTo.legalName", data?.bill_to?.client);
         form.setValue("billTo.state", data?.bill_to?.state?.state_code);
-        form.setValue("billTo.location", data?.bill_to?.location);
+        // form.setValue("billTo.location", data?.bill_to?.location);
         form.setValue("billTo.gstin", data?.bill_to?.gst);
         form.setValue("billTo.pincode", data?.bill_to?.pincode);
         form.setValue("billTo.pan", data?.bill_to?.pan);
@@ -114,7 +133,7 @@ export default function CreateEwayBill() {
         form.setValue("dispatchFrom.pan", data?.ship_from?.pan);
         form.setValue("dispatchFrom.addressLine1", data?.ship_from?.address1);
         form.setValue("dispatchFrom.addressLine2", data?.ship_from?.address2);
-        form.setValue("dispatchFrom.location", data?.ship_from?.location);
+        // form.setValue("dispatchFrom.location", data?.ship_from?.location);
         form.setValue("dispatchFrom.pincode", data?.ship_from?.pincode);
 
         form.setValue("shipTo.legalName", data?.ship_to?.company);
@@ -124,7 +143,7 @@ export default function CreateEwayBill() {
         form.setValue("shipTo.state", data?.ship_to?.state?.state_code);
         form.setValue("shipTo.addressLine1", data?.ship_to?.address1);
         form.setValue("shipTo.addressLine2", data?.ship_to?.address2);
-        form.setValue("shipTo.location", data?.ship_to?.location);
+      
       }
     });
   }, [params]);
@@ -444,7 +463,7 @@ export default function CreateEwayBill() {
                       )}
                     />
                   </div>
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="header.reverseCharge"
                     render={({ field }) => (
@@ -511,7 +530,7 @@ export default function CreateEwayBill() {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
                 </div>
               </CardContent>
             </Card>
@@ -1550,37 +1569,32 @@ export default function CreateEwayBill() {
                     )}
                     {!isEwayBill && (
                       <div>
-                        <FormField
-                          control={form.control}
-                          name="header.delivery_date"
-                          render={() => (
-                            <FormItem className="pl-[10px] w-full flex flex-col">
-                              <FormLabel className={LableStyle}>
-                                Delivery Date
-                              </FormLabel>
-                              <FormControl>
-                                <Space direction="vertical" size={12}>
-                                  <DatePicker
-                                    // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                    className={DatePickerStyle}
-                                    format="DD-MM-YYYY"
-                                    onChange={(value: Dayjs | null) => {
-                                      const formattedDate = value
-                                        ? value.format("DD-MM-YYYY")
-                                        : "";
-                                      form.setValue(
-                                        "headers.delivery_date",
-                                        formattedDate
-                                      );
-                                    }}
-                                  />
-                                </Space>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                      <FormField
+                        control={form.control}
+                        name="header.delivery_date"
+                        render={({ field }) => (
+                          <FormItem className="pl-[10px] w-full flex flex-col">
+                            <FormLabel className={LableStyle}>Delivery Date</FormLabel>
+                            <FormControl>
+                              <Space direction="vertical" size={12}>
+                                <DatePicker
+                                  className={DatePickerStyle}
+                                  format="DD-MM-YYYY"
+                                  value={field.value ? dayjs(field.value, "DD-MM-YYYY") : null}
+                                  onChange={(value: Dayjs | null) => {
+                                    const formattedDate = value ? value.format("DD-MM-YYYY") : "";
+                                    form.setValue("header.delivery_date", formattedDate, {
+                                      shouldValidate: true,
+                                    });
+                                  }}
+                                />
+                              </Space>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     )}
                   </div>
                 </CardContent>
