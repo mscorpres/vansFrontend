@@ -283,7 +283,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
                       <Form.Item
                         name="boxes"
                         label="No of Boxes"
-                        rules={[{ required: true, message: "Please enter number of boxes" }]}
+                        rules={[{ required: false, message: "Please enter number of boxes" }]}
                       >
                         <Input
                           type="number"
@@ -295,7 +295,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
                       <Form.Item
                         name="freightCharges"
                         label="Freight Charges"
-                        rules={[{ required: true, message: "Please enter freight charges" }]}
+                        rules={[{ required: false, message: "Please enter freight charges" }]}
                       >
                         <Input
                           type="number"
@@ -307,7 +307,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
                       <Form.Item
                         name="gstRateFreight"
                         label="GST Rate for Freight (%)"
-                        rules={[{ required: true, message: "Please select GST rate" }]}
+                        rules={[{ required: false, message: "Please select GST rate" }]}
                       >
                         <Select
                           placeholder="Select GST rate"
@@ -456,7 +456,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
                       <Form.Item
                         name="dispatchDocNo"
                         label="Dispatch Doc No"
-                        rules={[{ required: true, message: "Please enter dispatch document number" }]}
+                        rules={[{ required: false, message: "Please enter dispatch document number" }]}
                       >
                         <Input
                           placeholder="Enter dispatch document number"
@@ -467,7 +467,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
                       <Form.Item
                         name="dispatchThrough"
                         label="Dispatch Through"
-                        rules={[{ required: true, message: "Please enter dispatch through" }]}
+                        rules={[{ required: false, message: "Please enter dispatch through" }]}
                       >
                         <Input
                           placeholder="Enter dispatch through (e.g., Courier, Truck)"
@@ -485,7 +485,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({
                       <Form.Item
                         name="deliveryDate"
                         label="Delivery Date"
-                        rules={[{ required: true, message: "Please enter delivery date" }]}
+                        rules={[{ required: false, message: "Please enter delivery date" }]}
                       >
                         <Input
                           type="date"
