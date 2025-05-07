@@ -2,17 +2,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { Filter } from "lucide-react";
+import { Download, Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Form, Space } from "antd";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import Select from "react-select";
 import {
   fetchSellRequestList,
   setDateRange,
@@ -25,18 +19,29 @@ import { rangePresets } from "@/General";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import dayjs from "dayjs";
+import { customStyles } from "@/config/reactSelect/SelectColorConfig";
+import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 
 const { RangePicker } = DatePicker;
 const dateFormat = "DD/MM/YYYY";
 const wises = [
   { label: "Date Wise", value: "date_wise" },
   { label: "SO(s)Wise", value: "soid_wise" },
-] as const;
+];
+
+// Default date range: last 3 months
+const defaultDateRange = [
+  dayjs().subtract(3, "month").toDate(),
+  dayjs().toDate(),
+];
 
 const RegisterSalesOrderPage: React.FC = () => {
   const gridRef = useRef<AgGridReact<any>>(null);
   const { toast } = useToast();
-  const [type, setType] = useState<string>("date_wise");
+  const [type, setType] = useState<{ label: string; value: string }>({
+    label: "Date Wise",
+    value: "date_wise",
+  });
   const dispatch = useDispatch();
   const [isSearchPerformed, setIsSearchPerformed] = useState<boolean>(false);
   const [rowData, setRowData] = useState<any[]>([]);
@@ -45,28 +50,22 @@ const RegisterSalesOrderPage: React.FC = () => {
   );
   const [form] = Form.useForm();
 
-  // Default date range: last 3 months
-  const [defaultDateRange] = useState<Date[]>([
-    dayjs().subtract(3, "month").toDate(),
-    dayjs().toDate(),
-  ]);
-
   const onSubmit = async () => {
     try {
       const values = await form.validateFields();
       let dataString = "";
-      if (type === "date_wise" && values.dateRange) {
+      if (type.value === "date_wise" && values.dateRange) {
         const startDate = dayjs(values.dateRange[0]).format("DD-MM-YYYY");
         const endDate = dayjs(values.dateRange[1]).format("DD-MM-YYYY");
         dataString = `${startDate}-${endDate}`;
         dispatch(setDateRange(dataString as any));
-      } else if (type === "soid_wise" && values.soWise) {
+      } else if (type.value === "soid_wise" && values.soWise) {
         dataString = values.soWise;
         dispatch(setDateRange(dataString as any));
       }
 
       const resultAction = await dispatch(
-        fetchSellRequestList({ type, data: dataString }) as any
+        fetchSellRequestList({ type: type.value, data: dataString }) as any
       ).unwrap();
       if (resultAction.code === 200) {
         setRowData(resultAction.data);
@@ -101,65 +100,61 @@ const RegisterSalesOrderPage: React.FC = () => {
   useEffect(() => {
     setRowData([]);
     setIsSearchPerformed(false);
-  }, [type]);
+    if (type.value === "soid_wise") {
+      form.setFieldsValue({ dateRange: undefined, soWise: "" });
+    } else {
+      form.setFieldsValue({ dateRange: defaultDateRange });
+    }
+  }, [type, form]);
 
   useEffect(() => {
-    // Set default form values: "date_wise" and last 3 months date range
+    // Set default form values: "date_wise" and last 3 months
     form.setFieldsValue({
-      type: "date_wise",
+      type: { label: "Date Wise", value: "date_wise" },
       dateRange: defaultDateRange,
     });
-  }, [form, defaultDateRange]);
+  }, [form]);
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
-      {loading && <FullPageLoading />}
-      <div className="bg-[#fff]">
-        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
-          <Filter className="h-[20px] w-[20px]" />
-          Filter
-        </div>
-        <div className="p-[10px]">
-          <Form form={form} onFinish={onSubmit}>
-            <Form.Item name="type" rules={[{ required: true, message: "Filter type is required" }]}>
+    <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
+      {/* Filter Section */}
+      <div className="bg-white p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Form form={form} className="flex items-center gap-4" onFinish={onSubmit}>
+            <Form.Item
+              className="w-[300px] m-0"
+              name="type"
+              rules={[{ required: true, message: "Filter type is required" }]}
+            >
               <Select
-                onValueChange={(value: string) => {
-                  setType(value);
-                  if (value === "soid_wise") {
-                    form.setFieldsValue({ dateRange: undefined });
-                  } else {
-                    form.setFieldsValue({ dateRange: defaultDateRange });
-                  }
-                }}
+                styles={customStyles}
+                components={{ DropdownIndicator }}
+                placeholder="Select Type"
+                className="border-0 basic-single"
+                classNamePrefix="select border-0"
+                isClearable={true}
+                isSearchable={true}
+                options={wises}
                 value={type}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a filter type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {wises.map((data) => (
-                    <SelectItem key={data.value} value={data.value}>
-                      {data.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(selected) => {
+                  const newType = selected || { label: "Date Wise", value: "date_wise" };
+                  setType(newType);
+                }}
+              />
             </Form.Item>
 
-            {type === "date_wise" ? (
+            {type.value === "date_wise" ? (
               <Form.Item
+                className="w-[300px] m-0"
                 name="dateRange"
                 rules={[{ required: true, message: "Date range is required" }]}
               >
                 <Space direction="vertical" size={12} className="w-full">
                   <RangePicker
-                    className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
+                    className="border shadow-sm border-gray-300 py-[7px] hover:border-gray-400 w-full"
                     value={
                       form.getFieldValue("dateRange") &&
-                      Array.isArray(form.getFieldValue("dateRange")) &&
-                      form.getFieldValue("dateRange").every((date: any) =>
-                        dayjs(date).isValid()
-                      )
+                      Array.isArray(form.getFieldValue("dateRange"))
                         ? [
                             dayjs(form.getFieldValue("dateRange")[0]),
                             dayjs(form.getFieldValue("dateRange")[1]),
@@ -173,15 +168,12 @@ const RegisterSalesOrderPage: React.FC = () => {
                     }
                     format={dateFormat}
                     presets={rangePresets}
-                    defaultValue={[
-                      dayjs(defaultDateRange[0]),
-                      dayjs(defaultDateRange[1]),
-                    ]}
                   />
                 </Space>
               </Form.Item>
             ) : (
               <Form.Item
+                className="w-[300px] m-0"
                 name="soWise"
                 rules={[{ required: true, message: "SO number is required" }]}
               >
@@ -189,27 +181,30 @@ const RegisterSalesOrderPage: React.FC = () => {
               </Form.Item>
             )}
 
-            <div className="flex space-x-2 float-end pr-2">
+            <div className="flex space-x-2">
               {isSearchPerformed && (
                 <Button
                   type="button"
                   onClick={onBtExport}
-                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
                 >
                   <Download />
                 </Button>
               )}
               <Button
                 type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
               >
-                Submit
+                Search
               </Button>
             </div>
           </Form>
         </div>
       </div>
-      <div className="ag-theme-quartz h-[calc(100vh-100px)]">
+
+      {/* Grid Section */}
+      <div className="ag-theme-quartz flex-1">
+        {loading && <FullPageLoading />}
         <AgGridReact
           ref={gridRef}
           loadingCellRenderer={loadingCellRenderer}
@@ -218,9 +213,8 @@ const RegisterSalesOrderPage: React.FC = () => {
           defaultColDef={{ filter: true, sortable: true }}
           pagination={true}
           paginationPageSize={10}
+          paginationPageSizeSelector={[10, 25, 50]}
           suppressCellFocus={true}
-          paginationAutoPageSize={true}
-          loadingOverlayComponent={OverlayNoRowsTemplate}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           enableCellTextSelection={true}
         />
