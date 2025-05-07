@@ -1,6 +1,6 @@
 import { RowData } from "@/types/SalesOrderRegisterType";
 import { ColDef } from "ag-grid-community";
-import { MoreOutlined } from "@ant-design/icons";
+import { CarOutlined, CheckCircleOutlined, CloseCircleOutlined, EditOutlined, MoreOutlined, PrinterOutlined, StopOutlined } from "@ant-design/icons";
 import { Button, Menu, Dropdown, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
@@ -207,6 +207,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClick={() => {
           handleUpdate(row);
         }}
+        icon={<EditOutlined className="text-base" />}
         // disabled={isDisabled}
       >
         Update
@@ -214,6 +215,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item
         key="approve"
         onClick={() => handleshowMaterialListForApprove(row)}
+        icon={<CheckCircleOutlined className="text-base" />}
         // disabled={isDisabled}
       >
         View/Approve
@@ -221,7 +223,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item
         key="cancel"
         onClick={showCancelModal}
+        
         disabled={row?.soStatus === "Closed"}
+        icon={<CloseCircleOutlined className="text-base" />}
       >
         Cancel
       </Menu.Item>
@@ -234,16 +238,19 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           row?.approveStatus === "Rejected" ||
           row?.approveStatus === "Partially Approved"
         }
+        icon={<CarOutlined className="text-base" />}
       >
         Create Shipment
       </Menu.Item>
-      <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)}>
+      <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)}   icon={<PrinterOutlined className="text-base" />}>
         Print
       </Menu.Item>
       <Menu.Item
         key="shortClose"
         onClick={() => handleShortClose()}
         disabled={row?.soStatus === "Closed"}
+      
+        icon={<StopOutlined className="text-base" />}
       >
         Short Close
       </Menu.Item>

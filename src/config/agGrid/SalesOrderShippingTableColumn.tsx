@@ -1,6 +1,6 @@
 import { RowData } from "@/types/SalesOrderRegisterType";
 import { ColDef } from "ag-grid-community";
-import { MoreOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined, EditOutlined, FileAddOutlined, MoreOutlined, PrinterOutlined } from "@ant-design/icons";
 import { Button, Menu, Dropdown, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
@@ -254,16 +254,20 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Menu.Item
         key="approve"
         onClick={() => handleshowMaterialListForApprove(row)}
+        icon={<CheckCircleOutlined className="text-base" />}
       >
         View/Approve
       </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal}>
+      <Menu.Item key="cancel" onClick={showCancelModal} 
+      icon={<CloseCircleOutlined className="text-base" />} 
+      >
         Cancel
       </Menu.Item>
       <Menu.Item
         key="update"
         onClick={() => handleshowMaterialList(row)}
         // disabled={row?.approval_status === "P" || row?.material_status === "Y"}
+         icon={<EditOutlined className="text-base" />}
       >
         PickSlip
       </Menu.Item>
@@ -271,10 +275,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         key="createInvoice"
         onClick={showInvoiceModal}
         disabled={isDisabled || row?.material_status !== "Y"}
+        icon={<FileAddOutlined className="text-base" />}
       >
         Create Invoice
       </Menu.Item>
-      <Menu.Item key="print" onClick={() => handlePrintInvoice(row?.shipment_id, "Original")}>
+      <Menu.Item key="print" onClick={() => handlePrintInvoice(row?.shipment_id, "Original")} 
+      icon={<PrinterOutlined className="text-base" />}>
         Print
       </Menu.Item>
     </Menu>

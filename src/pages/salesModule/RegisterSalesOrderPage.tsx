@@ -1,20 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import { Download, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Space } from "antd";
+import { DatePicker, Form, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -33,8 +23,8 @@ import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
 import { rangePresets } from "@/General";
 import FullPageLoading from "@/components/shared/FullPageLoading";
-import moment from "moment";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 const dateFormat = "DD/MM/YYYY";
@@ -42,17 +32,6 @@ const wises = [
   { label: "Date Wise", value: "date_wise" },
   { label: "SO(s)Wise", value: "soid_wise" },
 ] as const;
-
-const FormSchema = z.object({
-  dateRange: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  soWise: z.string().optional(),
-});
 
 const RegisterSalesOrderPage: React.FC = () => {
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -64,26 +43,28 @@ const RegisterSalesOrderPage: React.FC = () => {
   const { data, loading } = useSelector(
     (state: RootState) => state.sellRequest
   );
+  const [form] = Form.useForm();
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
+  // Default date range: last 3 months
+  const [defaultDateRange] = useState<Date[]>([
+    dayjs().subtract(3, "month").toDate(),
+    dayjs().toDate(),
+  ]);
 
-  const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
-    const { dateRange, soWise } = formData;
-
-    let dataString = "";
-    if (type === "date_wise" && dateRange) {
-      const startDate = moment(dateRange[0]).format("DD-MM-YYYY");
-      const endDate = moment(dateRange[1]).format("DD-MM-YYYY");
-      dataString = `${startDate}-${endDate}`;
-      dispatch(setDateRange(dataString as any));
-    } else if (type === "soid_wise" && soWise) {
-      dataString = soWise;
-      dispatch(setDateRange(dataString as any));
-    }
-
+  const onSubmit = async () => {
     try {
+      const values = await form.validateFields();
+      let dataString = "";
+      if (type === "date_wise" && values.dateRange) {
+        const startDate = dayjs(values.dateRange[0]).format("DD-MM-YYYY");
+        const endDate = dayjs(values.dateRange[1]).format("DD-MM-YYYY");
+        dataString = `${startDate}-${endDate}`;
+        dispatch(setDateRange(dataString as any));
+      } else if (type === "soid_wise" && values.soWise) {
+        dataString = values.soWise;
+        dispatch(setDateRange(dataString as any));
+      }
+
       const resultAction = await dispatch(
         fetchSellRequestList({ type, data: dataString }) as any
       ).unwrap();
@@ -97,6 +78,11 @@ const RegisterSalesOrderPage: React.FC = () => {
       }
     } catch (error: any) {
       console.error("Failed to fetch sell requests:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch sell requests",
+        className: "bg-red-700 text-white",
+      });
     }
   };
 
@@ -107,6 +93,7 @@ const RegisterSalesOrderPage: React.FC = () => {
       gridRef.current.api.exportDataAsCsv();
     }
   }, []);
+
   useEffect(() => {
     setRowData(data as any);
   }, [data]);
@@ -115,6 +102,14 @@ const RegisterSalesOrderPage: React.FC = () => {
     setRowData([]);
     setIsSearchPerformed(false);
   }, [type]);
+
+  useEffect(() => {
+    // Set default form values: "date_wise" and last 3 months date range
+    form.setFieldsValue({
+      type: "date_wise",
+      dateRange: defaultDateRange,
+    });
+  }, [form, defaultDateRange]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -125,74 +120,77 @@ const RegisterSalesOrderPage: React.FC = () => {
           Filter
         </div>
         <div className="p-[10px]">
-          <Select
-            onValueChange={(value: string) => {
-              setType(value);
-              if (value === "soid_wise") {
-                form.setValue("dateRange", undefined);
-              }
-            }}
-            defaultValue={type}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a filter type" />
-            </SelectTrigger>
+          <Form form={form} onFinish={onSubmit}>
+            <Form.Item name="type" rules={[{ required: true, message: "Filter type is required" }]}>
+              <Select
+                onValueChange={(value: string) => {
+                  setType(value);
+                  if (value === "soid_wise") {
+                    form.setFieldsValue({ dateRange: undefined });
+                  } else {
+                    form.setFieldsValue({ dateRange: defaultDateRange });
+                  }
+                }}
+                value={type}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a filter type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {wises.map((data) => (
+                    <SelectItem key={data.value} value={data.value}>
+                      {data.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Form.Item>
 
-            <SelectContent>
-              {wises.map((data) => (
-                <SelectItem key={data.value} value={data.value}>
-                  {data.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 overflow-hidden p-[10px]"
-          >
             {type === "date_wise" ? (
-              <FormField
-                control={form.control}
+              <Form.Item
                 name="dateRange"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Space direction="vertical" size={12} className="w-full">
-                        <RangePicker
-                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
-                          onChange={(value) =>
-                            field.onChange(
-                              value ? value.map((date) => date!.toDate()) : []
-                            )
-                          }
-                          format={dateFormat}
-                          presets={rangePresets}
-                        />
-                      </Space>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                rules={[{ required: true, message: "Date range is required" }]}
+              >
+                <Space direction="vertical" size={12} className="w-full">
+                  <RangePicker
+                    className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
+                    value={
+                      form.getFieldValue("dateRange") &&
+                      Array.isArray(form.getFieldValue("dateRange")) &&
+                      form.getFieldValue("dateRange").every((date: any) =>
+                        dayjs(date).isValid()
+                      )
+                        ? [
+                            dayjs(form.getFieldValue("dateRange")[0]),
+                            dayjs(form.getFieldValue("dateRange")[1]),
+                          ]
+                        : undefined
+                    }
+                    onChange={(value) =>
+                      form.setFieldsValue({
+                        dateRange: value ? value.map((date) => date!.toDate()) : [],
+                      })
+                    }
+                    format={dateFormat}
+                    presets={rangePresets}
+                    defaultValue={[
+                      dayjs(defaultDateRange[0]),
+                      dayjs(defaultDateRange[1]),
+                    ]}
+                  />
+                </Space>
+              </Form.Item>
             ) : (
-              <FormField
-                control={form.control}
+              <Form.Item
                 name="soWise"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Input {...field} placeholder="SO number" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                rules={[{ required: true, message: "SO number is required" }]}
+              >
+                <Input placeholder="SO number" />
+              </Form.Item>
             )}
+
             <div className="flex space-x-2 float-end pr-2">
-              {isSearchPerformed && ( // Only show the download button if search is performed
+              {isSearchPerformed && (
                 <Button
                   type="button"
                   onClick={onBtExport}
@@ -208,8 +206,8 @@ const RegisterSalesOrderPage: React.FC = () => {
                 Submit
               </Button>
             </div>
-          </form>
-        </Form>
+          </Form>
+        </div>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
         <AgGridReact
@@ -224,7 +222,7 @@ const RegisterSalesOrderPage: React.FC = () => {
           paginationAutoPageSize={true}
           loadingOverlayComponent={OverlayNoRowsTemplate}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
-          enableCellTextSelection = {true}
+          enableCellTextSelection={true}
         />
       </div>
     </Wrapper>
