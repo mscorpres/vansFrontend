@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { StatusPanelDef } from "@ag-grid-community/core";
+import { StatusPanelDef, NavigateToNextCellParams } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import TextInputCellRenderer from "@/shared/TextInputCellRenderer";
 import DatePickerCellRenderer from "@/config/agGrid/DatePickerCellRenderer";
@@ -169,6 +170,97 @@ const AddPO: React.FC<Props> = ({
     }),
     []
   );
+  const navigateToNextCell = (params: NavigateToNextCellParams) => {
+    const { key, previousCellPosition, nextCellPosition, event } = params;
+    const gridApi = gridRef.current?.api;
+
+    if (!gridApi || !previousCellPosition) return previousCellPosition;
+
+    const editableColumns = columnDefs
+      .filter((col: ColDef) => col.editable && col.field && (col.cellRenderer === "textInputCellRenderer" || col.cellRenderer === "datePickerCellRenderer"))
+      .map((col: ColDef) => col.field!);
+
+    const currentRowIndex = previousCellPosition.rowIndex;
+    const currentColId = previousCellPosition.column.getColId();
+    const currentColIndex = editableColumns.indexOf(currentColId);
+
+    if (key === "Tab" || key === "Enter") {
+      let nextColIndex = currentColIndex + 1;
+      let nextRowIndex = currentRowIndex;
+      let nextColId = editableColumns[nextColIndex];
+
+      if (nextColIndex >= editableColumns.length) {
+        nextColIndex = 0;
+        nextRowIndex = currentRowIndex + 1;
+        nextColId = editableColumns[0];
+
+        if (nextRowIndex >= gridApi.getDisplayedRowCount()) {
+          addNewRow();
+          nextRowIndex = gridApi.getDisplayedRowCount();
+        }
+      }
+
+      if (!nextColId) {
+        console.error("No next editable column found");
+        return previousCellPosition;
+      }
+
+      const nextCellPosition = {
+        rowIndex: nextRowIndex,
+        rowPinned: null,
+        column: gridApi.getColumn(nextColId),
+      };
+
+      gridApi.ensureIndexVisible(nextRowIndex);
+      gridApi.ensureColumnVisible(nextColId);
+      gridApi.setFocusedCell(nextRowIndex, nextColId);
+      gridApi.startEditingCell({
+        rowIndex: nextRowIndex,
+        colKey: nextColId,
+      });
+
+      return nextCellPosition;
+    }
+
+    if (key === "ShiftTab" || (event as KeyboardEvent).key === "Enter" && (event as KeyboardEvent).shiftKey) {
+      let prevColIndex = currentColIndex - 1;
+      let prevRowIndex = currentRowIndex;
+      let prevColId = editableColumns[prevColIndex];
+
+      if (prevColIndex < 0) {
+        prevColIndex = editableColumns.length - 1;
+        prevRowIndex = currentRowIndex - 1;
+        prevColId = editableColumns[prevColIndex];
+
+        if (prevRowIndex < 0) {
+          return previousCellPosition;
+        }
+      }
+
+      if (!prevColId) {
+        console.error("No previous editable column found");
+        return previousCellPosition;
+      }
+
+      const prevCellPosition = {
+        rowIndex: prevRowIndex,
+        rowPinned: null,
+        column: gridApi.getColumn(prevColId),
+      };
+
+      gridApi.ensureIndexVisible(prevRowIndex);
+      gridApi.ensureColumnVisible(prevColId);
+      gridApi.setFocusedCell(prevRowIndex, prevColId);
+      gridApi.startEditingCell({
+        rowIndex: prevRowIndex,
+        colKey: prevColId,
+      });
+
+      return prevCellPosition;
+    }
+
+    return nextCellPosition || previousCellPosition;
+  };
 
   useEffect(() => {
     dispatch(fetchComponentDetail({ search: "" }));
@@ -747,10 +839,15 @@ const AddPO: React.FC<Props> = ({
               pagination={true}
               paginationPageSize={10}
               animateRows={true}
-              gridOptions={commonAgGridConfig}
-              suppressRowClickSelection={false}
+              gridOptions={{
+                ...commonAgGridConfig,
+                navigateToNextCell,
+                tabToNextCell: true,
+                suppressRowClickSelection: false,
+                suppressCellFocus: false,
+                singleClickEdit: true,
+              }}
               overlayNoRowsTemplate={OverlayNoRowsTemplate}
-              suppressCellFocus={false}
             />
           </div>
         </div>
