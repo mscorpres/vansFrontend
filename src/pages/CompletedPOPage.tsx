@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { DatePicker, Dropdown, Form, Menu, Space } from "antd";
+import { DatePicker, Dropdown,Button as AntdButton, Form, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
@@ -46,7 +46,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   return (
     <>
       <Dropdown overlay={menu} trigger={["click"]}>
-        <MoreOutlined />
+       <AntdButton icon={<MoreOutlined />} />
       </Dropdown>
     </>
   );
