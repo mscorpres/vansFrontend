@@ -8,7 +8,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { DatePicker, Divider, Dropdown, Form, Menu, Space } from "antd";
+import { DatePicker, Divider,Button as AntdButton, Dropdown, Form, Menu, Space } from "antd";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
 import { AppDispatch, RootState } from "@/store";
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/sheet";
 import { InputStyle } from "@/constants/themeContants";
 import { exportDateRange } from "@/components/shared/Options";
-import { MoreOutlined } from "@ant-design/icons";
+import { CloseCircleOutlined, EditOutlined, EyeOutlined, InboxOutlined, MoreOutlined, PaperClipOutlined, PrinterOutlined } from "@ant-design/icons";
 import ViewCompoents from "./ViewCompoents";
 import POCancel from "./POCancel";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
@@ -64,40 +64,53 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
     <Menu>
       <Menu.Item
         key="min"
+        icon={<InboxOutlined />}
         onClick={() => setViewMinPo(row)}
         // disabled={isDisabled}
       >
         Material In
       </Menu.Item>
       <Menu.Item
-        key=" Components"
-        onClick={() => setView(row)} // disabled={isDisabled}
+        key="Components"
+        icon={<EyeOutlined />}
+        onClick={() => setView(row)}
+        // disabled={isDisabled}
       >
         View
       </Menu.Item>
       <Menu.Item
-        key=" Edit"
+        key="Edit"
+        icon={<EditOutlined />}
         onClick={() =>
           navigate(
             `/create-po/edit/${row?.po_transaction?.replaceAll("/", "_")}`
           )
-        } // disabled={isDisabled}
+        }
+        // disabled={isDisabled}
       >
         Edit
       </Menu.Item>
       <Menu.Item
-        key=" Cancel"
-        onClick={() => setCancel(row)} // disabled={isDisabled}
+        key="Cancel"
+        icon={<CloseCircleOutlined />}
+        onClick={() => setCancel(row)}
+        // disabled={isDisabled}
       >
         Cancel
       </Menu.Item>
       <Menu.Item
-        key=" Print"
-        onClick={() => cancelTheSelectedPo(row)} // disabled={isDisabled}
+        key="Print"
+        icon={<PrinterOutlined />}
+        onClick={() => cancelTheSelectedPo(row)}
+        // disabled={isDisabled}
       >
         Print
       </Menu.Item>
-      <Menu.Item key=" Attachment" onClick={() => setSheetOpen(row)}>
+      <Menu.Item
+        key="Attachment"
+        icon={<PaperClipOutlined />}
+        onClick={() => setSheetOpen(row)}
+      >
         Add Attachment
       </Menu.Item>
     </Menu>
@@ -106,7 +119,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   return (
     <>
       <Dropdown overlay={menu} trigger={["click"]}>
-        <MoreOutlined />
+        <AntdButton icon={<MoreOutlined />} />
       </Dropdown>
     </>
   );
