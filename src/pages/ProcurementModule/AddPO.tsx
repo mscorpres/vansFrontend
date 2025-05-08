@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus } from "lucide-react";
 import { StatusPanelDef, NavigateToNextCellParams } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 
@@ -73,6 +73,29 @@ const AddPO: React.FC<Props> = ({
   const [search, setSearch] = useState("");
   const [taxDetails, setTaxDetails] = useState([]);
   const dispatch = useDispatch<AppDispatch>();
+
+  //tax card
+  
+  const [isTaxCardCollapsed, setIsTaxCardCollapsed] = useState(true);
+  useEffect(() => {
+    // Show the tax card after a slight delay on component mount
+    const timer = setTimeout(() => {
+      setIsTaxCardCollapsed(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Calculate total taxes and net amount
+  const totalTaxes = taxDetails.reduce((sum, item) => {
+    if (item.title === "CGST" || item.title === "SGST" || item.title === "IGST") {
+      return sum + item.description;
+    }
+    return sum;
+  }, 0);
+
+  const subTotalBeforeTaxes = taxDetails.find(item => item.title === "Sub-Total (Before Taxes)")?.description || 0;
+  const netAmount = subTotalBeforeTaxes + totalTaxes;
+
 
   const { currencyList, loading } = useSelector(
     (state: RootState) => state.client
@@ -638,7 +661,7 @@ const AddPO: React.FC<Props> = ({
         0
       );
       const value = +Number(values).toFixed(2);
-
+  
       const cgsts = singleArr?.reduce(
         (partialSum: any, a: any) => partialSum + +Number(a?.cgst).toFixed(2),
         0
@@ -653,18 +676,14 @@ const AddPO: React.FC<Props> = ({
         (partialSum: any, a: any) => partialSum + +Number(a?.igst).toFixed(2),
         0
       );
-
+  
       const igst = +Number(igsts).toFixed(2);
-
+  
       const arr = [
         {
-          title: "Value",
+          title: "Sub-Total (Before Taxes)", 
           description: value,
         },
-        // {
-        //   title: "Freight",
-        //   description: freight,
-        // },
         {
           title: "CGST",
           description: cgst,
@@ -677,27 +696,17 @@ const AddPO: React.FC<Props> = ({
           title: "IGST",
           description: igst,
         },
-        // { title: "TDS", description: tds },
-        // {
-        //   title: "Round Off",
-        //   description:
-        //     roundOffSign.toString() + [Number(roundOffValue).toFixed(2)],
-        // },
-        // {
-        //   title: "Vendor Amount",
-        //   description: vendorAmount,
-        // },
       ];
-
+  
       setTaxDetails(arr);
     };
-
+  
     // Initial calculation
     calculateTaxDetails();
-
+  
     // Set interval to recalculate every 5 seconds (5000 ms)
     const intervalId = setInterval(calculateTaxDetails, 5000);
-
+  
     // Clear interval on component unmount
     return () => clearInterval(intervalId);
   }, [rowData]);
@@ -706,93 +715,62 @@ const AddPO: React.FC<Props> = ({
     <Wrapper>
       {(loading || loading1) && <FullPageLoading />}
       <AddPOPopovers uiState={uiState} />
-      <div className="h-[calc(100vh-150px)]">
-        {/* <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
-          <Card className="rounded-sm shadow-sm shadow-slate-500">
-            <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
-              <CardTitle className="font-[550] text-slate-600">
-                Client Detail
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
-           
-              <h3 className="font-[500]">Name</h3>
-              <p className="text-[14px]">{vendorNameis?.label}</p>
-              <h3 className="font-[500]">Address</h3>
-              <p className="text-[14px]">{clientAdd}</p>
-              <h3 className="font-[500]">GSTIN</h3>
-              <p className="text-[14px]">{clientGst}</p>
-            </CardContent>
-          </Card>
-          <Card className="rounded-sm shadow-sm shadow-slate-500 ">
-            <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
-              <CardTitle className="font-[550] text-slate-600 ">
-                Tax Detail
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-slate-600 w-full block break-words text-base ">
-                <ul className="break-words text-base ">
-                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
-                    <div className=" w-[180px]">
-                      <h3 className="font-[500]">
-                        Sub-Total value before Taxes :
-                      </h3>
-                    </div>
-                    <div>
-                      <p className="text-[14px]">
-                        {taxDetails[0]?.description}
-                      </p>
-                    </div>
-                  </li>
-                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
-                    <div>
-                      <h3 className="font-[500]">CGST :</h3>
-                    </div>
-                    <div>
-                      <p className="text-[14px]">
-                        {" "}
-                        {taxDetails[1]?.description}
-                      </p>
-                    </div>
-                  </li>
-                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
-                    <div>
-                      <h3 className="font-[500]">SGST :</h3>
-                    </div>
-                    <div>
-                      <p className="text-[14px]">
-                        {taxDetails[2]?.description}
-                      </p>
-                    </div>
-                  </li>
-                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
-                    <div>
-                      <h3 className="font-[500]">ISGST :</h3>
-                    </div>
-                    <div>
-                      <p className="text-[14px]">
-                        {taxDetails[3]?.description}
-                      </p>
-                    </div>
-                  </li>
-                  <li className="grid grid-cols-[1fr_140px] mt-[20px]">
-                    <div className=" w-[180px]">
-                      <h3 className="font-[600] text-cyan-600">
-                        Sub-Total values after Taxes :
-                      </h3>
-                    </div>
-                    <div>
-                      <p className="text-[14px]">
-                        {taxDetails.reduce((a, b) => a + b.description, 0)}
-                      </p>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        </div> */}
+      <div className="h-[calc(100vh-150px)] relative">
+      <TaxCard isCollapsed={isTaxCardCollapsed}>
+        <Card className="card rounded-lg shadow-lg shadow-slate-500 bg-gradient-to-br from-cyan-50 to-teal-100 border border-cyan-200">
+          <CardHeader className="p-3 bg-cyan-700 text-white rounded-t-lg flex justify-between items-center">
+            <CardTitle className="font-semibold text-base">Taxes Detail</CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsTaxCardCollapsed(!isTaxCardCollapsed)}
+              className="text-white hover:text-cyan-200"
+            >
+              {isTaxCardCollapsed ? <ChevronUp /> : <ChevronDown />}
+            </Button>
+          </CardHeader>
+          <CardContent className="card-content p-3 text-slate-700">
+            <ul className="space-y-1 text-sm">
+              <li className="flex justify-between items-center">
+                <span className="font-bold">SUB-TOTAL value before Taxes</span>
+                <span className="font-medium">
+                  ₹{subTotalBeforeTaxes.toFixed(2)}
+                </span>
+              </li>
+              <li className="flex justify-between items-center">
+                <span className="font-bold">CGST</span>
+                <span className="font-medium">
+                  (+) ₹{taxDetails.find(item => item.title === "CGST")?.description.toFixed(2) || "0.00"}
+                </span>
+              </li>
+              <li className="flex justify-between items-center">
+                <span className="font-bold">SGST</span>
+                <span className="font-medium">
+                  (+) ₹{taxDetails.find(item => item.title === "SGST")?.description.toFixed(2) || "0.00"}
+                </span>
+              </li>
+              <li className="flex justify-between items-center">
+                <span className="font-bold">IGST</span>
+                <span className="font-medium">
+                  (+) ₹{taxDetails.find(item => item.title === "IGST")?.description.toFixed(2) || "0.00"}
+                </span>
+              </li>
+              <li className="flex justify-between items-center border-t border-slate-300 pt-1 mt-1">
+                <span className="font-bold">Total Taxes (CGST+SGST+IGST)</span>
+                <span className="font-medium">
+                  ₹{totalTaxes.toFixed(2)}
+                </span>
+              </li>
+              <li className="flex justify-between items-center border-t border-slate-300 pt-1 mt-1">
+                <span className="font-bold">Net Amount</span>
+                <span className="font-medium">
+                  ₹{netAmount.toFixed(2)}
+                </span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+      </TaxCard>
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto bg-white">
           <div className="flex items-center w-full gap-[20px] h-[60px] px-[10px] justify-between">
             <Button
@@ -802,31 +780,7 @@ const AddPO: React.FC<Props> = ({
               className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
             >
               <Plus className="font-[600]" /> Add Item
-            </Button>{" "}
-            {/* <Button
-              onClick={() => {
-                removeRows();
-              }}
-              className="rounded-md shadow bg-red-700 hover:bg-red-600 shadow-slate-500 max-w-max mr-[150px]"
-            >
-              <Trash2 />
-            </Button> */}
-            {/* <div className="flex items-center gap-[20px]">
-              <Button
-                onClick={onBtExport}
-                className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
-              >
-                <FaFileExcel className="text-white w-[20px] h-[20px]" /> Export
-                to Excel
-              </Button>
-              <Button
-                onClick={() => setExcelModel(true)}
-                className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
-              >
-                <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel
-                Here
-              </Button>
-            </div> */}
+            </Button>
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
             {(loading || loading1 || loading2) && <FullPageLoading />}
@@ -934,6 +888,38 @@ const Wrapper = styled.div`
   }
   .ag-theme-quartz .ag-cell {
     justify-content: center;
+  }
+`;
+
+const TaxCard = styled.div<{ isCollapsed: boolean }>`
+  position: fixed;
+  bottom: 0px;
+  left: 100px;
+  width: 300px;
+  z-index: 1000;
+  animation: slideUp 0.6s ease-out forwards;
+  .card-content {
+    max-height: ${({ isCollapsed }) => (isCollapsed ? '0' : '300px')};
+    opacity: ${({ isCollapsed }) => (isCollapsed ? '0' : '1')};
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease;
+  }
+  .card {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: ${({ isCollapsed }) => (isCollapsed ? 'scaleY(0.4)' : 'scaleY(1)')};
+    transform-origin: bottom;
+  }
+
+  @keyframes slideUp {
+    0% {
+      transform: translateY(100px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 `;
 

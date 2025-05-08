@@ -213,10 +213,21 @@ const ManagePoPage: React.FC = () => {
       },
     },
     {
+      field: "due_date",
+      headerName: "Due Date",
+      width: "190",
+
+    },
+    {
       field: "po_approval_status",
       headerName: "Approval Status",
       width: "190",
     },
+    {
+      field:"po_reg_by",
+      headerName:"Created By",
+      width:"190",
+    }
   ]);
 
   const type = [
