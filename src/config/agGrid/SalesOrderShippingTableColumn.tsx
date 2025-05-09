@@ -162,6 +162,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       gstRateFreight: values.gstRateFreight,
       documentType: values.documentType,
       supplyType: values.supplyType,
+      supplyTypeEW: values.supplyTypeW,
       transactionType: values.transactionType,
       reverseCharge: values.reverseCharge,
       igstOnIntra: values.igstOnIntra,

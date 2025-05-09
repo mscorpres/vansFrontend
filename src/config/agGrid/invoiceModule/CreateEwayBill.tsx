@@ -95,7 +95,7 @@ export default function CreateEwayBill() {
         form.setValue("header.delivery_note", data?.deliveryNote);
         //in repsoen the delivery date comign is yyyy-mm-dd i want to dd-mm-yyyy here
         form.setValue("header.delivery_date", dayjs(data?.deliveryDate).format("DD-MM-YYYY"));
-        form.setValue("header.supplyType", data?.supplyType);
+        form.setValue("header.supplyType", data?.supplyType || data?.supplyTypeEW);
         // form.setValue("header.subSupplyType", data?.subSupplyType);
         form.setValue("billFrom.location", data?.billFromLocation);
         form.setValue("billTo.location", data?.billToLocation);
