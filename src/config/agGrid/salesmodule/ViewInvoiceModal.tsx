@@ -330,52 +330,21 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                 <CgArrowTopRight className="h-[20px] w-[20px] font-[600]" />
               </Button>
               <div className="col-span-3 flex flex-col h-full">
-                <div className="flex justify-end mb-4 gap-4">
-                  {/* Print Dropdown */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline">
-                        Print{" "}
-                        <Printer className="pl-1 h-[20px] w-[20px] font-[600]" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end" // Align dropdown to the right
-                      className="z-50 bg-white shadow-lg rounded-md overflow-hidden max-w-[200px]"
-                    >
-                      <DropdownMenuItem
-                        onClick={() =>
-                          handlePrintInvoice(
-                            sellRequestDetails?.headerData?.invoiceNo,
-                            "Original"
-                          )
-                        }
-                      >
-                        Original
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          handlePrintInvoice(
-                            sellRequestDetails?.headerData?.invoiceNo,
-                            "Duplicate"
-                          )
-                        }
-                      >
-                        Duplicate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          handlePrintInvoice(
-                            sellRequestDetails?.headerData?.invoiceNo,
-                            "Triplicate"
-                          )
-                        }
-                      >
-                        Transporter
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+              <div className="col-span-3 flex flex-col h-full">
+  <div className="flex justify-end mb-4 gap-4">
+    {/* Print Button */}
+    <Button
+      variant="outline"
+      onClick={() => {
+        handlePrintInvoice(sellRequestDetails?.headerData?.invoiceNo, "Original");
+        handlePrintInvoice(sellRequestDetails?.headerData?.invoiceNo, "Duplicate");
+        handlePrintInvoice(sellRequestDetails?.headerData?.invoiceNo, "Triplicate");
+      }}
+    >
+      Print <Printer className="pl-1 h-[20px] w-[20px] font-[600]" />
+    </Button>
+  </div>
+</div>
               </div>
             </div>
             <div className="ag-theme-quartz flex-1">

@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { printSellInvoice } from "@/features/salesmodule/salesInvoiceSlice";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-import { printFunction } from "@/components/shared/PrintFunctions";
+import { downloadFunction, printFunction } from "@/components/shared/PrintFunctions";
 import { cancelEInvoice, cancelEwayBill } from "@/features/salesmodule/salesTransactionSlice";
 
 const ActionMenu: React.FC<any> = ({ row }) => {
@@ -29,7 +29,8 @@ const ActionMenu: React.FC<any> = ({ row }) => {
         printSellInvoice({ invoiceNo: orderId, printType: "Original" })
       ).then((response: any) => {
         if (response?.payload?.success) {
-          printFunction(response?.payload?.data.buffer.data);
+          downloadFunction(response?.payload?.data.buffer.data,
+            response?.payload?.data.filename);
         }
       });
     }

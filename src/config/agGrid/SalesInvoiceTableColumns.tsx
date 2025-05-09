@@ -14,7 +14,7 @@ import { AppDispatch, RootState } from "@/store";
 import { useState } from "react";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import ViewInvoiceModal from "@/config/agGrid/salesmodule/ViewInvoiceModal";
-import { printFunction } from "@/components/shared/PrintFunctions";
+import { downloadFunction, printFunction } from "@/components/shared/PrintFunctions";
 import AddFreightModal from "./salesmodule/AddFreightModal"; 
 
 const ActionMenu: React.FC<any> = ({ row }) => {
@@ -44,7 +44,8 @@ const ActionMenu: React.FC<any> = ({ row }) => {
       printSellInvoice({ invoiceNo: orderId, printType: printInvType })
     ).then((response: any) => {
       if (response?.payload?.success) {
-        printFunction(response?.payload?.data.buffer.data);
+        downloadFunction(response?.payload?.data.buffer.data,
+          response?.payload?.data.filename);
       }
     });
   };
