@@ -27,6 +27,7 @@ const dateFormat = "DD/MM/YYYY";
 const wises = [
   { label: "Date Wise", value: "date_wise" },
   { label: "SO(s)Wise", value: "soid_wise" },
+  { label: "Pending", value: "pending" },
 ];
 
 // Default date range: last 3 months
@@ -76,10 +77,9 @@ const RegisterSalesOrderPage: React.FC = () => {
         });
       }
     } catch (error: any) {
-      console.error("Failed to fetch sell requests:", error);
       toast({
-        title: "Error",
-        description: "Failed to fetch sell requests",
+        title: error.message || "Failed to fetch Product",
+        description: error.message,
         className: "bg-red-700 text-white",
       });
     }
@@ -102,8 +102,10 @@ const RegisterSalesOrderPage: React.FC = () => {
     setIsSearchPerformed(false);
     if (type.value === "soid_wise") {
       form.setFieldsValue({ dateRange: undefined, soWise: "" });
+    } else if (type.value === "date_wise") {
+      form.setFieldsValue({ dateRange: defaultDateRange, soWise: undefined });
     } else {
-      form.setFieldsValue({ dateRange: defaultDateRange });
+      form.setFieldsValue({ dateRange: undefined, soWise: undefined });
     }
   }, [type, form]);
 
@@ -143,7 +145,7 @@ const RegisterSalesOrderPage: React.FC = () => {
               />
             </Form.Item>
 
-            {type.value === "date_wise" ? (
+            {type.value === "date_wise" && (
               <Form.Item
                 className="w-[300px] m-0"
                 name="dateRange"
@@ -171,7 +173,8 @@ const RegisterSalesOrderPage: React.FC = () => {
                   />
                 </Space>
               </Form.Item>
-            ) : (
+            )}
+            {type.value === "soid_wise" && (
               <Form.Item
                 className="w-[300px] m-0"
                 name="soWise"
