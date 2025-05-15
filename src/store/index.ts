@@ -16,6 +16,7 @@ import salesShipmentSlice from "@/features/salesmodule/salesShipmentSlice";
 import salesInvoiceSlice from "@/features/salesmodule/salesInvoiceSlice";
 import storeSlice from "@/features/client/storeSlice";
 import sopRedeucer from "@/features/Sop/sopSlice";
+import dashboardReducer from "../features/dashboard/salesOrderSlice";
 
 export const store = configureStore({
   reducer: {
@@ -36,6 +37,7 @@ export const store = configureStore({
     invoice: salesTransactionSlice,
     sop: sopRedeucer,
     favorites: favoritesReducer,
+    dashboard: dashboardReducer,
   },
 });
 export type RootState = ReturnType<typeof store.getState>;
