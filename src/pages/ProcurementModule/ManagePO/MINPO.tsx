@@ -352,7 +352,7 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
       });
       // setLoading(false);
       setSheetOpen(false);
-      setAttachmentFile(response.data.data);
+      setAttachmentFile(response.data.data.keys);
       setFiles([]);
     }
     setShowLoading(false);
