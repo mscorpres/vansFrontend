@@ -609,7 +609,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="Pincode"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your Pincode!",
                               },
                               {
@@ -646,7 +646,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="GST Number"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your GST!",
                               },
                               {
@@ -828,7 +828,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="Pincode"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your Pincode!",
                               },
                               {
@@ -849,7 +849,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="Pan Number"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your Pan Number!",
                               },
                             ]}
@@ -865,7 +865,7 @@ const MasterCustomerPage: React.FC = () => {
                           label="GST Number"
                           rules={[
                             {
-                              required: true,
+                              required: false,
                               message: "Please input your GST!",
                             },
                             {
@@ -1247,7 +1247,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="Pincode"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your name!",
                               },
                               {
