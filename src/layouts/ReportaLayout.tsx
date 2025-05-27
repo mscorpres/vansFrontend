@@ -85,6 +85,19 @@ const ReportaLayout = (props: { children: React.ReactNode }) => {
               Box Rate Report
             </span>
           </li>
+          <li className="h-[50px] relative group/item">
+            <NavLink
+              to={"/inventory/report/r7"}
+              className={({ isActive }) =>
+                `${navLinkStyle} ${isActive && navlinkActiveStyle}`
+              }
+            >
+              R7
+            </NavLink>
+            <span className="absolute left-1/2 transform -translate-x-1/2 top-full mt-1 hidden group-hover/item:block bg-yellow-300 text-black text-xs rounded py-1 px-2 z-20 whitespace-nowrap">
+              Sales Order Report
+            </span>
+          </li>
         </ul>
       </div>
       <div className="h-[calc(100vh-100px)] bg-transparent overflow-y-auto">

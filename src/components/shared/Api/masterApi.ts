@@ -404,6 +404,14 @@ export const fetchR4 = async (payload: any) => {
   );
   return response;
 };
+
+//report 7 for sales order
+export const fetchR7 = async (payload: any) => {
+  const response= await spigenAxios.get(
+    `/report7?wise=${payload.wise}&data=${payload.data}`
+  );
+  return response;
+}
 export const fetchR4refreshed = async (payload: any) => {
   const response = await spigenAxios.get("/report/fetchCloseStockAll", payload);
   return response;

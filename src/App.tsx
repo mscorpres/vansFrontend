@@ -60,6 +60,7 @@ import R5 from "./pages/ReportsModule/R5";
 import R4 from "./pages/ReportsModule/R4";
 import R3 from "./pages/ReportsModule/R3";
 import R6 from "./pages/ReportsModule/R6";
+import R7 from "./pages/ReportsModule/R7";
 import ClientLayout from "./layouts/Master/ClientLayout";
 import Hsn from "./pages/masterModule/HSN/Hsn";
 import EditBom from "./pages/masterModule/Bom/EditBom";
@@ -607,6 +608,19 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/inventory/report/r6",
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <ReportaLayout>
+            <R7 />
+          </ReportaLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/inventory/report/r7",
+
   },
   ///////////////////////////////////////////////
   {
