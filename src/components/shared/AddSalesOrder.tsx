@@ -91,6 +91,7 @@ const AddSalesOrder = ({
       fcValue: 0,
       lcValue: 0,
       isNew: true,
+      partno: "",
     };
     setRowData((prevData: any) => [...prevData, newRow]);
   };
@@ -175,6 +176,7 @@ const AddSalesOrder = ({
     igst_rate: rowData?.map((component: RowData) => component.igst || 0),
     updaterow: rowData?.map((component: RowData) => component.updateid || 0),
     due_date: rowData?.map((component: RowData) => component.dueDate),
+    partno: rowData?.map((component: RowData) => component.partno || ""),
   };
   const soId = (params.id as string)?.replace(/_/g, "/");
 
@@ -185,7 +187,7 @@ const AddSalesOrder = ({
       header: { ...form.getValues(), so_id: soId },
       itemDetails: materials,
     };
-    // console.log("payloadData2", payloadData2);
+    console.log("payloadData2", payloadData2);
 
     if (window.location.pathname.includes("update")) {
       dispatch(updateSalesOrderRequest(payloadData2)).then((response: any) => {

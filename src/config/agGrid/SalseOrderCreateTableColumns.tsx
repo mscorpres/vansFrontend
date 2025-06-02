@@ -20,6 +20,7 @@ export interface RowData {
   remark?: string;
   exchangeRate?: number;
   updateid?: string;
+  partno?: string;
 }
 
 export const columnDefs = [
