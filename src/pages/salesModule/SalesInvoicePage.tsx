@@ -24,7 +24,7 @@ import styled from "styled-components";
 import { DatePicker, Space } from "antd";
 import { columnDefs } from "@/config/agGrid/SalesInvoiceTableColumns";
 import { RootState } from "@/store";
-import { downloadEInvoiceList, fetchSalesOrderInvoiceList } from "@/features/salesmodule/salesInvoiceSlice";
+import { fetchSalesOrderInvoiceList } from "@/features/salesmodule/salesInvoiceSlice";
 import { useDispatch, useSelector } from "react-redux";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -39,6 +39,7 @@ const dateFormat = "DD-MM-YYYY";
 const wises = [
   { label: "Date Wise", value: "date_wise" },
   { label: "Invoice Number Wise", value: "soinvid_wise" },
+  // { label: "so id", value: "so_id_wise" },
 ] as const;
 
 const FormSchema = z.object({
@@ -49,16 +50,8 @@ const FormSchema = z.object({
     .refine((data) => data === undefined || data.length === 2, {
       message: "Please select a valid date range.",
     }),
-  reportDateRange: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range for the report.",
-    }),
   soinvid_wise: z.string().optional(),
 });
-
 const SalesInvoicePage: React.FC = () => {
   const gridRef = useRef<AgGridReact<any>>(null);
   const [type, setType] = useState<string>("date_wise");
@@ -67,101 +60,40 @@ const SalesInvoicePage: React.FC = () => {
   const { data, loading } = useSelector(
     (state: RootState) => state.sellInvoice
   );
-  const [rowData, setRowData] = useState<any[]>([]);
+  const [rowData, setRowData] = useState<any[]>([]); // Local state for row data
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      dateRange: undefined,
-      reportDateRange: undefined,
-      soinvid_wise: "",
-    },
   });
-
   const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
     const { dateRange, soinvid_wise } = formData;
 
     let dataString = "";
-    let apiType = type;
     if (type === "date_wise" && dateRange) {
       const startDate = moment(dateRange[0]).format("DD-MM-YYYY");
       const endDate = moment(dateRange[1]).format("DD-MM-YYYY");
       dataString = `${startDate}-${endDate}`;
-      apiType = "datewise"; // Map to API's expected value
       dispatch(setDateRange(dataString as any));
-    } else if (type === "soinvid_wise" && soinvid_wise) {
+    } else if (type === "soinvid_wise" && type !== undefined) {
       dataString = soinvid_wise;
-      apiType = "invoicewise"; // Map to API's expected value
       dispatch(setDateRange(dataString as any));
-    } else {
-      toast({
-        title: "Please provide a valid date range or invoice number",
-        className: "bg-red-600 text-white items-center",
-      });
-      return;
     }
 
     try {
       const resultAction = await dispatch(
-        fetchSalesOrderInvoiceList({ type: apiType, data: dataString }) as any
+        fetchSalesOrderInvoiceList({ type: type, data: dataString }) as any
       ).unwrap();
-      if (resultAction.code === "200") {
+      if (resultAction.code == "200") {
         setRowData(resultAction.data);
         setIsSearchPerformed(true);
         toast({
           title: "Invoice fetched successfully",
           className: "bg-green-600 text-white items-center",
         });
-      } else {
-        throw new Error(resultAction.message || "Failed to fetch invoices");
       }
     } catch (error: any) {
       console.error("Failed to fetch sell requests:", error);
       toast({
-        title: error.message || "Failed to fetch invoices",
-        className: "bg-red-600 text-white items-center",
-      });
-    }
-  };
-
-  const onGenerateReport = async (formData: z.infer<typeof FormSchema>) => {
-    const { reportDateRange } = formData;
-
-    if (reportDateRange) {
-      const startDate = moment(reportDateRange[0]).format("DD-MM-YYYY");
-      const endDate = moment(reportDateRange[1]).format("DD-MM-YYYY");
-      const dataString = `${startDate}-${endDate}`;
-      dispatch(setDateRange(dataString as any));
-
-      try {
-        const resultAction = await dispatch(
-          downloadEInvoiceList({ wise: "datewise", data: dataString }) as any
-        ).unwrap();
-        if (resultAction.success) {
-          // Create a link to download the file
-          const link = document.createElement("a");
-          link.href = resultAction.data.filePath;
-          link.download = `tax_invoice_${moment().format("YYYY_MM_DD_HH_mm_ss")}.xlsx`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-
-          toast({
-            title: "Report downloaded successfully",
-            className: "bg-green-600 text-white items-center",
-          });
-        } else {
-          throw new Error(resultAction.message || "Failed to download report");
-        }
-      } catch (error: any) {
-        console.error("Failed to download report:", error);
-        toast({
-          title: error.message || "Failed to download report",
-          className: "bg-red-600 text-white items-center",
-        });
-      }
-    } else {
-      toast({
-        title: "Please select a valid date range for the report",
+        title: error.message || "Failed to fetch Product",
         className: "bg-red-600 text-white items-center",
       });
     }
@@ -187,9 +119,8 @@ const SalesInvoicePage: React.FC = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
       {loading && <FullPageLoading />}
-      <div className="bg-[#f5f7fa]">
-        {/* Filter Section */}
-        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-[#e6f0fa] px-[10px]">
+      <div className="bg-[#fff]">
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
@@ -203,9 +134,10 @@ const SalesInvoicePage: React.FC = () => {
             }}
             defaultValue={type}
           >
-            <SelectTrigger className="border-slate-300">
+            <SelectTrigger>
               <SelectValue placeholder="Select a filter type" />
             </SelectTrigger>
+
             <SelectContent>
               {wises.map((data) => (
                 <SelectItem key={data.value} value={data.value}>
@@ -230,7 +162,7 @@ const SalesInvoicePage: React.FC = () => {
                     <FormControl>
                       <Space direction="vertical" size={12} className="w-full">
                         <RangePicker
-                          className="border shadow-sm border-slate-300 py-[7px] hover:border-slate-400 w-full rounded-md"
+                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
                           onChange={(value) =>
                             field.onChange(
                               value ? value.map((date) => date!.toDate()) : []
@@ -252,69 +184,31 @@ const SalesInvoicePage: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Invoice number"
-                        className="border-slate-300 rounded-md"
-                      />
+                      <Input {...field} placeholder="Invoice number" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             )}
-            <div className="flex justify-end pr-2">
+            <div className="flex space-x-2 float-end pr-2">
+              {isSearchPerformed && ( // Only show the download button if search is performed
+                <Button
+                  type="button"
+                  onClick={onBtExport}
+                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                >
+                  <Download />
+                </Button>
+              )}
               <Button
                 type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 rounded-md"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
               >
-                Search
+                Submit
               </Button>
             </div>
           </form>
-
-          {/* Generate Report Section */}
-          <div className="border-t border-slate-300 mt-4 pt-4">
-            <div className="text-center text-lg font-semibold text-slate-800 mb-4">
-              Generate Report
-            </div>
-            <form
-              onSubmit={form.handleSubmit(onGenerateReport)}
-              className="space-y-6 overflow-hidden p-[10px]"
-            >
-              <FormField
-                control={form.control}
-                name="reportDateRange"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Space direction="vertical" size={12} className="w-full">
-                        <RangePicker
-                          className="border shadow-sm border-slate-300 py-[7px] hover:border-slate-400 w-full rounded-md"
-                          onChange={(value) =>
-                            field.onChange(
-                              value ? value.map((date) => date!.toDate()) : []
-                            )
-                          }
-                          format={dateFormat}
-                          presets={rangePresets}
-                        />
-                      </Space>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-end pr-2">
-                <Button
-                  type="submit"
-                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 rounded-md"
-                >
-                  Download Report
-                </Button>
-              </div>
-            </form>
-          </div>
         </Form>
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
@@ -330,59 +224,16 @@ const SalesInvoicePage: React.FC = () => {
           paginationAutoPageSize={true}
           loadingOverlayComponent={OverlayNoRowsTemplate}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
-          enableCellTextSelection={true}
+          enableCellTextSelection = {true}
         />
       </div>
     </Wrapper>
   );
 };
-
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;
     border-bottom: 0;
   }
-
-  /* Improved styling for a modern look */
-  .bg-[#f5f7fa] {
-    background-color: #f5f7fa;
-  }
-
-  .bg-[#e6f0fa] {
-    background-color: #e6f0fa;
-  }
-
-  .border-slate-300 {
-    border-color: #d1d5db;
-  }
-
-  .text-slate-600 {
-    color: #475569;
-  }
-
-  .text-slate-800 {
-    color: #1e293b;
-  }
-
-  .shadow-slate-500 {
-    box-shadow: 0 2px 4px rgba(100, 116, 139, 0.2);
-  }
-
-  .hover\\:border-slate-400:hover {
-    border-color: #94a3b8;
-  }
-
-  .bg-cyan-700 {
-    background-color: #0e7490;
-  }
-
-  .hover\\:bg-cyan-600:hover {
-    background-color: #155e75;
-  }
-
-  .rounded-md {
-    border-radius: 6px;
-  }
 `;
-
 export default SalesInvoicePage;
