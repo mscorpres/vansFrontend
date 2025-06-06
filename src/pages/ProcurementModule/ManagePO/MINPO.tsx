@@ -33,7 +33,7 @@ import { removeHtmlTags } from "@/components/shared/Options";
 import { fetchCurrency } from "@/features/salesmodule/createSalesOrderSlice";
 import dayjs from "dayjs";
 import moment from "moment";
-
+import { Progress } from "@/components/ui/progress"; 
 const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [rowData, setRowData] = useState([]);
   const [search, setSearch] = useState("");
@@ -42,7 +42,8 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const [files, setFiles] = useState<File[] | null>(null);
   const [taxDetails, setTaxDetails] = useState([]);
   const [attachmentFile, setAttachmentFile] = useState([]);
-  const [showLoading, setShowLoading] = useState(false);
+    const [attachmentUrls, setAttachmentUrls] = useState<string[]>([]); // New state for URLs
+  const [showLoading, setShowLoading] = useState<boolean | number>(false);
   const [vendorDetails, setVendorDetails] = useState([]);
   const { currency } = useSelector(
     (state: RootState) => state.createSalesOrder
@@ -311,7 +312,9 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
             title: resp.payload.message,
             className: "bg-green-700 text-white",
           });
-          setRowData([]);
+           setRowData([]);
+          setAttachmentFile([]); // Clear attachmentFile on successful submit
+          setAttachmentUrls([]); // Clear attachmentUrls on successful submit
           setViewMinPo(false);
           setShowConfirmation(false);
         } else {
@@ -332,31 +335,42 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
   const handleFileChange = (newFiles: File[] | null) => {
     setFiles(newFiles);
   };
-  const uploadDocs = async () => {
-    setShowLoading(true);
-    const formData = new FormData();
+ const uploadDocs = async () => {
+  setShowLoading(true);
+  const formData = new FormData();
 
-    files.map((comp) => {
-      formData.append("files", comp);
+  files?.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  try {
+    const response = await spigenAxios.post("/transaction/upload-invoice", formData, {
+      onUploadProgress: (progressEvent) => {
+        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        setShowLoading(percentCompleted);
+      },
     });
-    const response = await spigenAxios.post(
-      "/transaction/upload-invoice",
-      formData
-    );
+
     if (response.data.success) {
-      setShowLoading(false);
-      // toast
+      setAttachmentFile(response.data.data.keys); // Store file keys
+      setAttachmentUrls(response.data.data.urls); // Store file URLs
+      setFiles([]); // Clear files after upload
+      setSheetOpen(false);
       toast({
-        title: "Doc Uploaded successfully",
+        title: "Docs Uploaded successfully",
         className: "bg-green-600 text-white items-center",
       });
-      // setLoading(false);
-      setSheetOpen(false);
-      setAttachmentFile(response.data.data.keys);
-      setFiles([]);
     }
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    toast({
+      title: "Failed to upload files",
+      className: "bg-red-700 text-white",
+    });
+  } finally {
     setShowLoading(false);
-  };
+  }
+};
   useEffect(() => {
     const calculateTaxDetails = () => {
       let singleArr = rowData;
@@ -664,78 +678,120 @@ const MINPO: React.FC<Props> = ({ viewMinPo, setViewMinPo }) => {
         </div> */}
         </SheetContent>
       </Sheet>
-      <Sheet open={sheetOpen == true} onOpenChange={setSheetOpen}>
-        <SheetContent
-          className="min-w-[35%] p-0"
-          onInteractOutside={(e: any) => {
-            e.preventDefault();
-          }}
-        >
-          {(loading || showLoading) && <FullPageLoading />}
-          <SheetHeader className={modelFixHeaderStyle}>
-            <SheetTitle className="text-slate-600">Upload Docs here</SheetTitle>
-          </SheetHeader>
-          <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
-            {/* {loading && <FullPageLoading />} */}
-            <FileUploader
-              value={files}
-              onValueChange={handleFileChange}
-              dropzoneOptions={{
-                accept: {
-                  "image/*": [".jpg", ".jpeg", ".png", ".gif", ".pdf"],
-                },
-                maxFiles: 1,
-                maxSize: 4 * 1024 * 1024, // 4 MB
-                multiple: true,
-              }}
-            >
-              <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
-                <h2 className="text-xl font-semibold text-center mb-4">
-                  <div className=" text-center w-full justify-center flex">
-                    <div>Upload Your Files</div>
-                    <div>
-                      <IoCloudUpload
-                        className="text-cyan-700 ml-5 h-[20]"
-                        size={"1.5rem"}
-                      />
-                    </div>
-                  </div>
-                </h2>
-                <FileInput>
-                  <span className="text-slate-500 text-sm text-center w-full justify-center flex">
-                    Drag and drop files here, or click to select files
+     <Sheet open={sheetOpen === true} onOpenChange={setSheetOpen}>
+  <SheetContent
+    className="min-w-[35%] p-0"
+    onInteractOutside={(e: any) => {
+      e.preventDefault();
+    }}
+  >
+    {(loading || showLoading) && (
+      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        {typeof showLoading === "number" ? (
+          <div className="w-[50%]">
+            <Progress value={showLoading} className="w-full" />
+            <p className="text-white text-center mt-2">Uploading {showLoading}%</p>
+          </div>
+        ) : (
+          <FullPageLoading />
+        )}
+      </div>
+    )}
+    <SheetHeader className={modelFixHeaderStyle}>
+      <SheetTitle className="text-slate-600">Upload Docs Here</SheetTitle>
+    </SheetHeader>
+    <div className="ag-theme-quartz h-[calc(100vh-100px)] w-full">
+      <FileUploader
+        value={files}
+        onValueChange={handleFileChange}
+        dropzoneOptions={{
+          accept: {
+            "image/*": [".jpg", ".jpeg", ".png", ".gif"],
+            "application/pdf": [".pdf"],
+          },
+          maxFiles: 1,
+          maxSize: 4 * 1024 * 1024,
+          multiple: true,
+        }}
+      >
+        <div className="bg-white border border-gray-300 rounded-lg shadow-lg h-[120px] p-[20px] m-[20px]">
+          <h2 className="text-xl font-semibold text-center mb-4">
+            <div className="text-center w-full justify-center flex">
+              <div>Upload Your Files</div>
+              <div>
+                <IoCloudUpload
+                  className="text-cyan-700 ml-5 h-[20px]"
+                  size={"1.5rem"}
+                />
+              </div>
+            </div>
+          </h2>
+          <FileInput>
+            <span className="text-slate-600 text-sm text-center w-full justify-center flex">
+              Drag and drop files here, or click to select files
+            </span>
+          </FileInput>
+        </div>
+        <div className="m-[20px]">
+          <FileUploaderContent>
+            {files?.map((file, index) => (
+              <FileUploaderItem key={index} index={index}>
+                <span>{file.name}</span>
+              </FileUploaderItem>
+            ))}
+            {attachmentUrls?.map((url, index) => (
+              <FileUploaderItem key={`uploaded-${index}`} index={index + (files?.length || 0)}>
+                <div className="flex items-center gap-2">
+                  {url.endsWith('.pdf') ? (
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      {attachmentFile[index] || `File ${index + 1}`}
+                    </a>
+                  ) : (
+                    <img
+                      src={url}
+                      alt={attachmentFile[index] || `Uploaded file ${index + 1}`}
+                      className="w-16 h-16 object-cover rounded"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextSibling.style.display = 'block';
+                      }}
+                    />
+                  )}
+                  <span
+                    className="text-slate-600"
+                    style={{ display: url.endsWith('.pdf') ? 'none' : 'block' }}
+                  >
+                    {attachmentFile[index] || `File ${index + 1}`}
                   </span>
-                </FileInput>
-              </div>
-              <div className=" m-[20px]">
-                <FileUploaderContent>
-                  {files?.map((file, index) => (
-                    <FileUploaderItem key={index} index={index}>
-                      <span>{file.name}</span>
-                    </FileUploaderItem>
-                  ))}
-                </FileUploaderContent>
-              </div>
-            </FileUploader>
-          </div>
-          <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
-            <Button
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={() => setSheetOpen(false)}
-            >
-              Back
-            </Button>
-            <Button
-              className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
-              onClick={uploadDocs}
-              // loading={laoding}
-            >
-              {/* {isApprove ? "Approve" : "Submit"} */}
-              Upload
-            </Button>
-          </div>
-        </SheetContent>
-      </Sheet>
+                </div>
+              </FileUploaderItem>
+            ))}
+          </FileUploaderContent>
+        </div>
+      </FileUploader>
+    </div>
+    <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+      <Button
+        className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+        onClick={() => setSheetOpen(false)}
+      >
+        Back
+      </Button>
+      <Button
+        className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+        onClick={uploadDocs}
+        disabled={!files || files.length === 0}
+      >
+        Upload
+      </Button>
+    </div>
+  </SheetContent>
+</Sheet>
     </>
   );
 };

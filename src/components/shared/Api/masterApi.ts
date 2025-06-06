@@ -243,6 +243,13 @@ export const fetchCountryList = async () => {
   const response = await spigenAxios.get("/others/countries");
   return response;
 };
+export const fetchCountryListByCode = async (search?: string) => {
+  const response = await spigenAxios.get(`/backend/countrieswithcode`, {
+    params: { search: search || undefined },
+  });
+  return response;
+};
+
 export const fetchState = async () => {
   const response = await spigenAxios.get("/others/states");
   return response;

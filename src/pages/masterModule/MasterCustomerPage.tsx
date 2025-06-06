@@ -1104,11 +1104,6 @@ const MasterCustomerPage: React.FC = () => {
                                 required: true,
                                 message: "Please input your GST!",
                               },
-                              {
-                                min: 15,
-                                max: 15,
-                                message: "GST must be at least 15 characters!",
-                              },
                             ]}
                           >
                             <Input
@@ -1278,11 +1273,7 @@ const MasterCustomerPage: React.FC = () => {
                               required: true,
                               message: "Please input your GST!",
                             },
-                            {
-                              min: 15,
-                              max: 15,
-                              message: "GST must be at least 15 characters!",
-                            },
+                            
                           ]}
                         >
                           <Input

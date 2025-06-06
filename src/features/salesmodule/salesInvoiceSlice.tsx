@@ -49,7 +49,10 @@ interface CancelPayload {
   invoice_no: string;
   cancelReason: string;
 }
-
+interface DownloadEInvoicePayload {
+  wise: string;
+  data: string;
+}
 export const fetchSalesOrderInvoiceList = createAsyncThunk<
   ApiResponse<any>,
   FetchSellInvoicePayload
@@ -106,6 +109,23 @@ export const addfreight=createAsyncThunk(
     }
   }
 )
+export const downloadEInvoiceList = createAsyncThunk<
+  ApiResponse<{ filePath: string }>,
+  DownloadEInvoicePayload
+>("invoice/downloadEInvoiceList", async (payload, { rejectWithValue }) => {
+  try {
+    const response = await spigenAxios.post("/invoice/downloadEinvoicelist", payload);
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to download E-Invoice list");
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    }
+    return rejectWithValue("An unknown error occurred");
+  }
+});
 export const fetchDataForEwayBill = createAsyncThunk(
   "so_challan_shipment/fetchDataForEwayBill",
   async ({ shipment_id }: { shipment_id: string }, { rejectWithValue }) => {
@@ -340,6 +360,18 @@ const sellInvoiceSlice = createSlice({
       .addCase(fetchDataForInvoice.rejected, (state, action) => {
         state.error = action.error?.message || null;
         state.loading = false;
+      })
+      .addCase(downloadEInvoiceList.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(downloadEInvoiceList.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(downloadEInvoiceList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

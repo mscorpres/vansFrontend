@@ -54,6 +54,9 @@ import {
   generateEInvoice,
 } from "@/features/salesmodule/salesInvoiceSlice";
 import { transformStateOptions } from "@/helper/transform";
+import { fetchCountryListByCode } from "@/components/shared/Api/masterApi";
+import { Checkbox } from "@/components/ui/checkbox";
+import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 
 export default function CreateEwayBill() {
   const dispatch = useDispatch<AppDispatch>();
@@ -77,6 +80,44 @@ export default function CreateEwayBill() {
   const [orderId, setOrderId] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   // const transTypeSelected = Form?.useWatch("transactionType", form);
+
+  const [isExportInvoice, setIsExportInvoice] = useState(false);
+const [isLoadingCountries, setIsLoadingCountries] = useState(false);
+const [countryOptions, setCountryOptions] = useState([]);
+const [countryLabel, setCountryLabel] = useState<string | null>(null);
+
+const fetchCountries = async (inputValue: string) => {
+  setIsLoadingCountries(true);
+  try {
+    console.log("Fetching countries with search:", inputValue); // Debug API call
+    const response = await fetchCountryListByCode(inputValue);
+    console.log("Country API response:", response); // Debug response
+    // Ensure response.data is an array
+    const countries = Array.isArray(response.data)
+      ? response.data.map((country: any) => ({
+          value: country.code,
+          label: country.name,
+        }))
+      : [];
+    console.log("Mapped countries:", countries); // Debug mapped data
+    setIsLoadingCountries(false);
+    return countries;
+  } catch (error: any) {
+    console.error("Failed to fetch countries:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+    toast({
+      title: "Failed to load country list",
+      description: error.message || "Please try again later.",
+      className: "bg-red-600 text-white items-center",
+    });
+    setIsLoadingCountries(false);
+    return [];
+  }
+};
+
 
   useEffect(() => {
     const shipId = (params?.id as string).replace(/_/g, "/");
@@ -152,31 +193,36 @@ export default function CreateEwayBill() {
     setRowData(ewayBillData);
   }, [ewayBillData]);
 
-  const onSubmit = (payload: any) => {
-    if (isEwayBill) {
-      dispatch(createEwayBill(payload)).then((response) => {
-        if (response.meta.requestStatus === "fulfilled") {
-          toast({
-            title: "Data Fetched Successfully",
-            className: "bg-green-600 text-white items-center",
-          });
-          // setInvoiceData(response.payload.data);
-          setShowCreatedInvoiceModal(true);
-        }
-      });
-    } else {
-      dispatch(generateEInvoice(payload)).then((response) => {
-        if (response.meta.requestStatus === "fulfilled") {
-          toast({
-            title: "Created Successfully",
-            className: "bg-green-600 text-white items-center",
-          });
-          // setInvoiceData(response.payload.data);
-          setShowCreatedInvoiceModal(true);
-        }
-      });
-    }
+const onSubmit = (payload: any) => {
+  const modifiedPayload = {
+    ...payload,
+    ...(isExportInvoice && payload.expDtls?.CntCode
+      ? { expDtls: { CntCode: payload.expDtls.CntCode } }
+      : {}),
   };
+  console.log("modifiedPayload", modifiedPayload);
+  if (isEwayBill) {
+    dispatch(createEwayBill(modifiedPayload)).then((response) => {
+      if (response.meta.requestStatus === "fulfilled") {
+        toast({
+          title: "Data Fetched Successfully",
+          className: "bg-green-600 text-white items-center",
+        });
+        setShowCreatedInvoiceModal(true);
+      }
+    });
+  } else {
+    dispatch(generateEInvoice(modifiedPayload)).then((response) => {
+      if (response.meta.requestStatus === "fulfilled") {
+        toast({
+          title: "Created Successfully",
+          className: "bg-green-600 text-white items-center",
+        });
+        setShowCreatedInvoiceModal(true);
+      }
+    });
+  }
+};
 
   // useEffect(() => {
   //   let sum = 0;
@@ -463,6 +509,80 @@ export default function CreateEwayBill() {
                       )}
                     />
                   </div>
+
+
+                  <div className="flex items-center space-x-2">
+  <FormField
+    control={form.control}
+    name="isExportInvoice"
+    render={({ field }) => (
+      <FormItem className="flex items-center space-x-2">
+        <FormControl>
+          <Checkbox
+            checked={isExportInvoice}
+            onCheckedChange={(checked) => {
+              setIsExportInvoice(checked);
+              field.onChange(checked);
+              if (!checked) {
+                form.setValue("expDtls.CntCode", "");
+              }
+            }}
+          />
+        </FormControl>
+        <FormLabel className={LableStyle}>
+          Is this an export invoice?
+        </FormLabel>
+      </FormItem>
+    )}
+  />
+</div>
+{isExportInvoice && (
+  <div>
+    <FormField
+      control={form.control}
+      name="expDtls.CntCode"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className={LableStyle}>
+            Country
+            <span className="pl-1 text-red-500 font-bold">*</span>
+          </FormLabel>
+          <FormControl>
+            <ReusableAsyncSelect
+              endpoint="/backend/countrieswithcode"
+              fetchOptionWith="search"
+              placeholder="Country"
+              transform={(data: { code: string; name: string }[]) =>
+                data.map((item) => ({
+                  value: item.code,
+                  label: item.name,
+                }))
+              }
+              onChange={(selectedOption) => {
+                field.onChange(selectedOption ? selectedOption.value : "");
+                console.log("Selected country:", selectedOption); // Debug selection
+              }}
+              value={
+                field.value
+                  ? {
+                      value: field.value,
+                      label:
+                        (form.getValues("expDtls.CntCode") &&
+                          countryOptions.find(
+                            (opt) => opt.value === field.value
+                          )?.label) ||
+                        field.value,
+                    }
+                  : null
+              }
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  </div>
+)}
                   {/* <FormField
                     control={form.control}
                     name="header.reverseCharge"

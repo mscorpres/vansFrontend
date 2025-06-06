@@ -31,6 +31,7 @@ const supplyTypeOptions = [
     label: "Inward",
   },
 ];
+
 const subsupplytype = [
   { value: "1", label: "Supply" },
   { value: "2", label: "Import" },
@@ -54,7 +55,6 @@ const subOptions = [
   { value: "EXPWOP ", label: "Export without payment" },
   { value: "DEXP", label: "Deemed Export" },
 ];
-
 
 const docType = [
   { value: "INV", label: "Tax Invoice" },
@@ -93,6 +93,7 @@ const vehicleTypeOptions = [
     value: "O",
   },
 ];
+
 const transactionTypeOptions = [
   {
     label: "Regular",
@@ -142,8 +143,8 @@ const headerEInv = z.object({
   igstOnIntra: z.enum(["Y", "N"]).optional(),
   delivery_note: z.string().optional(),
   delivery_date: z.string().optional(),
-  dispatch_through:z.string().optional(),
-  dispatch_doc_no:z.string().optional(),
+  dispatch_through: z.string().optional(),
+  dispatch_doc_no: z.string().optional(),
 });
 
 const billFrom = z.object({
@@ -153,9 +154,6 @@ const billFrom = z.object({
   addressLine2: z.string().optional(),
   location: z.string({ required_error: "Location is required" }),
   state: z.string({ required_error: "State is required" }),
-  // state: stateSchema.refine((val) => val.code && val.name, {
-  //   message: "State is required",
-  // }),
   pincode: z.string({ required_error: "Pincode is required" }),
   pan: z.string().optional(),
 });
@@ -167,13 +165,8 @@ const billTo = z.object({
   addressLine2: z.string().optional(),
   location: z.string({ required_error: "Location is required" }),
   state: z.string({ required_error: "State is required" }),
-  // state: stateSchema.refine((val) => val.code && val.name, {
-  //   message: "State is required",
-  // }),
   pincode: z.string({ required_error: "Pincode is required" }),
   pan: z.string({ required_error: "Pan No. is required" }),
-  // email: z.string().optional(),
-  // phone: z.union([z.string().optional(), z.null()]),
 });
 
 const dispatchFrom = z.object({
@@ -181,10 +174,7 @@ const dispatchFrom = z.object({
   addressLine1: z.string({ required_error: "Address Line 1 is required" }),
   addressLine2: z.string().optional(),
   state: z.string({ required_error: "State is required" }),
-  // state: stateSchema.refine((val) => val.code && val.name, {
-  //   message: "State is required",
-  // }),ui
-  pan: z.string({ required_error: "Pincode is reqred" }),
+  pan: z.string({ required_error: "PAN is required" }),
   location: z.string({ required_error: "Location is required" }),
   pincode: z.string({ required_error: "Pincode is required" }),
 });
@@ -216,30 +206,40 @@ const ewaybillDetailsForBill = z.object({
   transporterName: z.string({ required_error: "Transporter Name is required" }),
   transMode: z.string({ required_error: "Transport Mode is required" }),
   transporterDocNo: z.string().optional(),
-  // transporterDate: z.string({ required_error: "Transporter Date is required" }),
   transporterDate: z.string().optional(),
   vehicleNo: z.string({ required_error: "Vehicle Number is required" }),
   vehicleType: z.string({ required_error: "Vehicle Type is required" }),
-  transDistance: z.string({ required_error: "Trans Distance is required" }), // Mandatory in both
+  transDistance: z.string({ required_error: "Trans Distance is required" }),
 });
 
-// Main schema
 const eInvoiceSchema = z.object({
   header: headerEInv,
   billFrom: billFrom,
   billTo: billTo,
-  dispatchFrom: dispatchFrom,
-  shipTo: shipTo,
+  dispatchFrom: dispatchFrom.optional(),
+  shipTo: shipTo.optional(),
   ewaybillDetails: ewaybillDetailsForInvoice,
+  isExportInvoice: z.boolean().optional(),
+  expDtls: z
+    .object({
+      CntCode: z.string().nonempty("Country Code is required"),
+    })
+    .optional(),
 });
 
 const ewayBillSchema = z.object({
   header: header,
   billFrom: billFrom,
   billTo: billTo,
-  dispatchFrom: dispatchFrom,
-  shipTo: shipTo,
+  dispatchFrom: dispatchFrom.optional(),
+  shipTo: shipTo.optional(),
   ewaybillDetails: ewaybillDetailsForBill,
+  isExportInvoice: z.boolean().optional(),
+  expDtls: z
+    .object({
+      CntCode: z.string().nonempty("Country Code is required"),
+    })
+    .optional(),
 });
 
 const debitNoteHeader = headerEInv.extend({
