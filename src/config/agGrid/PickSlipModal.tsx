@@ -19,6 +19,7 @@ import {
   stockOut,
 } from "@/features/salesmodule/salesShipmentSlice";
 import { toast } from "@/components/ui/use-toast";
+import { Circle } from "lucide-react";
 
 interface PickSlipModalProps {
   visible: boolean;
@@ -46,31 +47,34 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   }>({});
   const [box, setBox] = useState<string[]>([]);
   const [qty, setQty] = useState<string[]>([]);
-  const [selectedRows, setSelectedRows] = useState<string[]>([]); // Track selected rows
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const dispatch = useDispatch();
   const { availableStock } = useSelector(
     (state: RootState) => state.sellShipment
   );
 
-  // Function to handle when a row's "Select Box" field is clicked
+  // Handle box selection click
   const handleBoxesClick = (params: any) => {
     setSheetOpen(true);
-    const rowId = params.data.item; // Ensure this is the correct row identifier
-    setRowItem(rowId); // Store the rowId so it can be used for updating the boxes
+    const rowId = params.data.item;
+    setRowItem(rowId);
     const payload = {
       c_center: sellRequestDetails?.header?.costcenter?.code,
       component: params.data?.item,
     };
     dispatch(fetchAvailableStock(payload) as any).then((response: any) => {
       if (response.payload.code === 200) {
-        // Handle response if needed
+        toast({
+          title: "Stock fetched successfully",
+          className: "bg-green-600 text-white flex items-center gap-2",
+          duration: 3000,
+        });
       }
     });
   };
 
-  // Function to handle selected boxes and quantities
+  // Handle selected boxes and quantities
   const handleSelectedBoxes = (selectedData: any, rowId: string) => {
-    // Update selected boxes and quantities for the specific row (rowId)
     setSelectedBoxes((prevSelectedBoxes) => ({
       ...prevSelectedBoxes,
       [rowId]: {
@@ -78,7 +82,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
         qty: selectedData.map((item: any) => item.stock),
       },
     }));
-    setSheetOpen(false); // Close the sheet after selection
+    setSheetOpen(false);
   };
 
   // Handle checkbox selection
@@ -88,7 +92,28 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     setSelectedRows(selectedIds);
   };
 
-  // Column definitions for the grid
+  // Custom cell renderer for Item Name with isMaterialOut indicator and tooltip
+  const ItemNameWithMaterialOutRenderer = (params: any) => {
+    const { value, data } = params;
+    const isMaterialOut = data.isMaterialOut;
+
+    return (
+      <div className="flex items-center gap-2">
+        <div className="relative group">
+          <Circle
+            className={`w-4 h-4 ${isMaterialOut ? "text-red-600" : "text-green-600"}`}
+            aria-label={isMaterialOut ? "Already Out" : "Ready to Out"}
+          />
+          <div className="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 -top-8 left-1/2 -translate-x-1/2 z-10">
+            {isMaterialOut ? "Already Out" : "Ready to Out"}
+          </div>
+        </div>
+        <TruncateCellRenderer {...params} />
+      </div>
+    );
+  };
+
+  // Column definitions
   const columnDefs: ColDef[] = [
     {
       headerName: "Select",
@@ -96,45 +121,68 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       checkboxSelection: true,
       headerCheckboxSelection: true,
       maxWidth: 80,
+      cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
     },
-    { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
+    {
+      headerName: "#",
+      valueGetter: "node.rowIndex + 1",
+      maxWidth: 60,
+      cellStyle: { textAlign: "center", fontWeight: "500" },
+    },
     {
       headerName: "Item Name",
       field: "itemName",
       width: 200,
-      cellRenderer: TruncateCellRenderer,
+      cellRenderer: ItemNameWithMaterialOutRenderer,
+      sortable: true,
+      filter: "agTextColumnFilter",
     },
     {
       headerName: "Item Description",
       field: "itemSpecification",
-      autoHeight: true,
       width: 300,
+      autoHeight: true,
+      wrapText: true,
+      cellStyle: { lineHeight: "1.5" },
     },
     {
       headerName: "OUT BOX(es)",
       field: "outBoxQty",
+      width: 200,
       cellRenderer: (params: any) => {
         const rowId = params.data?.item;
         const selectedForRow = selectedBoxes[rowId];
 
         return (
-          <div
-            className="p-2 border border-gray-300 rounded-md"
+          <button
+            className="w-full text-left py-2 px-3 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-blue-200 transition-all duration-200 text-blue-800 font-medium"
             onClick={() => handleBoxesClick(params)}
+            aria-label="Select Out Boxes"
           >
             {selectedForRow && selectedForRow?.boxes?.length > 0
               ? selectedForRow.boxes.join(", ")
               : "Select Out Box(es)"}
-          </div>
+          </button>
         );
       },
-      autoHeight: true,
     },
-    { headerName: "Item Part Number", field: "itemPartNo" },
-    { headerName: "Qty", field: "qty" },
+    {
+      headerName: "Item Part Number",
+      field: "itemPartNo",
+      width: 150,
+      sortable: true,
+      filter: "agTextColumnFilter",
+    },
+    {
+      headerName: "Qty",
+      field: "qty",
+      width: 100,
+      cellStyle: { textAlign: "right", fontWeight: "500" },
+    },
     {
       headerName: "Remark",
       field: "remark",
+      width: 200,
       cellRenderer: (params: any) => {
         const { value, colDef, data, api, column } = params;
         const onRemarkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,21 +192,23 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
             rowNodes: [params.node],
             columns: [column],
           });
-          api.applyTransaction({ update: [data] }); // refresh cell
+          api.applyTransaction({ update: [data] });
         };
         return (
           <input
             type="text"
             value={value || ""}
             onChange={onRemarkChange}
-            className="p-2 border border-gray-300 rounded-md"
+            className="w-full py-1.5 px-3 border border-gray-200 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-200"
+            placeholder="Add remark"
+            aria-label="Remark input"
           />
         );
       },
     },
   ];
 
-  // Table data, mapping the available stock to rows
+  // Table data
   const tableData = useMemo(
     () => availableStock?.map((item) => ({ ...item })) || [],
     [availableStock]
@@ -171,9 +221,8 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     [sellRequestDetails?.items]
   );
 
-  // Submit function to gather all the selected boxes and quantities
+  // Submit handler
   const onSubmit = () => {
-    // Filter items based on selected rows
     const selectedItems = sellRequestDetails?.items?.filter((item: any) =>
       selectedRows.includes(item.item)
     );
@@ -181,7 +230,8 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     if (selectedRows.length === 0) {
       toast({
         title: "Please select at least one item to stock out",
-        className: "bg-red-600 text-white items-center",
+        className: "bg-red-600 text-white flex items-center gap-2",
+        duration: 3000,
       });
       return;
     }
@@ -205,7 +255,8 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       if (res.payload.code === 200 || res.payload.success) {
         toast({
           title: res.payload.message || "Material Out Successfully",
-          className: "bg-green-600 text-white items-center",
+          className: "bg-green-600 text-white flex items-center gap-2",
+          duration: 3000,
         });
         onClose();
         setSubmitSuccess(true);
@@ -213,93 +264,134 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     });
   };
 
+  // Update box and quantity
   const updateBoxAndQty = (selectData: any) => {
     const newBoxes = selectData.map((item: any) => item.box_name);
     const newQtys = selectData.map((item: any) => item.stock);
 
     setSelectedBoxes((prevSelectedBoxes) => {
       const updatedBoxes = { ...prevSelectedBoxes };
-
-      // Check if the row already has selected boxes (identified by rowItem)
       if (updatedBoxes[rowItem]) {
-        // If the box is already present, we will update the box and qty arrays
         const existingBoxes = updatedBoxes[rowItem].boxes;
         const existingQtys = updatedBoxes[rowItem].qty;
-
-        // Only add new boxes and qtys that are not already present
         newBoxes.forEach((box, index) => {
           if (!existingBoxes.includes(box)) {
             existingBoxes.push(box);
             existingQtys.push(newQtys[index]);
           } else {
-            // If the box already exists, update the quantity if needed
             const boxIndex = existingBoxes.indexOf(box);
             if (boxIndex >= 0) {
-              existingQtys[boxIndex] = newQtys[index]; // Update quantity for the existing box
+              existingQtys[boxIndex] = newQtys[index];
             }
           }
         });
-
         updatedBoxes[rowItem].boxes = existingBoxes;
         updatedBoxes[rowItem].qty = existingQtys;
       } else {
-        // If no boxes are selected for this row yet, create a new entry
         updatedBoxes[rowItem] = {
           boxes: newBoxes,
           qty: newQtys,
         };
       }
-
       return updatedBoxes;
     });
-
-    setSheetOpen(false); // Close the sheet after selection
+    setSheetOpen(false);
   };
 
   return (
     <Sheet open={visible} onOpenChange={onClose}>
-      <SheetHeader></SheetHeader>
+      <SheetHeader />
       <SheetContent
-        side={"bottom"}
+        side="bottom"
+        className="bg-gradient-to-b from-white to-gray-50 max-h-[92vh] overflow-y-auto rounded-t-2xl shadow-xl"
         onInteractOutside={(e: any) => e.preventDefault()}
       >
-        <div className="flex justify-between items-center mb-2">
+        <div className="relative flex justify-between items-start mb-4">
           <div>
-            <SheetTitle>{`Material Out of ${sellRequestDetails?.header?.shipment_id}`}</SheetTitle>
-            <SheetTitle>{`Customer Name : ${sellRequestDetails?.header?.customer_name?.customer_name} Cost Center : ${sellRequestDetails?.header?.costcenter?.name}`}</SheetTitle>
+            <SheetTitle className="text-xl font-bold text-gray-900">
+              Material Out - {sellRequestDetails?.header?.shipment_id}
+            </SheetTitle>
+            <div className="text-sm text-gray-500 font-medium">
+              Customer: {sellRequestDetails?.header?.customer_name?.customer_name} | Cost Center: {sellRequestDetails?.header?.costcenter?.name}
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 bg-white p-3 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Circle className="w-4 h-4 text-green-600" />
+              <span>Ready to Out</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Circle className="w-4 h-4 text-red-600" />
+              <span>Already Out</span>
+            </div>
           </div>
         </div>
 
-        <div className="ag-theme-quartz h-[calc(100vh-170px)]">
-          <AgGridReact
-            ref={gridRef}
-            modules={[CsvExportModule]}
-            rowData={tableData2}
-            columnDefs={columnDefs}
-            suppressCellFocus={true}
-            components={{
-              truncateCellRenderer: TruncateCellRenderer,
-            }}
-            overlayNoRowsTemplate={OverlayNoRowsTemplate}
-            loading={loading}
-            rowSelection="multiple" // Enable multiple row selection
-            onSelectionChanged={handleRowSelection} // Handle selection changes
-            suppressRowClickSelection={true} // Require checkbox for selection
-          />
+        <div className="relative ag-theme-quartz h-[calc(100vh-220px)] bg-white rounded-xl shadow-sm border border-gray-100">
+          {loading ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-white/80">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-3 border-blue-600"></div>
+            </div>
+          ) : (
+            <AgGridReact
+              ref={gridRef}
+              modules={[CsvExportModule]}
+              rowData={tableData2}
+              columnDefs={columnDefs}
+              suppressCellFocus={true}
+              components={{
+                truncateCellRenderer: TruncateCellRenderer,
+              }}
+              overlayNoRowsTemplate={OverlayNoRowsTemplate}
+              rowSelection="multiple"
+              onSelectionChanged={handleRowSelection}
+              suppressRowClickSelection={true}
+              className="text-gray-800"
+              gridOptions={{
+                rowHeight: 56,
+                headerHeight: 48,
+                domLayout: "normal",
+                defaultColDef: {
+                  resizable: true,
+                  filter: true,
+                  sortable: true,
+                  cellStyle: {
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "0 12px",
+                    borderBottom: "1px solid #e5e7eb",
+                  },
+                  headerClass: "bg-blue-50 text-blue-900 font-semibold",
+                },
+                rowClass: "hover:bg-blue-50/50 transition-colors duration-150",
+              }}
+            />
+          )}
         </div>
 
-        <div className="bg-white border-t shadow border-slate-300 h-[50px] flex items-center justify-end gap-[20px] px-[20px]">
+        <div className="bg-white border-t border-gray-200 shadow-sm h-16 flex items-center justify-end gap-4 px-8 mt-4">
           <Button
-            className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max px-[30px]"
+            className="rounded-lg border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 px-6"
             onClick={onClose}
+            disabled={loading}
+            aria-label="Cancel material out"
           >
             Back
           </Button>
           <Button
-            className="rounded-md shadow bg-green-700 hover:bg-green-600 shadow-slate-500 max-w-max px-[30px]"
+            className="rounded-lg bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md px-6 disabled:from-green-400 disabled:to-green-500"
             onClick={onSubmit}
+            disabled={loading}
+            aria-label="Submit material out"
           >
-            Pick Slip & Material Out
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white"></span>
+                Processing...
+              </span>
+            ) : (
+              "Pick Slip & Material Out"
+            )}
           </Button>
         </div>
 
@@ -314,8 +406,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
           }}
         />
       </SheetContent>
-
-      <SheetFooter></SheetFooter>
+      <SheetFooter />
     </Sheet>
   );
 };
