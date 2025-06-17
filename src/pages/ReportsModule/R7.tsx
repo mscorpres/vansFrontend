@@ -96,119 +96,135 @@ const R7 = () => {
     // fetchComponentList();
   }, []);
 
-  const columnDefs: ColDef<rowData>[] = [
-    {
-      headerName: "ID",
-      field: "id",
-      filter: "agNumberColumnFilter",
-      width: 90,
-    },
-    {
-      headerName: "SO Date",
-      field: "reg_date",
-      filter: "agTextColumnFilter",
-      width: 140,
-    },
-    {
-      headerName: "Created By",
-      field: "created_by",
-      filter: "agTextColumnFilter",
-      width: 140,
-    },
-    {
-      headerName: "SO Order Id",
-      field: "so_id",
-      filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
-      width: 220,
-    },
-    {
-      headerName: "Part No.",
-      field: "part_no",
-      filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
-      width: 190,
-    },
-    {
-      headerName: "Compenent",
-      field: "component_name",
-      filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
-      minWidth: 190,
-      flex: 1,
-    },
-    {
-      headerName: "UoM",
-      field: "units_name",
-      filter: "agTextColumnFilter",
-      width: 90,
-    },
-    {
-      headerName: "Qty",
-      field: "total_qty",
-      filter: "agTextColumnFilter",
-      width: 90,
-    },
-    {
-      headerName: " Pending Qty",
-      field: "pending_qty",
-      filter: "agTextColumnFilter",
-      width: 90,
-    },
-    {
-      headerName: "Rate",
-      field: "rate",
-      filter: "agTextColumnFilter",
-      width: 90,
-    },
-    {
-      headerName: "Currency",
-      field: "currency_label",
-      filter: "agTextColumnFilter",
-      width: 40,
-    },
-    {
-      headerName: "Currency Sym",
-      field: "currency_symbol",
-      filter: "agTextColumnFilter",
-      width: 40,
-    },
-    {
-      headerName: "Customer Code",
-      field: "customer_code",
-      cellRenderer: CopyCellRenderer,
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
-    {
-      headerName: "Customer Name",
-      field: "clients",
-      cellRenderer: CopyCellRenderer,
-      filter: "agTextColumnFilter",
-      minWidth: 240,
-      flex: 1,
-    },
-    {
-      headerName: "Due Date",
-      field: "due_date",
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
-    {
-      headerName: "Cost Center",
-      field: "cost_center",
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
+ const columnDefs: ColDef<RowData>[] = [
+  {
+    headerName: "ID",
+    field: "id",
+    filter: "agNumberColumnFilter",
+    width: 90,
+  },
+  {
+    headerName: "PO Number",
+    field: "po_number",
+    cellRenderer: CopyCellRenderer,
+    filter: "agTextColumnFilter",
+    width: 190,
+
+  },
+  
+  {
+    headerName: "PO Date",
+    field: "po_date",
+  
+    filter: "agTextColumnFilter",
+    width: 190,
+
+  },
+   {
+    headerName: "SO Order Id",
+    field: "so_id",
+    filter: "agTextColumnFilter",
+    cellRenderer: CopyCellRenderer,
+    width: 220,
+  },
+  {
+    headerName: "Customer Name",
+    field: "clients",
+
+    filter: "agTextColumnFilter",
+    minWidth: 240,
+    flex: 1,
+  },
+  {
+    headerName: "Part No.",
+    field: "part_no",
+    filter: "agTextColumnFilter",
+    
+    width: 190,
+  },
+  {
+    headerName: "Compenent",
+    field: "component_name",
+    filter: "agTextColumnFilter",
    
-    {
-      headerName: "Description",
-      field: "specification",
-      filter: "agTextColumnFilter",
-      width: 250,
-      minWidth: 250,
-    },
-  ];
+    minWidth: 190,
+    flex: 1,
+  },
+  {
+    headerName: "Description",
+    field: "specification",
+    filter: "agTextColumnFilter",
+    width: 250,
+    minWidth: 250,
+  },
+  {
+    headerName: "Due Date",
+    field: "due_date",
+    filter: "agTextColumnFilter",
+    width: 150,
+  },
+  {
+    headerName: "Qty",
+    field: "total_qty",
+    filter: "agTextColumnFilter",
+    width: 90,
+  },
+  {
+    headerName: "UoM",
+    field: "units_name",
+    filter: "agTextColumnFilter",
+    width: 90,
+  },
+  {
+    headerName: " Pending Qty",
+    field: "pending_qty",
+    filter: "agTextColumnFilter",
+    width: 90,
+  },
+  {
+    headerName: "Rate",
+    field: "rate",
+    filter: "agTextColumnFilter",
+    width: 90,
+  },
+  {
+    headerName: "Currency",
+    field: "currency_label",
+    filter: "agTextColumnFilter",
+    width: 40,
+  },
+  {
+    headerName: "Currency Sym",
+    field: "currency_symbol",
+    filter: "agTextColumnFilter",
+    width: 40,
+  },
+  {
+    headerName: "Customer Code",
+    field: "customer_code",
+    filter: "agTextColumnFilter",
+    width: 150,
+  },
+  {
+    headerName: "Cost Center",
+    field: "cost_center",
+    filter: "agTextColumnFilter",
+    width: 150,
+  },
+  {
+    headerName: "SO Date",
+    field: "reg_date",
+    filter: "agTextColumnFilter",
+    width: 140,
+  },
+ 
+  {
+    headerName: "Created By",
+    field: "created_by",
+    filter: "agTextColumnFilter",
+    width: 140,
+  },
+];
   const type = [
     {
       label: "Pending",
