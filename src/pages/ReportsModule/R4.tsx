@@ -5,29 +5,22 @@ import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import styled from "styled-components";
-import { DatePicker, Form, Tooltip } from "antd";
+import { Form, Tooltip } from "antd";
+import { debounce } from "lodash";
 import useApi from "@/hooks/useApi";
 import { fetchCloseStock, fetchR4, fetchR4refreshed } from "@/components/shared/Api/masterApi";
-import { IoMdDownload } from "react-icons/io";
+import { IoMdDownload, IoIosRefresh } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
-import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-import { IoIosRefresh } from "react-icons/io";
 import { Input } from "@/components/ui/input";
 import { InputStyle } from "@/constants/themeContants";
 
 // Define the form schema
 const FormSchema = z.object({
-  date: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
-  types: z.string().optional(),
+  primarySearch: z.string().optional(),
+  secondarySearch: z.string().optional(),
 });
 
 // Define row data type
@@ -54,16 +47,104 @@ const R4 = () => {
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const [isAnimating, setIsAnimating] = useState<number | null>(null);
-  const { RangePicker } = DatePicker;
-  const gridRef = useRef<AgGridReact>(null); // Reference to AG Grid
+  const gridRef = useRef<AgGridReact>(null);
 
-  const dateFormat = "YYYY/MM/DD";
-
-  const fetchQueryResults = async (formData?: z.infer<typeof FormSchema>) => {
-    const value = await form.validateFields();
-    if (value.search && rowData) {
+  // Debounced filter update
+  const debouncedFilter = debounce((formValues: z.infer<typeof FormSchema>) => {
+    const { primarySearch, secondarySearch } = formValues;
+    if (!primarySearch && !secondarySearch) {
+      setRowData(originalRowData);
+      setShowList(false);
+    } else {
+      const filteredData = searchData(primarySearch || "", secondarySearch || "");
+      setRowData(filteredData);
       setShowList(true);
-      const filteredData = searchData(value.search);
+      scrollToFirstMatch(filteredData);
+    }
+  }, 300);
+
+  // Handle search input change
+  const handleSearchChange = () => {
+    form.validateFields().then((values) => {
+      debouncedFilter(values);
+    });
+  };
+
+  // Advanced search function
+  const searchData = (primaryQuery: string, secondaryQuery: string): RowData[] => {
+    const primaryTerms = primaryQuery
+      .toLowerCase()
+      .trim()
+      .split(",")
+      .map((term) => term.trim())
+      .filter((term) => term.length > 0);
+    const secondaryTerms = secondaryQuery
+      .toLowerCase()
+      .trim()
+      .split(",")
+      .map((term) => term.trim())
+      .filter((term) => term.length > 0);
+
+    if (primaryTerms.length === 0 && secondaryTerms.length === 0) {
+      return originalRowData;
+    }
+
+    return originalRowData.filter((item) => {
+      const description = item.c_specification?.toLowerCase() || "";
+
+      // Check primary terms
+      const matchesPrimary = primaryTerms.length === 0 || primaryTerms.every((term) => {
+        if (term.endsWith("%")) {
+          return description.includes(term);
+        }
+        if (/^\d+$/.test(term)) {
+          return description.includes(term);
+        }
+        const regex = new RegExp(`\\b${term}\\b`, "i");
+        return regex.test(description) || description.includes(term);
+      });
+
+      // Check secondary terms
+      const matchesSecondary = secondaryTerms.length === 0 || secondaryTerms.every((term) => {
+        if (term.endsWith("%")) {
+          return description.includes(term);
+        }
+        if (/^\d+$/.test(term)) {
+          return description.includes(term);
+        }
+        const regex = new RegExp(`\\b${term}\\b`, "i");
+        return regex.test(description) || description.includes(term);
+      });
+
+      return matchesPrimary && matchesSecondary;
+    });
+  };
+
+  // Scroll to the first matching row
+  const scrollToFirstMatch = (filteredData: RowData[]) => {
+    if (gridRef.current && filteredData.length > 0) {
+      const firstMatchIndex = rowData.findIndex(
+        (row) =>
+          row.c_specification.toLowerCase().includes(filteredData[0].c_specification.toLowerCase())
+      );
+      if (firstMatchIndex !== -1) {
+        gridRef.current.api.ensureIndexVisible(firstMatchIndex, "top");
+      }
+    }
+  };
+
+  // Reset search
+  const handleResetSearch = () => {
+    form.resetFields();
+    setRowData(originalRowData);
+    setShowList(false);
+  };
+
+  const fetchQueryResults = async () => {
+    const value = await form.validateFields();
+    if (value.primarySearch || value.secondarySearch) {
+      setShowList(true);
+      const filteredData = searchData(value.primarySearch || "", value.secondarySearch || "");
       setRowData(filteredData);
       scrollToFirstMatch(filteredData);
     } else {
@@ -86,40 +167,6 @@ const R4 = () => {
     }
   };
 
-  // Handle search input change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchValue = e.target.value.toLowerCase();
-    if (searchValue === "") {
-      setRowData(originalRowData);
-      setShowList(false);
-    } else {
-      const filteredData = searchData(searchValue);
-      setRowData(filteredData);
-      setShowList(true);
-      scrollToFirstMatch(filteredData);
-    }
-  };
-
-  // Search function to filter data
-  const searchData = (query: string) =>
-    originalRowData.filter((item) =>
-      Object.values(item)
-        .join(" ")
-        .toLowerCase()
-        .includes(query.toLowerCase())
-    );
-
-  // Scroll to the first matching row
-  const scrollToFirstMatch = (filteredData: RowData[]) => {
-    if (gridRef.current && filteredData.length > 0) {
-      const firstMatchIndex = rowData.findIndex(
-        (row) =>
-          row.c_specification.toLowerCase().includes(filteredData[0].c_specification.toLowerCase())
-      );
-      gridRef.current.api.ensureIndexVisible(firstMatchIndex, "top");
-    }
-  };
-
   const getRefreshed = async () => {
     const response = await execFun(() => fetchR4refreshed(), "fetch");
     let { data } = response;
@@ -131,7 +178,7 @@ const R4 = () => {
       setRowData(arr);
       setOriginalRowData(arr);
       setShowList(false);
-      fetchQueryResults();
+      form.resetFields();
     } else {
       toast({
         title: response?.data.message,
@@ -150,7 +197,7 @@ const R4 = () => {
           item.id === id
             ? {
                 ...item,
-                navsStock: response.data.data.navsStock,
+                navStock: response.data.data.navStock,
                 stock: response.data.data.stock,
                 closing_stock_time: response.data.data.closing_stock_time,
               }
@@ -166,14 +213,12 @@ const R4 = () => {
       headerName: "Part Code",
       field: "part_no",
       filter: "agTextColumnFilter",
-      // cellRenderer: CopyCellRenderer,
       width: 140,
     },
     {
       headerName: "Part Name",
       field: "name",
       filter: "agTextColumnFilter",
-      // cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
@@ -182,17 +227,19 @@ const R4 = () => {
       filter: "agTextColumnFilter",
       width: 320,
       cellStyle: (params: any) => {
-        const searchValue = form.getFieldValue("search")?.toLowerCase();
+        const primarySearch = form.getFieldValue("primarySearch")?.toLowerCase();
+        const secondarySearch = form.getFieldValue("secondarySearch")?.toLowerCase();
+        const searchValue = [primarySearch, secondarySearch].filter(Boolean).join(",");
         if (searchValue && params.value?.toLowerCase().includes(searchValue)) {
-          return { backgroundColor: "#FFFF99" }; // Highlight matching description
+          return { backgroundColor: "#FFFF99" };
         }
         return null;
       },
     },
-    { headerName: "Total Stock", field: "stock", filter: "agTextColumnFilter", width: 150 },
-    { headerName: "Navs Stock", field: "navStock", filter: "agTextColumnFilter", width: 150 },
-    { headerName: "Vans Stock", field: "vansStock", filter: "agTextColumnFilter", width: 150 },
-    { headerName: "Silicon Stock", field: "siliconStock", filter: "agTextColumnFilter", width: 150 },
+    { headerName: "Total Stock", field: "stock", filter: "agNumberColumnFilter", width: 150 },
+    { headerName: "Navs Stock", field: "navStock", filter: "agNumberColumnFilter", width: 150 },
+    { headerName: "Vans Stock", field: "vansStock", filter: "agNumberColumnFilter", width: 150 },
+    { headerName: "Silicon Stock", field: "siliconStock", filter: "agNumberColumnFilter", width: 150 },
     { headerName: "Stock Time", field: "closing_stock_time", filter: "agTextColumnFilter", width: 150 },
     { headerName: "Make", field: "make", filter: "agTextColumnFilter", width: 180 },
     { headerName: "SOQ", field: "soq", filter: "agTextColumnFilter", width: 150 },
@@ -210,13 +257,23 @@ const R4 = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
       <div className="bg-white p-4 border-b border-gray-200 flex items-center gap-4">
-        <Form form={form} layout="vertical">
-          <Form.Item name="search" className="mb-0">
+        <Form form={form} layout="inline" onValuesChange={handleSearchChange}>
+          <Form.Item name="primarySearch" className="mb-0">
             <Input
               className={InputStyle}
-              placeholder="Enter Search (e.g., description)"
-              onChange={handleSearchChange}
+              placeholder="Primary terms (e.g., RES,5%)"
+              style={{ width: 200 }}
             />
+          </Form.Item>
+          <Form.Item name="secondarySearch" className="mb-0">
+            <Input
+              className={InputStyle}
+              placeholder="Secondary terms (e.g., 1%,2512)"
+              style={{ width: 200 }}
+            />
+          </Form.Item>
+          <Form.Item className="mb-0">
+            <Button onClick={handleResetSearch}>Reset Search</Button>
           </Form.Item>
         </Form>
         <div className="flex items-center gap-2">
@@ -239,18 +296,17 @@ const R4 = () => {
       </div>
 
       <div className="ag-theme-quartz flex-1">
-        {loading1("fetch") && <FullPageLoading />}
+        {loading1("fetch") && "fetch" in loading1 && <FullPageLoading />}
         <AgGridReact
           ref={gridRef}
           rowData={rowData}
           columnDefs={columnDefs}
-          defaultColDef={{ filter: true, sortable: true }}
+          defaultColDef={{ filter: true, sortable: true, floatingFilter: true }}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           enableCellTextSelection={true}
-          // Enable virtualized scrolling with a reasonable row buffer
-          rowBuffer={20} // Adjust based on performance needs
-          ensureDomOrder={true} // Ensures DOM order matches row order for scrolling
+          rowBuffer={20}
+          ensureDomOrder={true}
         />
       </div>
     </Wrapper>
@@ -265,6 +321,6 @@ const Wrapper = styled.div`
     border-bottom: 0;
   }
   .ag-theme-quartz .ag-body-viewport {
-    overflow-y: auto !important; /* Ensure vertical scrolling */
+    overflow-y: auto !important;
   }
 `;

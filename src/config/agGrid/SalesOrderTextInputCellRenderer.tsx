@@ -90,7 +90,7 @@ const gstType = [
   },
   {
     value: "0",
-    label: "Import",
+    label: "EXPORT",
   },
 ];
 const SalesOrderTextInputCellRenderer = (props: any) => {
