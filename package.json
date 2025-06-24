@@ -67,6 +67,7 @@
     "embla-carousel-autoplay": "^8.1.3",
     "embla-carousel-react": "^8.1.3",
     "emoji-picker-react": "^4.10.0",
+    "framer-motion": "^12.18.1",
     "fullcalendar": "^6.1.14",
     "js-file-download": "^0.4.12",
     "lodash": "^4.17.21",

@@ -8,14 +8,8 @@ import { useEffect, useState } from "react";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { printShipment } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
-import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
-import {
-  approveShipment,
-  cancelShipment,
-  createInvoice,
-  fetchMaterialList,
-  fetchSalesOrderShipmentList,
-} from "@/features/salesmodule/salesShipmentSlice";
+import MaterialListModal from "./MaterialListModal";
+import { approveShipment, cancelShipment, createInvoice, fetchMaterialList, fetchSalesOrderShipmentList } from "@/features/salesmodule/salesShipmentSlice";
 import { TruncateCellRenderer } from "@/General";
 import PickSlipModal from "@/config/agGrid/PickSlipModal";
 import { toast } from "react-toastify";
@@ -35,9 +29,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const [form] = Form.useForm();
   const [invoiceForm] = Form.useForm();
   const { loading } = useSelector((state: RootState) => state.sellRequest);
-  const { shipmentMaterialList, loading: loading2 } = useSelector(
-    (state: RootState) => state.sellShipment
-  );
+  const { shipmentMaterialList, loading: loading2 } = useSelector((state: RootState) => state.sellShipment);
 
   const dateRange = useSelector((state: RootState) => state.sellRequest.dateRange);
 
@@ -252,36 +244,24 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const menu = (
     <Menu>
-      <Menu.Item
-        key="approve"
-        onClick={() => handleshowMaterialListForApprove(row)}
-        icon={<CheckCircleOutlined className="text-base" />}
-      >
+      <Menu.Item key="approve" onClick={() => handleshowMaterialListForApprove(row)} icon={<CheckCircleOutlined className="text-base" />}>
         View/Approve
       </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal} 
-      icon={<CloseCircleOutlined className="text-base" />} 
-      >
+      <Menu.Item key="cancel" onClick={showCancelModal} icon={<CloseCircleOutlined className="text-base" />}>
         Cancel
       </Menu.Item>
       <Menu.Item
         key="update"
         onClick={() => handleshowMaterialList(row)}
         // disabled={row?.approval_status === "P" || row?.material_status === "Y"}
-         icon={<EditOutlined className="text-base" />}
+        icon={<EditOutlined className="text-base" />}
       >
         PickSlip
       </Menu.Item>
-      <Menu.Item
-        key="createInvoice"
-        onClick={showInvoiceModal}
-        disabled={isDisabled || row?.material_status !== "Y"}
-        icon={<FileAddOutlined className="text-base" />}
-      >
+      <Menu.Item key="createInvoice" onClick={showInvoiceModal} disabled={isDisabled || row?.material_status !== "Y"} icon={<FileAddOutlined className="text-base" />}>
         Create Invoice
       </Menu.Item>
-      <Menu.Item key="print" onClick={() => handlePrintInvoice(row?.shipment_id, "Original")} 
-      icon={<PrinterOutlined className="text-base" />}>
+      <Menu.Item key="print" onClick={() => handlePrintInvoice(row?.shipment_id, "Original")} icon={<PrinterOutlined className="text-base" />}>
         Print
       </Menu.Item>
     </Menu>
@@ -292,15 +272,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Dropdown overlay={menu} trigger={["click"]}>
         <Button icon={<MoreOutlined />} />
       </Dropdown>
-      <ConfirmCancellationDialog
-        isDialogVisible={isModalVisible}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        row={{ req_id: row?.so_id }}
-        form={form}
-        loading={loading}
-        module="Shipment"
-      />
+      <ConfirmCancellationDialog isDialogVisible={isModalVisible} handleOk={handleOk} handleCancel={handleCancel} row={{ req_id: row?.so_id }} form={form} loading={loading} module="Shipment" />
       <ViewAndCreateInvModal
         visible={isInvoiceModalVisible}
         onClose={handleInvoiceModalCancel}
@@ -369,25 +341,18 @@ export const columnDefs: ColDef<any>[] = [
   {
     headerName: "Approval Status",
     field: "approval_status",
-    valueGetter: (params) =>
-      params?.data?.approval_status === "A" ? "Approved" : "Pending",
+    valueGetter: (params) => (params?.data?.approval_status === "A" ? "Approved" : "Pending"),
   },
   {
     headerName: "Shipment Status",
     field: "shipment_status",
-    valueGetter: (params) =>
-      params?.data?.shipment_status === "Y"
-        ? "Active"
-        : params?.data?.shipment_status === "C"
-        ? "Cancelled"
-        : "Pending",
+    valueGetter: (params) => (params?.data?.shipment_status === "Y" ? "Active" : params?.data?.shipment_status === "C" ? "Cancelled" : "Pending"),
   },
   {
     headerName: "Material Status",
     field: "material_status",
     filter: "agTextColumnFilter",
-    valueGetter: (params) =>
-      params?.data?.material_status === "Y" ? "Out" : "Pending",
+    valueGetter: (params) => (params?.data?.material_status === "Y" ? "Out" : "Pending"),
   },
   {
     headerName: "SuplierName",

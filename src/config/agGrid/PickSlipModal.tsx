@@ -41,22 +41,24 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
 }) => {
   const gridRef = useRef<AgGridReact<any>>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [rowItem, setRowItem] = useState<string>("");
+  const [rowItem, setRowItem] = useState<string>(""); // Composite key: item + dueDate
   const [selectedBoxes, setSelectedBoxes] = useState<{
     [rowId: string]: { boxes: string[]; qty: string[] };
   }>({});
-  const [box, setBox] = useState<string[]>([]);
-  const [qty, setQty] = useState<string[]>([]);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const dispatch = useDispatch();
   const { availableStock } = useSelector(
     (state: RootState) => state.sellShipment
   );
 
+  // Create a composite key for uniqueness
+  const getRowId = (item: string, dueDate: string) =>
+    `${item}_${dueDate.replace(/[^a-zA-Z0-9]/g, "-")}`; // Sanitize dueDate
+
   // Handle box selection click
   const handleBoxesClick = (params: any) => {
     setSheetOpen(true);
-    const rowId = params.data.item;
+    const rowId = getRowId(params.data.item, params.data.dueDate);
     setRowItem(rowId);
     const payload = {
       c_center: sellRequestDetails?.header?.costcenter?.code,
@@ -88,7 +90,9 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   // Handle checkbox selection
   const handleRowSelection = (params: any) => {
     const selectedNodes = params.api.getSelectedNodes();
-    const selectedIds = selectedNodes.map((node: any) => node.data.item);
+    const selectedIds = selectedNodes.map((node: any) =>
+      getRowId(node.data.item, node.data.dueDate)
+    );
     setSelectedRows(selectedIds);
   };
 
@@ -146,11 +150,18 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       cellStyle: { lineHeight: "1.5" },
     },
     {
+      headerName: "Due Date",
+      field: "dueDate",
+      width: 150,
+      sortable: true,
+      filter: "agTextColumnFilter",
+    },
+    {
       headerName: "OUT BOX(es)",
       field: "outBoxQty",
       width: 200,
       cellRenderer: (params: any) => {
-        const rowId = params.data?.item;
+        const rowId = getRowId(params.data.item, params.data.dueDate);
         const selectedForRow = selectedBoxes[rowId];
 
         return (
@@ -208,7 +219,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
     },
   ];
 
-  // Table data
+  // Table data with unique rowId and isMaterialOut
   const tableData = useMemo(
     () => availableStock?.map((item) => ({ ...item })) || [],
     [availableStock]
@@ -216,7 +227,11 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   const tableData2 = useMemo(
     () =>
       Array.isArray(sellRequestDetails?.items)
-        ? sellRequestDetails?.items?.map((item: any) => ({ ...item }))
+        ? sellRequestDetails?.items?.map((item: any) => ({
+            ...item,
+            rowId: getRowId(item.item, item.dueDate), // Add rowId for uniqueness
+            isMaterialOut: item.isMaterialOut || false, // Ensure isMaterialOut is defined
+          }))
         : [],
     [sellRequestDetails?.items]
   );
@@ -224,7 +239,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
   // Submit handler
   const onSubmit = () => {
     const selectedItems = sellRequestDetails?.items?.filter((item: any) =>
-      selectedRows.includes(item.item)
+      selectedRows.includes(getRowId(item.item, item.dueDate))
     );
 
     if (selectedRows.length === 0) {
@@ -244,11 +259,12 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
       remark: selectedItems.map((item: any) => item?.itemRemark),
       costcenter: sellRequestDetails?.header?.costcenter?.code,
       box: selectedItems.map((item: any) =>
-        selectedBoxes[item.item]?.boxes?.join(",") || ""
+        selectedBoxes[getRowId(item.item, item.dueDate)]?.boxes?.join(",") || ""
       ),
       boxqty: selectedItems.map((item: any) =>
-        selectedBoxes[item.item]?.qty?.join(",") || ""
+        selectedBoxes[getRowId(item.item, item.dueDate)]?.qty?.join(",") || ""
       ),
+      dueDate: selectedItems.map((item: any) => item?.dueDate), // Add dueDate to payload
     };
 
     dispatch(stockOut(payload) as any).then((res: any) => {
@@ -258,6 +274,16 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
           className: "bg-green-600 text-white flex items-center gap-2",
           duration: 3000,
         });
+        // Update local data to reflect isMaterialOut status
+        const updatedItems = sellRequestDetails?.items?.map((item: any) => {
+          const rowId = getRowId(item.item, item.dueDate);
+          if (selectedRows.includes(rowId)) {
+            return { ...item, isMaterialOut: true };
+          }
+          return item;
+        });
+        // Assuming sellRequestDetails is managed in Redux, dispatch an action to update it
+        // If not, you may need to update the parent component's state
         onClose();
         setSubmitSuccess(true);
       }
@@ -364,6 +390,7 @@ const PickSlipModal: React.FC<PickSlipModalProps> = ({
                   headerClass: "bg-blue-50 text-blue-900 font-semibold",
                 },
                 rowClass: "hover:bg-blue-50/50 transition-colors duration-150",
+                getRowId: (params) => getRowId(params.data.item, params.data.dueDate),
               }}
             />
           )}

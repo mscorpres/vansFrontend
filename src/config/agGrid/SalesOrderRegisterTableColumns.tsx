@@ -8,19 +8,10 @@ import { useMemo, useState } from "react";
 import CreateShipmentListModal from "@/config/agGrid/registerModule/CreateShipmentListModal";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
-import {
-  approveSo,
-  cancelSalesOrder,
-  createShipment,
-  fetchMaterialList,
-  fetchSellRequestList,
-  printSellOrder,
-  rejectSo,
-  shortClose,
-} from "@/features/salesmodule/SalesSlice";
+import { approveSo, cancelSalesOrder, createShipment, fetchMaterialList, fetchSellRequestList, printSellOrder, rejectSo, shortClose } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import { useToast } from "@/components/ui/use-toast";
-import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
+import MaterialListModal from "./MaterialListModal";
 import { TruncateCellRenderer } from "@/General";
 
 interface ActionMenuProps {
@@ -31,19 +22,14 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
-    useState(false);
+  const [isMaterialListModalVisible, setIsMaterialListModalVisible] = useState(false);
   const [showHandleCloseModal, setShowHandleCloseModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [form] = Form.useForm();
   const [shortCloseForm] = Form.useForm(); // Form instance for the invoice modal
   const [rejectform] = Form.useForm(); // Form instance for the invoice modal
-  const { sellRequestList, loading } = useSelector(
-    (state: RootState) => state.sellRequest
-  );
-  const dateRange = useSelector(
-    (state: RootState) => state.sellRequest.dateRange
-  );
+  const { sellRequestList, loading } = useSelector((state: RootState) => state.sellRequest);
+  const dateRange = useSelector((state: RootState) => state.sellRequest.dateRange);
   const { toast } = useToast();
   const handleUpdate = (row: any) => {
     const soId = row?.so_id; // Replace with actual key for employee ID
@@ -59,8 +45,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     setIsModalVisible(false);
   };
 
-  const handleMaterialListModalClose = () =>
-    setIsMaterialListModalVisible(false);
+  const handleMaterialListModalClose = () => setIsMaterialListModalVisible(false);
   // dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
 
   const handleshowMaterialList = (row: RowData) => {
@@ -75,19 +60,12 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const confirmApprove = () => {
     dispatch(approveSo({ so_id: row?.so_id })).then((response: any) => {
-      if (
-        response?.payload?.code == 200 ||
-        response?.payload?.success ||
-        response?.payload?.status == success
-      ) {
+      if (response?.payload?.code == 200 || response?.payload?.success || response?.payload?.status == success) {
         toast({
           className: "bg-green-600 text-white items-center",
-          description:
-            response.payload.message || "Sales Order Approved successfully",
+          description: response.payload.message || "Sales Order Approved successfully",
         });
-        dispatch(
-          fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
-        );
+        dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
       }
     });
     setShowConfirmationModal(false);
@@ -162,9 +140,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         });
         setIsMaterialListModalVisible(false);
         handleMaterialListModalClose();
-        dispatch(
-          fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
-        );
+        dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
       }
     });
   };
@@ -182,9 +158,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       dispatch(shortClose(payload)).then((response: any) => {
         if (response?.payload?.code == 200 || response?.payload?.success) {
           setShowHandleCloseModal(false);
-          dispatch(
-            fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
-          );
+          dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
         }
       });
     });
@@ -192,13 +166,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const isDisabled = row?.approveStatus === "Approved";
 
-  const tableData = useMemo(
-    () =>
-      Array.isArray(sellRequestList)
-        ? sellRequestList.map((item) => ({ ...item }))
-        : [],
-    [sellRequestList]
-  );
+  const tableData = useMemo(() => (Array.isArray(sellRequestList) ? sellRequestList.map((item) => ({ ...item })) : []), [sellRequestList]);
 
   const menu = (
     <Menu>
@@ -220,38 +188,21 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       >
         View/Approve
       </Menu.Item>
-      <Menu.Item
-        key="cancel"
-        onClick={showCancelModal}
-        
-        disabled={row?.soStatus === "Closed"}
-        icon={<CloseCircleOutlined className="text-base" />}
-      >
+      <Menu.Item key="cancel" onClick={showCancelModal} disabled={row?.soStatus === "Closed"} icon={<CloseCircleOutlined className="text-base" />}>
         Cancel
       </Menu.Item>
       <Menu.Item
         key="materialList"
         onClick={() => handleshowMaterialList(row)}
-        disabled={
-          row?.approveStatus === "Pending" ||
-          row?.soStatus === "Closed" ||
-          row?.approveStatus === "Rejected" ||
-          row?.approveStatus === "Partially Approved"
-        }
+        disabled={row?.approveStatus === "Pending" || row?.soStatus === "Closed" || row?.approveStatus === "Rejected" || row?.approveStatus === "Partially Approved"}
         icon={<CarOutlined className="text-base" />}
       >
         Create Shipment
       </Menu.Item>
-      <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)}   icon={<PrinterOutlined className="text-base" />}>
+      <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)} icon={<PrinterOutlined className="text-base" />}>
         Print
       </Menu.Item>
-      <Menu.Item
-        key="shortClose"
-        onClick={() => handleShortClose()}
-        disabled={row?.soStatus === "Closed"}
-      
-        icon={<StopOutlined className="text-base" />}
-      >
+      <Menu.Item key="shortClose" onClick={() => handleShortClose()} disabled={row?.soStatus === "Closed"} icon={<StopOutlined className="text-base" />}>
         Short Close
       </Menu.Item>
     </Menu>
@@ -262,14 +213,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Dropdown overlay={menu} trigger={["click"]}>
         <Button icon={<MoreOutlined />} />
       </Dropdown>
-      <ConfirmCancellationDialog
-        isDialogVisible={isModalVisible}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        row={{ req_id: row?.so_id }}
-        form={form}
-        loading={loading}
-      />
+      <ConfirmCancellationDialog isDialogVisible={isModalVisible} handleOk={handleOk} handleCancel={handleCancel} row={{ req_id: row?.so_id }} form={form} loading={loading} />
 
       <CreateShipmentListModal
         visible={isMaterialListModalVisible}
@@ -290,7 +234,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         submitText="Approve"
         handleSubmit={confirmApprove}
         handleReject={() => setShowRejectModal(true)}
-        disableStatus={row?.approveStatus === "Approved"||row?.approveStatus === "Rejected"}
+        disableStatus={row?.approveStatus === "Approved" || row?.approveStatus === "Rejected"}
       />
       <CreateInvoiceDialog
         isDialogVisible={showHandleCloseModal}
@@ -332,7 +276,6 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "SO ID",
     field: "so_id",
     filter: "agTextColumnFilter",
-     
   },
   {
     headerName: "Approve Status",
@@ -348,7 +291,6 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "PO ID",
     field: "po_number",
     filter: "agTextColumnFilter",
-     
   },
   {
     headerName: "PO Date",
@@ -404,19 +346,16 @@ const materialListColumnDefs: ColDef[] = [
     field: "itemName",
     width: 300,
     // cellRenderer: "truncateCellRenderer",
-     
   },
   {
     headerName: "Specification",
     field: "itemSpecification",
     width: 350,
-
-     
   },
-  
+
   {
     headerName: "Customer Part No.",
-     
+
     field: "customer_part_no",
     width: 200,
     // cellRenderer: "truncateCellRenderer",

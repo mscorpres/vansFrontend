@@ -52,7 +52,7 @@ const subOptions = [
   { value: "SEZWP", label: "SEZ with payment" },
   { value: "SEZWOP", label: "SEZ without payment" },
   { value: "EXPWP", label: "Export with Payment" },
-  { value: "EXPWOP ", label: "Export without payment" },
+  { value: "EXPWOP", label: "Export without payment" },
   { value: "DEXP", label: "Deemed Export" },
 ];
 

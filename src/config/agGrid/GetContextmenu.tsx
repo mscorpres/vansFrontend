@@ -1,7 +1,5 @@
 import { GetContextMenuItemsParams, MenuItemDef } from "@ag-grid-community/core";
 
-
-
 export const menuresult = (params: GetContextMenuItemsParams) => {
   var result: (string | MenuItemDef)[] = [
     {
@@ -32,8 +30,8 @@ export const menuresult = (params: GetContextMenuItemsParams) => {
         } else {
         }
       },
-      cssClasses: ["bg-[#217346]","bold","text-white","hover:bg-[#2e9c60]","text-[14px]","py-[5px]","mx-[5px]","rounded-full","max-w-max"],
-      icon:`<img src="https://static-00.iconduck.com/assets.00/ms-excel-icon-1024x1014-pg0ryoeb.png" />`
+      cssClasses: ["bg-[#217346]", "bold", "text-white", "hover:bg-[#2e9c60]", "text-[14px]", "py-[5px]", "mx-[5px]", "rounded-full", "max-w-max"],
+      icon: `<img src="https://static-00.iconduck.com/assets.00/ms-excel-icon-1024x1014-pg0ryoeb.png" />`,
     },
   ];
 

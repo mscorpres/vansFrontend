@@ -124,7 +124,7 @@ const CreateSalesOrderPage = () => {
       form.setValue("billFrom.billFromId", header?.bill_from?.billing?.code);
       setShipStateCode(header?.bill_from?.state?.code);
       setBillStateCode(header?.customer?.state?.code);
-      if (header?.customer?.state?.code == 100) {
+      if (header?.customer?.state?.code == 96) {
         setIsImport("Import");
       } else {
         setIsImport("");
@@ -197,7 +197,7 @@ const CreateSalesOrderPage = () => {
           shouldDirty: true,
         });
         setBillStateCode(billingAddress.state?.stateCode);
-        if (billingAddress.state?.stateCode == 100) {
+        if (billingAddress.state?.stateCode == 96) {
           setIsImport("Import");
         } else {
           setIsImport("");
