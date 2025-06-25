@@ -325,6 +325,11 @@ export const columnDefs: ColDef<any>[] = [
     filter: "agTextColumnFilter",
   },
   {
+    headerName: "Shipment Status",
+    field: "shipment_status",
+    valueGetter: (params) => (params?.data?.shipment_status === "Y" ? "Active" : params?.data?.shipment_status === "C" ? "Cancelled" : "Pending"),
+  },
+  {
     headerName: "Shipment Date",
     field: "shipment_date",
     filter: "agNumberColumnFilter",
@@ -350,11 +355,7 @@ export const columnDefs: ColDef<any>[] = [
     field: "approval_status",
     valueGetter: (params) => (params?.data?.approval_status === "A" ? "Approved" : "Pending"),
   },
-  {
-    headerName: "Shipment Status",
-    field: "shipment_status",
-    valueGetter: (params) => (params?.data?.shipment_status === "Y" ? "Active" : params?.data?.shipment_status === "C" ? "Cancelled" : "Pending"),
-  },
+  
   {
     headerName: "Material Status",
     field: "material_status",

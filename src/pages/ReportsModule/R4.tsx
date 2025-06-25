@@ -301,7 +301,7 @@ const R4 = () => {
           ref={gridRef}
           rowData={rowData}
           columnDefs={columnDefs}
-          defaultColDef={{ filter: true, sortable: true, floatingFilter: true }}
+          defaultColDef={{ filter: true, sortable: true, floatingFilter: false }}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           enableCellTextSelection={true}
