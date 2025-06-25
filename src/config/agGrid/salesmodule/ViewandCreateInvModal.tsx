@@ -98,6 +98,19 @@ const supplyTypeW = [
   { code: "I", desc: "Inward" },
 ];
 
+const transportationMode = [
+  { value: "1", label: "Road" },
+  { value: "2", label: "Rail" },
+  { value: "3", label: "Air" },
+  { value: "4", label: "Ship" },
+  { value: "5", label: "In Transit" },
+];
+
+const vehicleTypeOptions = [
+  { label: "Regular", value: "R" },
+  { label: "ODC(Over Dimensional Cargo)", value: "O" },
+];
+
 const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, onClose, sellRequestDetails, loading, form, onSave }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -134,52 +147,76 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
   const shipmentIdextracted = data?.soId;
 
   const itemCGSTs = sellRequestDetails?.materialData?.map((item) => parseFloat(item?.cgstRate) || 0);
-  const itemSGSTs = sellRequestDetails?.materialData?.map((item) => parseFloat(item.sgstRate) || 0);
-  const itemIGSTs = sellRequestDetails?.materialData?.map((item) => parseFloat(item.igstRate) || 0);
+  const itemSGSTs = sellRequestDetails?.materialData?.map((item) => parseFloat(item?.sgstRate) || 0);
+  const itemIGSTs = sellRequestDetails?.materialData?.map((item) => parseFloat(item?.igstRate) || 0);
 
   const totalValue = sellRequestDetails?.materialData?.reduce((acc, item) => acc + (parseFloat(item.rate) ?? 0) * (parseFloat(item.qty) ?? 0), 0) ?? 0;
 
-  const totalCGST = itemCGSTs?.reduce((acc, value) => acc + value, 0);
-  const totalSGST = itemSGSTs?.reduce((acc, value) => acc + value, 0);
-  const totalIGST = itemIGSTs?.reduce((acc, value) => acc + value, 0);
+  const totalCGST = itemCGSTs?.reduce((acc, value) => acc + value, 0) || 0;
+  const totalSGST = itemSGSTs?.reduce((acc, value) => acc + value, 0) || 0;
+  const totalIGST = itemIGSTs?.reduce((acc, value) => acc + value, 0) || 0;
 
   const handleSave = () => {
     form
       .validateFields()
       .then((values) => {
-        onSave(values); // Call onSave but don't close the dialog here
+        onSave(values);
       })
       .catch((info) => {
-        console.log("Validation Failed:", info); // Log validation errors, dialog stays open
+        console.log("Validation Failed:", info);
       });
   };
+
   const handleSelectClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  const handleSameAsBillTo = () => {
+    const billToLocation = form.getFieldValue("billToLocation");
+    if (billToLocation) {
+      form.setFieldsValue({ shipToLocation: billToLocation });
+    }
+  };
+
+  const handleSameAsShipTo = () => {
+    const shipToLocation = form.getFieldValue("shipToLocation");
+    if (shipToLocation) {
+      form.setFieldsValue({ billToLocation: shipToLocation });
+    }
   };
 
   return (
     <Sheet open={visible} onOpenChange={onClose}>
       <SheetHeader />
-      <SheetContent side={"bottom"} className="bg-gray-50">
+      <SheetContent side="bottom" className="bg-gray-100">
         {loading && <FullPageLoading />}
-        <div className="max-h-[calc(100vh-140px)] mx-auto py-6 animate-fade-in flex flex-col h-screen">
-          <SheetTitle className="text-2xl font-bold text-gray-800 mb-6">
-            {sellRequestDetails ? `Invoice: ${sellRequestDetails?.headerData?.invoiceNo} | ${shipmentIdextracted}` : "Create New Invoice"}
+        <div className="max-h-[calc(100vh-80px)] mx-auto p-4 sm:p-6 animate-fade-in flex flex-col h-screen">
+          <SheetTitle className="text-2xl font-bold text-center text-gray-800 mb-4">
+            {sellRequestDetails ? (
+              <>
+                Invoice for:{" "}
+                <span className="text-blue-600">{sellRequestDetails?.headerData?.invoiceNo}</span>{" "}
+                |{" "}
+                <span className="text-green-600">{shipmentIdextracted}</span>
+              </>
+            ) : (
+              "Create New Invoice"
+            )}
           </SheetTitle>
 
           <div ref={scrollContainerRef} className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-teal-500 scrollbar-track-gray-200 max-h-[calc(100vh-100px)]">
-            <div className="space-y-8 min-h-[1500px]">
+            <div className="space-y-8">
               {/* View Details: Header Data */}
               {sellRequestDetails ? (
-                <Card className="shadow-sm rounded-lg">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-gray-700">Invoice Details</CardTitle>
+                <Card className="shadow-lg rounded-xl bg-white">
+                  <CardHeader className="bg-gray-50 rounded-t-xl">
+                    <CardTitle className="text-xl font-semibold text-gray-700">Invoice Details</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                      <div className="bg-white p-4 rounded-md shadow-sm">
-                        <h3 className="text-md font-semibold text-gray-600 mb-2">Bill To</h3>
-                        <div className="text-sm text-gray-500 space-y-1">
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h3 className="text-lg font-semibold text-gray-600 mb-3">Bill To</h3>
+                        <div className="text-sm text-gray-600 space-y-2">
                           <p>
                             <span className="font-medium">Client:</span> {data?.billTo?.custName || "N/A"}
                           </p>
@@ -194,9 +231,9 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white p-4 rounded-md shadow-sm">
-                        <h3 className="text-md font-semibold text-gray-600 mb-2">Bill From</h3>
-                        <div className="text-sm text-gray-500 space-y-1">
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h3 className="text-lg font-semibold text-gray-600 mb-3">Bill From</h3>
+                        <div className="text-sm text-gray-600 space-y-2">
                           <p>
                             <span className="font-medium">PAN:</span> {data?.billFrom?.pan || "N/A"}
                           </p>
@@ -204,13 +241,13 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                             <span className="font-medium">GSTIN:</span> {data?.billFrom?.gstin || "N/A"}
                           </p>
                           <p>
-                            <span className="font-medium">Address:</span> {(data?.billFrom?.address1 ?? "") + " " + (data?.billFrom?.address2 ?? "N/A")}
+                            <span className="font-medium">Address:</span> {(data?.billFrom?.address1 ?? "") + " " + (data?.billFrom?.address2 || "N/A")}
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white p-4 rounded-md shadow-sm">
-                        <h3 className="text-md font-semibold text-gray-600 mb-2">Ship To</h3>
-                        <div className="text-sm text-gray-500 space-y-1">
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h3 className="text-lg font-semibold text-gray-600 mb-3">Ship To</h3>
+                        <div className="text-sm text-gray-600 space-y-2">
                           <p>
                             <span className="font-medium">Company:</span> {data?.shipTo?.company || "N/A"}
                           </p>
@@ -225,9 +262,9 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white p-4 rounded-md shadow-sm">
-                        <h3 className="text-md font-semibold text-gray-600 mb-2">Tax Details</h3>
-                        <div className="text-sm text-gray-500 space-y-1">
+                      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h3 className="text-lg font-semibold text-gray-600 mb-3">Tax Details</h3>
+                        <div className="text-sm text-gray-600 space-y-2">
                           <p>
                             <span className="font-medium">Sub-Total Before Taxes:</span> {totalValue?.toFixed(2) || "0.00"}
                           </p>
@@ -249,18 +286,18 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                   </CardContent>
                 </Card>
               ) : (
-                <Card className="shadow-sm rounded-lg">
-                  <CardContent className="p-4 text-gray-500">No invoice details available. Please fill out the form below to create a new invoice.</CardContent>
+                <Card className="shadow-lg rounded-xl bg-white">
+                  <CardContent className="p-6 text-gray-600">No invoice details available. Please fill out the form below to create a new invoice.</CardContent>
                 </Card>
               )}
 
               {/* Material Data */}
               {sellRequestDetails && (
-                <Card className="shadow-sm rounded-lg">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-gray-700">Material List</CardTitle>
+                <Card className="shadow-lg rounded-xl bg-white">
+                  <CardHeader className="bg-gray-50 rounded-t-xl">
+                    <CardTitle className="text-xl font-semibold text-gray-700">Material List</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-6">
                     <div className="ag-theme-quartz h-64">
                       <AgGridReact
                         rowData={sellRequestDetails?.materialData}
@@ -275,22 +312,43 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
               )}
 
               {/* Input Fields */}
-              <Card className="shadow-sm rounded-lg">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-gray-700">{sellRequestDetails ? "Edit Invoice Details" : "Add Invoice Details"}</CardTitle>
+              <Card className="shadow-lg rounded-xl bg-white">
+                <CardHeader className="bg-gray-50 rounded-t-xl">
+                  <CardTitle className="text-xl font-semibold text-gray-700">{sellRequestDetails ? "Edit Invoice Details" : "Add Invoice Details"}</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <Form form={form} layout="vertical" className="space-y-6">
-                    <div className="text-md font-semibold text-gray-600 border-b border-gray-200 pb-2">Basic Details</div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-3">Basic Details</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       <Form.Item name="boxes" label="No of Boxes" rules={[{ required: false, message: "Please enter number of boxes" }]}>
-                        <Input type="number" placeholder="Enter number of boxes" className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500" autoFocus={false} />
+                        <Input
+                          type="number"
+                          placeholder="Enter number of boxes"
+                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                          autoFocus={false}
+                        />
                       </Form.Item>
                       <Form.Item name="freightCharges" label="Freight Charges" rules={[{ required: false, message: "Please enter freight charges" }]}>
-                        <Input type="number" placeholder="Enter freight charges" className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500" autoFocus={false} />
+                        <Input
+                          type="number"
+                          placeholder="Enter freight charges"
+                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                          autoFocus={false}
+                        />
                       </Form.Item>
-                      <Form.Item name="gstRateFreight" label="GST Rate for Freight (%)" rules={[{ required: false, message: "Please select GST rate" }]}>
-                        <Select placeholder="Select GST rate" className="rounded-md" popupClassName="rounded-md" onClick={handleSelectClick} dropdownStyle={{ zIndex: 2000 }}>
+                      <Form.Item
+                        name="gstRateFreight"
+                        label="GST Rate for Freight (%)"
+                        rules={[{ required: false, message: "Please select GST rate" }]}
+                       
+                      >
+                        <Select
+                          placeholder="Select GST rate"
+                          className="rounded-lg"
+                          popupClassName="rounded-lg"
+                          onClick={handleSelectClick}
+                          dropdownStyle={{ zIndex: 2000 }}
+                        >
                           <Select.Option value="0">0%</Select.Option>
                           <Select.Option value="5">5%</Select.Option>
                           <Select.Option value="12">12%</Select.Option>
@@ -298,8 +356,19 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                           <Select.Option value="28">28%</Select.Option>
                         </Select>
                       </Form.Item>
-                      <Form.Item name="documentType" label="Document Type" rules={[{ required: true, message: "Please select document type" }]}>
-                        <Select placeholder="Select document type" className="rounded-md" popupClassName="rounded-md" onClick={handleSelectClick} dropdownStyle={{ zIndex: 2000 }}>
+                      <Form.Item
+                        name="documentType"
+                        label="Document Type"
+                        rules={[{ required: true, message: "Please select document type" }]}
+                        initialValue="INV"
+                      >
+                        <Select
+                          placeholder="Select document type"
+                          className="rounded-lg"
+                          popupClassName="rounded-lg"
+                          onClick={handleSelectClick}
+                          dropdownStyle={{ zIndex: 2000 }}
+                        >
                           {docType.map((type) => (
                             <Select.Option key={type.code} value={type.code}>
                               {type.desc}
@@ -307,8 +376,19 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                           ))}
                         </Select>
                       </Form.Item>
-                      <Form.Item name="supplyType" label="Supply Type" rules={[{ required: true, message: "Please select supply type" }]}>
-                        <Select placeholder="Select supply type" className="rounded-md" popupClassName="rounded-md" onClick={handleSelectClick} dropdownStyle={{ zIndex: 2000 }}>
+                      <Form.Item
+                        name="supplyType"
+                        label="Supply Type"
+                        rules={[{ required: true, message: "Please select supply type" }]}
+                        initialValue="B2B"
+                      >
+                        <Select
+                          placeholder="Select supply type"
+                          className="rounded-lg"
+                          popupClassName="rounded-lg"
+                          onClick={handleSelectClick}
+                          dropdownStyle={{ zIndex: 2000 }}
+                        >
                           {supplyType.map((type) => (
                             <Select.Option key={type.code} value={type.code}>
                               {type.desc}
@@ -316,8 +396,19 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                           ))}
                         </Select>
                       </Form.Item>
-                      <Form.Item name="supplyTypeW" label="Sub Type" rules={[{ required: true, message: "Please select sub type" }]}>
-                        <Select placeholder="Select sub type" className="rounded-md" popupClassName="rounded-md" onClick={handleSelectClick} dropdownStyle={{ zIndex: 2000 }}>
+                      <Form.Item
+                        name="supplyTypeW"
+                        label="Sub Type"
+                        rules={[{ required: true, message: "Please select sub type" }]}
+                        initialValue="O"
+                      >
+                        <Select
+                          placeholder="Select sub type"
+                          className="rounded-lg"
+                          popupClassName="rounded-lg"
+                          onClick={handleSelectClick}
+                          dropdownStyle={{ zIndex: 2000 }}
+                        >
                           {supplyTypeW.map((type) => (
                             <Select.Option key={type.code} value={type.code}>
                               {type.desc}
@@ -325,8 +416,19 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                           ))}
                         </Select>
                       </Form.Item>
-                      <Form.Item name="transactionType" label="Transaction Type" rules={[{ required: true, message: "Please select transaction type" }]}>
-                        <Select placeholder="Select transaction type" className="rounded-md" popupClassName="rounded-md" onClick={handleSelectClick} dropdownStyle={{ zIndex: 2000 }}>
+                      <Form.Item
+                        name="transactionType"
+                        label="Transaction Type"
+                        rules={[{ required: true, message: "Please select transaction type" }]}
+                        initialValue="1"
+                      >
+                        <Select
+                          placeholder="Select transaction type"
+                          className="rounded-lg"
+                          popupClassName="rounded-lg"
+                          onClick={handleSelectClick}
+                          dropdownStyle={{ zIndex: 2000 }}
+                        >
                           {transactionType.map((type) => (
                             <Select.Option key={type.code} value={type.code}>
                               {type.desc}
@@ -336,76 +438,157 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                       </Form.Item>
                     </div>
 
-                    <div className="text-md font-semibold text-gray-600 border-b border-gray-200 pb-2">Location Details</div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Form.Item name="billFromLocation" label="Bill From Location" rules={[{ required: true, message: "Please enter bill from location" }]}>
-                        <Input.TextArea
-                          rows={2}
-                          placeholder="Enter bill from location"
-                          className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
-                          style={{ resize: "none" }}
-                          autoFocus={false}
-                        />
-                      </Form.Item>
-                      <Form.Item name="billToLocation" label="Bill To Location" rules={[{ required: true, message: "Please enter bill to location" }]}>
-                        <Input.TextArea
-                          rows={2}
-                          placeholder="Enter bill to location"
-                          className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
-                          style={{ resize: "none" }}
-                          autoFocus={false}
-                        />
-                      </Form.Item>
-                      <Form.Item name="dispatchFromLocation" label="Dispatch From Location" rules={[{ required: true, message: "Please enter dispatch from location" }]}>
-                        <Input.TextArea
-                          rows={2}
-                          placeholder="Enter dispatch from location"
-                          className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
-                          style={{ resize: "none" }}
-                          autoFocus={false}
-                        />
-                      </Form.Item>
-                      <Form.Item name="shipToLocation" label="Ship To Location" rules={[{ required: true, message: "Please enter ship to location" }]}>
-                        <Input.TextArea
-                          rows={2}
-                          placeholder="Enter ship to location"
-                          className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
-                          style={{ resize: "none" }}
-                          autoFocus={false}
-                        />
-                      </Form.Item>
+                    <div className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-3">Location Details</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div>
+                        <Form.Item name="billToLocation" label="Bill To Location" rules={[{ required: true, message: "Please enter bill to location" }]}>
+                          <Input.TextArea
+                            rows={2}
+                            placeholder="Enter bill to location"
+                            className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                            style={{ resize: "none" }}
+                            autoFocus={false}
+                          />
+                        </Form.Item>
+                        <Button
+                          variant="link"
+                          onClick={handleSameAsShipTo}
+                          className="text-teal-600 hover:text-teal-700 p-0 h-auto"
+                        >
+                          Same as Ship To
+                        </Button>
+                      </div>
+                      <div>
+                        <Form.Item name="shipToLocation" label="Ship To Location" rules={[{ required: true, message: "Please enter ship to location" }]}>
+                          <Input.TextArea
+                            rows={2}
+                            placeholder="Enter ship to location"
+                            className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                            style={{ resize: "none" }}
+                            autoFocus={false}
+                          />
+                        </Form.Item>
+                        <Button
+                          variant="link"
+                          onClick={handleSameAsBillTo}
+                          className="text-teal-600 hover:text-teal-700 p-0 h-auto"
+                        >
+                          Same as Bill To
+                        </Button>
+                      </div>
                     </div>
 
-                    <div className="text-md font-semibold text-gray-600 border-b border-gray-200 pb-2">Dispatch Details</div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-3">Dispatch Details</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <Form.Item name="dispatchDocNo" label="Dispatch Doc No" rules={[{ required: false, message: "Please enter dispatch document number" }]}>
-                        <Input placeholder="Enter dispatch document number" className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500" autoFocus={false} />
+                        <Input
+                          placeholder="Enter dispatch document number"
+                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                          autoFocus={false}
+                        />
                       </Form.Item>
                       <Form.Item name="dispatchThrough" label="Dispatch Through" rules={[{ required: false, message: "Please enter dispatch through" }]}>
-                        <Input placeholder="Enter dispatch through (e.g., Courier, Truck)" className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500" autoFocus={false} />
+                        <Input
+                          placeholder="Enter dispatch through (e.g., Courier, Truck)"
+                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                          autoFocus={false}
+                        />
                       </Form.Item>
                       <Form.Item name="deliveryNote" label="Delivery Note">
-                        <Input placeholder="Enter delivery note" className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500" autoFocus={false} />
+                        <Input
+                          placeholder="Enter delivery note"
+                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                          autoFocus={false}
+                        />
                       </Form.Item>
                       <Form.Item name="deliveryDate" label="Delivery Date" rules={[{ required: false, message: "Please enter delivery date" }]}>
-                        <Input type="date" className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500" autoFocus={false} />
+                        <Input
+                          type="date"
+                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                          autoFocus={false}
+                        />
                       </Form.Item>
                       <Form.Item name="remark" label="Remark">
                         <Input.TextArea
-                          rows={2}
+                          rows= "2"
                           placeholder="Enter remarks"
-                          className="rounded-md border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
                           style={{ resize: "none" }}
                           autoFocus={false}
                         />
                       </Form.Item>
                     </div>
 
-                    <div className="flex justify-end gap-4">
-                      <Button variant="outline" onClick={onClose} className="border-gray-300 text-gray-600 hover:bg-gray-100 rounded-md px-6 py-2">
+                    <div className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-3">Transporter Details</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <Form.Item
+                        name="transporterMode"
+                        label="Transporter Mode"
+                        rules={[{ required: false, message: "Please select transporter mode" }]}
+                        initialValue="1"
+                      >
+                        <Select
+                          placeholder="Select transporter mode"
+                          className="rounded-lg"
+                          popupClassName="rounded-lg"
+                          onClick={handleSelectClick}
+                          dropdownStyle={{ zIndex: 2000 }}
+                        >
+                          {transportationMode.map((mode) => (
+                            <Select.Option key={mode.value} value={mode.value}>
+                              {mode.label}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item
+                        name="vehicleType"
+                        label="Vehicle Type"
+                        rules={[{ required: false, message: "Please select vehicle type" }]}
+                        initialValue="R"
+                      >
+                        <Select
+                          placeholder="Select vehicle type"
+                          className="rounded-lg"
+                          popupClassName="rounded-lg"
+                          onClick={handleSelectClick}
+                          dropdownStyle={{ zIndex: 2000 }}
+                        >
+                          {vehicleTypeOptions.map((type) => (
+                            <Select.Option key={type.value} value={type.value}>
+                              {type.label}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item name="vehicleNo" label="Vehicle No." rules={[{ required: false, message: "Please enter vehicle number" }]}>
+                        <Input
+                          placeholder="Enter vehicle number"
+                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                          autoFocus={false}
+                        />
+                      </Form.Item>
+                      <Form.Item name="transportDoc" label="Transport Doc" rules={[{ required: false, message: "Please enter transport document" }]}>
+                        <Input
+                          placeholder="Enter transport document"
+                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                          autoFocus={false}
+                        />
+                      </Form.Item>
+                    </div>
+
+                    <div className="flex justify-end gap-4 mt-6">
+                      <Button
+                        variant="outline"
+                        onClick={onClose}
+                        className="border-gray-300 text-gray-600 hover:bg-gray-100 rounded-lg px-6 py-2 transition-all duration-200"
+                      >
                         Cancel
                       </Button>
-                      <Button onClick={handleSave} className="bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 rounded-md px-6 py-2">
+                      <Button
+                        onClick={handleSave}
+                        className="bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 rounded-lg px-6 py-2 transition-all duration-200"
+                      >
                         Create Invoice
                       </Button>
                     </div>
@@ -414,76 +597,76 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
               </Card>
             </div>
           </div>
-        </div>
 
-        <style jsx>{`
-          .scrollbar-thin {
-            scrollbar-width: thin !important;
-            scrollbar-color: #14b8a6 #e5e7eb !important;
-          }
-          .scrollbar-thin::-webkit-scrollbar {
-            width: 8px !important;
-            height: 8px !important;
-          }
-          .scrollbar-thin::-webkit-scrollbar-track {
-            background: #e5e7eb !important;
-            border-radius: 4px !important;
-          }
-          .scrollbar-thin::-webkit-scrollbar-thumb {
-            background: #14b8a6 !important;
-            border-radius: 4px !important;
-          }
-          .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-            background: #0d9488 !important;
-          }
-          .ag-theme-quartz {
-            --ag-background-color: #fff;
-            --ag-header-background-color: #f9fafb;
-            --ag-row-hover-background-color: #e0f2fe;
-            --ag-border-color: #e5e7eb;
-            --ag-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            --ag-font-size: 14px;
-          }
-          .ag-theme-quartz .ag-header {
-            border-bottom: 1px solid #e5e7eb;
-          }
-          .ag-theme-quartz .ag-row {
-            border-bottom: 1px solid #e5e7eb;
-          }
-          .ag-theme-quartz .ag-row-odd {
-            background-color: #f9fafb;
-          }
-          .ag-theme-quartz .ag-body-viewport::-webkit-scrollbar,
-          .ag-theme-quartz .ag-body-horizontal-scroll-viewport::-webkit-scrollbar {
-            width: 8px !important;
-            height: 8px !important;
-          }
-          .ag-theme-quartz .ag-body-viewport::-webkit-scrollbar-track,
-          .ag-theme-quartz .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-track {
-            background: #e5e7eb !important;
-            border-radius: 4px !important;
-          }
-          .ag-theme-quartz .ag-body-viewport::-webkit-scrollbar-thumb,
-          .ag-theme-quartz .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb {
-            background: #14b8a6 !important;
-            border-radius: 4px !important;
-          }
-          .ag-theme-quartz .ag-body-viewport::-webkit-scrollbar-thumb:hover,
-          .ag-theme-quartz .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb:hover {
-            background: #0d9488 !important;
-          }
-          .ag-theme-quartz .ag-body-viewport,
-          .ag-theme-quartz .ag-body-horizontal-scroll-viewport {
-            scrollbar-width: thin !important;
-            scrollbar-color: #14b8a6 #e5e7eb !important;
-          }
-          .ant-select-dropdown {
-            z-index: 2000 !important;
-            pointer-events: auto !important;
-          }
-        `}</style>
+          <style jsx>{`
+            .scrollbar-thin {
+              scrollbar-width: thin !important;
+              scrollbar-color: #14b8a6 #e5e7eb !important;
+            }
+            .scrollbar-thin::-webkit-scrollbar {
+              width: 8px !important;
+              height: 8px !important;
+            }
+            .scrollbar-thin::-webkit-scrollbar-track {
+              background: #e5e7eb !important;
+              border-radius: 4px !important;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+              background: #14b8a6 !important;
+              border-radius: 4px !important;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+              background: #0d9488 !important;
+            }
+            .ag-theme-quartz {
+              --ag-background-color: #fff;
+              --ag-header-background-color: #f9fafb;
+              --ag-row-hover-background-color: #e0f2fe;
+              --ag-border-color: #e5e7eb;
+              --ag-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              --ag-font-size: 14px;
+            }
+            .ag-theme-quartz .ag-header {
+              border-bottom: 1px solid #e5e7eb;
+            }
+            .ag-theme-quartz .ag-row {
+              border-bottom: 1px solid #e5e7eb;
+            }
+            .ag-theme-quartz .ag-row-odd {
+              background-color: #f9fafb;
+            }
+            .ag-theme-quartz .ag-body-viewport::-webkit-scrollbar,
+            .ag-theme-quartz .ag-body-horizontal-scroll-viewport::-webkit-scrollbar {
+              width: 8px !important;
+              height: 8px !important;
+            }
+            .ag-theme-quartz .ag-body-viewport::-webkit-scrollbar-track,
+            .ag-theme-quartz .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-track {
+              background: #e5e7eb !important;
+              border-radius: 4px !important;
+            }
+            .ag-theme-quartz .ag-body-viewport::-webkit-scrollbar-thumb,
+            .ag-theme-quartz .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb {
+              background: #14b8a6 !important;
+              border-radius: 4px !important;
+            }
+            .ag-theme-quartz .ag-body-viewport::-webkit-scrollbar-thumb:hover,
+            .ag-theme-quartz .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb:hover {
+              background: #0d9488 !important;
+            }
+            .ag-theme-quartz .ag-body-viewport,
+            .ag-theme-quartz .ag-body-horizontal-scroll-viewport {
+              scrollbar-width: thin !important;
+              scrollbar-color: #14b8a6 #e5e7eb !important;
+            }
+            .ant-select-dropdown {
+              z-index: 2000 !important;
+              pointer-events: auto !important;
+            }
+          `}</style>
+        </div>
+        <SheetFooter />
       </SheetContent>
-      <SheetFooter />
     </Sheet>
   );
 };

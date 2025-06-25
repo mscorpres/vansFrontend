@@ -44,7 +44,7 @@ const ActionMenu: React.FC<any> = ({ row }) => {
       printSellInvoice({ invoiceNo: orderId, printType: printInvType })
     ).then((response: any) => {
       if (response?.payload?.success) {
-        downloadFunction(response?.payload?.data.buffer.data,
+        printFunction(response?.payload?.data.buffer.data,
           response?.payload?.data.filename);
       }
     });

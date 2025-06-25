@@ -166,6 +166,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       dispatchThrough: values.dispatchThrough,
       deliveryNote: values.deliveryNote,
       deliveryDate: values.deliveryDate,
+      transporterMode: values.transporterMode,
+      vehicleType: values.vehicleType,
+      vehicleNo: values.vehicleNo,
+      transportDoc: values.transportDoc,
+
     };
 
     dispatch(createInvoice(payload)).then((resultAction: any) => {

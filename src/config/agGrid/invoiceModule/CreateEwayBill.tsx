@@ -125,6 +125,7 @@ const fetchCountries = async (inputValue: string) => {
     dispatch(action({ shipment_id: shipId })).then((res: any) => {
       if (res.payload?.success) {
         var data = res.payload?.data;
+        form.setValue("ewaybillDetails.transDistance", data?.transporterDetails?.transDistance || "0");
         console.log("data", data);
         setTotalSum(data?.total_amount);
         form.setValue("header.documentNo", data?.documentNo);
@@ -184,6 +185,14 @@ const fetchCountries = async (inputValue: string) => {
         form.setValue("shipTo.state", data?.ship_to?.state?.state_code);
         form.setValue("shipTo.addressLine1", data?.ship_to?.address1);
         form.setValue("shipTo.addressLine2", data?.ship_to?.address2);
+
+//part b
+        form.setValue("ewaybillDetails.transMode", data?.transporterMode || "");
+      form.setValue("ewaybillDetails.vehicleType", data?.vehicleType || "");
+      form.setValue("ewaybillDetails.vehicleNo", data?.vehicleNo || "");
+      form.setValue("ewaybillDetails.transporterDocNo", data?.transportDoc || "");
+      // Set Transport Date to Current Date
+      form.setValue("ewaybillDetails.transporterDate", dayjs().format("DD-MM-YYYY"));
       
       }
     });
@@ -1863,42 +1872,47 @@ const onSubmit = (payload: any) => {
                       />
                     </div>
                     <div>
-                      <FormField
-                        control={form.control}
-                        name="ewaybillDetails.transporterDate"
-                        render={() => (
-                          <FormItem className="pl-[10px] w-full flex flex-col">
-                            <FormLabel className={LableStyle}>
-                              Transport Date
-                              {isEwayBill && (
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
-                              )}
-                            </FormLabel>
-                            <FormControl>
-                              <Space direction="vertical" size={12}>
-                                <DatePicker
-                                  // className="border-0 border-b-2 border-black py-[10px] w-[450px] "
-                                  className={DatePickerStyle}
-                                  format="DD-MM-YYYY"
-                                  onChange={(value: Dayjs | null) => {
-                                    const formattedDate = value
-                                      ? value.format("DD-MM-YYYY")
-                                      : "";
-                                    form.setValue(
-                                      "ewaybillDetails.transporterDate",
-                                      formattedDate
-                                    );
-                                  }}
-                                />
-                              </Space>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+    <FormField
+      control={form.control}
+      name="ewaybillDetails.transporterDate"
+      render={() => (
+        <FormItem className="pl-[10px] w-full flex flex-col">
+          <FormLabel className={LableStyle}>
+            Transport Date
+            {isEwayBill && (
+              <span className="pl-1 text-red-500 font-bold">*</span>
+            )}
+          </FormLabel>
+          <FormControl>
+            <Space direction="vertical" size={12}>
+              <DatePicker
+                className={DatePickerStyle}
+                format="DD-MM-YYYY"
+                onChange={(value: Dayjs | null) => {
+                  const formattedDate = value
+                    ? value.format("DD-MM-YYYY")
+                    : "";
+                  form.setValue(
+                    "ewaybillDetails.transporterDate",
+                    formattedDate
+                  );
+                }}
+                value={
+                  form.getValues("ewaybillDetails.transporterDate")
+                    ? dayjs(
+                        form.getValues("ewaybillDetails.transporterDate"),
+                        "DD-MM-YYYY"
+                      )
+                    : dayjs() // Default to current date
+                }
+              />
+            </Space>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  </div>
                   </div>
                 </CardContent>
               </Card>
