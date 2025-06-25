@@ -186,13 +186,17 @@ const fetchCountries = async (inputValue: string) => {
         form.setValue("shipTo.addressLine1", data?.ship_to?.address1);
         form.setValue("shipTo.addressLine2", data?.ship_to?.address2);
 
-//part b
+          //part b
         form.setValue("ewaybillDetails.transMode", data?.transporterMode || "");
       form.setValue("ewaybillDetails.vehicleType", data?.vehicleType || "");
       form.setValue("ewaybillDetails.vehicleNo", data?.vehicleNo || "");
       form.setValue("ewaybillDetails.transporterDocNo", data?.transportDoc || "");
       // Set Transport Date to Current Date
       form.setValue("ewaybillDetails.transporterDate", dayjs().format("DD-MM-YYYY"));
+
+      //PART a
+      form.setValue("ewaybillDetails.transporterName", data?.transporterName || "");
+      form.setValue("ewaybillDetails.transporterId", data?.transporterId || "");
       
       }
     });

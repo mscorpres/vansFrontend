@@ -191,7 +191,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
       <SheetContent side="bottom" className="bg-gray-100">
         {loading && <FullPageLoading />}
         <div className="max-h-[calc(100vh-80px)] mx-auto p-4 sm:p-6 animate-fade-in flex flex-col h-screen">
-          <SheetTitle className="text-2xl font-bold text-center text-gray-800 mb-4">
+          <SheetTitle className="text-xl font-bold text-center text-gray-800 mb-4">
             {sellRequestDetails ? (
               <>
                 Invoice for:{" "}
@@ -208,7 +208,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
             <div className="space-y-8">
               {/* View Details: Header Data */}
               {sellRequestDetails ? (
-                <Card className="shadow-lg rounded-xl bg-white">
+                <Card className="shadow-none rounded-xl bg-white">
                   <CardHeader className="bg-gray-50 rounded-t-xl">
                     <CardTitle className="text-xl font-semibold text-gray-700">Invoice Details</CardTitle>
                   </CardHeader>
@@ -293,7 +293,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
 
               {/* Material Data */}
               {sellRequestDetails && (
-                <Card className="shadow-lg rounded-xl bg-white">
+                <Card className="shadow-none rounded-xl bg-white">
                   <CardHeader className="bg-gray-50 rounded-t-xl">
                     <CardTitle className="text-xl font-semibold text-gray-700">Material List</CardTitle>
                   </CardHeader>
@@ -520,62 +520,93 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                     </div>
 
                     <div className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-3">Transporter Details</div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <Form.Item
-                        name="transporterMode"
-                        label="Transporter Mode"
-                        rules={[{ required: false, message: "Please select transporter mode" }]}
-                        initialValue="1"
-                      >
-                        <Select
-                          placeholder="Select transporter mode"
-                          className="rounded-lg"
-                          popupClassName="rounded-lg"
-                          onClick={handleSelectClick}
-                          dropdownStyle={{ zIndex: 2000 }}
+                    <div className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-3">Transporter Details</div>
+                    <div className="space-y-4">
+                      <div className="text-md font-semibold text-gray-600">Part A</div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <Form.Item
+                          name="transporterName"
+                          label="Transporter Name"
+                          rules={[{ required: false, message: "Please enter transporter name" }]}
                         >
-                          {transportationMode.map((mode) => (
-                            <Select.Option key={mode.value} value={mode.value}>
-                              {mode.label}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                      <Form.Item
-                        name="vehicleType"
-                        label="Vehicle Type"
-                        rules={[{ required: false, message: "Please select vehicle type" }]}
-                        initialValue="R"
-                      >
-                        <Select
-                          placeholder="Select vehicle type"
-                          className="rounded-lg"
-                          popupClassName="rounded-lg"
-                          onClick={handleSelectClick}
-                          dropdownStyle={{ zIndex: 2000 }}
+                          <Input
+                            placeholder="Enter transporter name"
+                            className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                            autoFocus={false}
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          name="transporterId"
+                          label="Transporter ID"
+                          rules={[{ required: false, message: "Please enter transporter ID" }]}
                         >
-                          {vehicleTypeOptions.map((type) => (
-                            <Select.Option key={type.value} value={type.value}>
-                              {type.label}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                      <Form.Item name="vehicleNo" label="Vehicle No." rules={[{ required: false, message: "Please enter vehicle number" }]}>
-                        <Input
-                          placeholder="Enter vehicle number"
-                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
-                          autoFocus={false}
-                        />
-                      </Form.Item>
-                      <Form.Item name="transportDoc" label="Transport Doc" rules={[{ required: false, message: "Please enter transport document" }]}>
-                        <Input
-                          placeholder="Enter transport document"
-                          className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
-                          autoFocus={false}
-                        />
-                      </Form.Item>
+                          <Input
+                            placeholder="Enter transporter ID"
+                            className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                            autoFocus={false}
+                          />
+                        </Form.Item>
+                      </div>
+
+                      <div className="text-md font-semibold text-gray-600">Part B</div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <Form.Item
+                          name="transporterMode"
+                          label="Transporter Mode"
+                          rules={[{ required: false, message: "Please select transporter mode" }]}
+                          initialValue="1"
+                        >
+                          <Select
+                            placeholder="Select transporter mode"
+                            className="rounded-lg"
+                            popupClassName="rounded-lg"
+                            onClick={handleSelectClick}
+                            dropdownStyle={{ zIndex: 2000 }}
+                          >
+                            {transportationMode.map((mode) => (
+                              <Select.Option key={mode.value} value={mode.value}>
+                                {mode.label}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                        <Form.Item
+                          name="vehicleType"
+                          label="Vehicle Type"
+                          rules={[{ required: false, message: "Please select vehicle type" }]}
+                          initialValue="R"
+                        >
+                          <Select
+                            placeholder="Select vehicle type"
+                            className="rounded-lg"
+                            popupClassName="rounded-lg"
+                            onClick={handleSelectClick}
+                            dropdownStyle={{ zIndex: 2000 }}
+                          >
+                            {vehicleTypeOptions.map((type) => (
+                              <Select.Option key={type.value} value={type.value}>
+                                {type.label}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                        <Form.Item name="vehicleNo" label="Vehicle No." rules={[{ required: false, message: "Please enter vehicle number" }]}>
+                          <Input
+                            placeholder="Enter vehicle number"
+                            className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                            autoFocus={false}
+                          />
+                        </Form.Item>
+                        <Form.Item name="transportDoc" label="Transport Doc" rules={[{ required: false, message: "Please enter transport document" }]}>
+                          <Input
+                            placeholder="Enter transport document"
+                            className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                            autoFocus={false}
+                          />
+                        </Form.Item>
+                      </div>
                     </div>
+
 
                     <div className="flex justify-end gap-4 mt-6">
                       <Button

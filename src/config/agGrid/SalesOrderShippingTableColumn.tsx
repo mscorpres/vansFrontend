@@ -170,6 +170,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       vehicleType: values.vehicleType,
       vehicleNo: values.vehicleNo,
       transportDoc: values.transportDoc,
+      transporterName: values.transporterName,
+      transporterId: values.transporterId,
 
     };
 
