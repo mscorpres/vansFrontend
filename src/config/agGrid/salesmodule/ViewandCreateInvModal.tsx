@@ -520,7 +520,7 @@ const ViewAndCreateInvModal: React.FC<ViewAndCreateInvModalProps> = ({ visible, 
                     </div>
 
                     <div className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-3">Transporter Details</div>
-                    <div className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-3">Transporter Details</div>
+                    
                     <div className="space-y-4">
                       <div className="text-md font-semibold text-gray-600">Part A</div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

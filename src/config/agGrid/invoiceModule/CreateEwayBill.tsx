@@ -1,19 +1,8 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  Form,
-  FormField,
-  FormLabel,
-  FormMessage,
-  FormControl,
-  FormItem,
-} from "@/components/ui/form";
+import { Form, FormField, FormLabel, FormMessage, FormControl, FormItem } from "@/components/ui/form";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
-import {
-  DatePickerStyle,
-  InputStyle,
-  LableStyle,
-} from "@/constants/themeContants";
+import { DatePickerStyle, InputStyle, LableStyle } from "@/constants/themeContants";
 import Select from "react-select";
 
 import { Controller, useForm } from "react-hook-form";
@@ -47,12 +36,7 @@ import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import ConfirmationModal from "@/components/shared/ConfirmationModal";
 import { stateOptions, TruncateCellRenderer } from "@/General";
 import ShowInvoiceModal from "@/config/agGrid/invoiceModule/ShowInvoiceModal";
-import {
-  createEwayBill,
-  fetchDataForEwayBill,
-  fetchDataForInvoice,
-  generateEInvoice,
-} from "@/features/salesmodule/salesInvoiceSlice";
+import { createEwayBill, fetchDataForEwayBill, fetchDataForInvoice, generateEInvoice } from "@/features/salesmodule/salesInvoiceSlice";
 import { transformStateOptions } from "@/helper/transform";
 import { fetchCountryListByCode } from "@/components/shared/Api/masterApi";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -62,9 +46,7 @@ export default function CreateEwayBill() {
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
   const [totalSum, setTotalSum] = useState(0);
-  const [transactionType, setTransactionType] = useState<string | undefined>(
-    ""
-  );
+  const [transactionType, setTransactionType] = useState<string | undefined>("");
   const [showCreatedInvoiceModal, setShowCreatedInvoiceModal] = useState(false);
   // const [invoiceData, setInvoiceData] = useState<any>({});
   const isEwayBill = window.location.href?.includes("e-way");
@@ -73,51 +55,48 @@ export default function CreateEwayBill() {
     resolver: zodResolver(isEwayBill ? ewayBillSchema : eInvoiceSchema),
     mode: "onBlur",
   });
-  const { ewayBillData, loading } = useSelector(
-    (state: RootState) => state.sellInvoice
-  );
+  const { ewayBillData, loading } = useSelector((state: RootState) => state.sellInvoice);
   const [rowData, setRowData] = useState(ewayBillData || []);
   const [orderId, setOrderId] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   // const transTypeSelected = Form?.useWatch("transactionType", form);
 
   const [isExportInvoice, setIsExportInvoice] = useState(false);
-const [isLoadingCountries, setIsLoadingCountries] = useState(false);
-const [countryOptions, setCountryOptions] = useState([]);
-const [countryLabel, setCountryLabel] = useState<string | null>(null);
+  const [isLoadingCountries, setIsLoadingCountries] = useState(false);
+  const [countryOptions, setCountryOptions] = useState([]);
+  const [countryLabel, setCountryLabel] = useState<string | null>(null);
 
-const fetchCountries = async (inputValue: string) => {
-  setIsLoadingCountries(true);
-  try {
-    console.log("Fetching countries with search:", inputValue); // Debug API call
-    const response = await fetchCountryListByCode(inputValue);
-    console.log("Country API response:", response); // Debug response
-    // Ensure response.data is an array
-    const countries = Array.isArray(response.data)
-      ? response.data.map((country: any) => ({
-          value: country.code,
-          label: country.name,
-        }))
-      : [];
-    console.log("Mapped countries:", countries); // Debug mapped data
-    setIsLoadingCountries(false);
-    return countries;
-  } catch (error: any) {
-    console.error("Failed to fetch countries:", {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data,
-    });
-    toast({
-      title: "Failed to load country list",
-      description: error.message || "Please try again later.",
-      className: "bg-red-600 text-white items-center",
-    });
-    setIsLoadingCountries(false);
-    return [];
-  }
-};
-
+  const fetchCountries = async (inputValue: string) => {
+    setIsLoadingCountries(true);
+    try {
+      console.log("Fetching countries with search:", inputValue); // Debug API call
+      const response = await fetchCountryListByCode(inputValue);
+      console.log("Country API response:", response); // Debug response
+      // Ensure response.data is an array
+      const countries = Array.isArray(response.data)
+        ? response.data.map((country: any) => ({
+            value: country.code,
+            label: country.name,
+          }))
+        : [];
+      console.log("Mapped countries:", countries); // Debug mapped data
+      setIsLoadingCountries(false);
+      return countries;
+    } catch (error: any) {
+      console.error("Failed to fetch countries:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      toast({
+        title: "Failed to load country list",
+        description: error.message || "Please try again later.",
+        className: "bg-red-600 text-white items-center",
+      });
+      setIsLoadingCountries(false);
+      return [];
+    }
+  };
 
   useEffect(() => {
     const shipId = (params?.id as string).replace(/_/g, "/");
@@ -143,10 +122,7 @@ const fetchCountries = async (inputValue: string) => {
         form.setValue("billTo.location", data?.billToLocation);
         form.setValue("shipTo.location", data?.shipToLocation);
         form.setValue("dispatchFrom.location", data?.dispatchFromLocation);
-        
-      
-        
-        
+
         setOrderId(data?.documentNo);
         // form.setValue(
         //   "header.documentDate",
@@ -186,18 +162,25 @@ const fetchCountries = async (inputValue: string) => {
         form.setValue("shipTo.addressLine1", data?.ship_to?.address1);
         form.setValue("shipTo.addressLine2", data?.ship_to?.address2);
 
-          //part b
+        //part b
         form.setValue("ewaybillDetails.transMode", data?.transporterMode || "");
-      form.setValue("ewaybillDetails.vehicleType", data?.vehicleType || "");
-      form.setValue("ewaybillDetails.vehicleNo", data?.vehicleNo || "");
-      form.setValue("ewaybillDetails.transporterDocNo", data?.transportDoc || "");
-      // Set Transport Date to Current Date
-      form.setValue("ewaybillDetails.transporterDate", dayjs().format("DD-MM-YYYY"));
+        form.setValue("ewaybillDetails.vehicleType", data?.vehicleType || "");
+        form.setValue("ewaybillDetails.vehicleNo", data?.vehicleNo || "");
 
-      //PART a
-      form.setValue("ewaybillDetails.transporterName", data?.transporterName || "");
-      form.setValue("ewaybillDetails.transporterId", data?.transporterId || "");
-      
+        if (data?.transportDoc) {
+          form.setValue("ewaybillDetails.transporterDocNo", data?.transportDoc);
+        }
+
+        // Set Transport Date to Current Date
+        form.setValue("ewaybillDetails.transporterDate", dayjs().format("DD-MM-YYYY"));
+
+        //PART a
+        if (data?.transporterName) {
+          form.setValue("ewaybillDetails.transporterName", data.transporterName);
+        }
+        if (data?.transporterId) {
+          form.setValue("ewaybillDetails.transporterId", data.transporterId);
+        }
       }
     });
   }, [params]);
@@ -206,36 +189,34 @@ const fetchCountries = async (inputValue: string) => {
     setRowData(ewayBillData);
   }, [ewayBillData]);
 
-const onSubmit = (payload: any) => {
-  const modifiedPayload = {
-    ...payload,
-    ...(isExportInvoice && payload.expDtls?.CntCode
-      ? { expDtls: { CntCode: payload.expDtls.CntCode } }
-      : {}),
+  const onSubmit = (payload: any) => {
+    const modifiedPayload = {
+      ...payload,
+      ...(isExportInvoice && payload.expDtls?.CntCode ? { expDtls: { CntCode: payload.expDtls.CntCode } } : {}),
+    };
+    console.log("modifiedPayload", modifiedPayload);
+    if (isEwayBill) {
+      dispatch(createEwayBill(modifiedPayload)).then((response) => {
+        if (response.meta.requestStatus === "fulfilled") {
+          toast({
+            title: "Data Fetched Successfully",
+            className: "bg-green-600 text-white items-center",
+          });
+          setShowCreatedInvoiceModal(true);
+        }
+      });
+    } else {
+      dispatch(generateEInvoice(modifiedPayload)).then((response) => {
+        if (response.meta.requestStatus === "fulfilled") {
+          toast({
+            title: "Created Successfully",
+            className: "bg-green-600 text-white items-center",
+          });
+          setShowCreatedInvoiceModal(true);
+        }
+      });
+    }
   };
-  console.log("modifiedPayload", modifiedPayload);
-  if (isEwayBill) {
-    dispatch(createEwayBill(modifiedPayload)).then((response) => {
-      if (response.meta.requestStatus === "fulfilled") {
-        toast({
-          title: "Data Fetched Successfully",
-          className: "bg-green-600 text-white items-center",
-        });
-        setShowCreatedInvoiceModal(true);
-      }
-    });
-  } else {
-    dispatch(generateEInvoice(modifiedPayload)).then((response) => {
-      if (response.meta.requestStatus === "fulfilled") {
-        toast({
-          title: "Created Successfully",
-          className: "bg-green-600 text-white items-center",
-        });
-        setShowCreatedInvoiceModal(true);
-      }
-    });
-  }
-};
 
   // useEffect(() => {
   //   let sum = 0;
@@ -279,15 +260,11 @@ const onSubmit = (payload: any) => {
           }}
         >
           <div className="rounded p-[30px] shadow bg-[#fff] overflow-y-auto mb-10">
-            <div className="text-slate-600 font-[600] text-[20px] flex justify-center">
-              {isEwayBill ? "Create E-Way Bill" : "Create E-Invoice"}
-            </div>
+            <div className="text-slate-600 font-[600] text-[20px] flex justify-center">{isEwayBill ? "Create E-Way Bill" : "Create E-Invoice"}</div>
             {/*Document Details*/}
             <Card className="rounded shadow bg-[#fff] mb-8">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                <h3 className="text-[17px] font-[600] text-slate-600">
-                  Document Details
-                </h3>
+                <h3 className="text-[17px] font-[600] text-slate-600">Document Details</h3>
               </CardHeader>
               <CardContent className="mt-[30px]">
                 <div className="grid grid-cols-3 gap-[40px] mt-[30px]">
@@ -299,9 +276,7 @@ const onSubmit = (payload: any) => {
                         <FormItem>
                           <FormLabel className={LableStyle}>
                             Supply Type
-                            <span className="pl-1 text-red-500 font-bold">
-                              *
-                            </span>
+                            <span className="pl-1 text-red-500 font-bold">*</span>
                           </FormLabel>
                           <FormControl>
                             <Select
@@ -314,18 +289,11 @@ const onSubmit = (payload: any) => {
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
-                              options={
-                                isEwayBill ? supplyTypeOptions : subOptions
-                              }
+                              options={isEwayBill ? supplyTypeOptions : subOptions}
                               onChange={(selectedOption) => {
-                                field.onChange(
-                                  selectedOption ? selectedOption?.value : ""
-                                );
+                                field.onChange(selectedOption ? selectedOption?.value : "");
                               }}
-                              value={(isEwayBill
-                                ? supplyTypeOptions
-                                : subOptions
-                              )?.find((option) => option.value === field.value)}
+                              value={(isEwayBill ? supplyTypeOptions : subOptions)?.find((option) => option.value === field.value)}
                             />
                           </FormControl>
                           <FormMessage />
@@ -342,9 +310,7 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Sub Supply Type
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -359,13 +325,9 @@ const onSubmit = (payload: any) => {
                                 isSearchable={true}
                                 options={subsupplytype}
                                 onChange={(selectedOption) => {
-                                  field.onChange(
-                                    selectedOption ? selectedOption?.value : ""
-                                  );
+                                  field.onChange(selectedOption ? selectedOption?.value : "");
                                 }}
-                                value={subsupplytype?.find(
-                                  (option) => option.value === field.value
-                                )}
+                                value={subsupplytype?.find((option) => option.value === field.value)}
                               />
                             </FormControl>
                             <FormMessage />
@@ -382,16 +344,10 @@ const onSubmit = (payload: any) => {
                         <FormItem>
                           <FormLabel className={LableStyle}>
                             Document No
-                            <span className="pl-1 text-red-500 font-bold">
-                              *
-                            </span>
+                            <span className="pl-1 text-red-500 font-bold">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              className={InputStyle}
-                              placeholder="Document No"
-                              {...field}
-                            />
+                            <Input className={InputStyle} placeholder="Document No" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -406,9 +362,7 @@ const onSubmit = (payload: any) => {
                         <FormItem>
                           <FormLabel className={LableStyle}>
                             Document Type
-                            <span className="pl-1 text-red-500 font-bold">
-                              *
-                            </span>
+                            <span className="pl-1 text-red-500 font-bold">*</span>
                           </FormLabel>
                           <FormControl>
                             <Select
@@ -419,17 +373,13 @@ const onSubmit = (payload: any) => {
                               classNamePrefix="select border-0"
                               components={{ DropdownIndicator }}
                               onChange={(selectedOption) => {
-                                field.onChange(
-                                  selectedOption ? selectedOption.value : null
-                                );
+                                field.onChange(selectedOption ? selectedOption.value : null);
                               }}
                               isDisabled={false}
                               isClearable={true}
                               isSearchable={true}
                               options={docType}
-                              value={docType?.find(
-                                (option) => option.value === field.value
-                              )}
+                              value={docType?.find((option) => option.value === field.value)}
                             />
                           </FormControl>
                           <FormMessage />
@@ -446,9 +396,7 @@ const onSubmit = (payload: any) => {
                         <FormItem className="pl-[10px] w-full flex flex-col">
                           <FormLabel className={LableStyle}>
                             Document Date
-                            <span className="pl-1 text-red-500 font-bold">
-                              *
-                            </span>
+                            <span className="pl-1 text-red-500 font-bold">*</span>
                           </FormLabel>
                           <FormControl>
                             <Space direction="vertical" size={12}>
@@ -456,23 +404,11 @@ const onSubmit = (payload: any) => {
                                 className={DatePickerStyle}
                                 format="DD-MM-YYYY"
                                 onChange={(value: Dayjs | null) => {
-                                  const formattedDate = value
-                                    ? value.format("DD-MM-YYYY")
-                                    : "";
+                                  const formattedDate = value ? value.format("DD-MM-YYYY") : "";
 
-                                  form.setValue(
-                                    "header.documentDate",
-                                    formattedDate
-                                  );
+                                  form.setValue("header.documentDate", formattedDate);
                                 }}
-                                value={
-                                  form.getValues("header.documentDate")
-                                    ? dayjs(
-                                        form.getValues("header.documentDate"),
-                                        "DD-MM-YYYY"
-                                      )
-                                    : null
-                                }
+                                value={form.getValues("header.documentDate") ? dayjs(form.getValues("header.documentDate"), "DD-MM-YYYY") : null}
                               />
                             </Space>
                           </FormControl>
@@ -490,9 +426,7 @@ const onSubmit = (payload: any) => {
                         <FormItem>
                           <FormLabel className={LableStyle}>
                             Transaction Type
-                            <span className="pl-1 text-red-500 font-bold">
-                              *
-                            </span>
+                            <span className="pl-1 text-red-500 font-bold">*</span>
                           </FormLabel>
                           <FormControl>
                             <Select
@@ -507,14 +441,10 @@ const onSubmit = (payload: any) => {
                               isSearchable={true}
                               options={transactionTypeOptions}
                               onChange={(selectedOption) => {
-                                field.onChange(
-                                  selectedOption ? selectedOption.value : null
-                                );
+                                field.onChange(selectedOption ? selectedOption.value : null);
                                 setTransactionType(selectedOption?.value);
                               }}
-                              value={transactionTypeOptions?.find(
-                                (option) => option.value === field.value
-                              )}
+                              value={transactionTypeOptions?.find((option) => option.value === field.value)}
                             />
                           </FormControl>
                           <FormMessage />
@@ -523,79 +453,71 @@ const onSubmit = (payload: any) => {
                     />
                   </div>
 
-
                   <div className="flex items-center space-x-2">
-  <FormField
-    control={form.control}
-    name="isExportInvoice"
-    render={({ field }) => (
-      <FormItem className="flex items-center space-x-2">
-        <FormControl>
-          <Checkbox
-            checked={isExportInvoice}
-            onCheckedChange={(checked) => {
-              setIsExportInvoice(checked);
-              field.onChange(checked);
-              if (!checked) {
-                form.setValue("expDtls.CntCode", "");
-              }
-            }}
-          />
-        </FormControl>
-        <FormLabel className={LableStyle}>
-          Is this an export invoice?
-        </FormLabel>
-      </FormItem>
-    )}
-  />
-</div>
-{isExportInvoice && (
-  <div>
-    <FormField
-      control={form.control}
-      name="expDtls.CntCode"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className={LableStyle}>
-            Country
-            <span className="pl-1 text-red-500 font-bold">*</span>
-          </FormLabel>
-          <FormControl>
-            <ReusableAsyncSelect
-              endpoint="/backend/countrieswithcode"
-              fetchOptionWith="search"
-              placeholder="Country"
-              transform={(data: { code: string; name: string }[]) =>
-                data.map((item) => ({
-                  value: item.code,
-                  label: item.name,
-                }))
-              }
-              onChange={(selectedOption) => {
-                field.onChange(selectedOption ? selectedOption.value : "");
-                console.log("Selected country:", selectedOption); // Debug selection
-              }}
-              value={
-                field.value
-                  ? {
-                      value: field.value,
-                      label:
-                        (form.getValues("expDtls.CntCode") &&
-                          countryOptions.find(
-                            (opt) => opt.value === field.value
-                          )?.label) ||
-                        field.value,
-                    }
-                  : null
-              }
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  </div>
-)}
+                    <FormField
+                      control={form.control}
+                      name="isExportInvoice"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center space-x-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={isExportInvoice}
+                              onCheckedChange={(checked) => {
+                                setIsExportInvoice(checked);
+                                field.onChange(checked);
+                                if (!checked) {
+                                  form.setValue("expDtls.CntCode", "");
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className={LableStyle}>Is this an export invoice?</FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {isExportInvoice && (
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="expDtls.CntCode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className={LableStyle}>
+                              Country
+                              <span className="pl-1 text-red-500 font-bold">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <ReusableAsyncSelect
+                                endpoint="/backend/countrieswithcode"
+                                fetchOptionWith="search"
+                                placeholder="Country"
+                                transform={(data: { code: string; name: string }[]) =>
+                                  data.map((item) => ({
+                                    value: item.code,
+                                    label: item.name,
+                                  }))
+                                }
+                                onChange={(selectedOption) => {
+                                  field.onChange(selectedOption ? selectedOption.value : "");
+                                  console.log("Selected country:", selectedOption); // Debug selection
+                                }}
+                                value={
+                                  field.value
+                                    ? {
+                                        value: field.value,
+                                        label: (form.getValues("expDtls.CntCode") && countryOptions.find((opt) => opt.value === field.value)?.label) || field.value,
+                                      }
+                                    : null
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
                   {/* <FormField
                     control={form.control}
                     name="header.reverseCharge"
@@ -671,9 +593,7 @@ const onSubmit = (payload: any) => {
               {/* Bill From */}
               <Card className="rounded shadow bg-[#fff]">
                 <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    Bill From
-                  </h3>
+                  <h3 className="text-[17px] font-[600] text-slate-600">Bill From</h3>
                 </CardHeader>
                 <CardContent className="mt-[30px]">
                   <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
@@ -685,16 +605,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Name
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Legal Name"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Legal Name" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -709,16 +623,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               GSTIN
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="GSTIN"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="GSTIN" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -733,9 +641,7 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               State
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -748,21 +654,13 @@ const onSubmit = (payload: any) => {
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
-                                options={
-                                  stateOptions
-                                    ? transformStateOptions(stateOptions)
-                                    : []
-                                }
+                                options={stateOptions ? transformStateOptions(stateOptions) : []}
                                 value={
                                   // Find the corresponding option based on field.value (which is the stateCode)
-                                  transformStateOptions(stateOptions)?.find(
-                                    (option) => option.value === field.value
-                                  ) || null
+                                  transformStateOptions(stateOptions)?.find((option) => option.value === field.value) || null
                                 }
                                 onChange={(selectedOption) => {
-                                  field.onChange(
-                                    selectedOption ? selectedOption.value : null
-                                  );
+                                  field.onChange(selectedOption ? selectedOption.value : null);
                                 }}
                               />
                             </FormControl>
@@ -779,16 +677,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Location
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Supplier Location"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Supplier Location" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -804,16 +696,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Pincode
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Pincode"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Pincode" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -828,16 +714,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Pan No.
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Pan No."
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Pan No." {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -852,18 +732,10 @@ const onSubmit = (payload: any) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LableStyle}>
-                            Address Line 1
-                            <span className="pl-1 text-red-500 font-bold">
-                              *
-                            </span>
+                            Address Line 1<span className="pl-1 text-red-500 font-bold">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              maxLength={100}
-                              className={InputStyle}
-                              placeholder="Address line 1"
-                              {...field}
-                            />
+                            <Textarea maxLength={100} className={InputStyle} placeholder="Address line 1" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -877,18 +749,10 @@ const onSubmit = (payload: any) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LableStyle}>
-                            Address Line 2
-                            <span className="pl-1 text-red-500 font-bold">
-                              *
-                            </span>
+                            Address Line 2<span className="pl-1 text-red-500 font-bold">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              maxLength={100}
-                              className={InputStyle}
-                              placeholder="Address line 2"
-                              {...field}
-                            />
+                            <Textarea maxLength={100} className={InputStyle} placeholder="Address line 2" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -900,9 +764,7 @@ const onSubmit = (payload: any) => {
               {/* Bill To */}
               <Card className="rounded shadow bg-[#fff]">
                 <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    Bill To
-                  </h3>
+                  <h3 className="text-[17px] font-[600] text-slate-600">Bill To</h3>
                 </CardHeader>
 
                 <CardContent className="mt-[10px]">
@@ -915,16 +777,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Name
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Legal Name"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Legal Name" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -939,16 +795,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               GSTIN
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="GSTIN"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="GSTIN" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -963,9 +813,7 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               State
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -978,21 +826,13 @@ const onSubmit = (payload: any) => {
                                 isDisabled={false}
                                 isClearable={true}
                                 isSearchable={true}
-                                options={
-                                  stateOptions
-                                    ? transformStateOptions(stateOptions)
-                                    : []
-                                }
+                                options={stateOptions ? transformStateOptions(stateOptions) : []}
                                 value={
                                   // Find the corresponding option based on field.value (which is the stateCode)
-                                  transformStateOptions(stateOptions)?.find(
-                                    (option) => option.value === field.value
-                                  ) || null
+                                  transformStateOptions(stateOptions)?.find((option) => option.value === field.value) || null
                                 }
                                 onChange={(selectedOption) => {
-                                  field.onChange(
-                                    selectedOption ? selectedOption.value : null
-                                  );
+                                  field.onChange(selectedOption ? selectedOption.value : null);
                                 }}
                               />
                             </FormControl>
@@ -1009,16 +849,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Location
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Place of Supply"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Place of Supply" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1034,16 +868,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Pincode
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Pincode"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Pincode" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1056,15 +884,9 @@ const onSubmit = (payload: any) => {
                         name="billTo.pan"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pan No.
-                            </FormLabel>
+                            <FormLabel className={LableStyle}>Pan No.</FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Pan No."
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Pan No." {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1079,18 +901,10 @@ const onSubmit = (payload: any) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LableStyle}>
-                            Address Line 1
-                            <span className="pl-1 text-red-500 font-bold">
-                              *
-                            </span>
+                            Address Line 1<span className="pl-1 text-red-500 font-bold">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              maxLength={100}
-                              className={InputStyle}
-                              placeholder="Address line 1"
-                              {...field}
-                            />
+                            <Textarea maxLength={100} className={InputStyle} placeholder="Address line 1" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1104,18 +918,10 @@ const onSubmit = (payload: any) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className={LableStyle}>
-                            Address Line 2
-                            <span className="pl-1 text-red-500 font-bold">
-                              *
-                            </span>
+                            Address Line 2<span className="pl-1 text-red-500 font-bold">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea
-                              maxLength={100}
-                              className={InputStyle}
-                              placeholder="Address line 2"
-                              {...field}
-                            />
+                            <Textarea maxLength={100} className={InputStyle} placeholder="Address line 2" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1128,9 +934,7 @@ const onSubmit = (payload: any) => {
               {transactionType !== "1" && transactionType !== "2" && (
                 <Card className="rounded shadow bg-[#fff]">
                   <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                    <h3 className="text-[17px] font-[600] text-slate-600">
-                      Dispatch From
-                    </h3>
+                    <h3 className="text-[17px] font-[600] text-slate-600">Dispatch From</h3>
                   </CardHeader>
                   <CardContent className="mt-[10px]">
                     <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
@@ -1142,16 +946,10 @@ const onSubmit = (payload: any) => {
                             <FormItem>
                               <FormLabel className={LableStyle}>
                                 Legal Name
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
+                                <span className="pl-1 text-red-500 font-bold">*</span>
                               </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Legal Name"
-                                  {...field}
-                                />
+                                <Input className={InputStyle} placeholder="Legal Name" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1166,9 +964,7 @@ const onSubmit = (payload: any) => {
                             <FormItem>
                               <FormLabel className={LableStyle}>
                                 State
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
+                                <span className="pl-1 text-red-500 font-bold">*</span>
                               </FormLabel>
                               <FormControl>
                                 <Select
@@ -1181,23 +977,13 @@ const onSubmit = (payload: any) => {
                                   isDisabled={false}
                                   isClearable={true}
                                   isSearchable={true}
-                                  options={
-                                    stateOptions
-                                      ? transformStateOptions(stateOptions)
-                                      : []
-                                  }
+                                  options={stateOptions ? transformStateOptions(stateOptions) : []}
                                   value={
                                     // Find the corresponding option based on field.value (which is the stateCode)
-                                    transformStateOptions(stateOptions)?.find(
-                                      (option) => option.value === field.value
-                                    ) || null
+                                    transformStateOptions(stateOptions)?.find((option) => option.value === field.value) || null
                                   }
                                   onChange={(selectedOption) => {
-                                    field.onChange(
-                                      selectedOption
-                                        ? selectedOption.value
-                                        : null
-                                    );
+                                    field.onChange(selectedOption ? selectedOption.value : null);
                                   }}
                                 />
                               </FormControl>
@@ -1214,70 +1000,53 @@ const onSubmit = (payload: any) => {
                             <FormItem>
                               <FormLabel className={LableStyle}>
                                 Pan No.
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
+                                <span className="pl-1 text-red-500 font-bold">*</span>
                               </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Pan No."
-                                  {...field}
-                                />
+                                <Input className={InputStyle} placeholder="Pan No." {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                       </div>
-                  
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="dispatchFrom.location"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Location
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Place of Supply"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />  </div>
+
                       <div className="">
-                      <FormField
-                        control={form.control}
-                        name="dispatchFrom.pincode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Pincode
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Pincode"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                        <FormField
+                          control={form.control}
+                          name="dispatchFrom.location"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                Location
+                                <span className="pl-1 text-red-500 font-bold">*</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input className={InputStyle} placeholder="Place of Supply" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />{" "}
+                      </div>
+                      <div className="">
+                        <FormField
+                          control={form.control}
+                          name="dispatchFrom.pincode"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                Pincode
+                                <span className="pl-1 text-red-500 font-bold">*</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input className={InputStyle} placeholder="Pincode" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
                     <div className="mt-[40px]">
                       <FormField
@@ -1286,18 +1055,10 @@ const onSubmit = (payload: any) => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Address Line 1
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              Address Line 1<span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Textarea
-                                maxLength={100}
-                                className={InputStyle}
-                                placeholder="Address Line 1"
-                                {...field}
-                              />
+                              <Textarea maxLength={100} className={InputStyle} placeholder="Address Line 1" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1311,18 +1072,10 @@ const onSubmit = (payload: any) => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Address Line 2
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              Address Line 2<span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Textarea
-                                maxLength={100}
-                                className={InputStyle}
-                                placeholder="Address Line 2"
-                                {...field}
-                              />
+                              <Textarea maxLength={100} className={InputStyle} placeholder="Address Line 2" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1337,9 +1090,7 @@ const onSubmit = (payload: any) => {
               {transactionType !== "1" && transactionType !== "3" && (
                 <Card className="rounded shadow bg-[#fff]">
                   <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                    <h3 className="text-[17px] font-[600] text-slate-600">
-                      Ship To
-                    </h3>
+                    <h3 className="text-[17px] font-[600] text-slate-600">Ship To</h3>
                   </CardHeader>
 
                   <CardContent className="mt-[10px]">
@@ -1352,16 +1103,10 @@ const onSubmit = (payload: any) => {
                             <FormItem>
                               <FormLabel className={LableStyle}>
                                 Legal Name
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
+                                <span className="pl-1 text-red-500 font-bold">*</span>
                               </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Legal Name"
-                                  {...field}
-                                />
+                                <Input className={InputStyle} placeholder="Legal Name" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1377,9 +1122,7 @@ const onSubmit = (payload: any) => {
                             <FormItem>
                               <FormLabel className={LableStyle}>
                                 State
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
+                                <span className="pl-1 text-red-500 font-bold">*</span>
                               </FormLabel>
                               <FormControl>
                                 <Select
@@ -1392,23 +1135,13 @@ const onSubmit = (payload: any) => {
                                   isDisabled={false}
                                   isClearable={true}
                                   isSearchable={true}
-                                  options={
-                                    stateOptions
-                                      ? transformStateOptions(stateOptions)
-                                      : []
-                                  }
+                                  options={stateOptions ? transformStateOptions(stateOptions) : []}
                                   value={
                                     // Find the corresponding option based on field.value (which is the stateCode)
-                                    transformStateOptions(stateOptions)?.find(
-                                      (option) => option.value === field.value
-                                    ) || null
+                                    transformStateOptions(stateOptions)?.find((option) => option.value === field.value) || null
                                   }
                                   onChange={(selectedOption) => {
-                                    field.onChange(
-                                      selectedOption
-                                        ? selectedOption.value
-                                        : null
-                                    );
+                                    field.onChange(selectedOption ? selectedOption.value : null);
                                   }}
                                 />
                               </FormControl>
@@ -1425,16 +1158,10 @@ const onSubmit = (payload: any) => {
                             <FormItem>
                               <FormLabel className={LableStyle}>
                                 Pincode
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
+                                <span className="pl-1 text-red-500 font-bold">*</span>
                               </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Pincode"
-                                  {...field}
-                                />
+                                <Input className={InputStyle} placeholder="Pincode" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1449,46 +1176,35 @@ const onSubmit = (payload: any) => {
                             <FormItem>
                               <FormLabel className={LableStyle}>
                                 GSTIN
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
+                                <span className="pl-1 text-red-500 font-bold">*</span>
                               </FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="GSTIN"
-                                  {...field}
-                                />
+                                <Input className={InputStyle} placeholder="GSTIN" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                       </div>
-                   
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="shipTo.location"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Location
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Place of Supply"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      /> </div>
+
+                      <div className="">
+                        <FormField
+                          control={form.control}
+                          name="shipTo.location"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={LableStyle}>
+                                Location
+                                <span className="pl-1 text-red-500 font-bold">*</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input className={InputStyle} placeholder="Place of Supply" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />{" "}
+                      </div>
                     </div>
                     <div className="mt-[40px]">
                       <FormField
@@ -1497,18 +1213,10 @@ const onSubmit = (payload: any) => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Address Line 1
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              Address Line 1<span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Textarea
-                                maxLength={100}
-                                className={InputStyle}
-                                placeholder="Address line 1"
-                                {...field}
-                              />
+                              <Textarea maxLength={100} className={InputStyle} placeholder="Address line 1" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1522,18 +1230,10 @@ const onSubmit = (payload: any) => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={LableStyle}>
-                              Address Line 2
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              Address Line 2<span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Textarea
-                                maxLength={100}
-                                className={InputStyle}
-                                placeholder="Address line 2"
-                                {...field}
-                              />
+                              <Textarea maxLength={100} className={InputStyle} placeholder="Address line 2" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1548,9 +1248,7 @@ const onSubmit = (payload: any) => {
               {/* Transporter Details */}
               <Card className="rounded shadow bg-[#fff]">
                 <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    Dispatch Details
-                  </h3>
+                  <h3 className="text-[17px] font-[600] text-slate-600">Dispatch Details</h3>
                 </CardHeader>
                 <CardContent className="mt-[10px]">
                   <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
@@ -1561,15 +1259,9 @@ const onSubmit = (payload: any) => {
                           name="header.dispatch_doc_no"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>
-                                Dispatch Doc No.
-                              </FormLabel>
+                              <FormLabel className={LableStyle}>Dispatch Doc No.</FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder=" Dispatch Doc No"
-                                  {...field}
-                                />
+                                <Input className={InputStyle} placeholder=" Dispatch Doc No" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1584,15 +1276,9 @@ const onSubmit = (payload: any) => {
                           name="header.dispatch_through"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>
-                                Dispatch Through
-                              </FormLabel>
+                              <FormLabel className={LableStyle}>Dispatch Through</FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Dispatch Through"
-                                  {...field}
-                                />
+                                <Input className={InputStyle} placeholder="Dispatch Through" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1608,18 +1294,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Transporter Id
-                              {isEwayBill && (
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
-                              )}
+                              {isEwayBill && <span className="pl-1 text-red-500 font-bold">*</span>}
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Transporter Id"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Transporter Id" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1634,18 +1312,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Transporter Name
-                              {isEwayBill && (
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
-                              )}
+                              {isEwayBill && <span className="pl-1 text-red-500 font-bold">*</span>}
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Transporter Name"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Transporter Name" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1661,16 +1331,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Distance (in Km)
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
+                              <span className="pl-1 text-red-500 font-bold">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Distance"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Distance" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1684,15 +1348,9 @@ const onSubmit = (payload: any) => {
                           name="header.delivery_note"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className={LableStyle}>
-                                Delivery Note
-                              </FormLabel>
+                              <FormLabel className={LableStyle}>Delivery Note</FormLabel>
                               <FormControl>
-                                <Input
-                                  className={InputStyle}
-                                  placeholder="Dilever Note"
-                                  {...field}
-                                />
+                                <Input className={InputStyle} placeholder="Dilever Note" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1702,32 +1360,32 @@ const onSubmit = (payload: any) => {
                     )}
                     {!isEwayBill && (
                       <div>
-                      <FormField
-                        control={form.control}
-                        name="header.delivery_date"
-                        render={({ field }) => (
-                          <FormItem className="pl-[10px] w-full flex flex-col">
-                            <FormLabel className={LableStyle}>Delivery Date</FormLabel>
-                            <FormControl>
-                              <Space direction="vertical" size={12}>
-                                <DatePicker
-                                  className={DatePickerStyle}
-                                  format="DD-MM-YYYY"
-                                  value={field.value ? dayjs(field.value, "DD-MM-YYYY") : null}
-                                  onChange={(value: Dayjs | null) => {
-                                    const formattedDate = value ? value.format("DD-MM-YYYY") : "";
-                                    form.setValue("header.delivery_date", formattedDate, {
-                                      shouldValidate: true,
-                                    });
-                                  }}
-                                />
-                              </Space>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                        <FormField
+                          control={form.control}
+                          name="header.delivery_date"
+                          render={({ field }) => (
+                            <FormItem className="pl-[10px] w-full flex flex-col">
+                              <FormLabel className={LableStyle}>Delivery Date</FormLabel>
+                              <FormControl>
+                                <Space direction="vertical" size={12}>
+                                  <DatePicker
+                                    className={DatePickerStyle}
+                                    format="DD-MM-YYYY"
+                                    value={field.value ? dayjs(field.value, "DD-MM-YYYY") : null}
+                                    onChange={(value: Dayjs | null) => {
+                                      const formattedDate = value ? value.format("DD-MM-YYYY") : "";
+                                      form.setValue("header.delivery_date", formattedDate, {
+                                        shouldValidate: true,
+                                      });
+                                    }}
+                                  />
+                                </Space>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     )}
                   </div>
                 </CardContent>
@@ -1735,9 +1393,7 @@ const onSubmit = (payload: any) => {
               {/* Part B */}
               <Card className="rounded shadow bg-[#fff]">
                 <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
-                  <h3 className="text-[17px] font-[600] text-slate-600">
-                    Part B
-                  </h3>
+                  <h3 className="text-[17px] font-[600] text-slate-600">Part B</h3>
                 </CardHeader>
                 <CardContent className="mt-[10px]">
                   <div className="grid grid-cols-2 gap-[40px] mt-[30px]">
@@ -1749,11 +1405,7 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Transporter Mode
-                              {isEwayBill && (
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
-                              )}
+                              {isEwayBill && <span className="pl-1 text-red-500 font-bold">*</span>}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -1768,13 +1420,9 @@ const onSubmit = (payload: any) => {
                                 isSearchable={true}
                                 options={transportationMode}
                                 onChange={(selectedOption) => {
-                                  field.onChange(
-                                    selectedOption ? selectedOption.value : null
-                                  );
+                                  field.onChange(selectedOption ? selectedOption.value : null);
                                 }}
-                                value={transportationMode?.find(
-                                  (option) => option.value === field.value
-                                )}
+                                value={transportationMode?.find((option) => option.value === field.value)}
                               />
                             </FormControl>
                             <FormMessage />
@@ -1790,11 +1438,7 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Vehicle Type
-                              {isEwayBill && (
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
-                              )}
+                              {isEwayBill && <span className="pl-1 text-red-500 font-bold">*</span>}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -1809,13 +1453,9 @@ const onSubmit = (payload: any) => {
                                 isSearchable={true}
                                 options={vehicleTypeOptions}
                                 onChange={(selectedOption) => {
-                                  field.onChange(
-                                    selectedOption ? selectedOption.value : null
-                                  );
+                                  field.onChange(selectedOption ? selectedOption.value : null);
                                 }}
-                                value={vehicleTypeOptions?.find(
-                                  (option) => option.value === field.value
-                                )}
+                                value={vehicleTypeOptions?.find((option) => option.value === field.value)}
                               />
                             </FormControl>
                             <FormMessage />
@@ -1831,18 +1471,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Vehicle No.
-                              {isEwayBill && (
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
-                              )}
+                              {isEwayBill && <span className="pl-1 text-red-500 font-bold">*</span>}
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Vehicle No."
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Vehicle No." {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1857,18 +1489,10 @@ const onSubmit = (payload: any) => {
                           <FormItem>
                             <FormLabel className={LableStyle}>
                               Transport Doc
-                              {isEwayBill && (
-                                <span className="pl-1 text-red-500 font-bold">
-                                  *
-                                </span>
-                              )}
+                              {isEwayBill && <span className="pl-1 text-red-500 font-bold">*</span>}
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Transport Doc"
-                                {...field}
-                              />
+                              <Input className={InputStyle} placeholder="Transport Doc" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1876,59 +1500,43 @@ const onSubmit = (payload: any) => {
                       />
                     </div>
                     <div>
-    <FormField
-      control={form.control}
-      name="ewaybillDetails.transporterDate"
-      render={() => (
-        <FormItem className="pl-[10px] w-full flex flex-col">
-          <FormLabel className={LableStyle}>
-            Transport Date
-            {isEwayBill && (
-              <span className="pl-1 text-red-500 font-bold">*</span>
-            )}
-          </FormLabel>
-          <FormControl>
-            <Space direction="vertical" size={12}>
-              <DatePicker
-                className={DatePickerStyle}
-                format="DD-MM-YYYY"
-                onChange={(value: Dayjs | null) => {
-                  const formattedDate = value
-                    ? value.format("DD-MM-YYYY")
-                    : "";
-                  form.setValue(
-                    "ewaybillDetails.transporterDate",
-                    formattedDate
-                  );
-                }}
-                value={
-                  form.getValues("ewaybillDetails.transporterDate")
-                    ? dayjs(
-                        form.getValues("ewaybillDetails.transporterDate"),
-                        "DD-MM-YYYY"
-                      )
-                    : dayjs() // Default to current date
-                }
-              />
-            </Space>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  </div>
+                      <FormField
+                        control={form.control}
+                        name="ewaybillDetails.transporterDate"
+                        render={() => (
+                          <FormItem className="pl-[10px] w-full flex flex-col">
+                            <FormLabel className={LableStyle}>
+                              Transport Date
+                              {isEwayBill && <span className="pl-1 text-red-500 font-bold">*</span>}
+                            </FormLabel>
+                            <FormControl>
+                              <Space direction="vertical" size={12}>
+                                <DatePicker
+                                  className={DatePickerStyle}
+                                  format="DD-MM-YYYY"
+                                  onChange={(value: Dayjs | null) => {
+                                    const formattedDate = value ? value.format("DD-MM-YYYY") : "";
+                                    form.setValue("ewaybillDetails.transporterDate", formattedDate);
+                                  }}
+                                  value={
+                                    form.getValues("ewaybillDetails.transporterDate") ? dayjs(form.getValues("ewaybillDetails.transporterDate"), "DD-MM-YYYY") : dayjs() // Default to current date
+                                  }
+                                />
+                              </Space>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
             <Card className="rounded shadow bg-[#fff] mt-8">
               <CardHeader className="bg-[#e0f2f1] p-0 flex justify-between items-center px-[10px] py-[5px] w-full flex-row">
-                <h3 className="text-[17px] font-[600] text-slate-600">
-                  Items Details: {rowData?.length} Items
-                </h3>
-                <h3 className="text-[17px] font-[600] text-slate-600">
-                  Total Amount: {totalSum}
-                </h3>
+                <h3 className="text-[17px] font-[600] text-slate-600">Items Details: {rowData?.length} Items</h3>
+                <h3 className="text-[17px] font-[600] text-slate-600">Total Amount: {totalSum}</h3>
               </CardHeader>
 
               <CardContent className="mt-[30px]">
