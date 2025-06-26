@@ -97,7 +97,7 @@ export default function QuickLink({ ...props }: DialogProps) {
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if ((e.key === "f" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
+      if ((e.key === "ff" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
         if (
           (e.target instanceof HTMLElement && e.target.isContentEditable) ||
           e.target instanceof HTMLInputElement ||
