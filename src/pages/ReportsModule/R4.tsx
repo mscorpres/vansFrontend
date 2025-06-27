@@ -1,7 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import styled from "styled-components";
@@ -9,17 +6,19 @@ import { Form, Tooltip } from "antd";
 import { debounce } from "lodash";
 import useApi from "@/hooks/useApi";
 import { fetchCloseStock, fetchR4, fetchR4refreshed } from "@/components/shared/Api/masterApi";
-import { IoMdDownload, IoIosRefresh, IoMdClose } from "react-icons/io"; // Added IoMdClose
+import { IoMdDownload, IoIosRefresh, IoMdClose } from "react-icons/io";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { toast } from "@/components/ui/use-toast";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import { Input } from "@/components/ui/input";
 import { InputStyle } from "@/constants/themeContants";
+import { z } from "zod";
 
 // Define the form schema
 const FormSchema = z.object({
-  searchQuery: z.string().optional(),
+  primarySearch: z.string().optional(),
+  secondarySearch: z.string().optional(),
 });
 
 // Define row data type
@@ -46,18 +45,18 @@ const R4 = () => {
   const [form] = Form.useForm();
   const { execFun, loading: loading1 } = useApi();
   const [isAnimating, setIsAnimating] = useState<number | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false); // New state for refresh loading
-  const [isResetAnimating, setIsResetAnimating] = useState(false); // New state for reset animation
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isResetAnimating, setIsResetAnimating] = useState(false);
   const gridRef = useRef<AgGridReact>(null);
 
   // Debounced filter update
   const debouncedFilter = debounce((formValues: z.infer<typeof FormSchema>) => {
-    const { searchQuery } = formValues;
-    if (!searchQuery) {
+    const { primarySearch, secondarySearch } = formValues;
+    if (!primarySearch && !secondarySearch) {
       setRowData(originalRowData);
       setShowList(false);
     } else {
-      const filteredData = searchData(searchQuery || "");
+      const filteredData = searchData(primarySearch || "", secondarySearch || "");
       setRowData(filteredData);
       setShowList(true);
       scrollToFirstMatch(filteredData);
@@ -71,23 +70,53 @@ const R4 = () => {
     });
   };
 
-  // Simplified search function
-  const searchData = (query: string): RowData[] => {
-    const lowerQuery = query.toLowerCase().trim();
-    if (!lowerQuery) {
+  // Advanced search function from older code
+  const searchData = (primaryQuery: string, secondaryQuery: string): RowData[] => {
+    const primaryTerms = primaryQuery
+      .toLowerCase()
+      .trim()
+      .split(",")
+      .map((term) => term.trim())
+      .filter((term) => term.length > 0);
+    const secondaryTerms = secondaryQuery
+      .toLowerCase()
+      .trim()
+      .split(",")
+      .map((term) => term.trim())
+      .filter((term) => term.length > 0);
+
+    if (primaryTerms.length === 0 && secondaryTerms.length === 0) {
       return originalRowData;
     }
 
     return originalRowData.filter((item) => {
-      const searchableFields = [
-        item.part_no?.toLowerCase() || "",
-        item.name?.toLowerCase() || "",
-        item.c_specification?.toLowerCase() || "",
-        item.make?.toLowerCase() || "",
-        item.soq?.toLowerCase() || "",
-        item.moq?.toLowerCase() || "",
-      ];
-      return searchableFields.some((field) => field.includes(lowerQuery));
+      const description = item.c_specification?.toLowerCase() || "";
+
+      // Check primary terms
+      const matchesPrimary = primaryTerms.length === 0 || primaryTerms.every((term) => {
+        if (term.endsWith("%")) {
+          return description.includes(term);
+        }
+        if (/^\d+$/.test(term)) {
+          return description.includes(term);
+        }
+        const regex = new RegExp(`\\b${term}\\b`, "i");
+        return regex.test(description) || description.includes(term);
+      });
+
+      // Check secondary terms
+      const matchesSecondary = secondaryTerms.length === 0 || secondaryTerms.every((term) => {
+        if (term.endsWith("%")) {
+          return description.includes(term);
+        }
+        if (/^\d+$/.test(term)) {
+          return description.includes(term);
+        }
+        const regex = new RegExp(`\\b${term}\\b`, "i");
+        return regex.test(description) || description.includes(term);
+      });
+
+      return matchesPrimary && matchesSecondary;
     });
   };
 
@@ -110,14 +139,14 @@ const R4 = () => {
     form.resetFields();
     setRowData(originalRowData);
     setShowList(false);
-    setTimeout(() => setIsResetAnimating(false), 300); // Animation duration
+    setTimeout(() => setIsResetAnimating(false), 300);
   };
 
   const fetchQueryResults = async () => {
     const value = await form.validateFields();
-    if (value.searchQuery) {
+    if (value.primarySearch || value.secondarySearch) {
       setShowList(true);
-      const filteredData = searchData(value.searchQuery || "");
+      const filteredData = searchData(value.primarySearch || "", value.secondarySearch || "");
       setRowData(filteredData);
       scrollToFirstMatch(filteredData);
     } else {
@@ -141,7 +170,7 @@ const R4 = () => {
   };
 
   const getRefreshed = async () => {
-    setIsRefreshing(true); // Start loading animation
+    setIsRefreshing(true);
     const response = await execFun(() => fetchR4refreshed(), "fetch");
     let { data } = response;
     if (data.success) {
@@ -159,7 +188,7 @@ const R4 = () => {
         className: "bg-red-700 text-white",
       });
     }
-    setIsRefreshing(false); // Stop loading animation
+    setIsRefreshing(false);
   };
 
   const handleClick = async (id: number, params: any) => {
@@ -202,8 +231,10 @@ const R4 = () => {
       filter: "agTextColumnFilter",
       width: 320,
       cellStyle: (params: any) => {
-        const searchQuery = form.getFieldValue("searchQuery")?.toLowerCase();
-        if (searchQuery && params.value?.toLowerCase().includes(searchQuery)) {
+        const primarySearch = form.getFieldValue("primarySearch")?.toLowerCase();
+        const secondarySearch = form.getFieldValue("secondarySearch")?.toLowerCase();
+        const searchValue = [primarySearch, secondarySearch].filter(Boolean).join(",");
+        if (searchValue && params.value?.toLowerCase().includes(searchValue)) {
           return { backgroundColor: "#FFFF99" };
         }
         return null;
@@ -214,7 +245,7 @@ const R4 = () => {
       field: "stock",
       filter: "agNumberColumnFilter",
       width: 150,
-      cellStyle: { backgroundColor: "#E9D8FD", color: "#4C1D95" }, // Purple theme
+      cellStyle: { backgroundColor: "#E9D8FD", color: "#4C1D95" },
     },
     {
       headerName: "Navs Stock",
@@ -260,10 +291,17 @@ const R4 = () => {
     <Wrapper className="h-[calc(100vh-100px)] flex flex-col bg-gray-50">
       <Header className="bg-white p-4 border-b border-gray-200 flex items-center justify-between gap-4 shadow-sm">
         <Form form={form} layout="inline" onValuesChange={handleSearchChange}>
-          <Form.Item name="searchQuery" className="mb-0">
+          <Form.Item name="primarySearch" className="mb-0">
             <StyledInput
               className={InputStyle}
-              placeholder="Search part code, name, description, etc."
+              placeholder="Primary terms (e.g., RES,5%)"
+              style={{ width: 300 }}
+            />
+          </Form.Item>
+          <Form.Item name="secondarySearch" className="mb-0">
+            <StyledInput
+              className={InputStyle}
+              placeholder="Secondary terms (e.g., 1%,2512)"
               style={{ width: 300 }}
             />
           </Form.Item>

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Upload } from "lucide-react";
+import { Plus, Upload, Menu } from "lucide-react"; // Added Menu icon for toggle
 import { StatusPanelDef, ColDef, ColGroupDef } from "@ag-grid-community/core";
 import { AgGridReact } from "@ag-grid-community/react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -8,14 +8,11 @@ import StatusCellRenderer from "@/config/agGrid/StatusCellRenderer";
 import styled from "styled-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddPoUIStateType } from "@/types/AddPOTypes";
-import columnDefs, {
-  RowData,
-} from "@/config/agGrid/SalseOrderCreateTableColumns";
+import columnDefs, { RowData } from "@/config/agGrid/SalseOrderCreateTableColumns";
 import AddPOPopovers from "@/components/shared/AddPOPopovers";
 import { commonAgGridConfig } from "@/config/agGrid/commongridoption";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
-// import { fetchComponentDetail } from "@/features/salesmodule/createSalesOrderSlice";
 import SalesOrderTextInputCellRenderer from "@/config/agGrid/SalesOrderTextInputCellRenderer";
 import {
   createSalesOrderRequest,
@@ -57,6 +54,7 @@ const AddSalesOrder = ({
   const [igstTotal, setIgstTotal] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [search] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // New state for sidebar toggle
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
   const navigate = useNavigate();
@@ -77,7 +75,6 @@ const AddSalesOrder = ({
       material: "",
       asinNumber: "",
       orderQty: 1,
-      // rate: 50,
       currency: "364907247",
       gstRate: 0,
       gstType: derivedType,
@@ -114,9 +111,9 @@ const AddSalesOrder = ({
       ],
     };
   }, []);
+
   const handleSearch = (searchKey: string) => {
     if (searchKey) {
-      // Ensure there's a search key before dispatching
       dispatch(fetchComponentDetail({ search: searchKey }));
     }
   };
@@ -142,10 +139,6 @@ const AddSalesOrder = ({
     }),
     []
   );
-
-  // const onBtExport = useCallback(() => {
-  //   gridRef.current!.api.exportDataAsExcel();
-  // }, []);
 
   useEffect(() => {
     rowData?.length === 0 && addNewRow();
@@ -181,8 +174,6 @@ const AddSalesOrder = ({
   const soId = (params.id as string)?.replace(/_/g, "/");
 
   const handleSubmit = () => {
-    // if (confirmed) {
-    // Proceed with the submission
     const payloadData2: any = {
       header: { ...form.getValues(), so_id: soId },
       itemDetails: materials,
@@ -195,12 +186,12 @@ const AddSalesOrder = ({
           toast({
             className: "bg-green-600 text-white items-center",
             description:
-              response.payload.message || "Sales Order created successfully",
+              response.payload.message || "Sales Order updated successfully",
           });
           setBillStateCode("");
           setShipStateCode("");
           setIsImport("");
-          form.reset(); // Reset the form
+          form.reset();
           setRowData([]);
           navigate("/sales/order/register");
         }
@@ -211,19 +202,18 @@ const AddSalesOrder = ({
           toast({
             className: "bg-green-600 text-white items-center",
             description:
-              response.payload.message || "Sales Order updated successfully",
+              response.payload.message || "Sales Order created successfully",
           });
           setBillStateCode("");
           setShipStateCode("");
           setIsImport("");
-          form.reset(); // Reset the form
+          form.reset();
           setRowData([]);
           navigate("/sales/order/register");
         }
       });
     }
-    // }
-    setShowConfirmation(false); // Close the modal
+    setShowConfirmation(false);
   };
 
   useEffect(() => {
@@ -248,27 +238,25 @@ const AddSalesOrder = ({
       }
     }, 5000);
 
-    return () => clearInterval(intervalId); // Clean up on unmount
+    return () => clearInterval(intervalId);
   }, [rowData]);
 
   const totalSum = rowData?.reduce((sum: number, item: any) => {
-    // Convert rate and orderQty to numbers
     const rate = parseFloat(item.rate);
     const orderQty = item.orderQty;
-
-    // Ensure rate and orderQty are valid numbers before multiplying
     if (!isNaN(rate) && !isNaN(orderQty)) {
-      if (!isNaN(rate) && !isNaN(orderQty)) {
-        // Calculate the total for the current item
-        const itemTotal = rate * orderQty;
-        return sum + itemTotal;
-      }
+      const itemTotal = rate * orderQty;
+      return sum + itemTotal;
     }
     return sum;
   }, 0);
 
-  // Round the total sum to 2 decimal places
   const roundedTotalSum = Number(totalSum?.toFixed(2));
+
+  // Toggle sidebar visibility
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   return (
     <Wrapper>
@@ -277,110 +265,128 @@ const AddSalesOrder = ({
         derivedState={derivedType}
         getCostCenter={getCostCenter}
       />
-      <div className="h-[calc(100vh-150px)] grid grid-cols-[400px_1fr]">
-        <div className="max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px]">
-          <Card className="rounded-sm shadow-sm shadow-slate-500">
-            <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
-              <CardTitle className="font-[550] text-slate-600">
-                Customer Detail
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
-              <h3 className="font-[500]">Name</h3>
-              <p className="text-[14px]">{form.getValues("customer_name")}</p>
-              <h3 className="font-[500]">Address</h3>
-              <p className="text-[14px]">
-                {form.getValues("billTo.address1") +
-                  ", " +
-                  form.getValues("billTo.address2")}
-              </p>
-              <h3 className="font-[500]">GSTIN</h3>
-              <p className="text-[14px]">{form.getValues("billTo.gst")}</p>
-            </CardContent>
-          </Card>
-          <Card className="rounded-sm shadow-sm shadow-slate-500">
-            <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
-              <CardTitle className="font-[550] text-slate-600">
-                Tax Detail
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-slate-600">
-                <ul>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
-                      <h3 className="font-[600]">
-                        Sub-Total value before Taxes :
-                        <span className="font-normal">{`(+) ${
-                          roundedTotalSum ?? 0.0
-                        }`}</span>
-                      </h3>
-                    </div>
-                  </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
-                      <h3 className="font-[600]">
-                        CGST :{" "}
-                        <span className="font-normal">{`(+) ${cgstTotal?.toFixed(
-                          2
-                        )}`}</span>
-                      </h3>
-                    </div>
-                  </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
-                      <h3 className="font-[600]">
-                        SGST :{" "}
-                        <span className="font-normal">{`(+) ${sgstTotal?.toFixed(
-                          2
-                        )}`}</span>
-                      </h3>
-                    </div>
-                  </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
-                      <h3 className="font-[600]">
-                        ISGST :{" "}
-                        <span className="font-normal">{`(+) ${igstTotal?.toFixed(
-                          2
-                        )}`}</span>
-                      </h3>
-                    </div>
-                  </li>
-                  <li className="grid grid-cols-[1fr_70px] mt-[20px]">
-                    <div>
-                      <h3 className="font-[600] text-cyan-600">
-                        Sub-Total values after Taxes :
-                        <span className="font-normal text-cyan-950">{`(+) ${(
-                          roundedTotalSum +
-                          cgstTotal +
-                          sgstTotal +
-                          igstTotal
-                        ).toFixed(2)}`}</span>
-                      </h3>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="h-[calc(100vh-150px)] grid grid-cols-[auto_1fr]">
+        {/* Sidebar */}
+        <div
+          className={`${
+            isSidebarOpen ? "w-[400px]" : "w-0"
+          } max-h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-800 scrollbar-track-gray-300 bg-white border-r flex flex-col gap-[10px] p-[10px] transition-all duration-300 ease-in-out ${
+            !isSidebarOpen && "p-0"
+          }`}
+        >
+          {isSidebarOpen && (
+            <>
+              <Card className="rounded-sm shadow-sm shadow-slate-500">
+                <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
+                  <CardTitle className="font-[550] text-slate-600">
+                    Customer Detail
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="mt-[20px] flex flex-col gap-[10px] text-slate-600">
+                  <h3 className="font-[500]">Name</h3>
+                  <p className="text-[14px]">{form.getValues("customer_name")}</p>
+                  <h3 className="font-[500]">Address</h3>
+                  <p className="text-[14px]">
+                    {form.getValues("billTo.address1") +
+                      ", " +
+                      form.getValues("billTo.address2")}
+                  </p>
+                  <h3 className="font-[500]">GSTIN</h3>
+                  <p className="text-[14px]">{form.getValues("billTo.gst")}</p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-sm shadow-sm shadow-slate-500">
+                <CardHeader className="flex flex-row items-center justify-between p-[10px] bg-[#e0f2f1]">
+                  <CardTitle className="font-[550] text-slate-600">
+                    Tax Detail
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-slate-600">
+                    <ul>
+                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                        <div>
+                          <h3 className="font-[600]">
+                            Sub-Total value before Taxes :
+                            <span className="font-normal">{`(+) ${
+                              roundedTotalSum ?? 0.0
+                            }`}</span>
+                          </h3>
+                        </div>
+                      </li>
+                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                        <div>
+                          <h3 className="font-[600]">
+                            CGST :{" "}
+                            <span className="font-normal">{`(+) ${cgstTotal?.toFixed(
+                              2
+                            )}`}</span>
+                          </h3>
+                        </div>
+                      </li>
+                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                        <div>
+                          <h3 className="font-[600]">
+                            SGST :{" "}
+                            <span className="font-normal">{`(+) ${sgstTotal?.toFixed(
+                              2
+                            )}`}</span>
+                          </h3>
+                        </div>
+                      </li>
+                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                        <div>
+                          <h3 className="font-[600]">
+                            ISGST :{" "}
+                            <span className="font-normal">{`(+) ${igstTotal?.toFixed(
+                              2
+                            )}`}</span>
+                          </h3>
+                        </div>
+                      </li>
+                      <li className="grid grid-cols-[1fr_70px] mt-[20px]">
+                        <div>
+                          <h3 className="font-[600] text-cyan-600">
+                            Sub-Total values after Taxes :
+                            <span className="font-normal text-cyan-950">{`(+) ${(
+                              roundedTotalSum +
+                              cgstTotal +
+                              sgstTotal +
+                              igstTotal
+                            ).toFixed(2)}`}</span>
+                          </h3>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
+        {/* Main Content */}
         <div className="max-h-[calc(100vh-150px)] overflow-y-auto bg-white">
           <div className="flex items-center w-full gap-[20px] h-[60px] px-[10px] justify-between">
-            <Button
-              onClick={addNewRow}
-              className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
-            >
-              <Plus className="font-[600]" /> Add Item
-            </Button>
             <div className="flex items-center gap-[20px]">
               <Button
-                onClick={() => setExcelModel(true)}
-                className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
+                onClick={toggleSidebar}
+                className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
               >
-                <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel
+                <Menu className="w-[20px] h-[20px]" />
+              </Button>
+              <Button
+                onClick={addNewRow}
+                className="rounded-md shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 max-w-max"
+              >
+                <Plus className="font-[600]" /> Add Item
               </Button>
             </div>
+            <Button
+              onClick={() => setExcelModel(true)}
+              className="bg-[#217346] text-white hover:bg-[#2fa062] hover:text-white flex items-center gap-[10px] text-[15px] shadow shadow-slate-600 rounded-md"
+            >
+              <Upload className="text-white w-[20px] h-[20px]" /> Upload Excel
+            </Button>
           </div>
           <div className="ag-theme-quartz h-[calc(100vh-210px)] w-full">
             <AgGridReact

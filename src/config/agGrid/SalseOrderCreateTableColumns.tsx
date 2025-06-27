@@ -24,13 +24,20 @@ export interface RowData {
 }
 
 export const columnDefs = [
-  {
+   {
     headerName: "",
     valueGetter: "node.rowIndex + 1",
     cellRenderer: "textInputCellRenderer",
-    maxWidth: 100,
+    maxWidth: 50,
     field: "delete",
   },
+  {
+    headerName: "Sl no.",
+    valueGetter: "node.rowIndex + 1",
+    maxWidth: 50,
+    field: "sno",
+  },
+ 
 
   {
     headerName: "Component / Part",
