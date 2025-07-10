@@ -305,7 +305,7 @@ const CreatePoPage: React.FC<Props> = ({
       form.setFieldValue("vendorGst", arr?.gstid);
       form.setFieldValue("address", arr?.address);
 
-      if (arr.state == 100) {
+      if (arr.state == 96) {
         setIsImport("Import");
       } else {
         setIsImport("");
