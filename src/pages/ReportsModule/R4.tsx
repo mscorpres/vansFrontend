@@ -171,26 +171,32 @@ const R4 = () => {
 
   const getRefreshed = async () => {
     setIsRefreshing(true);
-    const response = await execFun(() => fetchR4refreshed(), "fetch");
-    let { data } = response;
-    if (data.success) {
-      let arr = data.data.map((r: any, index: number) => ({
-        id: index + 1,
-        ...r,
-      }));
-      setRowData(arr);
-      setOriginalRowData(arr);
-      setShowList(false);
-      form.resetFields();
-    } else {
+    try {
+      const response = await execFun(() => fetchR4refreshed(), "fetch");
+      let { data } = response;
+      if (data.success) {
+        toast({
+          title: data.message,
+          className: "bg-green-700 text-white",
+        });
+        form.resetFields();
+        await fetchQueryResults(); // Changed: Reload data after success
+      } else {
+        toast({
+          title: data.message || "Failed to refresh data",
+          className: "bg-red-700 text-white",
+        });
+      }
+    } catch (error) {
+      console.error("Error refreshing data:", error);
       toast({
-        title: response?.data.message,
+        title: "Failed to refresh data",
         className: "bg-red-700 text-white",
       });
+    } finally {
+      setIsRefreshing(false);
     }
-    setIsRefreshing(false);
   };
-
   const handleClick = async (id: number, params: any) => {
     setIsAnimating(id);
     setTimeout(() => setIsAnimating(null), 500);
