@@ -80,13 +80,7 @@ export interface ApiResponse<T> {
 }
 
 // Define the payload type for updating pending quantity
-interface UpdatePendingQtyPayload {
-  so_id: string;
-  items: {
-    ID: number;
-    pending_qty: number;
-  }[];
-}
+
 
 // Define the async thunk for updating pending quantity
 
@@ -341,20 +335,7 @@ export const updateSalesOrderRequest = createAsyncThunk<ApiResponse<any>, SellRe
   return response.data;
 });
 
-export const updatePendingQty = createAsyncThunk<ApiResponse<any>, UpdatePendingQtyPayload>("client/updatePendingQty", async (payload, { rejectWithValue }) => {
-  try {
-    const response = await spigenAxios.patch("/salesOrder/updatePendingQty", payload);
-    if (!response.data.success) {
-      throw new Error(response.data.message || "Failed to update pending quantities");
-    }
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      return rejectWithValue(error.message);
-    }
-    return rejectWithValue("An unknown error occurred");
-  }
-});
+
 
 export const fetchBranchDetail = createAsyncThunk<
   ComponentDetail[], // Expected return type
@@ -541,20 +522,7 @@ const clientSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch component details";
       });
-    builder
-      .addCase(updatePendingQty.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updatePendingQty.fulfilled, (state, action) => {
-        state.loading = false;
-        // Optionally update state if needed (e.g., updateData)
-        // state.updateData = action.payload.data;
-      })
-      .addCase(updatePendingQty.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || "Failed to update pending quantities";
-      });
+   
   },
 });
 
