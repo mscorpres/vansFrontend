@@ -4,20 +4,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
 import { Filter } from "lucide-react";
 import styled from "styled-components";
@@ -64,15 +52,18 @@ const SalesInvoicePage: React.FC = () => {
   const [type, setType] = useState<string>("date_wise");
   const dispatch = useDispatch();
   const [isSearchPerformed, setIsSearchPerformed] = useState<boolean>(false);
-  const { data, loading } = useSelector(
-    (state: RootState) => state.sellInvoice
-  );
+  const { data, loading } = useSelector((state: RootState) => state.sellInvoice);
   const [rowData, setRowData] = useState<any[]>([]);
+
+  // Set today's date as default for dateRange and reportDateRange
+  const today = new Date();
+  const defaultDateRange = [today, today];
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      dateRange: undefined,
-      reportDateRange: undefined,
+      dateRange: defaultDateRange,
+      reportDateRange: defaultDateRange,
       soinvid_wise: "",
     },
   });
@@ -98,9 +89,7 @@ const SalesInvoicePage: React.FC = () => {
     }
 
     try {
-      const resultAction = await dispatch(
-        fetchSalesOrderInvoiceList({ type: type, data: dataString }) as any
-      ).unwrap();
+      const resultAction = await dispatch(fetchSalesOrderInvoiceList({ type: type, data: dataString }) as any).unwrap();
       if (resultAction.code == "200") {
         setRowData(resultAction.data);
         setIsSearchPerformed(true);
@@ -138,11 +127,9 @@ const SalesInvoicePage: React.FC = () => {
 
     try {
       console.log("Downloading report with payload:", { type, data: dataString });
-      const resultAction = await dispatch(
-        downloadEInvoiceList({ type, data: dataString }) as any
-      ).unwrap();
+      const resultAction = await dispatch(downloadEInvoiceList({ type, data: dataString }) as any).unwrap();
       console.log("Download response:", resultAction);
-      if (resultAction.success) { // Check for success, not code
+      if (resultAction.success) {
         const filePath = resultAction.data?.filePath || resultAction.data?.file_path;
         if (!filePath) {
           throw new Error("No file path returned in response");
@@ -179,7 +166,16 @@ const SalesInvoicePage: React.FC = () => {
   useEffect(() => {
     setRowData([]);
     setIsSearchPerformed(false);
-  }, [type]);
+    if (type === "date_wise") {
+      form.setValue("dateRange", defaultDateRange);
+      form.setValue("reportDateRange", defaultDateRange);
+      form.setValue("soinvid_wise", "");
+    } else {
+      form.setValue("dateRange", undefined);
+      form.setValue("reportDateRange", undefined);
+      form.setValue("soinvid_wise", "");
+    }
+  }, [type, form]);
 
   return (
     <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
@@ -193,10 +189,6 @@ const SalesInvoicePage: React.FC = () => {
           <Select
             onValueChange={(value: string) => {
               setType(value);
-              if (value === "soinvid_wise") {
-                form.setValue("dateRange", undefined);
-                form.setValue("reportDateRange", undefined);
-              }
             }}
             defaultValue={type}
           >
@@ -214,10 +206,7 @@ const SalesInvoicePage: React.FC = () => {
         </div>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 overflow-hidden p-[10px]"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 overflow-hidden p-[10px]">
             {type === "date_wise" ? (
               <FormField
                 control={form.control}
@@ -228,13 +217,10 @@ const SalesInvoicePage: React.FC = () => {
                       <Space direction="vertical" size={12} className="w-full">
                         <RangePicker
                           className="border shadow-sm border-slate-300 py-[7px] hover:border-slate-400 w-full rounded-md"
-                          onChange={(value) =>
-                            field.onChange(
-                              value ? value.map((date) => date!.toDate()) : []
-                            )
-                          }
+                          onChange={(value) => field.onChange(value ? value.map((date) => date!.toDate()) : [])}
                           format={dateFormat}
                           presets={rangePresets}
+                          value={field.value ? [moment(field.value[0]), moment(field.value[1])] : undefined}
                         />
                       </Space>
                     </FormControl>
@@ -249,11 +235,7 @@ const SalesInvoicePage: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Invoice number"
-                        className="border-slate-300 rounded-md"
-                      />
+                      <Input {...field} placeholder="Invoice number" className="border-slate-300 rounded-md" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -261,23 +243,15 @@ const SalesInvoicePage: React.FC = () => {
               />
             )}
             <div className="flex justify-end pr-2">
-              <Button
-                type="submit"
-                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 rounded-md"
-              >
+              <Button type="submit" className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 rounded-md">
                 Search
               </Button>
             </div>
           </form>
 
           <div className="border-t border-slate-300 mt-4 pt-4">
-            <div className="text-center text-lg font-semibold text-slate-800 mb-4">
-              GENERATE REPORT
-            </div>
-            <form
-              onSubmit={form.handleSubmit(onGenerateReport)}
-              className="space-y-6 overflow-hidden p-[10px]"
-            >
+            <div className="text-center text-lg font-semibold text-slate-800 mb-4">GENERATE REPORT</div>
+            <form onSubmit={form.handleSubmit(onGenerateReport)} className="space-y-6 overflow-hidden p-[10px]">
               {type === "date_wise" ? (
                 <FormField
                   control={form.control}
@@ -288,13 +262,10 @@ const SalesInvoicePage: React.FC = () => {
                         <Space direction="vertical" size={12} className="w-full">
                           <RangePicker
                             className="border shadow-sm border-slate-300 py-[7px] hover:border-slate-400 w-full rounded-md"
-                            onChange={(value) =>
-                              field.onChange(
-                                value ? value.map((date) => date!.toDate()) : []
-                              )
-                            }
+                            onChange={(value) => field.onChange(value ? value.map((date) => date!.toDate()) : [])}
                             format={dateFormat}
                             presets={rangePresets}
+                            value={field.value ? [moment(field.value[0]), moment(field.value[1])] : undefined}
                           />
                         </Space>
                       </FormControl>
@@ -309,11 +280,7 @@ const SalesInvoicePage: React.FC = () => {
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Invoice number"
-                          className="border-slate-300 rounded-md"
-                        />
+                        <Input {...field} placeholder="Invoice number" className="border-slate-300 rounded-md" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -321,10 +288,7 @@ const SalesInvoicePage: React.FC = () => {
                 />
               )}
               <div className="flex justify-end pr-2">
-                <Button
-                  type="submit"
-                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 rounded-md"
-                >
+                <Button type="submit" className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 rounded-md">
                   Download Report
                 </Button>
               </div>
