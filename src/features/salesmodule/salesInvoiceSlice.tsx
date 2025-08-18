@@ -67,6 +67,33 @@ export const printSellInvoice = createAsyncThunk(
   "client/printSellInvoice",
   async (payload: any, { rejectWithValue }) => {
     try {
+      // Replace / with _ in so_invoice
+      const modifiedInvoice = payload.invoiceNo.replace(/\//g, "_");
+
+      // Construct the URL with query parameters
+      const url =
+        spigenAxios.defaults.baseURL +
+        `so_challan_shipment/printSellInvoice?so_invoice=${encodeURIComponent(
+          modifiedInvoice
+        )}&printType=${encodeURIComponent(payload.printType)}`;
+
+      // Make the GET request
+      window.open(url, "_blank");
+      return;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle error using rejectWithValue
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+export const printSellInvoice2 = createAsyncThunk(
+  "client/printSellInvoice",
+  async (payload: any, { rejectWithValue }) => {
+    try {
       const response = await spigenAxios.post<any>(
         "/salesInvoice/printEInvoice",
         payload
@@ -76,6 +103,7 @@ export const printSellInvoice = createAsyncThunk(
         throw new Error("No data received");
       }
       // Return the entire response as expected by the fulfilled case
+      console.log(response.data)
       return response.data;
     } catch (error) {
       if (error instanceof Error) {
