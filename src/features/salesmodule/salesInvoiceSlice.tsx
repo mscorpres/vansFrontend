@@ -73,7 +73,7 @@ export const printSellInvoice = createAsyncThunk(
       // Construct the URL with query parameters
       const url =
         spigenAxios.defaults.baseURL +
-        `/so_challan_shipment/printSellInvoice?so_invoice=${encodeURIComponent(
+        `/salesInvoice/printEInvoice?invoiceNo=${encodeURIComponent(
           modifiedInvoice
         )}&printType=${encodeURIComponent(payload.printType)}`;
 
