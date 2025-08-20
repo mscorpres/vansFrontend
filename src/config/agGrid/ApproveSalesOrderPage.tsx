@@ -121,7 +121,7 @@ const ApproveSalesOrderPage: React.FC = () => {
                   truncateCellRenderer: TruncateCellRenderer,
                 }}
                 overlayNoRowsTemplate={OverlayNoRowsTemplate}
-                loading={loading}
+                
                 enableCellTextSelection={true}
                 className="border border-gray-200 rounded-lg shadow-sm"
               />
