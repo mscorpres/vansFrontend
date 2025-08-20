@@ -19,6 +19,7 @@ import { materialListColumnDefs }from "@/config/agGrid/SalesOrderRegisterTableCo
 import MainLayout from "@/layouts/MainLayout";// Assume your layouts
 // import SOLayout from "@/layouts/SOLayout";
 import Protected from "@/components/Protected";
+import { Star } from "lucide-react";
 
 const ApproveSalesOrderPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -93,16 +94,21 @@ const ApproveSalesOrderPage: React.FC = () => {
 
   return (
     <Protected authentication>
-      {/* <MainLayout> */}
-        {/* <SOLayout> */}
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-xl font-bold">Approve Sales Order for {so_id}</h1>
-              <Button onClick={onBtExport} className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500">
-                <Download size={16} />
-              </Button>
-            </div>
-
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold">Approve Sales Order for {so_id}</h1>
+            <span
+              className="flex items-center gap-1 text-xs font-medium text-white bg-blue-500 rounded-full px-2 py-1"
+              title="New Feature"
+            >
+              <Star size={12} className="text-yellow-300" /> New features
+            </span>
+          </div>
+          <Button onClick={onBtExport} className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500">
+            <Download size={16} />
+          </Button>
+        </div>
             <div className="ag-theme-quartz h-[calc(100vh-180px)]">
               {loading && <FullPageLoading />}
               <AgGridReact
