@@ -113,6 +113,7 @@ import Profile from "@/components/shared/Api/Profile";
 import { useSelector } from "react-redux";
 import OtpPage from "@/pages/otpPage";
 import RecoveryPassword from "@/pages/RecoveryPassword";
+import ApproveSalesOrderPage from "./config/agGrid/ApproveSalesOrderPage";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -658,6 +659,19 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/sales/order/register",
+  },
+  //approve sales order route
+   {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <SOLayout>
+            <ApproveSalesOrderPage />
+          </SOLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/sales/order/approve",
   },
   {
     element: (

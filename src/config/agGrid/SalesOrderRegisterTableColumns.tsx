@@ -13,6 +13,7 @@ import { printFunction } from "@/components/shared/PrintFunctions";
 import { useToast } from "@/components/ui/use-toast";
 import MaterialListModal from "./MaterialListModal";
 import { TruncateCellRenderer } from "@/General";
+import { useNavigate } from "react-router-dom"; // NEW: Import useNavigate
 
 interface ActionMenuProps {
   row: RowData; // Use the RowData type here
@@ -20,6 +21,7 @@ interface ActionMenuProps {
 
 const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate(); // NEW: Add navigate hook
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isMaterialListModalVisible, setIsMaterialListModalVisible] = useState(false);
@@ -53,23 +55,27 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     setIsMaterialListModalVisible(true);
   };
 
+  // const handleshowMaterialListForApprove = (row: RowData) => {
+  //   dispatch(fetchMaterialList({ so_id: row?.so_id }));
+  //   setShowConfirmationModal(true);
+  // };
   const handleshowMaterialListForApprove = (row: RowData) => {
-    dispatch(fetchMaterialList({ so_id: row?.so_id }));
-    setShowConfirmationModal(true);
+    // CHANGE: Navigate to the new approval page instead of opening modal
+    navigate(`/sales/order/approve?so_id=${encodeURIComponent(row?.so_id)}`);
   };
 
-  const confirmApprove = () => {
-    dispatch(approveSo({ so_id: row?.so_id })).then((response: any) => {
-      if (response?.payload?.code == 200 || response?.payload?.success || response?.payload?.status == success) {
-        toast({
-          className: "bg-green-600 text-white items-center",
-          description: response.payload.message || "Sales Order Approved successfully",
-        });
-        dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
-      }
-    });
-    setShowConfirmationModal(false);
-  };
+  // const confirmApprove = () => {
+  //   dispatch(approveSo({ so_id: row?.so_id })).then((response: any) => {
+  //     if (response?.payload?.code == 200 || response?.payload?.success || response?.payload?.status == success) {
+  //       toast({
+  //         className: "bg-green-600 text-white items-center",
+  //         description: response.payload.message || "Sales Order Approved successfully",
+  //       });
+  //       dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
+  //     }
+  //   });
+  //   setShowConfirmationModal(false);
+  // };
 
   const handleOkReject = () => {
     rejectform
@@ -81,7 +87,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         };
         dispatch(rejectSo(payload) as any).then((response: any) => {
           if (response?.payload?.code == 200 || response?.payload?.success) {
-            form.resetFields();
+            rejectform.resetFields();
             dispatch(
               fetchSellRequestList({
                 type: "date_wise",
@@ -223,7 +229,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         loading={loading}
         onCreateShipment={onCreateShipment}
       />
-      <MaterialListModal
+      {/* <MaterialListModal
         visible={showConfirmationModal}
         onClose={() => setShowConfirmationModal(false)}
         sellRequestDetails={tableData}
@@ -235,7 +241,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         handleSubmit={confirmApprove}
         handleReject={() => setShowRejectModal(true)}
         disableStatus={row?.approveStatus === "Approved" || row?.approveStatus === "Rejected"}
-      />
+      /> */}
       <CreateInvoiceDialog
         isDialogVisible={showHandleCloseModal}
         handleOk={handleShortCloseModalOk}
@@ -329,7 +335,7 @@ export const columnDefs: ColDef<any>[] = [
   },
 ];
 
-const materialListColumnDefs: ColDef[] = [
+export const materialListColumnDefs: ColDef[] = [
   { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
   // {
   //   headerName: "SO ID",

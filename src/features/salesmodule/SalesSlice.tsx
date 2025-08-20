@@ -420,7 +420,7 @@ const sellRequestSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchMaterialList.fulfilled, (state, action) => {
-        state.sellRequestList = action.payload.data;
+        state.sellRequestList = action.payload.data || [];
         state.loading = false;
       })
       .addCase(fetchMaterialList.rejected, (state, action) => {
