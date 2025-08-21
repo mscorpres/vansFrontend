@@ -28,6 +28,7 @@ const wises = [
   { label: "Date Wise", value: "date_wise" },
   { label: "SO(s)Wise", value: "soid_wise" },
   { label: "Pending", value: "pending" },
+  {label:"All",value:"all"}
 ];
 
 // Default date range: last 3 months
