@@ -353,7 +353,7 @@ const CreateInward: React.FC<Props> = ({
                     rules={rules.vendorGst}
                   >
                     <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      className="focus-visible:ring-0"
                       placeholder="GSTIN / UIN"
                     />
                   </Form.Item>
@@ -408,7 +408,7 @@ const CreateInward: React.FC<Props> = ({
                     rules={rules.exchange_rate}
                   >
                     <Input
-                      className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
+                      // className="border-0 border-b rounded-none shadow-none border-slate-600 focus-visible:ring-0"
                       placeholder="Exchange Rate"
                       min={1}
                     />
@@ -426,7 +426,7 @@ const CreateInward: React.FC<Props> = ({
                     }
                   >
                     <Textarea
-                      className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
+                      // className="border-0 border-b rounded-none shadow-none outline-none resize-none border-slate-600 focus-visible:ring-0"
                       placeholder="Address"
                     />
                   </Form.Item>{" "}
