@@ -13,15 +13,15 @@ import { printFunction } from "@/components/shared/PrintFunctions";
 import { useToast } from "@/components/ui/use-toast";
 import MaterialListModal from "./MaterialListModal";
 import { TruncateCellRenderer } from "@/General";
-import { useNavigate } from "react-router-dom"; // NEW: Import useNavigate
+import { useNavigate } from "react-router-dom"; 
 
 interface ActionMenuProps {
-  row: RowData; // Use the RowData type here
+  row: RowData; 
 }
 
 const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate(); // NEW: Add navigate hook
+  const navigate = useNavigate(); 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isMaterialListModalVisible, setIsMaterialListModalVisible] = useState(false);
@@ -34,7 +34,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dateRange = useSelector((state: RootState) => state.sellRequest.dateRange);
   const { toast } = useToast();
   const handleUpdate = (row: any) => {
-    const soId = row?.so_id; // Replace with actual key for employee ID
+    const soId = row?.so_id;
     window.open(`/sales/order/update/${soId.replaceAll("/", "_")}`, "_blank");
     // dispatch(fetchDataForUpdate({ clientCode: soId }));
   };
@@ -61,7 +61,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   // };
   const handleshowMaterialListForApprove = (row: RowData) => {
     // CHANGE: Navigate to the new approval page instead of opening modal
-    navigate(`/sales/order/approve?so_id=${encodeURIComponent(row?.so_id)}`);
+      const url = `/sales/order/approve?so_id=${encodeURIComponent(row?.so_id)}`;
+     window.open(url, "_blank");
+     
   };
 
   // const confirmApprove = () => {
