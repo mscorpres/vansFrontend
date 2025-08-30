@@ -42,6 +42,7 @@ spigenAxios.interceptors.request.use(async (config) => {
   );
   if (loggedInUser) {
     config.headers["authorization"] = loggedInUser.token;
+    config.headers["x-windows-url"]=window.location.href;
   }
   return config;
 });
