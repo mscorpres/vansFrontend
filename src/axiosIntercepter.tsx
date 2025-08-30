@@ -1,6 +1,7 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { toast as toasts } from "@/components/ui/use-toast";
+
 const socketLink: string = import.meta.env.VITE_REACT_APP_SOCKET_BASE_URL;
 const imsLink: string = import.meta.env.VITE_REACT_APP_API_BASE_URL;
 
@@ -10,7 +11,7 @@ interface LoggedInUser {
 
 interface ErrorResponse {
   success?: boolean;
-  message?: string;
+  message?: string | { msg?: string };
   data?: {
     logout?: boolean;
   };
@@ -32,7 +33,7 @@ const otherData: OtherData | null = JSON.parse(
 const spigenAxios = axios.create({
   baseURL: imsLink,
   headers: {
-    "authorization": loggedInUser?.token,
+    authorization: loggedInUser?.token,
   },
 });
 
@@ -42,7 +43,7 @@ spigenAxios.interceptors.request.use(async (config) => {
   );
   if (loggedInUser) {
     config.headers["authorization"] = loggedInUser.token;
-    config.headers["x-windows-url"]=window.location.href;
+    config.headers["x-windows-url"] = window.location.href;
   }
   return config;
 });
@@ -55,17 +56,27 @@ spigenAxios.interceptors.response.use(
     return response;
   },
   (error: AxiosError<ErrorResponse>) => {
+    // Handle 401 Unauthorized
+    if (error.response?.status === 401) {
+      toast.error("Session expired. Logging out...");
+      localStorage.clear();
+      window.location.reload();
+      return Promise.reject(error);
+    }
+
+    // Existing error handling
     if (error.response && typeof error.response.data === "object") {
       const errorData = error.response.data;
-      toast.error(errorData?.message.msg || errorData.errors);
-      console.log(errorData);
+
+      // Handle specific error cases
       if (errorData?.data?.logout) {
         toast.error(errorData.message || "Logout error.");
         localStorage.clear();
         window.location.reload();
         return Promise.reject(error);
       }
-   if (errorData.success === false || errorData?.status == "error") {
+
+      if (errorData.success === false || errorData?.status === "error") {
         if (errorData?.message?.msg) {
           toasts({
             title: errorData?.message?.msg,
@@ -99,8 +110,8 @@ spigenAxios.interceptors.response.use(
 
 const branch: string = otherData?.company_branch ?? "BRMSC012";
 const session: string = otherData?.session ?? "25-26";
-const savedSession = JSON.parse(localStorage.getItem("loggedInUser") || '{}')?.session || "25-26";
-
+const savedSession = JSON.parse(localStorage.getItem("loggedInUser") || "{}")
+  ?.session || "25-26";
 
 spigenAxios.defaults.headers["Company-Branch"] = branch;
 spigenAxios.defaults.headers["Session"] = savedSession;
