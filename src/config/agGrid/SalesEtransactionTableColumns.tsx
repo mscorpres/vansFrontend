@@ -6,7 +6,7 @@ import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/Confir
 import { AppDispatch } from "@/store";
 import { useDispatch } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
-import { printSellInvoice } from "@/features/salesmodule/salesInvoiceSlice";
+import { printEwayBill, printSellInvoice } from "@/features/salesmodule/salesInvoiceSlice";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
 import { downloadFunction, printFunction } from "@/components/shared/PrintFunctions";
 import { cancelEInvoice, cancelEwayBill } from "@/features/salesmodule/salesTransactionSlice";
@@ -19,19 +19,48 @@ const ActionMenu: React.FC<any> = ({ row }) => {
   const [form] = Form.useForm();
 
   const handlePrintInvoice = async (orderId: string, section: string) => {
-    if (section === "e-waybill") {
-      toast({
-        title: "Cannot Generate print of Eway Bill",
-        className: "bg-green-600 text-white items-center",
-      });
-    } else {
-      dispatch(
-        printSellInvoice({ invoiceNo: orderId, printType: "Original" })
-      ).then((response: any) => {
+    try {
+      if (section === "e-waybill" && row?.ewaybillno) {
+        const response = await dispatch(
+          printEwayBill({ ewayBillNo: orderId, printType: "Original" })
+        );
         if (response?.payload?.success) {
-          downloadFunction(response?.payload?.data.buffer.data,
-            response?.payload?.data.filename);
+          downloadFunction(
+            response?.payload?.data.buffer.data,
+            response?.payload?.data.filename
+          );
+        } else {
+          toast({
+            title: "Failed to print e-waybill",
+            className: "bg-red-600 text-white items-center",
+          });
         }
+      } else if (section === "e-invoice" && row?.invoiceNo) {
+        const response = await dispatch(
+          printSellInvoice({ invoiceNo: orderId, printType: "Original" })
+        );
+        if (response?.payload?.success) {
+          downloadFunction(
+            response?.payload?.data.buffer.data,
+            response?.payload?.data.filename
+          );
+        } else {
+          toast({
+            title: "Failed to print e-invoice",
+            className: "bg-red-600 text-white items-center",
+          });
+        }
+      } else {
+        toast({
+          title: "Invalid document details",
+          className: "bg-red-600 text-white items-center",
+        });
+      }
+    } catch (error) {
+      console.error("Print error:", error);
+      toast({
+        title: "An error occurred while printing",
+        className: "bg-red-600 text-white items-center",
       });
     }
   };
@@ -57,7 +86,6 @@ const ActionMenu: React.FC<any> = ({ row }) => {
       })
       .catch((errorInfo) => {
         console.error("Validation Failed:", errorInfo);
-        // form.resetFields();
       });
   };
 
@@ -85,6 +113,7 @@ const ActionMenu: React.FC<any> = ({ row }) => {
       return cancelEwayBill(payload);
     }
   };
+
   const menu = (
     <Menu>
       <Menu.Item
@@ -98,8 +127,8 @@ const ActionMenu: React.FC<any> = ({ row }) => {
           setCancelModalVisible(true);
         }}
         disabled={
-          row.eInvoice_status == "CANCELLED" ||
-          row.ewaybill_status == "CANCELLED"
+          row.eInvoice_status === "CANCELLED" ||
+          row.ewaybill_status === "CANCELLED"
         }
       >
         Cancel
@@ -109,12 +138,12 @@ const ActionMenu: React.FC<any> = ({ row }) => {
         onClick={() => {
           if (row?.eInvoiceNo) {
             handlePrintInvoice(row?.invoiceNo, "e-invoice");
-          } else if (row?.eway_bill_no) {
-            handlePrintInvoice(row?.eway_bill_no, "e-waybill");
+          } else if (row?.ewaybillno) {
+            handlePrintInvoice(row?.ewaybillno, "e-waybill");
           } else {
             toast({
-              title: "In Development , We will Update Soon!",
-              className: "bg-blue-600 text-white items-center",
+              title: "No valid document to print",
+              className: "bg-red-600 text-white items-center",
             });
           }
         }}

@@ -27,6 +27,7 @@ interface SellShipmentState {
   data: SellInvoiceData[];
   challanDetails: any[];
   invoiceData: any[];
+  dataNotes: any[];
   ewayBillData: any[];
   loading: boolean;
   error: string | null;
@@ -36,6 +37,7 @@ const initialState: SellShipmentState = {
   data: [],
   challanDetails: [],
   invoiceData: [],
+  dataNotes: [],
   ewayBillData: [],
   loading: false,
   error: null,
@@ -43,6 +45,12 @@ const initialState: SellShipmentState = {
 interface FetchSellInvoicePayload {
   type: any;
   data: string;
+}
+
+interface CreditNote {
+  invoice_id: string;
+  other_ref: string;
+  material: {};
 }
 
 interface CancelPayload {
@@ -74,6 +82,58 @@ export const printSellInvoice = createAsyncThunk(
       const url =
         spigenAxios.defaults.baseURL +
         `/salesInvoice/printEInvoice?invoiceNo=${encodeURIComponent(
+          modifiedInvoice
+        )}&printType=${encodeURIComponent(payload.printType)}`;
+
+      // Make the GET request
+      window.open(url, "_blank");
+      return;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle error using rejectWithValue
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+export const printExportInvoice = createAsyncThunk(
+  "client/printSellInvoice",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      // Replace / with _ in so_invoice
+      const modifiedInvoice = payload.invoiceNo.replace(/\//g, "_");
+
+      // Construct the URL with query parameters
+      const url =
+        spigenAxios.defaults.baseURL +
+        `/salesInvoice/printExportInvoice?invoiceNo=${encodeURIComponent(
+          modifiedInvoice
+        )}&printType=${encodeURIComponent(payload.printType)}`;
+
+      // Make the GET request
+      window.open(url, "_blank");
+      return;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle error using rejectWithValue
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+export const printEwayBill = createAsyncThunk(
+  "client/Ewaybill",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      // Replace / with _ in so_invoice
+      const modifiedInvoice = payload.ewayBillNo.replace(/\//g, "_");
+
+      // Construct the URL with query parameters
+      const url =
+        spigenAxios.defaults.baseURL +
+        `/salesInvoice/printEwayBill?ewayBillNo=${encodeURIComponent(
           modifiedInvoice
         )}&printType=${encodeURIComponent(payload.printType)}`;
 
@@ -262,6 +322,113 @@ export const generateEInvoice = createAsyncThunk(
   }
 );
 
+export const createCreditNote = createAsyncThunk(
+  "client/createcreditNote",
+  async (payload: CreditNote, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "/enote/createCreditNote",
+        payload
+      )) as any;
+
+      if (response?.data?.success) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      } else {
+        toast({
+          title: response.data.message,
+          className: "bg-red-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+export const fetchDataNotes = createAsyncThunk(
+  "so/fetchDataNotes",
+  async ({ shipment_id }: { shipment_id: string }, { rejectWithValue }) => {
+    try {
+      const response = await spigenAxios.get<any>(
+        `/enote/fetchData4notes?shipment_id=${shipment_id}`,
+     
+      );
+
+      if (!response.data) {
+        throw new Error("No data received");
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+export const fetchNoteData = createAsyncThunk(
+  "enote/fetchCreditNoteEinvoice",
+  async ({ note_no }: { note_no: string }, { rejectWithValue }) => {
+    try {
+      const response = await spigenAxios.get<any>(
+        `/enote/fetchCreditNoteEinvoice?so_note_id=${note_no}`,
+     
+      );
+
+      if (!response.data) {
+        throw new Error("No data received");
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+//create credinote einvoice
+export const createCreditEinvoice = createAsyncThunk(
+  "client/createCreditNoteEinvoice",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.post<any>(
+        "enote/createCreditNoteEinvoice",
+        payload
+      )) as any;
+
+      if (response?.data?.success) {
+        toast({
+          title: response?.data?.message,
+          className: "bg-green-600 text-white items-center",
+        });
+      } else {
+        toast({
+          title: response.data.message,
+          className: "bg-red-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 export const fetchInvoiceDetail = createAsyncThunk(
   "client/fetchInvoiceDetail",
   async ({ invoiceNo }: { invoiceNo: string }, { rejectWithValue }) => {
@@ -400,7 +567,42 @@ const sellInvoiceSlice = createSlice({
       .addCase(downloadEInvoiceList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      });
+      })
+      .addCase(fetchDataNotes.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchDataNotes.fulfilled, (state, action) => {
+        state.dataNotes = action.payload?.data || []; 
+        state.loading = false;
+      })
+      .addCase(fetchDataNotes.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.loading = false;
+      })
+      .addCase(fetchNoteData.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchNoteData.fulfilled, (state, action) => {
+        state.ewayBillData = action.payload.data;
+        state.loading = false;
+      })
+      .addCase(fetchNoteData.rejected, (state, action) => {
+        state.error = action.error?.message || null;
+        state.loading = false;
+      })
+      .addCase(createCreditEinvoice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createCreditEinvoice.fulfilled, (state, action) => {
+        state.loading = false;
+        state.invoiceData = action.payload.data;
+      })
+      .addCase(createCreditEinvoice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
   },
 });
 
