@@ -268,7 +268,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
 // Custom cell renderer for SO ID with strike-through for cancelled orders
 const SoIdCellRenderer = (params: any) => {
-  const isCancelled = params.data?.soStatus === "Cancelled";
+  const isCancelled = params.data?.soStatus === "Cancelled" || params.data?.approveStatus === "Rejected";
+  
   
   return (
     <div style={{ 
