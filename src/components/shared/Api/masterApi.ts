@@ -399,8 +399,7 @@ export const fetchR2 = async (payload: any) => {
 };
 export const fetchR3 = async (payload: any) => {
   const response = await spigenAxios.get(
-    `report3?date=${payload.date}&product=${payload.product}&subject=${payload.subject}`
-    // payload
+    `/report3?wise=${payload.wise}&data=${payload.data}`
   );
   return response;
 };
@@ -408,6 +407,12 @@ export const fetchR4 = async (payload: any) => {
   const response = await spigenAxios.get(
     "/report4/allItemClosingStock",
     payload
+  );
+  return response;
+};
+export const fetchR8 = async (payload: any) => {
+  const response = await spigenAxios.get(
+    `/report8?wise=${payload.wise}&data=${payload.data}`
   );
   return response;
 };

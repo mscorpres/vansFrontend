@@ -43,7 +43,7 @@ const ReportaLayout = (props: { children: React.ReactNode }) => {
               R3
             </NavLink>
             <span className="absolute left-1/2 transform -translate-x-1/2 top-full mt-1 hidden group-hover/item:block bg-yellow-300 text-black text-xs rounded py-1 px-2 z-20 whitespace-nowrap">
-              BOM Wise Report
+              ALL Inward Report
             </span>
           </li>
           <li className="h-[50px] relative group/item">
@@ -96,6 +96,33 @@ const ReportaLayout = (props: { children: React.ReactNode }) => {
             </NavLink>
             <span className="absolute left-1/2 transform -translate-x-1/2 top-full mt-1 hidden group-hover/item:block bg-yellow-300 text-black text-xs rounded py-1 px-2 z-20 whitespace-nowrap">
               Sales Order Report
+            </span>
+          </li>
+
+          <li className="h-[50px] relative group/item">
+            <NavLink
+              to={"/inventory/report/r8"}
+              className={({ isActive }) =>
+                `${navLinkStyle} ${isActive && navlinkActiveStyle}`
+              }
+            >
+              R8
+            </NavLink>
+            <span className="absolute left-1/2 transform -translate-x-1/2 top-full mt-1 hidden group-hover/item:block bg-yellow-300 text-black text-xs rounded py-1 px-2 z-20 whitespace-nowrap">
+              All Outward Report
+            </span>
+          </li>
+          <li className="h-[50px] relative group/item">
+            <NavLink
+              to={"/inventory/report/r9"}
+              className={({ isActive }) =>
+                `${navLinkStyle} ${isActive && navlinkActiveStyle}`
+              }
+            >
+              R9
+            </NavLink>
+            <span className="absolute left-1/2 transform -translate-x-1/2 top-full mt-1 hidden group-hover/item:block bg-yellow-300 text-black text-xs rounded py-1 px-2 z-20 whitespace-nowrap">
+              Aging report
             </span>
           </li>
         </ul>

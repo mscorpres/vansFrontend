@@ -77,6 +77,26 @@ const ReportLayout = (props: { children: React.ReactNode }) => {
               R7
             </NavLink>
           </li>
+          <li className="h-[50px]">
+            <NavLink
+              to={"/inventory/r8"}
+              className={({ isActive }) =>
+                `${navLinkStyle} ${isActive && navlinkActiveStyle}`
+              }
+            >
+              R8
+            </NavLink>
+          </li>
+          <li className="h-[50px]">
+            <NavLink
+              to={"/inventory/r9"}
+              className={({ isActive }) =>
+                `${navLinkStyle} ${isActive && navlinkActiveStyle}`
+              }
+            >
+              R9
+            </NavLink>
+          </li>
         </ul>
       </div>
       <div className="h-[calc(100vh-100px)] bg-transparent overflow-y-auto ">

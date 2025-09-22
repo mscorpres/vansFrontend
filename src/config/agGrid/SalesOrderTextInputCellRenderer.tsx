@@ -150,6 +150,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
           const selectedComponent = componentDetails?.find(
             (item: any) => item.id === value
           );
+          data["soq"]= componentData?.soq;
           data["stock"] = componentData?.closingQty;
           data["materialName"] = selectedComponent?.text || data.materialName; // Preserve existing materialName if not found
           data["hsnCode"] = componentData?.hsn;
@@ -538,6 +539,7 @@ const SalesOrderTextInputCellRenderer = (props: any) => {
       case "igst":
       case "partno":
       case "stock":
+        case "soq":
         return (
           <Input
             readOnly

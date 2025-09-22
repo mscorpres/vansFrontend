@@ -1,6 +1,7 @@
 export interface RowData {
   type?: string;
   material?: string;
+    itemName?: string;
   lcValue?: number;
   asinNumber?: string;
   orderQty?: number;
@@ -21,6 +22,9 @@ export interface RowData {
   exchangeRate?: number;
   updateid?: string;
   partno?: string;
+  exchange_rate?: number;
+  
+
 }
 
 export const columnDefs = [
@@ -58,6 +62,14 @@ export const columnDefs = [
   {
     headerName: "Order Qty",
     field: "orderQty",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "soq qty",
+    field: "soq",
     editable: false,
     flex: 1,
     cellRenderer: "textInputCellRenderer",
@@ -216,6 +228,159 @@ export const dummyData: RowData[] = [
     igst: 0,
     dueDate: "2024-07-30",
     hsnCode: "987654",
+  },
+];
+export const creditNoteColumnDefs = [
+  {
+    headerName: "",
+    valueGetter: "node.rowIndex + 1",
+    cellRenderer: "textInputCellRenderer",
+    maxWidth: 100,
+    field: "delete",
+  },
+  {
+    headerName: "#",
+    valueGetter: "node.rowIndex + 1",
+    maxWidth: 100,
+  },
+
+  {
+    headerName: "Item Code",
+    field: "material",
+    editable: false,
+    flex: 4,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 500,
+  },
+  
+  {
+    headerName: "Part No",
+    field: "partno",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+
+  {
+    headerName: "Part Name",
+    field: "itemName",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 300,
+  },
+  {
+    headerName: "Material Description",
+    field: "materialDescription",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 300,
+  },
+  {
+    headerName: "Order Qty",
+    field: "orderQty",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "Rate",
+    field: "rate",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "Currency",
+    field: "currency",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "Exchange Rate",
+    field: "exchange_rate",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "GST Rate",
+    field: "gstRate",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "GST Type",
+    field: "gstType",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "Local Value",
+    field: "localValue",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "CGST",
+    field: "cgst",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "SGST",
+    field: "sgst",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "IGST",
+    field: "igst",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "Due Date",
+    field: "dueDate",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "HSN Code",
+    field: "hsnCode",
+    editable: false,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
+  },
+  {
+    headerName: "Remark",
+    field: "remark",
+    editable: true,
+    flex: 1,
+    cellRenderer: "textInputCellRenderer",
+    minWidth: 200,
   },
 ];
 

@@ -34,8 +34,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dateRange = useSelector((state: RootState) => state.sellRequest.dateRange);
 
   const showCancelModal = () => {
-    setIsModalVisible(true);
-  };
+    setIsModalVisible(true); 
+   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
