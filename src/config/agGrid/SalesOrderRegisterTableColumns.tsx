@@ -265,6 +265,22 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     </>
   );
 };
+
+// Custom cell renderer for SO ID with strike-through for cancelled orders
+const SoIdCellRenderer = (params: any) => {
+  const isCancelled = params.data?.soStatus === "Cancelled" || params.data?.approveStatus === "Rejected";
+  
+  
+  return (
+    <div style={{ 
+      textDecoration: isCancelled ? 'line-through' : 'none',
+      // color: isCancelled ? '#000' : 'inherit',
+      fontWeight: isCancelled ? '500' : 'normal'
+    }}>
+      {params.value}
+    </div>
+  );
+};
 export default ActionMenu;
 
 export const columnDefs: ColDef<any>[] = [
@@ -284,6 +300,7 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "SO ID",
     field: "so_id",
     filter: "agTextColumnFilter",
+    cellRenderer: SoIdCellRenderer, 
   },
   {
     headerName: "Approve Status",

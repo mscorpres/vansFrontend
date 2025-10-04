@@ -61,6 +61,7 @@ import R4 from "./pages/ReportsModule/R4";
 import R3 from "./pages/ReportsModule/R3";
 import R6 from "./pages/ReportsModule/R6";
 import R7 from "./pages/ReportsModule/R7";
+import R8 from "./pages/ReportsModule/R8";
 import ClientLayout from "./layouts/Master/ClientLayout";
 import Hsn from "./pages/masterModule/HSN/Hsn";
 import EditBom from "./pages/masterModule/Bom/EditBom";
@@ -114,6 +115,7 @@ import { useSelector } from "react-redux";
 import OtpPage from "@/pages/otpPage";
 import RecoveryPassword from "@/pages/RecoveryPassword";
 import ApproveSalesOrderPage from "./config/agGrid/ApproveSalesOrderPage";
+import R9 from "./pages/ReportsModule/R9";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -621,6 +623,32 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/inventory/report/r7",
+
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <ReportaLayout>
+            <R8 />
+          </ReportaLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/inventory/report/r8",
+
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <ReportaLayout>
+            <R9 />
+          </ReportaLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/inventory/report/r9",
 
   },
   ///////////////////////////////////////////////

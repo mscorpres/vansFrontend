@@ -1,4 +1,4 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -24,26 +24,21 @@ import {
 import styled from "styled-components";
 import { DatePicker, Space } from "antd";
 import Select from "react-select";
+import moment from "moment";
 
 import useApi from "@/hooks/useApi";
 
 import { fetchR7 } from "@/components/shared/Api/masterApi";
-import { exportDateRangespace } from "@/components/shared/Options";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-import { rangePresets } from "@/General";
 
 const FormSchema = z.object({
   date: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
+    .date()
+    .optional(),
   types: z.string().optional(),
   search: z.string().optional(),
 });
@@ -54,9 +49,8 @@ const R7 = () => {
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
-  const { RangePicker } = DatePicker;
 
-  const dateFormat = "YYYY/MM/DD";
+  const dateFormat = "DD/MM/YYYY";
   const theType = form.watch("types");
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
@@ -65,7 +59,8 @@ const R7 = () => {
     let dataString = "";
 
     if (date) {
-      dataString = exportDateRangespace(date);
+      // Format single date as DD-MM-YYYY for the backend
+      dataString = moment(date).format("DD-MM-YYYY");
     } else {
       dataString = search;
     }
@@ -89,142 +84,137 @@ const R7 = () => {
     } else {
     }
   };
+
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "R7 PO Report");
+    downloadCSV(rowData, columnDefs, "R7 SO Report");
   };
+
   useEffect(() => {
     // fetchComponentList();
   }, []);
 
- const columnDefs: ColDef<RowData>[] = [
-  {
-    headerName: "ID",
-    field: "id",
-    filter: "agNumberColumnFilter",
-    width: 90,
-  },
-  {
-    headerName: "PO Number",
-    field: "po_number",
-    cellRenderer: CopyCellRenderer,
-    filter: "agTextColumnFilter",
-    width: 190,
+  const columnDefs: ColDef<RowData>[] = [
+    {
+      headerName: "ID",
+      field: "id",
+      filter: "agNumberColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: "PO Number",
+      field: "po_number",
+      cellRenderer: CopyCellRenderer,
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "PO Date",
+      field: "po_date",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "SO Order Id",
+      field: "so_id",
+      filter: "agTextColumnFilter",
+      cellRenderer: CopyCellRenderer,
+      width: 220,
+    },
+    {
+      headerName: "Customer Name",
+      field: "clients",
+      filter: "agTextColumnFilter",
+      minWidth: 240,
+      flex: 1,
+    },
+    {
+      headerName: "Part No.",
+      field: "part_no",
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
+      headerName: "Compenent",
+      field: "component_name",
+      filter: "agTextColumnFilter",
+      minWidth: 190,
+      flex: 1,
+    },
+    {
+      headerName: "Description",
+      field: "specification",
+      filter: "agTextColumnFilter",
+      width: 250,
+      minWidth: 250,
+    },
+    {
+      headerName: "Due Date",
+      field: "due_date",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
+      headerName: "Qty",
+      field: "total_qty",
+      filter: "agTextColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: "UoM",
+      field: "units_name",
+      filter: "agTextColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: " Pending Qty",
+      field: "pending_qty",
+      filter: "agTextColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: "Rate",
+      field: "rate",
+      filter: "agTextColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: "Currency",
+      field: "currency_label",
+      filter: "agTextColumnFilter",
+      width: 40,
+    },
+    {
+      headerName: "Currency Sym",
+      field: "currency_symbol",
+      filter: "agTextColumnFilter",
+      width: 40,
+    },
+    // {
+    //   headerName: "Customer Code",
+    //   field: "customer_code",
+    //   filter: "agTextColumnFilter",
+    //   width: 150,
+    // },
+    {
+      headerName: "Cost Center",
+      field: "cost_center",
+      filter: "agTextColumnFilter",
+      width: 150,
+    },
+    {
+      headerName: "SO Date",
+      field: "reg_date",
+      filter: "agTextColumnFilter",
+      width: 140,
+    },
+    {
+      headerName: "Created By",
+      field: "created_by",
+      filter: "agTextColumnFilter",
+      width: 140,
+    },
+  ];
 
-  },
-  
-  {
-    headerName: "PO Date",
-    field: "po_date",
-  
-    filter: "agTextColumnFilter",
-    width: 190,
-
-  },
-   {
-    headerName: "SO Order Id",
-    field: "so_id",
-    filter: "agTextColumnFilter",
-    cellRenderer: CopyCellRenderer,
-    width: 220,
-  },
-  {
-    headerName: "Customer Name",
-    field: "clients",
-
-    filter: "agTextColumnFilter",
-    minWidth: 240,
-    flex: 1,
-  },
-  {
-    headerName: "Part No.",
-    field: "part_no",
-    filter: "agTextColumnFilter",
-    
-    width: 190,
-  },
-  {
-    headerName: "Compenent",
-    field: "component_name",
-    filter: "agTextColumnFilter",
-   
-    minWidth: 190,
-    flex: 1,
-  },
-  {
-    headerName: "Description",
-    field: "specification",
-    filter: "agTextColumnFilter",
-    width: 250,
-    minWidth: 250,
-  },
-  {
-    headerName: "Due Date",
-    field: "due_date",
-    filter: "agTextColumnFilter",
-    width: 150,
-  },
-  {
-    headerName: "Qty",
-    field: "total_qty",
-    filter: "agTextColumnFilter",
-    width: 90,
-  },
-  {
-    headerName: "UoM",
-    field: "units_name",
-    filter: "agTextColumnFilter",
-    width: 90,
-  },
-  {
-    headerName: " Pending Qty",
-    field: "pending_qty",
-    filter: "agTextColumnFilter",
-    width: 90,
-  },
-  {
-    headerName: "Rate",
-    field: "rate",
-    filter: "agTextColumnFilter",
-    width: 90,
-  },
-  {
-    headerName: "Currency",
-    field: "currency_label",
-    filter: "agTextColumnFilter",
-    width: 40,
-  },
-  {
-    headerName: "Currency Sym",
-    field: "currency_symbol",
-    filter: "agTextColumnFilter",
-    width: 40,
-  },
-  {
-    headerName: "Customer Code",
-    field: "customer_code",
-    filter: "agTextColumnFilter",
-    width: 150,
-  },
-  {
-    headerName: "Cost Center",
-    field: "cost_center",
-    filter: "agTextColumnFilter",
-    width: 150,
-  },
-  {
-    headerName: "SO Date",
-    field: "reg_date",
-    filter: "agTextColumnFilter",
-    width: 140,
-  },
- 
-  {
-    headerName: "Created By",
-    field: "created_by",
-    filter: "agTextColumnFilter",
-    width: 140,
-  },
-];
   const type = [
     {
       label: "Pending",
@@ -234,7 +224,6 @@ const R7 = () => {
       label: "All",
       value: "A",
     },
-  
     {
       label: "Completed",
       value: "C",
@@ -283,7 +272,7 @@ const R7 = () => {
                       <FormControl>
                         <Input
                           className={InputStyle}
-                          placeholder="Search"
+                          placeholder="Search Project Name"
                           {...field}
                         />
                       </FormControl>
@@ -299,15 +288,13 @@ const R7 = () => {
                     <FormItem className="w-[300px] m-0">
                       <FormControl>
                         <Space direction="vertical" size={12} className="w-full">
-                          <RangePicker
+                          <DatePicker
                             className="border shadow-sm border-gray-300 py-[7px] hover:border-gray-400 w-full"
+                            placeholder="Select Date (Up to this date)"
                             onChange={(value) =>
-                              field.onChange(
-                                value ? value.map((date) => date!.toDate()) : []
-                              )
+                              field.onChange(value ? value.toDate() : null)
                             }
-                            format={"DD/MM/YYYY"}
-                            presets={rangePresets}
+                            format={dateFormat}
                           />
                         </Space>
                       </FormControl>

@@ -28,6 +28,7 @@ import { Filter } from "lucide-react";
 import styled from "styled-components";
 import { DatePicker, Space } from "antd";
 import Select from "react-select";
+import moment from "moment";
 
 import useApi from "@/hooks/useApi";
 
@@ -38,16 +39,11 @@ import { IoMdDownload } from "react-icons/io";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
-import { rangePresets } from "@/General";
 
 const FormSchema = z.object({
   date: z
-    .array(z.date())
-    .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
-      message: "Please select a valid date range.",
-    }),
+    .date()
+    .optional(),
   types: z.string().optional(),
   search: z.string().optional(),
 });
@@ -58,9 +54,8 @@ const R2 = () => {
     resolver: zodResolver(FormSchema),
   });
   const { execFun, loading: loading1 } = useApi();
-  const { RangePicker } = DatePicker;
 
-  const dateFormat = "YYYY/MM/DD";
+  const dateFormat = "DD/MM/YYYY";
   const theType = form.watch("types");
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
@@ -69,7 +64,8 @@ const R2 = () => {
     let dataString = "";
 
     if (date) {
-      dataString = exportDateRangespace(date);
+      // Format single date as DD-MM-YYYY for the backend
+      dataString = moment(date).format("DD-MM-YYYY");
     } else {
       dataString = search;
     }
@@ -93,9 +89,11 @@ const R2 = () => {
     } else {
     }
   };
+
   const handleDownloadExcel = () => {
     downloadCSV(rowData, columnDefs, "R2 PO Report");
   };
+
   useEffect(() => {
     // fetchComponentList();
   }, []);
@@ -224,6 +222,7 @@ const R2 = () => {
       minWidth: 250,
     },
   ];
+
   const type = [
     {
       label: "Pending",
@@ -285,7 +284,7 @@ const R2 = () => {
                       <FormControl>
                         <Input
                           className={InputStyle}
-                          placeholder="Search"
+                          placeholder="Search Project Name"
                           {...field}
                         />
                       </FormControl>
@@ -301,15 +300,13 @@ const R2 = () => {
                     <FormItem className="w-[300px] m-0">
                       <FormControl>
                         <Space direction="vertical" size={12} className="w-full">
-                          <RangePicker
+                          <DatePicker
                             className="border shadow-sm border-gray-300 py-[7px] hover:border-gray-400 w-full"
+                            placeholder="Select Date (Up to this date)"
                             onChange={(value) =>
-                              field.onChange(
-                                value ? value.map((date) => date!.toDate()) : []
-                              )
+                              field.onChange(value ? value.toDate() : null)
                             }
-                            format={"DD/MM/YYYY"}
-                            presets={rangePresets}
+                            format={dateFormat}
                           />
                         </Space>
                       </FormControl>

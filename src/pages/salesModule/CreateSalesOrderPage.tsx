@@ -149,6 +149,7 @@ const CreateSalesOrderPage = () => {
         remark: material.itemRemark || "",
         updateid: material?.updateid || 0,
         stock: material?.closingQty,
+        soq: material?.soq,
         isNew: true,
       }));
 

@@ -263,7 +263,7 @@ export const materialmenu = [
         // path: "/not-permission",
         subMenu: [
           { name: "MIN Register", path: "/inventory/min" },
-          { name: "Reports R1-R6", path: "/inventory/report/r1" },
+          { name: "Reports R1-R9", path: "/inventory/report/r1" },
         ],
       },
       { name: "Printing", path: "/warehouse/min/print" },
