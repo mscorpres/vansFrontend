@@ -280,7 +280,7 @@ const LogningV2: React.FC = () => {
                 </div>
               </div>
               <div className=" flex justify-center">
-              <ReCAPTCHA sitekey="6Lcg8N8qAAAAAPBlPUssamaVv6yLzeA9nPXmUlT_" onChange={handleRecaptchaChange} key={recaptchaKey}/>
+              <ReCAPTCHA sitekey="6LdmVcArAAAAAOb1vljqG4DTEEi2zP1TIjDd_0wR" onChange={handleRecaptchaChange} key={recaptchaKey}/>
             </div>
               <LoadingButton
                 loading={loading}

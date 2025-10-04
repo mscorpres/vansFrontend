@@ -49,7 +49,8 @@ const OtpPage: React.FC = () => {
   // Handle OTP submission
   const handleOtpSubmit = () => {
     if (!otp) return showToast("Please enter the OTP", "error");
-    dispatch(verifyOtpAsync({ otp: otp, secret: secretKey })).then((res: any) => {
+    const username = localStorage.getItem("username");
+    dispatch(verifyOtpAsync({ otp: otp, secret: secretKey,username:username })).then((res: any) => {
       if (res?.payload?.data?.success) {
         showToast(res.payload?.data?.message, "success");
         window.location.replace("/"); // Assuming "/dashboard" is the user landing page
@@ -97,7 +98,7 @@ const OtpPage: React.FC = () => {
           className="mt-4"
         >
           {!isShowQr
-            ? "Enter the OTP from your device."
+            ? "Enter the OTP from your email address."
             : "Scan the QR code with your authentication app to enable 2FA, then enter the OTP."}
         </Typography>
 

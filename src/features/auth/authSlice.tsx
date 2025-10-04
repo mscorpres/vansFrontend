@@ -90,7 +90,7 @@ export const getQRStatus = createAsyncThunk<
 
 export const verifyOtpAsync = createAsyncThunk<
   AxiosResponse<{ success: boolean; message: string }>,
-  { otp: string; secret: string }
+  { otp: string; secret: string, username: string }
 >("auth/verifyOtpAsync", async (paylaod) => {
   const response = await spigenAxios.post("/auth/verify", paylaod);
   return response;
@@ -136,6 +136,7 @@ const authSlice = createSlice({
         if (!data) {
           state.qrStatus = action.payload.data;
           localStorage.setItem("showOtpPage",action.payload.data?.isTwoStep);
+          localStorage.setItem("username",action.payload.data?.username);
           const userObj = {
             token: action.payload.data.token,
           };
