@@ -58,7 +58,7 @@ const LogningV2: React.FC = () => {
       showToast("Please verify the reCAPTCHA", "error");
       return;
     }
-    dispatch(loginUserAsync(data)).then((response: any) => {
+    dispatch(loginUserAsync({...data,recaptchaToken:recaptchaValue})).then((response: any) => {
 
       if (response?.payload?.data?.success) {
         toast({
