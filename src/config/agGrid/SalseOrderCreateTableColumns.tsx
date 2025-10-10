@@ -6,7 +6,11 @@ export interface RowData {
   asinNumber?: string;
   orderQty?: number;
   rate?: number;
-  currency?: string;
+  currency:{
+    symbol: string
+    id: string
+    label: string
+  }
   gstRate?: number;
   gstType?: string;
   fcValue?: number;

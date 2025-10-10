@@ -197,7 +197,7 @@ export const materialmenu = [
       { name: "Sales Order Register", path: "/sales/order/register" },
       { name: "Sales Order Shipment", path: "/sales/order/shipment" },
       { name: "Invoice Register", path: "/sales/order/invoice" },
-      // { name: "Allocated Invoices", path: "/sales/order/allocated" },
+      { name: "Credit Note", path: "/sales/order/allocated" },
       {
         name: "e-Transaction Invoices",
         path: "/sales/order/e-transaction-register",

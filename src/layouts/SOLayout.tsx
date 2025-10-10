@@ -34,11 +34,11 @@ const SOLayout = (props: { children: React.ReactNode }) => {
             Invoice Register
             </NavLink>
           </li>
-          {/* <li className="h-[50px]">
+          <li className="h-[50px]">
             <NavLink to={"/sales/order/allocated"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
-              Allocated Invoice
+              CN/DN Register
             </NavLink>
-          </li>*/}
+          </li>
           <li className="h-[50px]">
             <NavLink to={"/sales/order/e-transaction-register"} className={({ isActive }) => `${navLinkStyle} ${isActive && navlinkActiveStyle}`}>
             <Package className="h-4 w-4 mr-2" />

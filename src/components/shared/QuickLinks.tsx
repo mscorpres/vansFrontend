@@ -64,11 +64,11 @@ const navLinks = [
     label: "Invoice Register",
     value: "invoice",
   },
-  // {
-  //   href: "/sales/order/allocated",
-  //   label: "Allocated Invoices",
-  //   value: "allocated-invoices",
-  // },
+  {
+    href: "/sales/order/allocated",
+    label: "Credit Note",
+    value: "allocated-invoices",
+  },
   {
     href: "/sales/order/e-transaction-register",
     label: "E Transaction Register",

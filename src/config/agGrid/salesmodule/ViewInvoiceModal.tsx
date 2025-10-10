@@ -75,6 +75,8 @@ interface ViewInvoiceModalProps {
     }[];
   };
   handlePrintInvoice: any;
+  handleExportInvoice: any;
+  
   loading: boolean;
 }
 
@@ -83,6 +85,8 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
   onClose,
   sellRequestDetails,
   handlePrintInvoice,
+  handleExportInvoice,
+
   loading,
 }) => {
   const columnDefs: ColDef[] = [
@@ -144,6 +148,7 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
       `width=${width},height=${height},top=${top},left=${left},status=1,scrollbars=1,location=0,resizable=yes`
     );
   }
+  
 
   const handleEwayClick = (module: string) => {
     const shipmentId = sellRequestDetails?.headerData?.invoiceNo || "";
@@ -156,6 +161,8 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
       fnOpenNewWindow(`/salesOrder/e-way/${sanitizedShipmentId}`);
     }
   };
+   const isExportInvoice = sellRequestDetails?.headerData?.invoiceNo?.startsWith("EXP");
+  console.log("sellRequestDetails", sellRequestDetails);
 
   return (
     <Sheet open={visible} onOpenChange={onClose}>
@@ -373,6 +380,18 @@ const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
                       >
                         Transporter
                       </DropdownMenuItem>
+                        {isExportInvoice && (
+                    <DropdownMenuItem
+                      onClick={() =>
+                        handleExportInvoice(
+                          sellRequestDetails?.headerData?.invoiceNo,
+                          "Original"
+                        )
+                      }
+                    >
+                      Export
+                    </DropdownMenuItem>
+                  )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

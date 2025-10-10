@@ -17,6 +17,7 @@ import salesInvoiceSlice from "@/features/salesmodule/salesInvoiceSlice";
 import storeSlice from "@/features/client/storeSlice";
 import sopRedeucer from "@/features/Sop/sopSlice";
 import dashboardReducer from "../features/dashboard/salesOrderSlice";
+import creditDebitRegisterSlice from "../features/salesmodule/creditDebitRegisterSlice";
 
 export const store = configureStore({
   reducer: {
@@ -38,6 +39,7 @@ export const store = configureStore({
     sop: sopRedeucer,
     favorites: favoritesReducer,
     dashboard: dashboardReducer,
+    creditDebitRegister:creditDebitRegisterSlice,
   },
 });
 export type RootState = ReturnType<typeof store.getState>;
