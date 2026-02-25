@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Search, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FaChartLine, FaShoppingCart, FaFileInvoice, FaUsers, FaUserTie, FaCubes } from "react-icons/fa";
+import { FaShoppingCart, FaFileInvoice, FaUsers, FaUserTie, FaCubes } from "react-icons/fa";
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -76,11 +76,50 @@ const chartOptions: ChartOptions<"line" | "bar"> = {
   plugins: {
     legend: {
       position: "top",
+      labels: {
+        usePointStyle: true,
+        padding: 15,
+        font: {
+          size: 12,
+          weight: 500,
+        },
+      },
+    },
+    tooltip: {
+      backgroundColor: "rgba(0, 0, 0, 0.8)",
+      padding: 12,
+      titleFont: {
+        size: 14,
+        weight: 600,
+      },
+      bodyFont: {
+        size: 13,
+      },
+      cornerRadius: 8,
+      displayColors: true,
     },
   },
   scales: {
     y: {
       beginAtZero: true,
+      grid: {
+        color: "rgba(0, 0, 0, 0.05)",
+      },
+      ticks: {
+        font: {
+          size: 11,
+        },
+      },
+    },
+    x: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        font: {
+          size: 11,
+        },
+      },
     },
   },
 };
@@ -170,93 +209,139 @@ const HomePage: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 relative z-0">
       {/* Header Section */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white/80 backdrop-blur-sm shadow-md border-b border-gray-200/50 sticky top-0 z-[5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {getGreeting()}, let's drive your business to new heights today!
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                Dashboard
+              </h1>
+              <p className="text-sm text-gray-600 mt-1 font-medium">
+                {getGreeting()}, let's drive your business to new heights today! 🚀
+              </p>
+            </div>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-0">
         {/* Search Bar */}
         <div className="flex justify-center mb-8">
-          <div className="flex items-center w-full max-w-lg border border-gray-300 rounded-full shadow-md bg-white">
+          <div className="flex items-center w-full max-w-lg border-2 border-gray-200 rounded-full shadow-lg bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:border-blue-300">
             <Input
-              className="border-none focus-visible:ring-0 rounded-l-full"
+              className="border-none focus-visible:ring-0 rounded-l-full bg-transparent pl-6"
               placeholder="Search orders, customers, or vendors..."
             />
             <Button
               variant="outline"
-              className="h-10 w-10 p-0 bg-blue-100 rounded-full border-none"
+              className="h-10 w-10 p-0 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-full border-none text-white shadow-md hover:shadow-lg transition-all duration-300"
             >
-              <Search className="h-5 w-5 text-blue-600" />
+              <Search className="h-5 w-5" />
             </Button>
           </div>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          {/* <div className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 hover:shadow-lg transition-shadow">
-            <FaChartLine className="h-10 w-10 text-blue-600" />
-            <div>
-              <p className="text-sm text-gray-500">Total Sales</p>
-              <p className="text-2xl font-semibold text-gray-800">$45,230</p>
-              <p className="text-xs text-green-500">+12% from last month</p>
+          <div className="group bg-gradient-to-br from-white to-green-50/50 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center space-x-4 border border-green-100/50 hover:border-green-300 hover:-translate-y-1">
+            <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <FaShoppingCart className="h-7 w-7 text-white" />
             </div>
-          </div> */}
-          <div className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 hover:shadow-lg transition-shadow">
-            <FaShoppingCart className="h-10 w-10 text-green-600" />
-            <div>
-              <p className="text-sm text-gray-500">Sales Orders</p>
-              <p className="text-2xl font-semibold text-gray-800">
-                {salesLoading ? "Loading..." : salesError ? `Error: ${salesError}` : totalSalesOrders}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">Sales Orders</p>
+              <p className="text-2xl font-bold text-gray-800 truncate">
+                {salesLoading ? (
+                  <span className="text-sm text-gray-400">Loading...</span>
+                ) : salesError ? (
+                  <span className="text-sm text-red-500">Error</span>
+                ) : (
+                  totalSalesOrders.toLocaleString()
+                )}
               </p>
-              <p className={`text-xs ${salesPercentageIncrease >= 0 ? "text-green-500" : "text-red-500"}`}>
-                {salesLoading || salesError ? "" : `${salesPercentageIncrease >= 0 ? "+" : ""}${salesPercentageIncrease}% from last month`}
+              {!salesLoading && !salesError && (
+                <p className={`text-xs font-semibold mt-1 ${salesPercentageIncrease >= 0 ? "text-green-600" : "text-red-600"}`}>
+                  {salesPercentageIncrease >= 0 ? "↑" : "↓"} {Math.abs(salesPercentageIncrease)}% from last month
+                </p>
+              )}
+            </div>
+          </div>
+          
+          <div className="group bg-gradient-to-br from-white to-amber-50/50 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center space-x-4 border border-amber-100/50 hover:border-amber-300 hover:-translate-y-1">
+            <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <FaFileInvoice className="h-7 w-7 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">Purchase Orders</p>
+              <p className="text-2xl font-bold text-gray-800 truncate">
+                {purchaseLoading ? (
+                  <span className="text-sm text-gray-400">Loading...</span>
+                ) : purchaseError ? (
+                  <span className="text-sm text-red-500">Error</span>
+                ) : (
+                  totalPurchaseOrders.toLocaleString()
+                )}
+              </p>
+              {!purchaseLoading && !purchaseError && (
+                <p className={`text-xs font-semibold mt-1 ${purchasePercentageIncrease >= 0 ? "text-green-600" : "text-red-600"}`}>
+                  {purchasePercentageIncrease >= 0 ? "↑" : "↓"} {Math.abs(purchasePercentageIncrease)}% from last month
+                </p>
+              )}
+            </div>
+          </div>
+          
+          <div className="group bg-gradient-to-br from-white to-purple-50/50 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center space-x-4 border border-purple-100/50 hover:border-purple-300 hover:-translate-y-1">
+            <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <FaUsers className="h-7 w-7 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">Total Customers</p>
+              <p className="text-2xl font-bold text-gray-800 truncate">
+                {clientsLoading ? (
+                  <span className="text-sm text-gray-400">Loading...</span>
+                ) : clientsError ? (
+                  <span className="text-sm text-red-500">Error</span>
+                ) : (
+                  totalClients.toLocaleString()
+                )}
               </p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 hover:shadow-lg transition-shadow">
-            <FaFileInvoice className="h-10 w-10 text-yellow-600" />
-            <div>
-              <p className="text-sm text-gray-500">Purchase Orders</p>
-              <p className="text-2xl font-semibold text-gray-800">
-                {purchaseLoading ? "Loading..." : purchaseError ? `Error: ${purchaseError}` : totalPurchaseOrders}
-              </p>
-              <p className={`text-xs ${purchasePercentageIncrease >= 0 ? "text-green-500" : "text-red-500"}`}>
-                {purchaseLoading || purchaseError ? "" : `${purchasePercentageIncrease >= 0 ? "+" : ""}${purchasePercentageIncrease}% from last month`}
+          
+          <div className="group bg-gradient-to-br from-white to-teal-50/50 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center space-x-4 border border-teal-100/50 hover:border-teal-300 hover:-translate-y-1">
+            <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <FaUserTie className="h-7 w-7 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">Total Vendors</p>
+              <p className="text-2xl font-bold text-gray-800 truncate">
+                {vendorsLoading ? (
+                  <span className="text-sm text-gray-400">Loading...</span>
+                ) : vendorsError ? (
+                  <span className="text-sm text-red-500">Error</span>
+                ) : (
+                  totalVendors.toLocaleString()
+                )}
               </p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 hover:shadow-lg transition-shadow">
-            <FaUsers className="h-10 w-10 text-purple-600" />
-            <div>
-              <p className="text-sm text-gray-500">Total Customers</p>
-              <p className="text-2xl font-semibold text-gray-800">
-                {clientsLoading ? "Loading..." : clientsError ? `Error: ${clientsError}` : totalClients}
-              </p>
+          
+          <div className="group bg-gradient-to-br from-white to-indigo-50/50 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center space-x-4 border border-indigo-100/50 hover:border-indigo-300 hover:-translate-y-1">
+            <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <FaCubes className="h-7 w-7 text-white" />
             </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 hover:shadow-lg transition-shadow">
-            <FaUserTie className="h-10 w-10 text-teal-600" />
-            <div>
-              <p className="text-sm text-gray-500">Total Vendors</p>
-              <p className="text-2xl font-semibold text-gray-800">
-                {vendorsLoading ? "Loading..." : vendorsError ? `Error: ${vendorsError}` : totalVendors}
-              </p>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 hover:shadow-lg transition-shadow">
-            <FaCubes className="h-10 w-10 text-indigo-600" />
-            <div>
-              <p className="text-sm text-gray-500">Total Components</p>
-              <p className="text-2xl font-semibold text-gray-800">
-                {componentsLoading ? "Loading..." : componentsError ? `Error: ${componentsError}` : totalComponents}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">Total Components</p>
+              <p className="text-2xl font-bold text-gray-800 truncate">
+                {componentsLoading ? (
+                  <span className="text-sm text-gray-400">Loading...</span>
+                ) : componentsError ? (
+                  <span className="text-sm text-red-500">Error</span>
+                ) : (
+                  totalComponents.toLocaleString()
+                )}
               </p>
             </div>
           </div>
@@ -264,25 +349,50 @@ const HomePage: React.FC = () => {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Sales Orders Trend</h2>
+          <div className="bg-gradient-to-br from-white to-blue-50/30 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-blue-100/50">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
+                Sales Orders Trend
+              </h2>
+            </div>
             <div className="h-64">
               {monthlySalesLoading ? (
-                <p>Loading...</p>
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                    <p className="text-sm text-gray-500">Loading chart data...</p>
+                  </div>
+                </div>
               ) : monthlySalesError ? (
-                <p>Error: {monthlySalesError}</p>
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-red-500 font-medium">Error: {monthlySalesError}</p>
+                </div>
               ) : (
                 <Line data={salesData} options={chartOptions} />
               )}
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Purchase Orders Trend</h2>
+          
+          <div className="bg-gradient-to-br from-white to-amber-50/30 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-amber-100/50">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-amber-500 to-amber-600 rounded-full"></div>
+                Purchase Orders Trend
+              </h2>
+            </div>
             <div className="h-64">
               {monthlyPurchaseLoading ? (
-                <p>Loading...</p>
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-2"></div>
+                    <p className="text-sm text-gray-500">Loading chart data...</p>
+                  </div>
+                </div>
               ) : monthlyPurchaseError ? (
-                <p>Error: {monthlyPurchaseError}</p>
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-red-500 font-medium">Error: {monthlyPurchaseError}</p>
+                </div>
               ) : (
                 <Bar data={purchaseData} options={chartOptions} />
               )}
@@ -292,33 +402,53 @@ const HomePage: React.FC = () => {
       </main>
 
       {/* Footer Section */}
-      <footer className="bg-gray-100 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-          <div className="mb-6 sm:mb-0">
-            <img src="/mscorpreslogo.png" alt="MsCorpres Logo" className="w-32 mb-4" />
-            <div className="text-sm text-gray-500">
-              <p>MsCorpres Automation Pvt Ltd</p>
-              <p>Office No. 1 and 2, 3rd Floor, Plot number B-88 Sector 83, Noida,</p>
-              <p>Gautam Buddha Nagar, 201305</p>
-              <p>Phone: +91 88 26 788880</p>
-              <p>Email: marketing@mscorpres.in</p>
+      <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-12 relative z-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div>
+              <div className="mb-6">
+                <img 
+                  src="/mscorpreslogo.png" 
+                  alt="MsCorpres Logo" 
+                  className="w-40 mb-4 brightness-0 invert opacity-90 hover:opacity-100 transition-opacity" 
+                />
+                <div className="h-1 w-20 bg-gradient-to-r from-blue-400 to-teal-400 rounded-full"></div>
+              </div>
+              <div className="space-y-2 text-sm text-gray-300">
+                <p className="text-lg font-bold text-white mb-3">MsCorpres Automation Pvt Ltd</p>
+                <p className="flex items-start gap-2">
+                  <span className="text-teal-400 mt-1">📍</span>
+                  <span>Office No. 1 and 2, 3rd Floor, Plot number B-88 Sector 83, Noida, Gautam Buddha Nagar, 201305</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <span className="text-teal-400">📞</span>
+                  <a href="tel:+918826788880" className="hover:text-teal-400 transition-colors">+91 88 26 788880</a>
+                </p>
+                <p className="flex items-center gap-2">
+                  <span className="text-teal-400">✉️</span>
+                  <a href="mailto:marketing@mscorpres.in" className="hover:text-teal-400 transition-colors">marketing@mscorpres.in</a>
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col items-start sm:items-end">
-            <p className="text-sm text-gray-500 mb-4">Stay updated with our latest products and updates.</p>
-            <div className="flex w-full max-w-sm border border-gray-300 rounded-full shadow-md bg-white">
-              <Input
-                className="border-none focus-visible:ring-0 rounded-l-full"
-                placeholder="Enter your email"
-              />
-              <Button
-                variant="outline"
-                className="h-10 w-10 p-0 bg-blue-100 rounded-full border-none"
-              >
-                <Send className="h-5 w-5 text-blue-600" />
-              </Button>
+            
+            <div className="flex flex-col items-start md:items-end">
+              <p className="text-sm text-gray-300 mb-4 font-medium">Stay updated with our latest products and updates.</p>
+              <div className="flex w-full max-w-sm border-2 border-gray-700 rounded-full shadow-lg bg-gray-800/50 backdrop-blur-sm hover:border-teal-500/50 transition-all duration-300">
+                <Input
+                  className="border-none focus-visible:ring-0 rounded-l-full bg-transparent text-white placeholder:text-gray-400 pl-6"
+                  placeholder="Enter your email"
+                />
+                <Button
+                  variant="outline"
+                  className="h-10 w-10 p-0 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 rounded-full border-none text-white shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  <Send className="h-5 w-5" />
+                </Button>
+              </div>
+              <p className="text-xs text-gray-400 mt-6 text-center md:text-right">
+                © 2024 MsCorpres Automation Pvt. Ltd. | All rights reserved
+              </p>
             </div>
-            <p className="text-sm text-gray-500 mt-4">© 2024 MsCorpres Automation Pvt. Ltd. | All rights reserved</p>
           </div>
         </div>
       </footer>

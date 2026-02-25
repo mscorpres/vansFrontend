@@ -13,7 +13,39 @@ import { printFunction } from "@/components/shared/PrintFunctions";
 import { useToast } from "@/components/ui/use-toast";
 import MaterialListModal from "./MaterialListModal";
 import { TruncateCellRenderer } from "@/General";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+
+// Round status badge (invoice/shipment style)
+const StatusBadge: React.FC<{ value: string }> = ({ value }) => {
+  const status = (value || "").trim();
+  const lower = status.toLowerCase();
+  const config: Record<string, { pill: string; dot: string; label: string }> = {
+    approved: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Approved" },
+    "partially approved": { pill: "bg-sky-50 text-sky-700", dot: "bg-sky-500", label: "Partially Approved" },
+    rejected: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Rejected" },
+    active: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Active" },
+    open: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Open" },
+    closed: { pill: "bg-slate-100 text-slate-600", dot: "bg-slate-400", label: "Closed" },
+    cancelled: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    cancel: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    pending: { pill: "bg-amber-50 text-amber-700", dot: "bg-amber-500", label: "Pending" },
+  };
+  const key = Object.keys(config).find((k) => lower.includes(k)) || "pending";
+  const { pill, dot, label } = config[key] || { pill: "bg-slate-50 text-slate-700", dot: "bg-slate-400", label: status };
+  const displayLabel = config[key]?.label ?? status;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        pill
+      )}
+    >
+      <span className={cn("h-2 w-2 shrink-0 rounded-full", dot)} />
+      {displayLabel}
+    </span>
+  );
+};
 
 interface ActionMenuProps {
   row: RowData; 
@@ -306,6 +338,7 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Approve Status",
     field: "approveStatus",
     filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => <StatusBadge value={params?.data?.approveStatus ?? ""} />,
   },
   {
     headerName: "Created Date",
@@ -322,19 +355,31 @@ export const columnDefs: ColDef<any>[] = [
     field: "po_date",
     filter: "agTextColumnFilter",
   },
-  { headerName: "Status", field: "soStatus", filter: "agTextColumnFilter" },
-
+  {
+    headerName: "Status",
+    field: "soStatus",
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => {
+      const v = params?.data?.soStatus ?? "";
+      const label = v === "A" ? "Active" : v === "P" ? "Pending" : v === "C" ? "Closed" : v;
+      return <StatusBadge value={label} />;
+    },
+  },
   {
     headerName: "Customer Name",
     field: "clintname",
     filter: "agTextColumnFilter",
-    width: 400,
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 180,
+    width: 280,
   },
   {
     headerName: "Supplier Name",
     field: "supplierName",
     filter: "agTextColumnFilter",
-    width: 300,
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 160,
+    width: 220,
   },
   {
     headerName: "Created By",
@@ -350,7 +395,9 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Reject Reason",
     field: "reject_reason",
     filter: "agTextColumnFilter",
-    cellRenderer: TruncateCellRenderer,
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 140,
+    width: 180,
   },
 ];
 

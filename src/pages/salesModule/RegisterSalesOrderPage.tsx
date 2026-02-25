@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { RootState } from "@/store";
 import CustomLoadingCellRenderer from "@/config/agGrid/CustomLoadingCellRenderer";
 import { columnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import { useToast } from "@/components/ui/use-toast";
-import { rangePresets } from "@/General";
+import { rangePresets, TruncateCellRenderer } from "@/General";
 import FullPageLoading from "@/components/shared/FullPageLoading";
 import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
 import dayjs from "dayjs";
@@ -88,6 +88,11 @@ const RegisterSalesOrderPage: React.FC = () => {
 
   const loadingCellRenderer = useCallback(CustomLoadingCellRenderer, []);
 
+  const components = useMemo(
+    () => ({ truncateCellRenderer: TruncateCellRenderer }),
+    []
+  );
+
   const onBtExport = useCallback(() => {
     if (gridRef.current) {
       gridRef.current.api.exportDataAsCsv();
@@ -121,9 +126,9 @@ const RegisterSalesOrderPage: React.FC = () => {
   return (
     <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
       {/* Filter Section */}
-      <div className="bg-white p-4 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Form form={form} className="flex items-center gap-4" onFinish={onSubmit}>
+      <div className="bg-white px-5 py-4 border-b border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div className="flex items-center gap-5">
+          <Form form={form} className="flex flex-wrap items-end gap-5" onFinish={onSubmit}>
             <Form.Item
               className="w-[300px] m-0"
               name="type"
@@ -154,7 +159,7 @@ const RegisterSalesOrderPage: React.FC = () => {
               >
                 <Space direction="vertical" size={12} className="w-full">
                   <RangePicker
-                    className="border shadow-sm border-gray-300 py-[7px] hover:border-gray-400 w-full"
+                    className="border shadow-sm border-slate-300 py-[7px] hover:border-slate-400 w-full rounded-md"
                     value={
                       form.getFieldValue("dateRange") &&
                       Array.isArray(form.getFieldValue("dateRange"))
@@ -185,19 +190,19 @@ const RegisterSalesOrderPage: React.FC = () => {
               </Form.Item>
             )}
 
-            <div className="flex space-x-2">
+            <div className="flex gap-2 items-center">
               {isSearchPerformed && (
                 <Button
                   type="button"
                   onClick={onBtExport}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
+                  className="bg-amber-500 hover:bg-amber-600 text-black font-semibold py-2 px-4 rounded-lg shadow-sm"
                 >
-                  <Download />
+                  <Download className="w-4 h-4" />
                 </Button>
               )}
               <Button
                 type="submit"
-                className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
+                className="bg-amber-500 hover:bg-amber-600 text-black font-semibold py-2 px-4 rounded-lg shadow-sm"
               >
                 Search
               </Button>
@@ -214,10 +219,8 @@ const RegisterSalesOrderPage: React.FC = () => {
           loadingCellRenderer={loadingCellRenderer}
           rowData={rowData}
           columnDefs={columnDefs as any}
+          components={components}
           defaultColDef={{ filter: true, sortable: true }}
-          pagination={true}
-          paginationPageSize={10}
-          paginationPageSizeSelector={[10, 25, 50]}
           suppressCellFocus={true}
           overlayNoRowsTemplate={OverlayNoRowsTemplate}
           enableCellTextSelection={true}
@@ -231,6 +234,15 @@ const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;
     border-bottom: 0;
+  }
+  .ag-theme-quartz .ag-cell {
+    overflow: hidden;
+    min-width: 0;
+  }
+  .ag-theme-quartz .ag-cell-wrapper {
+    overflow: hidden;
+    min-width: 0;
+    text-overflow: ellipsis;
   }
 `;
 

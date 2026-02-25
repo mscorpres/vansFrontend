@@ -105,11 +105,16 @@ function MainLayout(props: { children: React.ReactNode }) {
       {/* alert disalogs start=============== */}
       {/* sidebars=========================== */}
       <div
-        className={`sheetone absolute  h-[100vh] z-10 top-0 w-full transition-all  ${
+        className={`sheetone fixed h-[100vh] z-[20] top-0 left-0 w-full transition-all duration-300 ${
           sheetOpen || sheet2Open || favoriteSheet
-            ? "bg-[#00000081]"
-            : "left-[-100%]"
+            ? "bg-[#00000081] backdrop-blur-sm"
+            : "pointer-events-none opacity-0"
         }`}
+        onClick={() => {
+          if (sheetOpen) setSheetOpen(false);
+          if (sheet2Open) setSheet2Open(false);
+          if (favoriteSheet) setFavoriteSheet(false);
+        }}
       ></div>
       <FavoriteSidebar uiState={uiState} />
       <SidebarMenues uiState={uiState} />
@@ -323,7 +328,7 @@ function MainLayout(props: { children: React.ReactNode }) {
             </TooltipProvider>
           </div>
         </div>
-        <main className="ml-[60px]  bg-[#ffffff] h-full">{props.children}</main>
+        <main className="ml-[60px] bg-[#ffffff] h-full relative z-0">{props.children}</main>
       </div>
     </Wrapper>
   );

@@ -3,6 +3,7 @@ import { ColDef } from "ag-grid-community";
 import { Button, Dropdown, Form } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
+import { cn } from "@/lib/utils";
 import {
   addfreight,
   cancelInvoice,
@@ -19,6 +20,56 @@ import ViewInvoiceModal from "@/config/agGrid/salesmodule/ViewInvoiceModal";
 import { downloadFunction, printFunction } from "@/components/shared/PrintFunctions";
 import AddFreightModal from "./salesmodule/AddFreightModal"; 
 import CreditNote from "./invoiceModule/CreditNote";
+
+// Round status indicator for Invoice Status (elive/inventory style)
+const InvoiceStatusBadge: React.FC<{ value: string }> = ({ value }) => {
+  const status = (value || "").trim();
+  const lower = status.toLowerCase();
+  const config: Record<string, { pill: string; dot: string; label: string }> = {
+    approved: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Approved" },
+    active: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Active" },
+    cancelled: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    cancel: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    pending: { pill: "bg-amber-50 text-amber-700", dot: "bg-amber-500", label: "Pending" },
+    rejected: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Rejected" },
+  };
+  const key = Object.keys(config).find((k) => lower.includes(k)) || "pending";
+  const { pill, dot, label } = config[key] || config.pending;
+  const displayLabel = config[key]?.label ?? status;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        pill
+      )}
+    >
+      <span className={cn("h-2 w-2 shrink-0 rounded-full", dot)} />
+      {displayLabel}
+    </span>
+  );
+};
+
+// Small round dot + text for Yes/No (e-wayBill, e-Invoice)
+const YesNoIndicator: React.FC<{ value: string; yesLabel?: string; noLabel?: string }> = ({
+  value,
+  yesLabel = "Yes",
+  noLabel = "No",
+}) => {
+  const isYes = (value || "").toString().toLowerCase() === "yes" || value === "Y";
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs">
+      <span
+        className={cn(
+          "h-2 w-2 shrink-0 rounded-full",
+          isYes ? "bg-emerald-500" : "bg-slate-300"
+        )}
+      />
+      <span className={isYes ? "text-emerald-700 font-medium" : "text-slate-500"}>
+        {isYes ? yesLabel : noLabel}
+      </span>
+    </span>
+  );
+};
 
 const ActionMenu: React.FC<any> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -216,22 +267,38 @@ export const columnDefs: ColDef<RowData>[] = [
   {
     headerName: "SO Invoice ID",
     field: "invoiceNo",
-    filter: "agNumberColumnFilter",
+    filter: "agTextColumnFilter",
   },
   {
     headerName: "Shipment ID",
     field: "shipmentId",
-    filter: "agNumberColumnFilter",
+    filter: "agTextColumnFilter",
+  },
+  {
+    headerName:"SO ID",
+    field: "soId",
+    filter: "agTextColumnFilter",
+  },
+  {
+    headerName:"Po Number",
+    field: "po_number",
+    filter: "agTextColumnFilter",
+  },
+  {
+    headerName:"Po Date", 
+    field: "po_date",
+    filter: "agTextColumnFilter",
   },
   {
     headerName: "Invoice Status",
     field: "invStatus",
-    filter: "agDateColumnFilter",
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => <InvoiceStatusBadge value={params?.data?.invStatus ?? ""} />,
   },
   {
     headerName: "Customer Name",
     field: "custName",
-    filter: "agDateColumnFilter",
+    filter: "agTextColumnFilter",
     width: 300,
   },
   {
@@ -241,14 +308,20 @@ export const columnDefs: ColDef<RowData>[] = [
     width: 280,
   },
   {
-    headerName: "e-wayBill Created",
+    headerName: "e-wayBill",
     field: "ewaybill",
-    valueGetter: (params) => (params?.data?.ewaybill === "N" ? "No" : "Yes"),
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => (
+      <YesNoIndicator value={params?.data?.ewaybill === "N" ? "No" : "Yes"} />
+    ),
   },
   {
-    headerName: "e-Invoice Created",
+    headerName: "e-Invoice",
     field: "eInvoice",
-    valueGetter: (params) => (params?.data?.eInvoice === "N" ? "No" : "Yes"),
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => (
+      <YesNoIndicator value={params?.data?.eInvoice === "N" ? "No" : "Yes"} />
+    ),
   },
   {
     headerName: "Create Date",

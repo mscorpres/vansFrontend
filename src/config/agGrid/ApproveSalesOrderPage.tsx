@@ -15,11 +15,10 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { useToast } from "@/components/ui/use-toast";
 import { Form } from "antd";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
-import { materialListColumnDefs }from "@/config/agGrid/SalesOrderRegisterTableColumns";
-import MainLayout from "@/layouts/MainLayout";// Assume your layouts
-// import SOLayout from "@/layouts/SOLayout";
+import { materialListColumnDefs } from "@/config/agGrid/SalesOrderRegisterTableColumns";
 import Protected from "@/components/Protected";
 import { Star } from "lucide-react";
+import styled from "styled-components";
 
 const ApproveSalesOrderPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -94,76 +93,92 @@ const ApproveSalesOrderPage: React.FC = () => {
 
   return (
     <Protected authentication>
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold">Approve Sales Order for {so_id}</h1>
+      <div className="flex flex-col h-[calc(100vh-100px)] bg-slate-50/50">
+        {/* Header */}
+        <div className="flex justify-between items-center gap-4 px-5 py-4 bg-white border-b border-slate-200/80 shadow-sm">
+          <div className="flex items-center gap-3 min-w-0">
+            <h1 className="text-xl font-bold text-slate-800 truncate">Approve Sales Order for {so_id}</h1>
             <span
-              className="flex items-center gap-1 text-xs font-medium text-white bg-blue-500 rounded-full px-2 py-1"
+              className="flex items-center gap-1.5 shrink-0 text-xs font-medium text-white bg-blue-500 rounded-full px-2.5 py-1"
               title="New Feature"
             >
               <Star size={12} className="text-yellow-300" /> New features
             </span>
           </div>
-          <Button onClick={onBtExport} className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500">
-            <Download size={16} />
+          <Button
+            onClick={onBtExport}
+            className="shrink-0 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm"
+          >
+            <Download className="w-4 h-4" />
           </Button>
         </div>
-            <div className="ag-theme-quartz h-[calc(100vh-180px)]">
-              {loading && <FullPageLoading />}
-              <AgGridReact
-                ref={gridRef}
-                modules={[CsvExportModule]}
-                rowData={sellRequestList} // Use materialList from Redux
-                columnDefs={materialListColumnDefs}
-                suppressCellFocus={true}
-                components={{
-                  truncateCellRenderer: TruncateCellRenderer,
-                }}
-                overlayNoRowsTemplate={OverlayNoRowsTemplate}
-                
-                enableCellTextSelection={true}
-                className="border border-gray-200 rounded-lg shadow-sm"
-              />
-            </div>
 
-            <div className="bg-white border-t border-gray-100 shadow-sm h-16 flex items-center justify-end gap-3 px-6 sticky bottom-0">
-              <Button
-                className="rounded-md bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 text-sm font-medium shadow-sm transition-all"
-                onClick={() => navigate("/sales/order/register")}
-              >
-                Back
-              </Button>
-              <Button
-                className="rounded-md bg-red-500 hover:bg-red-600 text-white px-6 py-2 text-sm font-medium shadow-sm transition-all"
-                onClick={() => setShowRejectModal(true)}
-                disabled={isDisabled}
-              >
-                Reject
-              </Button>
-              <Button
-                className="rounded-md bg-green-500 hover:bg-green-600 text-white px-6 py-2 text-sm font-medium shadow-sm transition-all"
-                onClick={confirmApprove}
-                disabled={isDisabled}
-              >
-                Approve
-              </Button>
-            </div>
+        {/* Grid */}
+        <GridWrapper className="flex-1 min-h-0 px-5 py-4">
+          {loading && <FullPageLoading />}
+          <AgGridReact
+            ref={gridRef}
+            modules={[CsvExportModule]}
+            rowData={sellRequestList}
+            columnDefs={materialListColumnDefs}
+            suppressCellFocus={true}
+            components={{
+              truncateCellRenderer: TruncateCellRenderer,
+            }}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
+            enableCellTextSelection={true}
+            className="ag-theme-quartz border border-slate-200 rounded-xl shadow-sm bg-white h-full"
+          />
+        </GridWrapper>
 
-            <CreateInvoiceDialog
-              isDialogVisible={showRejectModal}
-              handleOk={handleOkReject}
-              handleCancel={() => setShowRejectModal(false)}
-              form={rejectform}
-              loading={loading}
-              heading="Reject"
-              description={`Are you sure you want to Reject this SO ${so_id}?`}
-            />
-          </div>
-        {/* </SOLayout> */}
-      {/* </MainLayout> */}
+        {/* Action bar */}
+        <div className="bg-white border-t border-slate-200/80 shadow-[0_-2px_10px_rgba(0,0,0,0.04)] flex items-center justify-end gap-4 px-6 py-4">
+          <Button
+            className="rounded-lg bg-slate-500 hover:bg-slate-600 text-white px-6 py-2 text-sm font-medium shadow-sm transition-all"
+            onClick={() => navigate("/sales/order/register")}
+          >
+            Back
+          </Button>
+          <Button
+            className="rounded-lg bg-red-500 hover:bg-red-600 text-white px-6 py-2 text-sm font-medium shadow-sm transition-all disabled:opacity-60"
+            onClick={() => setShowRejectModal(true)}
+            disabled={isDisabled}
+          >
+            Reject
+          </Button>
+          <Button
+            className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 text-sm font-medium shadow-sm transition-all disabled:opacity-60"
+            onClick={confirmApprove}
+            disabled={isDisabled}
+          >
+            Approve
+          </Button>
+        </div>
+
+        <CreateInvoiceDialog
+          isDialogVisible={showRejectModal}
+          handleOk={handleOkReject}
+          handleCancel={() => setShowRejectModal(false)}
+          form={rejectform}
+          loading={loading}
+          heading="Reject"
+          description={`Are you sure you want to Reject this SO ${so_id}?`}
+        />
+      </div>
     </Protected>
   );
 };
+
+const GridWrapper = styled.div`
+  .ag-theme-quartz .ag-cell {
+    overflow: hidden;
+    min-width: 0;
+  }
+  .ag-theme-quartz .ag-cell-wrapper {
+    overflow: hidden;
+    min-width: 0;
+    text-overflow: ellipsis;
+  }
+`;
 
 export default ApproveSalesOrderPage;
