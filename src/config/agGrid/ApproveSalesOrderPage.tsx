@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "@/store";
 import { fetchMaterialList, approveSo, rejectSo, fetchSellRequestList } from "@/features/salesmodule/SalesSlice";
+import dayjs from "dayjs";
 import { AgGridReact } from "ag-grid-react";
 import { CsvExportModule } from "ag-grid-community";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,43 @@ import { materialListColumnDefs } from "@/config/agGrid/SalesOrderRegisterTableC
 import Protected from "@/components/Protected";
 import { Star } from "lucide-react";
 import styled from "styled-components";
+import { cn } from "@/lib/utils";
+
+// Approval status badge for header (Pending, Partially Approved, Approved, Rejected)
+const ApprovalStatusBadge: React.FC<{ status: string }> = ({ status }) => {
+  const s = (status || "").trim().toLowerCase();
+  const isApproved = s === "approved";
+  const isRejected = s === "rejected";
+  const isPartiallyApproved = s.includes("partially");
+  const isPending = s === "pending" || !status;
+  const pill = isApproved
+    ? "bg-emerald-50 text-emerald-700"
+    : isRejected
+      ? "bg-red-50 text-red-700"
+      : isPartiallyApproved
+        ? "bg-sky-50 text-sky-700"
+        : "bg-amber-50 text-amber-700";
+  const dot = isApproved
+    ? "bg-emerald-500"
+    : isRejected
+      ? "bg-red-500"
+      : isPartiallyApproved
+        ? "bg-sky-500"
+        : "bg-amber-500";
+  const label = status || "Pending";
+  const displayLabel = isPartiallyApproved ? "Partially Approved" : label;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0",
+        pill
+      )}
+    >
+      <span className={cn("h-2 w-2 rounded-full shrink-0", dot)} />
+      {displayLabel}
+    </span>
+  );
+};
 
 const ApproveSalesOrderPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -28,22 +66,31 @@ const ApproveSalesOrderPage: React.FC = () => {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectform] = Form.useForm();
   const gridRef = useRef<AgGridReact<any>>(null);
+  const [soRow, setSoRow] = useState<any>(null);
 
-  const {  loading, sellRequestList, dateRange } = useSelector((state: RootState) => state.sellRequest); // Assume materialList is in state
+  const { loading, sellRequestList, dateRange } = useSelector((state: RootState) => state.sellRequest);
 
-  // Get so_id from query param
   const queryParams = new URLSearchParams(location.search);
   const so_id = queryParams.get("so_id") || "";
 
-  // Fetch material list on page load
+  // Capture SO row (with approveStatus) from register list before it gets replaced by material list
   useEffect(() => {
-    if (so_id) {
-      dispatch(fetchMaterialList({ so_id }));
-    } else {
-      // Optional: Handle no so_id (e.g., navigate back or show error)
+    if (!so_id || !sellRequestList?.length) return;
+    const row = sellRequestList.find((item: any) => item.so_id === so_id && item.approveStatus != null);
+    if (row) setSoRow(row);
+  }, [so_id, sellRequestList]);
+
+  // Fetch register list first so we have approveStatus, then fetch material list for grid
+  useEffect(() => {
+    if (!so_id) {
       toast({ className: "bg-red-600 text-white", description: "No SO ID provided" });
       navigate("/sales/order/register");
+      return;
     }
+    const range = dateRange || `${dayjs().subtract(3, "month").format("DD-MM-YYYY")}-${dayjs().format("DD-MM-YYYY")}`;
+    dispatch(fetchSellRequestList({ type: "date_wise", data: range }) as any).then(() => {
+      dispatch(fetchMaterialList({ so_id }));
+    });
   }, [dispatch, so_id, navigate, toast]);
 
   const onBtExport = useCallback(() => {
@@ -87,17 +134,18 @@ const ApproveSalesOrderPage: React.FC = () => {
       });
   };
 
-  // Find the row's approveStatus for disabling buttons
-  const rowData = sellRequestList.find((item) => item.so_id === so_id);
-  const isDisabled = rowData?.approveStatus === "Approved" || rowData?.approveStatus === "Rejected";
+  const isDisabled = soRow?.approveStatus === "Approved" || soRow?.approveStatus === "Rejected";
 
   return (
     <Protected authentication>
       <div className="flex flex-col h-[calc(100vh-100px)] bg-slate-50/50">
         {/* Header */}
         <div className="flex justify-between items-center gap-4 px-5 py-4 bg-white border-b border-slate-200/80 shadow-sm">
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0 flex-wrap">
             <h1 className="text-xl font-bold text-slate-800 truncate">Approve Sales Order for {so_id}</h1>
+            {soRow?.approveStatus != null && (
+              <ApprovalStatusBadge status={soRow.approveStatus} />
+            )}
             <span
               className="flex items-center gap-1.5 shrink-0 text-xs font-medium text-white bg-blue-500 rounded-full px-2.5 py-1"
               title="New Feature"

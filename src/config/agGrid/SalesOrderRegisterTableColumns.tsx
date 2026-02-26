@@ -21,8 +21,9 @@ const StatusBadge: React.FC<{ value: string }> = ({ value }) => {
   const status = (value || "").trim();
   const lower = status.toLowerCase();
   const config: Record<string, { pill: string; dot: string; label: string }> = {
-    approved: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Approved" },
     "partially approved": { pill: "bg-sky-50 text-sky-700", dot: "bg-sky-500", label: "Partially Approved" },
+    partiallyapproved: { pill: "bg-sky-50 text-sky-700", dot: "bg-sky-500", label: "Partially Approved" },
+    approved: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Approved" },
     rejected: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Rejected" },
     active: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Active" },
     open: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Open" },
@@ -31,6 +32,7 @@ const StatusBadge: React.FC<{ value: string }> = ({ value }) => {
     cancel: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
     pending: { pill: "bg-amber-50 text-amber-700", dot: "bg-amber-500", label: "Pending" },
   };
+  // Check "partially approved" before "approved" (since "partially approved".includes("approved") is true)
   const key = Object.keys(config).find((k) => lower.includes(k)) || "pending";
   const { pill, dot, label } = config[key] || { pill: "bg-slate-50 text-slate-700", dot: "bg-slate-400", label: status };
   const displayLabel = config[key]?.label ?? status;
