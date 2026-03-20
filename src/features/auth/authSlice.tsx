@@ -75,6 +75,16 @@ export const loginUserAsync = createAsyncThunk<
   return response;
 });
 
+export const loginWithGoogleAsync = createAsyncThunk<
+  AxiosResponse<LoginResponse>,
+  { credential: string }
+>("auth/loginWithGoogle", async ({ credential }) => {
+  const response = await spigenAxios.post<LoginResponse>("auth/google", {
+    credential,
+  });
+  return response;
+});
+
 export const recoveryAccount = createAsyncThunk<AxiosResponse<{ success: boolean; message: string }>, { email: string }>("auth/verifyPasswordOtpAsync", async (paylaod) => {
   const response = await spigenAxios.get(`auth/reacative-login?email=${paylaod.email}`);
   return response;
@@ -172,6 +182,58 @@ const authSlice = createSlice({
         }
       })
       .addCase(loginUserAsync.rejected, (state) => {
+        state.loading = "failed";
+      })
+      .addCase(loginWithGoogleAsync.pending, (state) => {
+        state.loading = "loading";
+      })
+      .addCase(loginWithGoogleAsync.fulfilled, (state, action) => {
+        const savedSession = JSON.parse(
+          localStorage.getItem("loggedInUser") || "{}"
+        )?.session || "25-26";
+
+        const data = action.payload.data.data;
+        if (!data) {
+          state.qrStatus = action.payload.data;
+          localStorage.setItem(
+            "showOtpPage",
+            action.payload.data?.isTwoStep
+          );
+          localStorage.setItem("username", action.payload.data?.username);
+
+          const userObj = {
+            token: action.payload.data.token,
+          };
+          localStorage.setItem("loggedInUser", JSON.stringify(userObj));
+
+          state.user = action.payload.data;
+          state.authStatus = true;
+          state.loading = "success";
+          state.token = action.payload.data.token;
+          return;
+        }
+
+        if (data) {
+          const userObj = {
+            email: data?.crn_email,
+            phone: data?.crn_mobile,
+            userName: data?.username,
+            token: data?.token,
+            type: data?.crn_type,
+            id: data?.crn_id,
+            showLegal: data?.department === "legal",
+            session: savedSession,
+          };
+
+          localStorage.setItem("loggedInUser", JSON.stringify(userObj));
+
+          state.user = data;
+          state.authStatus = true;
+          state.loading = "success";
+          state.token = data.token;
+        }
+      })
+      .addCase(loginWithGoogleAsync.rejected, (state) => {
         state.loading = "failed";
       })
       .addCase(verifyOtpAsync.pending, (state) => {
