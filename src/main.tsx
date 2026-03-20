@@ -8,6 +8,7 @@ import "@ag-grid-community/styles/ag-theme-quartz.css";
 import "./font.css";
 import { moduleregistri } from "./config/agGrid/ModuleRegistry.ts";
 import { ToastProvider } from "./components/ui/toast.tsx";
+import RootLayout from "@/components/TawkChat/TawkLayout.tsx";
 
 moduleregistri();
 
@@ -17,8 +18,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     // components={{ Toast: Snack }}
     placement="top-center"
   >
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </ToastProvider>
+    <RootLayout>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </RootLayout>
+  </ToastProvider>,
 );
