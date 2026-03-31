@@ -14,6 +14,35 @@ import { TruncateCellRenderer } from "@/General";
 import PickSlipModal from "@/config/agGrid/PickSlipModal";
 import { toast } from "react-toastify";
 import ViewAndCreateInvModal from "@/config/agGrid/salesmodule/ViewandCreateInvModal";
+import { cn } from "@/lib/utils";
+
+// Round status badge for Shipment / Approval / Material status (invoice page style)
+const StatusBadge: React.FC<{ value: string; labelMap?: Record<string, string> }> = ({ value, labelMap }) => {
+  const status = (value || "").trim();
+  const lower = status.toLowerCase();
+  const config: Record<string, { pill: string; dot: string; label: string }> = {
+    approved: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Approved" },
+    active: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Active" },
+    out: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Out" },
+    cancelled: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    cancel: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    pending: { pill: "bg-amber-50 text-amber-700", dot: "bg-amber-500", label: "Pending" },
+  };
+  const key = Object.keys(config).find((k) => lower.includes(k)) || "pending";
+  const { pill, dot, label } = config[key] || config.pending;
+  const displayLabel = labelMap?.[status] ?? config[key]?.label ?? status;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        pill
+      )}
+    >
+      <span className={cn("h-2 w-2 shrink-0 rounded-full", dot)} />
+      {displayLabel}
+    </span>
+  );
+};
 
 interface ActionMenuProps {
   row: RowData;
@@ -327,12 +356,17 @@ export const columnDefs: ColDef<any>[] = [
   {
     headerName: "Shipment Status",
     field: "shipment_status",
-    valueGetter: (params) => (params?.data?.shipment_status === "Y" ? "Active" : params?.data?.shipment_status === "C" ? "Cancelled" : "Pending"),
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => {
+      const v = params?.data?.shipment_status;
+      const label = v === "Y" ? "Active" : v === "C" ? "Cancelled" : "Pending";
+      return <StatusBadge value={label} />;
+    },
   },
   {
     headerName: "Shipment Date",
     field: "shipment_date",
-    filter: "agNumberColumnFilter",
+    filter: "agTextColumnFilter",
   },
   { headerName: "SO ID", field: "so_id", filter: "agTextColumnFilter" },
   {
@@ -343,7 +377,7 @@ export const columnDefs: ColDef<any>[] = [
   {
     headerName: "PO Date",
     field: "po_date",
-    filter: "agDateColumnFilter",
+    filter: "agTextColumnFilter",
   },
   {
     headerName: "Pickslip ID",
@@ -353,30 +387,52 @@ export const columnDefs: ColDef<any>[] = [
   {
     headerName: "Approval Status",
     field: "approval_status",
-    valueGetter: (params) => (params?.data?.approval_status === "A" ? "Approved" : "Pending"),
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => {
+      const v = params?.data?.approval_status;
+      const label = v === "A" ? "Approved" : "Pending";
+      return <StatusBadge value={label} />;
+    },
   },
-  
   {
     headerName: "Material Status",
     field: "material_status",
     filter: "agTextColumnFilter",
-    valueGetter: (params) => (params?.data?.material_status === "Y" ? "Out" : "Pending"),
+    cellRenderer: (params: any) => {
+      const v = params?.data?.material_status;
+      const label = v === "Y" ? "Out" : "Pending";
+      return <StatusBadge value={label} />;
+    },
   },
   {
-    headerName: "SuplierName",
+    headerName: "Supplier Name",
     field: "SuplierName",
     filter: "agTextColumnFilter",
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 160,
+    width: 180,
   },
   {
     headerName: "Supplier Address",
     field: "supplierAddress",
     cellRenderer: "truncateCellRenderer",
+    minWidth: 200,
+    width: 240,
   },
-  { headerName: "Client", field: "clientName", filter: "agTextColumnFilter" },
+  {
+    headerName: "Client",
+    field: "clientName",
+    filter: "agTextColumnFilter",
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 140,
+    width: 160,
+  },
   {
     headerName: "Client Address",
     field: "clientAddress",
     filter: "agTextColumnFilter",
     cellRenderer: "truncateCellRenderer",
+    minWidth: 200,
+    width: 240,
   },
 ];

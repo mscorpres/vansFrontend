@@ -3,11 +3,14 @@ import { ColDef } from "ag-grid-community";
 import { Button, Dropdown, Form } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
+import { cn } from "@/lib/utils";
 import {
   addfreight,
   cancelInvoice,
+  fetchDataNotes,
   fetchInvoiceDetail,
   fetchSalesOrderInvoiceList,
+  printExportInvoice,
   printSellInvoice,
 } from "@/features/salesmodule/salesInvoiceSlice";
 import { AppDispatch, RootState } from "@/store";
@@ -16,16 +19,71 @@ import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/Confir
 import ViewInvoiceModal from "@/config/agGrid/salesmodule/ViewInvoiceModal";
 import { downloadFunction, printFunction } from "@/components/shared/PrintFunctions";
 import AddFreightModal from "./salesmodule/AddFreightModal"; 
+import CreditNote from "./invoiceModule/CreditNote";
+
+// Round status indicator for Invoice Status (elive/inventory style)
+const InvoiceStatusBadge: React.FC<{ value: string }> = ({ value }) => {
+  const status = (value || "").trim();
+  const lower = status.toLowerCase();
+  const config: Record<string, { pill: string; dot: string; label: string }> = {
+    approved: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Approved" },
+    active: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Active" },
+    cancelled: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    cancel: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    pending: { pill: "bg-amber-50 text-amber-700", dot: "bg-amber-500", label: "Pending" },
+    rejected: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Rejected" },
+  };
+  const key = Object.keys(config).find((k) => lower.includes(k)) || "pending";
+  const { pill, dot, label } = config[key] || config.pending;
+  const displayLabel = config[key]?.label ?? status;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        pill
+      )}
+    >
+      <span className={cn("h-2 w-2 shrink-0 rounded-full", dot)} />
+      {displayLabel}
+    </span>
+  );
+};
+
+// Small round dot + text for Yes/No (e-wayBill, e-Invoice)
+const YesNoIndicator: React.FC<{ value: string; yesLabel?: string; noLabel?: string }> = ({
+  value,
+  yesLabel = "Yes",
+  noLabel = "No",
+}) => {
+  const isYes = (value || "").toString().toLowerCase() === "yes" || value === "Y";
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs">
+      <span
+        className={cn(
+          "h-2 w-2 shrink-0 rounded-full",
+          isYes ? "bg-emerald-500" : "bg-slate-300"
+        )}
+      />
+      <span className={isYes ? "text-emerald-700 font-medium" : "text-slate-500"}>
+        {isYes ? yesLabel : noLabel}
+      </span>
+    </span>
+  );
+};
 
 const ActionMenu: React.FC<any> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [viewInvoice, setViewInvoice] = useState(false);
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [addFreightModalVisible, setAddFreightModalVisible] = useState(false); // New state for freight modal
+
+const [viewCreditNote, setViewCreditNote] = useState(false);
   const [form] = Form.useForm();
-  const { challanDetails, loading }: any = useSelector(
+  const { challanDetails,dataNotes, loading }: any = useSelector(
     (state: RootState) => state.sellInvoice
   );
+
+  
   const dateRange = useSelector(
     (state: RootState) => state.sellRequest.dateRange
   );
@@ -33,6 +91,11 @@ const ActionMenu: React.FC<any> = ({ row }) => {
   const handleViewInvoice = (row: any) => {
     setViewInvoice(true);
     dispatch(fetchInvoiceDetail({ invoiceNo: row.invoiceNo }));
+  };
+    const handleViewCreditNote = (row: any) => {
+      console.log(row.shipment_id);
+    dispatch(fetchDataNotes({ shipment_id: row.shipmentId}));
+    setViewCreditNote(true);
   };
 
   const handleAddFreight = (so_inv_id: string, freight: string) => {
@@ -48,6 +111,24 @@ const ActionMenu: React.FC<any> = ({ row }) => {
           response?.payload?.data.filename);
       }
     });
+  };
+    const handleExportInvoice = async (orderId: string, printInvType: string) => {
+    dispatch(
+      printExportInvoice({ invoiceNo: orderId, printType: printInvType })
+    ).then((response: any) => {
+      if (response?.payload?.success) {
+        printFunction(response?.payload?.data.buffer.data,
+          response?.payload?.data.filename);
+      }
+    });
+  };
+    const handlePrintClick = () => {
+    if (row?.approveStatus !== "PENDING") {
+      handleViewCreditNote(row);
+      console.log("rrrrrrrrrrrrr",row);
+      
+      
+    }
   };
 
   const handleOk = () => {
@@ -110,6 +191,21 @@ const ActionMenu: React.FC<any> = ({ row }) => {
       ),
       disabled: isDisabled || row?.ewaybill === "Y" || row?.eInvoice === "Y",
     },
+    {
+      key: "createCreditNote",
+      label: (
+        <div
+          onClick={handlePrintClick} // Separate function to handle print click
+          style={{
+            cursor: row?.approveStatus === "PENDING" ? "not-allowed" : "pointer",
+            color: row?.approveStatus === "PENDING" ? "gray" : "inherit",
+          }}
+        >
+          Credit Note
+        </div>
+      ),
+      disabled: row?.approveStatus === "PENDING",
+    },
   ];
 
   return (
@@ -122,6 +218,7 @@ const ActionMenu: React.FC<any> = ({ row }) => {
         onClose={() => setViewInvoice(false)}
         sellRequestDetails={challanDetails}
         handlePrintInvoice={handlePrintInvoice}
+        handleExportInvoice={handleExportInvoice}
         loading={loading}
       />
       <ConfirmCancellationDialog
@@ -133,10 +230,19 @@ const ActionMenu: React.FC<any> = ({ row }) => {
         module="Invoice"
         loading={loading}
       />
+      
       <AddFreightModal
         visible={addFreightModalVisible}
         onClose={() => setAddFreightModalVisible(false)}
         invoiceNo={row.invoiceNo}
+      />
+
+      <CreditNote
+        visible={viewCreditNote}
+        onClose={() => setViewCreditNote(false)}
+        sellRequestDetails={dataNotes || []}
+        row={{ req_id: row.invoiceNo }}
+       
       />
     </>
   );
@@ -161,38 +267,61 @@ export const columnDefs: ColDef<RowData>[] = [
   {
     headerName: "SO Invoice ID",
     field: "invoiceNo",
-    filter: "agNumberColumnFilter",
+    filter: "agTextColumnFilter",
   },
   {
     headerName: "Shipment ID",
     field: "shipmentId",
-    filter: "agNumberColumnFilter",
+    filter: "agTextColumnFilter",
+  },
+  {
+    headerName:"SO ID",
+    field: "soId",
+    filter: "agTextColumnFilter",
+  },
+  {
+    headerName:"Po Number",
+    field: "po_number",
+    filter: "agTextColumnFilter",
+  },
+  {
+    headerName:"Po Date", 
+    field: "po_date",
+    filter: "agTextColumnFilter",
   },
   {
     headerName: "Invoice Status",
     field: "invStatus",
-    filter: "agDateColumnFilter",
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => <InvoiceStatusBadge value={params?.data?.invStatus ?? ""} />,
   },
   {
     headerName: "Customer Name",
     field: "custName",
-    filter: "agDateColumnFilter",
+    filter: "agTextColumnFilter",
     width: 300,
   },
   {
     headerName: "Supplier Name",
     field: "supplier",
     filter: "agTextColumnFilter",
+    width: 280,
   },
   {
-    headerName: "e-wayBill Created",
+    headerName: "e-wayBill",
     field: "ewaybill",
-    valueGetter: (params) => (params?.data?.ewaybill === "N" ? "No" : "Yes"),
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => (
+      <YesNoIndicator value={params?.data?.ewaybill === "N" ? "No" : "Yes"} />
+    ),
   },
   {
-    headerName: "e-Invoice Created",
+    headerName: "e-Invoice",
     field: "eInvoice",
-    valueGetter: (params) => (params?.data?.eInvoice === "N" ? "No" : "Yes"),
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => (
+      <YesNoIndicator value={params?.data?.eInvoice === "N" ? "No" : "Yes"} />
+    ),
   },
   {
     headerName: "Create Date",

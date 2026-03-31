@@ -25,7 +25,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { AppDispatch, RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
-import { loginUserAsync } from "@/features/auth/authSlice";
+import { loginUserAsync, loginWithGoogleAsync } from "@/features/auth/authSlice";
 import { z } from "zod";
 import React, { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -35,6 +35,8 @@ const LogningV2: React.FC = () => {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const [recaptchaValue, setRecaptchaValue] = React.useState<string | null>(null);
   const [recaptchaKey, setRecaptchaKey] = React.useState(Math.random());
+  const googleButtonContainerRef = React.useRef<HTMLDivElement | null>(null);
+  const googleInitializedRef = React.useRef(false);
 
   const dispatch = useDispatch<AppDispatch>();
   const data = useSelector((state: RootState) => state.auth);
@@ -77,6 +79,80 @@ const LogningV2: React.FC = () => {
   const handleRecaptchaChange = (value: string | null) => {
     setRecaptchaValue(value);
   };
+
+  React.useEffect(() => {
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as
+      | string
+      | undefined;
+
+    if (!googleClientId) {
+      showToast("VITE_GOOGLE_CLIENT_ID missing in frontend env.", "error");
+      return;
+    }
+
+    if (googleInitializedRef.current) return;
+
+    const loadGoogleScript = () => {
+      const existing = document.querySelector<HTMLScriptElement>(
+        'script[src="https://accounts.google.com/gsi/client"]'
+      );
+      if (existing) return Promise.resolve();
+
+      return new Promise<void>((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "https://accounts.google.com/gsi/client";
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("Google script load failed"));
+        document.head.appendChild(script);
+      });
+    };
+
+    loadGoogleScript()
+      .then(() => {
+        const g = (window as any).google;
+        if (!g?.accounts?.id) {
+          showToast("Google Identity SDK not available.", "error");
+          return;
+        }
+
+        g.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: (response: any) => {
+            const credential = response?.credential as string | undefined;
+            if (!credential) {
+              showToast("Google credential missing.", "error");
+              return;
+            }
+
+            dispatch(loginWithGoogleAsync({ credential })).then((action: any) => {
+              if (action?.payload?.data?.success) {
+                toast({
+                  title: "Welcome to Vans IMS Portal",
+                  description: "Now you can start your work",
+                  className: "bg-green-600 text-white items-center",
+                });
+              }
+            });
+          },
+        });
+
+        if (googleButtonContainerRef.current) {
+          g.accounts.id.renderButton(googleButtonContainerRef.current, {
+            theme: "outline",
+            size: "large",
+            shape: "pill",
+            text: "continue_with",
+          });
+        }
+
+        googleInitializedRef.current = true;
+      })
+      .catch(() => {
+        showToast("Failed to load Google Sign-In.", "error");
+      });
+  }, [dispatch]);
 
   return (
     <div className="h-[100vh]  w-full grid grid-cols-2">
@@ -282,6 +358,12 @@ const LogningV2: React.FC = () => {
               <div className=" flex justify-center">
               <ReCAPTCHA sitekey="6LdmVcArAAAAAOb1vljqG4DTEEi2zP1TIjDd_0wR" onChange={handleRecaptchaChange} key={recaptchaKey}/>
             </div>
+              <div className="flex flex-col items-center gap-3 mt-[20px]">
+                <Typography fontSize={12} className="text-slate-500">
+                  or continue with
+                </Typography>
+                <div ref={googleButtonContainerRef} />
+              </div>
               <LoadingButton
                 loading={loading}
                 size="large"

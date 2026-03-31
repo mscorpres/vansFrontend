@@ -123,7 +123,7 @@ export default function CreateEwayBill() {
       if (res.payload?.success) {
         var data = res.payload?.data;
         form.setValue("ewaybillDetails.transDistance", data?.transporterDetails?.transDistance || "0");
-        console.log("data", data);
+        console.log("data total", data);
         setTotalSum(data?.total_amount);
         form.setValue("header.documentNo", data?.documentNo);
         form.setValue("header.documentType", data?.documentType);
@@ -229,8 +229,8 @@ export default function CreateEwayBill() {
         // billFrom mappings
         form.setValue("billFrom.legalName", data?.bill_from?.legalName);
         form.setValue("billFrom.tradeName", data?.bill_from?.tradeName || ""); // Handle missing tradeName
-        form.setValue("billFrom.state", data?.bill_from?.state?.state_code);
-        form.setValue("billFrom.location", data?.bill_from?.state?.state_name);
+        form.setValue("billFrom.state", data?.bill_from?.state?.state_name);
+        form.setValue("billFrom.location", data?.bill_from?.location);
         form.setValue("billFrom.gstin", data?.bill_from?.gstin);
         form.setValue("billFrom.pincode", data?.bill_from?.pincode);
         form.setValue("billFrom.pan", data?.bill_from?.pan);
@@ -242,8 +242,8 @@ export default function CreateEwayBill() {
         // billTo mappings
         form.setValue("billTo.legalName", data?.bill_to?.client); // Use 'client' for legalName
         form.setValue("billTo.tradeName", data?.bill_to?.branch || ""); // Use 'branch' for tradeName
-        form.setValue("billTo.state", data?.bill_to?.state?.state_code || "");
-        form.setValue("billTo.location", data?.bill_to?.state?.state_name || "");
+        form.setValue("billTo.state", data?.bill_to?.state?.state_name || "");
+        form.setValue("billTo.location", data?.bill_to?.location || "");
         form.setValue("billTo.gstin", data?.bill_to?.gst);
         form.setValue("billTo.pincode", data?.bill_to?.pincode);
         form.setValue("billTo.pan", data?.bill_to?.pan);
@@ -254,19 +254,18 @@ export default function CreateEwayBill() {
 
         // dispatchFrom mappings (using ship_from)
         form.setValue("dispatchFrom.legalName", data?.ship_from?.legalName);
-        form.setValue("dispatchFrom.state", data?.ship_from?.state?.state_code);
-        form.setValue("dispatchFrom.location", data?.ship_from?.state?.state_name);
+        form.setValue("dispatchFrom.state", data?.ship_from?.state?.state_name);
+        form.setValue("dispatchFrom.location", data?.ship_from?.location);
         form.setValue("dispatchFrom.pincode", data?.ship_from?.pincode);
         form.setValue("dispatchFrom.addressLine1", data?.ship_from?.address1);
         form.setValue("dispatchFrom.addressLine2", data?.ship_from?.address2);
-         form.setValue("dispatchFrom.pan", data?.ship_from?.pan);
 
         // shipTo mappings
         form.setValue("shipTo.legalName", data?.ship_to?.company); // Use 'company' for legalName
-        form.setValue("shipTo.state", data?.ship_to?.state?.state_code);
+        form.setValue("shipTo.state", data?.ship_to?.state?.state_name);
         form.setValue("shipTo.tradeName", data?.ship_to?.tradeName || ""); // Handle missing tradeName
         form.setValue("shipTo.gstin", data?.ship_to?.gst);
-        form.setValue("shipTo.location", data?.ship_to?.state?.state_name || "");
+        form.setValue("shipTo.location", data?.ship_to?.location || "");
         form.setValue("shipTo.pincode", data?.ship_to?.pincode);
         form.setValue("shipTo.addressLine1", data?.ship_to?.address1);
         form.setValue("shipTo.addressLine2", data?.ship_to?.address2);
@@ -372,13 +371,7 @@ export default function CreateEwayBill() {
           }}
         >
           <div className="rounded p-[30px] shadow bg-[#fff] overflow-y-auto mb-10">
-            <div className="text-slate-600 font-[600] text-[20px] flex justify-center"> {isCnDn
-                ? isCrNote
-                  ? "Credit Note Invoice"
-                  : "Debit Note Invoice"
-                : isEwayBill
-                ? "Create E-Way Bill"
-                : "Create E-Invoice"}</div>
+            <div className="text-slate-600 font-[600] text-[20px] flex justify-center">{isEwayBill ? "Create E-Way Bill" : "Create E-Invoice"}</div>
             {/*Document Details*/}
             <Card className="rounded shadow bg-[#fff] mb-8">
               <CardHeader className=" bg-[#e0f2f1] p-0 flex justify-center px-[10px] py-[5px]">
@@ -505,32 +498,24 @@ export default function CreateEwayBill() {
                       )}
                     />
                   </div>
-                  {isCrNote && (
-                    <div className="">
-                      <FormField
-                        control={form.control}
-                        name="header.creditNo"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={LableStyle}>
-                              Note Id
-                              <span className="pl-1 text-red-500 font-bold">
-                                *
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className={InputStyle}
-                                placeholder="Document No"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  )}
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="header.creditNo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={LableStyle}>
+                            Note Id
+                            <span className="pl-1 text-red-500 font-bold">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input className={InputStyle} placeholder="Document No" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <div className="w-full">
                     <Controller

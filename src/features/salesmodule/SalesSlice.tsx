@@ -100,6 +100,8 @@ interface SellRequestState {
   dateRange: string;
   sellRequestList: SellRequest[];
   loading: boolean;
+  updateData: [];
+   wise: any;
   error: string | null;
 }
 
@@ -107,7 +109,9 @@ const initialState: SellRequestState = {
   data: [],
   dateRange: "",
   sellRequestList: [],
+   updateData: [],
   loading: false,
+   wise: null,
   error: null,
 };
 interface FetchSellRequestPayload {
@@ -364,9 +368,12 @@ const sellRequestSlice = createSlice({
     setDateRange(state, action: any) {
       state.dateRange = action.payload;
     },
-    // setWise(state, action: any) {
-    //   state.wise = action.payload;
-    // },
+     clearUpdatedData(state) {
+      state.updateData = [];
+    },
+   setWise(state, action: any) {
+      state.wise = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -497,5 +504,5 @@ const sellRequestSlice = createSlice({
   },
 });
 
-export const { setDateRange } = sellRequestSlice.actions;
+export const { setDateRange,setWise,clearUpdatedData } = sellRequestSlice.actions;
 export default sellRequestSlice.reducer;
