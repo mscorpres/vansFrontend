@@ -109,9 +109,9 @@ spigenAxios.interceptors.response.use(
 );
 
 const branch: string = otherData?.company_branch ?? "BRMSC012";
-const session: string = otherData?.session ?? "25-26";
+const session: string = otherData?.session ?? "26-27";
 const savedSession = JSON.parse(localStorage.getItem("loggedInUser") || "{}")
-  ?.session || "25-26";
+  ?.session || "26-27";
 
 spigenAxios.defaults.headers["Company-Branch"] = branch;
 spigenAxios.defaults.headers["Session"] = savedSession;

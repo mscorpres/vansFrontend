@@ -33,7 +33,7 @@ import { IconButton } from "@mui/material";
 import { SiSocketdotio } from "react-icons/si";
 import socket from "@/components/shared/socket";
 function MainLayout(props: { children: React.ReactNode }) {
-  const [selectedSession, setSelectedSession] = useState("25-26");
+  const [selectedSession, setSelectedSession] = useState("26-27");
   const [sheetOpen, setSheetOpen] = useState<boolean>(false);
   const [sheet2Open, setSheet2Open] = useState<boolean>(false);
   const [favoriteSheet, setFavoriteSheet] = useState<boolean>(false);
@@ -140,6 +140,12 @@ function MainLayout(props: { children: React.ReactNode }) {
                     />
                   </SelectTrigger>
                   <SelectContent className="bg-white" value={selectedSession}>
+                    <SelectItem
+                      value="26-27"
+                      className="text-slate-700 focus:text-white focus:bg-cyan-600"
+                    >
+                      2026-2027
+                    </SelectItem>
                     <SelectItem
                       value="25-26"
                       className="text-slate-700 focus:text-white focus:bg-cyan-600"
