@@ -190,7 +190,7 @@ const authSlice = createSlice({
       .addCase(loginWithGoogleAsync.fulfilled, (state, action) => {
         const savedSession = JSON.parse(
           localStorage.getItem("loggedInUser") || "{}"
-        )?.session || "25-26";
+        )?.session || "26-27";
 
         const data = action.payload.data.data;
         if (!data) {
