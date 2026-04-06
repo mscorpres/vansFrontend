@@ -1,8 +1,10 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { toast as toasts } from "@/components/ui/use-toast";
-const socketLink: string = import.meta.env.VITE_REACT_APP_SOCKET_BASE_URL;
-const imsLink: string = import.meta.env.VITE_REACT_APP_API_BASE_URL;
+import {
+  clearLocalStorageExceptEndpointConfig,
+  getResolvedApiBaseUrl,
+} from "@/config/imsEndpoints";
 
 interface LoggedInUser {
   token: string;
@@ -30,13 +32,14 @@ const otherData: OtherData | null = JSON.parse(
 );
 
 const spigenAxios = axios.create({
-  baseURL: imsLink,
+  baseURL: getResolvedApiBaseUrl(),
   headers: {
     "authorization": loggedInUser?.token,
   },
 });
 
 spigenAxios.interceptors.request.use(async (config) => {
+  config.baseURL = getResolvedApiBaseUrl();
   const loggedInUser: LoggedInUser | null = JSON.parse(
     localStorage.getItem("loggedInUser") as string
   );
@@ -54,13 +57,22 @@ spigenAxios.interceptors.response.use(
     return response;
   },
   (error: AxiosError<ErrorResponse>) => {
+    // Handle 401 Unauthorized
+    if (error.response?.status === 401) {
+      toast.error("Session expired. Logging out...");
+      clearLocalStorageExceptEndpointConfig();
+      window.location.reload();
+      return Promise.reject(error);
+    }
+
+    // Existing error handling
     if (error.response && typeof error.response.data === "object") {
       const errorData = error.response.data;
       toast.error(errorData?.message.msg || errorData.errors);
       console.log(errorData);
       if (errorData?.data?.logout) {
         toast.error(errorData.message || "Logout error.");
-        localStorage.clear();
+        clearLocalStorageExceptEndpointConfig();
         window.location.reload();
         return Promise.reject(error);
       }
@@ -102,4 +114,5 @@ const session: string = otherData?.session ?? "24-25";
 spigenAxios.defaults.headers["Company-Branch"] = branch;
 spigenAxios.defaults.headers["Session"] = session;
 
-export { spigenAxios, socketLink };
+export { spigenAxios };
+export { getSocketLink } from "@/config/imsEndpoints";

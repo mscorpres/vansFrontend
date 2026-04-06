@@ -10,7 +10,9 @@ import { z } from "zod";
 import { Link } from "react-router-dom";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
-
+import { useState } from "react";
+import { Settings } from "lucide-react";
+import SettingDrawer from "@/components/ims-settings/SettingDrawer";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -24,6 +26,7 @@ const LoginPage: React.FC = () => {
   const { toast } = useToast();
   const dispatch = useDispatch<AppDispatch>();
   const data = useSelector((state: RootState) => state.auth);
+  const [imsSettingsOpen, setImsSettingsOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,7 +46,18 @@ const LoginPage: React.FC = () => {
     });
   }
   return (
-    <div className="mx-auto grid w-[400px] gap-6 p-[20px] rounded-md bg-blue-50 shadow ">
+    <div className="relative mx-auto grid w-[400px] gap-6 p-[20px] rounded-md bg-blue-50 shadow ">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="absolute right-1 top-1 h-9 w-9 text-slate-500"
+        onClick={() => setImsSettingsOpen(true)}
+        aria-label="IMS Settings"
+      >
+        <Settings className="h-5 w-5" />
+      </Button>
+      <SettingDrawer open={imsSettingsOpen} onClose={() => setImsSettingsOpen(false)} />
       <div className="grid gap-2">
         <h1 className="text-3xl font-bold text-slate-600">Login</h1>
         <p className="text-balance text-muted-foreground">Enter your email below to login to your account</p>
@@ -82,7 +96,7 @@ const LoginPage: React.FC = () => {
               </FormItem>
             )}
           />
-          <Button disabled={data.loading === "loading" ? true : false} type="submit" className="w-full bg-cyan-700 hover:bg-cyan-600">
+          <Button disabled={data.loading === "loading"} type="submit" className="w-full bg-cyan-700 hover:bg-cyan-600">
             {data.loading === "loading" ? (
               <>
                 <ReloadIcon className="h-[20px] w-[20px] animate-spin mr-[5px]" />

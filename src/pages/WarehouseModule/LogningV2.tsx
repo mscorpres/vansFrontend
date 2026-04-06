@@ -20,6 +20,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import PhonelinkLockRoundedIcon from "@mui/icons-material/PhonelinkLockRounded";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { useForm } from "react-hook-form";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { AppDispatch, RootState } from "@/store";
@@ -28,7 +29,12 @@ import { toast } from "@/components/ui/use-toast";
 import { loginUserAsync } from "@/features/auth/authSlice";
 import { z } from "zod";
 import React from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import { showToast } from "@/General";
+import SettingDrawer from "@/components/ims-settings/SettingDrawer";
+
 const LogningV2: React.FC = () => {
+  const [imsSettingsOpen, setImsSettingsOpen] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
   const data = useSelector((state: RootState) => state.auth);
@@ -61,7 +67,27 @@ const LogningV2: React.FC = () => {
   }
 
   return (
-    <div className="h-[100vh]  w-full grid grid-cols-2">
+    <div className="relative h-[100vh] w-full grid grid-cols-2">
+      <IconButton
+        onClick={() => setImsSettingsOpen(true)}
+        aria-label="IMS Settings"
+        sx={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+          zIndex: 50,
+          bgcolor: "background.paper",
+          boxShadow: 1,
+          "&:hover": { bgcolor: "action.hover" },
+        }}
+        size="small"
+      >
+        <SettingsIcon />
+      </IconButton>
+      <SettingDrawer
+        open={imsSettingsOpen}
+        onClose={() => setImsSettingsOpen(false)}
+      />
       <div className="w-full h-full bg-neutral-100 ">
         <Swiper
           autoplay={{
