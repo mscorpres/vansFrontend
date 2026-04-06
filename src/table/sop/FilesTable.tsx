@@ -25,6 +25,7 @@ import { deleteFolder } from "@/features/Sop/sopSlice";
 import { Filedata } from "@/features/Sop/sopType";
 import { AppDispatch, RootState } from "@/store";
 import { downloadFile } from "@/General";
+import { joinWithApiBaseUrl } from "@/config/imsEndpoints";
 type Props = {
   rowdata: Filedata[];
   refreshfile: () => void;
@@ -90,12 +91,7 @@ const FilesTable: React.FC<Props> = ({ rowdata, refreshfile }) => {
                 color="primary"
                 size="small"
                 onClick={() => {
-                  window.open(
-                    `${import.meta.env.VITE_REACT_APP_API_BASE_URL}/${
-                      params.data.url
-                    }`,
-                    "_blank"
-                  );
+                  window.open(joinWithApiBaseUrl(params.data.url), "_blank");
                 }}
               >
                 <FullscreenIcon fontSize="small" />
@@ -108,9 +104,7 @@ const FilesTable: React.FC<Props> = ({ rowdata, refreshfile }) => {
                 onClick={() =>
                   downloadFile({
                     fileName: params.data.name,
-                    fileUrl: `${import.meta.env.VITE_REACT_APP_API_BASE_URL}/${
-                      params.data.url
-                    }`,
+                    fileUrl: joinWithApiBaseUrl(params.data.url),
                   })
                 }
               >

@@ -1,12 +1,12 @@
-import {io} from "socket.io-client";
-import { socketLink } from "../../axiosIntercepter";
+import { io } from "socket.io-client";
+import { getSocketLink } from "@/config/imsEndpoints";
 
 const userToken = JSON.parse(localStorage.getItem("loggedInUser"))?.token;
 const companyBranch = JSON.parse(
   localStorage.getItem("otherData")
 )?.company_branch;
 
-const socket = io(socketLink, {
+const socket = io(getSocketLink(), {
   extraHeaders: {
     token: userToken,
   },

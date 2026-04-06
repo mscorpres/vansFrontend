@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { getQRStatus, verifyOtpAsync } from "@/features/auth/authSlice";
 import { showToast } from "@/General";
+import { clearLocalStorageExceptEndpointConfig } from "@/config/imsEndpoints";
 
 const OtpPage: React.FC = () => {
   const { qrStatus } = useSelector((state) => state.auth);
@@ -65,9 +66,7 @@ const OtpPage: React.FC = () => {
       <div className="absolute top-[30px] right-[20px]">
         <Button
           onClick={() => {
-            localStorage.clear();
-            // clearUser();
-            // saveUser(null);
+            clearLocalStorageExceptEndpointConfig();
             window.location.reload();
           }}
           className="flex items-center gap-[20px] border border-red-500 hover:bg-red-50 shadow-none bg-transparent text-red-500 "

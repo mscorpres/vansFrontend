@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { spigenAxios } from "@/axiosIntercepter";
+import { clearLocalStorageExceptEndpointConfig } from "@/config/imsEndpoints";
 import { AxiosResponse } from "axios";
 import { showToast } from "@/General";
 
@@ -131,7 +132,7 @@ const authSlice = createSlice({
       state.user = null;
       state.authStatus = false;
       state.token = null;
-      localStorage.clear();
+      clearLocalStorageExceptEndpointConfig();
       window.location.reload();
     },
   },

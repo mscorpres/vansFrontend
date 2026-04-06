@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Props } from "@/types/MainLayout";
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 // import { FaUserEdit } from "react-icons/fa";
 import { PiPasswordFill } from "react-icons/pi";
 import SetPassword from "@/components/shared/SetPassword";
+import SettingDrawer from "@/components/ims-settings/SettingDrawer";
 
 const ProfileSidebar: React.FC<Props> = ({ uiState }) => {
   const { sidebaref, setSheet2Open, sheet2Open, setLogotAlert } = uiState;
   const userData = localStorage.getItem("loggedInUser");
-  const[changePassword,setChangePassword]=useState(false)
+  const [changePassword, setChangePassword] = useState(false);
+  const [imsSettingsOpen, setImsSettingsOpen] = useState(false);
   const user = userData ? JSON.parse(userData) : null;
   
   return (
@@ -57,6 +59,17 @@ const ProfileSidebar: React.FC<Props> = ({ uiState }) => {
             <PiPasswordFill className="h-[15px] w-[15px]" />
             <span className="text-[13px]"> Profile</span>
           </Link>
+          <button
+            type="button"
+            className="dispaly flex w-full items-center gap-[10px] py-[8px] px-[10px] hover:bg-white/10 rounded text-slate-300 text-left"
+            onClick={() => {
+              setImsSettingsOpen(true);
+              setSheet2Open(false);
+            }}
+          >
+            <Settings className="h-[15px] w-[15px] shrink-0" />
+            <span className="text-[13px]">IMS Settings</span>
+          </button>
         </div>
         <div className="absolute bottom-0 left-0 p-[10px] w-full flex justify-center items-center">
           <Button
@@ -70,6 +83,10 @@ const ProfileSidebar: React.FC<Props> = ({ uiState }) => {
         </div>
       </div>
       <SetPassword open={changePassword} onClose={()=>setChangePassword(false)} />
+      <SettingDrawer
+        open={imsSettingsOpen}
+        onClose={() => setImsSettingsOpen(false)}
+      />
     </div>
   );
 };
