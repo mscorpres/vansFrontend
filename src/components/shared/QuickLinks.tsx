@@ -64,11 +64,11 @@ const navLinks = [
     label: "Invoice Register",
     value: "invoice",
   },
-  // {
-  //   href: "/sales/order/allocated",
-  //   label: "Allocated Invoices",
-  //   value: "allocated-invoices",
-  // },
+  {
+    href: "/sales/order/allocated",
+    label: "Credit Note",
+    value: "allocated-invoices",
+  },
   {
     href: "/sales/order/e-transaction-register",
     label: "E Transaction Register",
@@ -97,7 +97,7 @@ export default function QuickLink({ ...props }: DialogProps) {
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if ((e.key === "f" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
+      if ((e.key === "ff" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
         if (
           (e.target instanceof HTMLElement && e.target.isContentEditable) ||
           e.target instanceof HTMLInputElement ||

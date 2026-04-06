@@ -1,6 +1,4 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,8 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { customStyles } from "@/config/reactSelect/SelectColorConfig";
 import DropdownIndicator from "@/config/reactSelect/DropdownIndicator";
-import { ICellRendererParams } from "ag-grid-community";
-import MyAsyncSelect from "@/components/shared/MyAsyncSelect";
 import {
   InputStyle,
   LableStyle,
@@ -24,7 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Filter } from "lucide-react";
+
 import styled from "styled-components";
 import { DatePicker, Space } from "antd";
 import Select from "react-select";
@@ -32,8 +28,7 @@ import moment from "moment";
 
 import useApi from "@/hooks/useApi";
 
-import { fetchR2 } from "@/components/shared/Api/masterApi";
-import { exportDateRangespace } from "@/components/shared/Options";
+import { fetchR7 } from "@/components/shared/Api/masterApi";
 import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { IoMdDownload } from "react-icons/io";
 import FullPageLoading from "@/components/shared/FullPageLoading";
@@ -48,7 +43,7 @@ const FormSchema = z.object({
   search: z.string().optional(),
 });
 
-const R2 = () => {
+const R7 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -74,7 +69,7 @@ const R2 = () => {
       data: dataString,
     };
 
-    const response = await execFun(() => fetchR2(payload), "fetch");
+    const response = await execFun(() => fetchR7(payload), "fetch");
     let { data } = response;
     if (data.success) {
       let arr = data.response.data.map((r, index) => {
@@ -91,14 +86,14 @@ const R2 = () => {
   };
 
   const handleDownloadExcel = () => {
-    downloadCSV(rowData, columnDefs, "R2 PO Report");
+    downloadCSV(rowData, columnDefs, "R7 SO Report");
   };
 
   useEffect(() => {
     // fetchComponentList();
   }, []);
 
-  const columnDefs: ColDef<rowData>[] = [
+  const columnDefs: ColDef<RowData>[] = [
     {
       headerName: "ID",
       field: "id",
@@ -106,120 +101,117 @@ const R2 = () => {
       width: 90,
     },
     {
+      headerName: "PO Number",
+      field: "po_number",
+      cellRenderer: CopyCellRenderer,
+      filter: "agTextColumnFilter",
+      width: 190,
+    },
+    {
       headerName: "PO Date",
-      field: "reg_date",
+      field: "po_date",
       filter: "agTextColumnFilter",
       width: 190,
     },
     {
-      headerName: "Created By",
-      field: "reg_by",
-      filter: "agTextColumnFilter",
-      width: 190,
-    },
-    {
-      headerName: "PO Order Id",
-      field: "po_order_id",
+      headerName: "SO Order Id",
+      field: "so_id",
       filter: "agTextColumnFilter",
       cellRenderer: CopyCellRenderer,
       width: 220,
     },
     {
+      headerName: "Customer Name",
+      field: "clients",
+      filter: "agTextColumnFilter",
+      minWidth: 240,
+      flex: 1,
+    },
+    {
       headerName: "Part No.",
       field: "part_no",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
       width: 190,
     },
     {
       headerName: "Compenent",
       field: "component_name",
       filter: "agTextColumnFilter",
-      cellRenderer: CopyCellRenderer,
       minWidth: 190,
       flex: 1,
     },
     {
-      headerName: "UoM",
-      field: "unit_name",
+      headerName: "Description",
+      field: "specification",
       filter: "agTextColumnFilter",
-      width: 120,
-    },
-    {
-      headerName: "Qty",
-      field: "ordered_qty",
-      filter: "agTextColumnFilter",
-      width: 120,
-    },
-    {
-      headerName: " Pending Qty",
-      field: "ordered_pending",
-      filter: "agTextColumnFilter",
-      width: 180,
-    },
-    {
-      headerName: "Rate",
-      field: "po_rate",
-      filter: "agTextColumnFilter",
-      width: 120,
-    },
-    {
-      headerName: "Currency",
-      field: "currency_lable",
-      filter: "agTextColumnFilter",
-      width: 120,
-    },
-    {
-      headerName: "Currency Sym",
-      field: "currency_symbol",
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
-    {
-      headerName: "Vendor Code",
-      field: "vendor_code",
-      cellRenderer: CopyCellRenderer,
-      filter: "agTextColumnFilter",
-      width: 150,
-    },
-    {
-      headerName: "Vendor Name",
-      field: "vendor_name",
-      cellRenderer: CopyCellRenderer,
-      filter: "agTextColumnFilter",
-      minWidth: 210,
-      flex: 1,
+      width: 250,
+      minWidth: 250,
     },
     {
       headerName: "Due Date",
       field: "due_date",
       filter: "agTextColumnFilter",
-      width: 190,
+      width: 150,
     },
+    {
+      headerName: "Qty",
+      field: "total_qty",
+      filter: "agTextColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: "UoM",
+      field: "units_name",
+      filter: "agTextColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: " Pending Qty",
+      field: "pending_qty",
+      filter: "agTextColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: "Rate",
+      field: "rate",
+      filter: "agTextColumnFilter",
+      width: 90,
+    },
+    {
+      headerName: "Currency",
+      field: "currency_label",
+      filter: "agTextColumnFilter",
+      width: 40,
+    },
+    {
+      headerName: "Currency Sym",
+      field: "currency_symbol",
+      filter: "agTextColumnFilter",
+      width: 40,
+    },
+    // {
+    //   headerName: "Customer Code",
+    //   field: "customer_code",
+    //   filter: "agTextColumnFilter",
+    //   width: 150,
+    // },
     {
       headerName: "Cost Center",
-      field: "po_cost_center",
+      field: "cost_center",
       filter: "agTextColumnFilter",
       width: 150,
     },
     {
-      headerName: "Project Name",
-      field: "po_project",
+      headerName: "SO Date",
+      field: "reg_date",
       filter: "agTextColumnFilter",
-      width: 150,
+      width: 140,
     },
     {
-      headerName: "Branch In",
-      field: "branch",
+      headerName: "Created By",
+      field: "created_by",
       filter: "agTextColumnFilter",
-      width: 150,
-    },
-    {
-      headerName: "Description",
-      field: "description",
-      filter: "agTextColumnFilter",
-      width: 250,
-      minWidth: 250,
+      width: 140,
     },
   ];
 
@@ -231,10 +223,6 @@ const R2 = () => {
     {
       label: "All",
       value: "A",
-    },
-    {
-      label: "Project",
-      value: "PROJECT",
     },
     {
       label: "Completed",
@@ -357,7 +345,7 @@ const R2 = () => {
   );
 };
 
-export default R2;
+export default R7;
 
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {

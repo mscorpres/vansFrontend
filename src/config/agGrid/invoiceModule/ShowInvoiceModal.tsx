@@ -15,7 +15,7 @@ const DataDialog = ({ open, onClose, orderId, module }: any) => {
 
   const handleDownload = () => {
     dispatch(
-      printSellInvoice({ invoiceNo: orderId, printType: "Original" })
+      printSellInvoice({ so_invoice: orderId, printInvType: "Original" })
     ).then((response: any) => {
         if (response?.payload?.success) {
           printFunction(response?.payload?.data.buffer.data);

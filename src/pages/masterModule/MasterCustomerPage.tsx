@@ -221,7 +221,7 @@ const MasterCustomerPage: React.FC = () => {
       cellRenderer: CopyCellRenderer,
     },
     {
-      headerName: "Address Line 1",
+      headerName: "Address Line 2",
       field: "addressLine2",
       filter: "agTextColumnFilter",
       width: 390,
@@ -272,7 +272,7 @@ const MasterCustomerPage: React.FC = () => {
       form.setFieldValue("shipPincode", ship.pinCode);
       form.setFieldValue("shipCompany", ship.company);
       form.setFieldValue("shipAddress1", ship.addressLine1);
-      form.setFieldValue("shipAddress2", ship.addressLine1);
+      form.setFieldValue("shipAddress2", ship.addressLine2);
       form.setFieldValue("shipPan", ship.panno);
       setOpenView(bill);
     } else {
@@ -328,7 +328,7 @@ const MasterCustomerPage: React.FC = () => {
           label: r.label,
           gst: r.gst,
           pincode: r.pinCode,
-          addressLine1: r.addressLine2,
+          addressLine1: r.addressLine1,
           addressLine2: r.addressLine2,
           addressID: r.addressID,
           // ...r,
@@ -374,8 +374,8 @@ const MasterCustomerPage: React.FC = () => {
       shipToPincode: value.shipPincode,
       shipToGst: value.shipGst,
       shipToPan: value.shipPan,
-      shipToAddress1: value.shipAddress2,
-      shipToAddress2: value.shipAddress1,
+      shipToAddress1: value.shipAddress1,
+      shipToAddress2: value.shipAddress2,
       same_shipping_addres: samebilling,
     };
 
@@ -418,8 +418,8 @@ const MasterCustomerPage: React.FC = () => {
       shipToPincode: value.shipPincode,
       shipToGst: value.shipGst,
       shipToPan: value.shipPan,
-      shipToAddress1: value.shipAddress2,
-      shipToAddress2: value.shipAddress1,
+      shipToAddress1: value.shipAddress1,
+      shipToAddress2: value.shipAddress2,
       same_shipping_addres: samebilling,
     };
     // return;
@@ -609,7 +609,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="Pincode"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your Pincode!",
                               },
                               {
@@ -646,7 +646,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="GST Number"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your GST!",
                               },
                               {
@@ -828,7 +828,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="Pincode"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your Pincode!",
                               },
                               {
@@ -849,7 +849,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="Pan Number"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your Pan Number!",
                               },
                             ]}
@@ -865,7 +865,7 @@ const MasterCustomerPage: React.FC = () => {
                           label="GST Number"
                           rules={[
                             {
-                              required: true,
+                              required: false,
                               message: "Please input your GST!",
                             },
                             {
@@ -1104,11 +1104,6 @@ const MasterCustomerPage: React.FC = () => {
                                 required: true,
                                 message: "Please input your GST!",
                               },
-                              {
-                                min: 15,
-                                max: 15,
-                                message: "GST must be at least 15 characters!",
-                              },
                             ]}
                           >
                             <Input
@@ -1247,7 +1242,7 @@ const MasterCustomerPage: React.FC = () => {
                             label="Pincode"
                             rules={[
                               {
-                                required: true,
+                                required: false,
                                 message: "Please input your name!",
                               },
                               {
@@ -1278,11 +1273,7 @@ const MasterCustomerPage: React.FC = () => {
                               required: true,
                               message: "Please input your GST!",
                             },
-                            {
-                              min: 15,
-                              max: 15,
-                              message: "GST must be at least 15 characters!",
-                            },
+                            
                           ]}
                         >
                           <Input

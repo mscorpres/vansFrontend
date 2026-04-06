@@ -4,66 +4,50 @@ const FullPageLoading = () => {
   const [isTakingLonger, setIsTakingLonger] = useState(false);
 
   useEffect(() => {
-  
     const timer = setTimeout(() => {
       setIsTakingLonger(true);
-    }, 30000); 
-
-    
+    }, 30000);
     return () => clearTimeout(timer);
-  }, []); 
+  }, []);
 
   return (
-    <div className="fixed z-[9] top-0 left-0 right-0 bottom-0 bg-[#ffffffb1] flex justify-center items-center flex-col">
-      <div className="relative w-20 h-20 perspective-1000">
+    <div className="fixed inset-0 z-[9] flex flex-col items-center justify-center bg-white/75">
+      {/* Spinner + text only, no card/rectangle */}
+      <div className="relative mb-6 flex h-20 w-20 items-center justify-center">
         <div
-          className="absolute w-full h-full rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-lg animate-flip"
-          style={{
-            transformStyle: "preserve-3d",
-            animation: "flip 1.5s infinite ease-in-out",
-          }}
-        >
-          <div
-            className="absolute w-full h-full rounded-full bg-yellow-500 flex items-center justify-center text-white text-2xl font-bold backface-hidden"
-            style={{ transform: "rotateY(0deg)" }}
-          >
-            VANS
-          </div>
-          <div
-            className="absolute w-full h-full rounded-full bg-yellow-600 flex items-center justify-center text-white text-2xl font-bold backface-hidden"
-            style={{ transform: "rotateY(180deg)" }}
-          >
-            VANS
-          </div>
-        </div>
+          className="absolute inset-0 rounded-full border-[3px] border-slate-100"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-amber-400"
+          style={{ animation: "spin 0.9s linear infinite" }}
+          aria-hidden
+        />
+        <div
+          className="absolute inset-[6px] rounded-full border-[2px] border-transparent border-t-amber-500"
+          style={{ animation: "spin 1.2s linear infinite reverse" }}
+          aria-hidden
+        />
+        <span className="relative z-10 text-base font-bold tracking-widest text-amber-600">
+          VANS
+        </span>
       </div>
-      <div className="text-slate-600 text-lg mt-4 font-mono tracking-wide">
-        Powering Up...
-      </div>
+      <p className="flex items-center gap-1 text-sm font-medium text-slate-500">
+        Loading
+        <span className="flex gap-0.5" aria-hidden>
+          <span className="h-1 w-1 animate-pulse rounded-full bg-amber-400 [animation-delay:0ms]" />
+          <span className="h-1 w-1 animate-pulse rounded-full bg-amber-400 [animation-delay:200ms]" />
+          <span className="h-1 w-1 animate-pulse rounded-full bg-amber-400 [animation-delay:400ms]" />
+        </span>
+      </p>
       {isTakingLonger && (
-        <div className="text-slate-500 text-sm mt-2 font-mono tracking-wide">
-          Taking longer than usual, please stay and wait...
-        </div>
+        <p className="mt-3 max-w-[240px] text-center text-xs text-slate-400">
+          Taking longer than usual, please wait…
+        </p>
       )}
-
-      {/* Custom CSS Animation */}
-      <style jsx>{`
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        .backface-hidden {
-          backface-visibility: hidden;
-        }
-        @keyframes flip {
-          0% {
-            transform: rotateY(0deg) translateZ(0);
-          }
-          50% {
-            transform: rotateY(180deg) translateZ(10px);
-          }
-          100% {
-            transform: rotateY(360deg) translateZ(0);
-          }
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>

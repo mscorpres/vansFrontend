@@ -197,7 +197,7 @@ export const materialmenu = [
       { name: "Sales Order Register", path: "/sales/order/register" },
       { name: "Sales Order Shipment", path: "/sales/order/shipment" },
       { name: "Invoice Register", path: "/sales/order/invoice" },
-      // { name: "Allocated Invoices", path: "/sales/order/allocated" },
+      { name: "Credit Note", path: "/sales/order/allocated" },
       {
         name: "e-Transaction Invoices",
         path: "/sales/order/e-transaction-register",
@@ -263,7 +263,7 @@ export const materialmenu = [
         // path: "/not-permission",
         subMenu: [
           { name: "MIN Register", path: "/inventory/min" },
-          { name: "Reports R1-R6", path: "/inventory/report/r1" },
+          { name: "Reports R1-R9", path: "/inventory/report/r1" },
         ],
       },
       { name: "Printing", path: "/warehouse/min/print" },

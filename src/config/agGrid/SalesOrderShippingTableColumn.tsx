@@ -1,29 +1,51 @@
 import { RowData } from "@/types/SalesOrderRegisterType";
 import { ColDef } from "ag-grid-community";
-import { MoreOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined, EditOutlined, FileAddOutlined, MoreOutlined, PrinterOutlined } from "@ant-design/icons";
 import { Button, Menu, Dropdown, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { useEffect, useState } from "react";
-// import { printFunction } from "@/General";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
-import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
 import { printShipment } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
-import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
-import {
-  approveShipment,
-  cancelShipment,
-  createInvoice,
-  fetchMaterialList,
-  fetchSalesOrderShipmentList,
-} from "@/features/salesmodule/salesShipmentSlice";
+import MaterialListModal from "./MaterialListModal";
+import { approveShipment, cancelShipment, createInvoice, fetchMaterialList, fetchSalesOrderShipmentList } from "@/features/salesmodule/salesShipmentSlice";
 import { TruncateCellRenderer } from "@/General";
 import PickSlipModal from "@/config/agGrid/PickSlipModal";
 import { toast } from "react-toastify";
+import ViewAndCreateInvModal from "@/config/agGrid/salesmodule/ViewandCreateInvModal";
+import { cn } from "@/lib/utils";
+
+// Round status badge for Shipment / Approval / Material status (invoice page style)
+const StatusBadge: React.FC<{ value: string; labelMap?: Record<string, string> }> = ({ value, labelMap }) => {
+  const status = (value || "").trim();
+  const lower = status.toLowerCase();
+  const config: Record<string, { pill: string; dot: string; label: string }> = {
+    approved: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Approved" },
+    active: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Active" },
+    out: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Out" },
+    cancelled: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    cancel: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    pending: { pill: "bg-amber-50 text-amber-700", dot: "bg-amber-500", label: "Pending" },
+  };
+  const key = Object.keys(config).find((k) => lower.includes(k)) || "pending";
+  const { pill, dot, label } = config[key] || config.pending;
+  const displayLabel = labelMap?.[status] ?? config[key]?.label ?? status;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        pill
+      )}
+    >
+      <span className={cn("h-2 w-2 shrink-0 rounded-full", dot)} />
+      {displayLabel}
+    </span>
+  );
+};
 
 interface ActionMenuProps {
-  row: RowData; // Use the RowData type here
+  row: RowData;
 }
 
 const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
@@ -32,30 +54,23 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isInvoiceModalVisible, setIsInvoiceModalVisible] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
-    useState(false);
+  const [isMaterialListModalVisible, setIsMaterialListModalVisible] = useState(false);
   const [form] = Form.useForm();
-  const [invoiceForm] = Form.useForm(); // Form instance for the invoice modal
+  const [invoiceForm] = Form.useForm();
   const { loading } = useSelector((state: RootState) => state.sellRequest);
+  const { shipmentMaterialList, loading: loading2 } = useSelector((state: RootState) => state.sellShipment);
 
-  const { shipmentMaterialList, loading: loading2 } = useSelector(
-    (state: RootState) => state.sellShipment
-  );
-
-  const dateRange = useSelector(
-    (state: RootState) => state.sellRequest.dateRange
-  );
+  const dateRange = useSelector((state: RootState) => state.sellRequest.dateRange);
 
   const showCancelModal = () => {
-    setIsModalVisible(true);
-  };
+    setIsModalVisible(true); 
+   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
-  const handleMaterialListModalClose = () =>
-    setIsMaterialListModalVisible(false);
+  const handleMaterialListModalClose = () => setIsMaterialListModalVisible(false);
 
   const handleshowMaterialList = (row: RowData) => {
     dispatch(fetchMaterialList({ shipment_id: row?.shipment_id }));
@@ -68,20 +83,17 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   };
 
   const confirmApprove = () => {
-    dispatch(approveShipment({ so_id: row?.shipment_id })).then(
-      (response: any) => {
-
-        if (response?.payload?.code == 200 || response?.payload?.success) {
-          toast.success(response?.payload?.message);
-          dispatch(
-            fetchSalesOrderShipmentList({
-              type: "date_wise",
-              data: dateRange,
-            }) as any
-          );
-        }
+    dispatch(approveShipment({ so_id: row?.shipment_id })).then((response: any) => {
+      if (response?.payload?.code === 200 || response?.payload?.success) {
+        toast.success(response?.payload?.message);
+        dispatch(
+          fetchSalesOrderShipmentList({
+            type: "date_wise",
+            data: dateRange,
+          }) as any
+        );
       }
-    );
+    });
     setShowConfirmationModal(false);
   };
 
@@ -94,8 +106,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
           shipment_id: row?.shipment_id,
         };
         dispatch(cancelShipment(payload)).then((response: any) => {
-          if (response?.payload?.code == 200 || response?.payload?.success) {
-            form.resetFields(); // Clear the form fields after submission
+          if (response?.payload?.code === 200 || response?.payload?.success) {
+            form.resetFields();
             dispatch(
               fetchSalesOrderShipmentList({
                 type: "date_wise",
@@ -110,40 +122,116 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         console.error("Validation Failed:", errorInfo);
       });
   };
+
   const showInvoiceModal = () => {
-    setIsInvoiceModalVisible(true);
-  };
-  const handleInvoiceModalOk = () => {
-    invoiceForm
-      .validateFields()
-      .then((values) => {
-        const payload: any = {
-          shipment_id: row?.shipment_id,
-          remark: values.remark,
-          so_id: row?.so_id,
-          costcenter:row?.costcenter,
-
+    dispatch(fetchMaterialList({ shipment_id: row?.shipment_id })).then((response: any) => {
+      if (response?.payload?.success && response?.payload?.data) {
+        const fetchedData = response.payload.data;
+        const sellRequestDetails = {
+          headerData: {
+            soId: row?.so_id, // Still using row.so_id as it may be needed
+            invoiceNo: fetchedData.header.shipment_id,
+            billTo: {
+              custName: fetchedData.header.customer_name.customer_name,
+              pincode: fetchedData.header.bill_to.pincode,
+              panno: fetchedData.header.bill_to.panno,
+              gst: fetchedData.header.bill_to.gstno,
+              address1: fetchedData.header.bill_to.address,
+              address2: "",
+            },
+            shipTo: {
+              company: fetchedData.header.ship_to.company,
+              panno: fetchedData.header.ship_to.panno,
+              gst: fetchedData.header.ship_to.gstno,
+              pincode: fetchedData.header.ship_to.pincode,
+              address1: fetchedData.header.ship_to.address1,
+              address2: fetchedData.header.ship_to.address2,
+            },
+            billFrom: {
+              pan: fetchedData.header.bill_from.panno,
+              gstin: fetchedData.header.bill_from.gstno,
+              address1: fetchedData.header.bill_from.address1,
+              address2: fetchedData.header.bill_from.address2,
+            },
+            ewaybill: "No",
+            eInvoice: "No",
+            invStatus: row?.shipment_status === "Y" ? "Active" : "Pending", // Still using row.shipment_status
+            createDate: row?.shipment_date, // Still using row.shipment_date
+          },
+          materialData: fetchedData.items || [],
         };
-        dispatch(createInvoice(payload)).then((resultAction: any) => {
-          if (
-            resultAction.payload?.code == 200 ||
-            resultAction.payload?.success
-          ) {
-            setIsInvoiceModalVisible(false);
-            dispatch(
-              fetchSalesOrderShipmentList({
-                type: "date_wise",
-                data: dateRange,
-              }) as any
-            );
-          }
-        });
+        console.log("sellRequestDetails:", sellRequestDetails);
+        setIsInvoiceModalVisible(true);
+        // Store sellRequestDetails in state to pass to modal
+        setInvoiceModalData(sellRequestDetails);
+      } else {
+        toast.error("Failed to fetch material list.");
+      }
+    });
+  };
 
+  const [invoiceModalData, setInvoiceModalData] = useState<any>(null);
+
+  const handleInvoiceModalOk = (values: any) => {
+    const payload = {
+      shipment_id: row?.shipment_id,
+      so_id: row?.so_id,
+      costcenter: row?.costcenter,
+      boxes: values.boxes,
+      remark: values.remark,
+      freightCharges: values.freightCharges,
+      gstRateFreight: values.gstRateFreight,
+      documentType: values.documentType,
+      supplyType: values.supplyType,
+      supplyTypeEW: values.supplyTypeW,
+      transactionType: values.transactionType,
+      reverseCharge: values.reverseCharge,
+      igstOnIntra: values.igstOnIntra,
+      billFromLocation: values.billFromLocation,
+      billToLocation: values.billToLocation,
+      dispatchFromLocation: values.dispatchFromLocation,
+      shipToLocation: values.shipToLocation,
+      dispatchDocNo: values.dispatchDocNo,
+      dispatchThrough: values.dispatchThrough,
+      deliveryNote: values.deliveryNote,
+      deliveryDate: values.deliveryDate,
+      transporterMode: values.transporterMode,
+      vehicleType: values.vehicleType,
+      vehicleNo: values.vehicleNo,
+      transportDoc: values.transportDoc,
+      transporterName: values.transporterName,
+      transporterId: values.transporterId,
+
+    };
+
+    dispatch(createInvoice(payload)).then((resultAction: any) => {
+      if (resultAction.payload?.code === 200 || resultAction.payload?.success) {
+        setIsInvoiceModalVisible(false);
+        dispatch(
+          fetchSalesOrderShipmentList({
+            type: "date_wise",
+            data: dateRange,
+          }) as any
+        );
         invoiceForm.resetFields();
-      })
-      .catch((errorInfo) => {
-        console.error("Validation Failed:", errorInfo);
-      });
+        toast.success("Invoice created successfully!");
+      } else {
+        toast.error("Failed to create invoice.");
+      }
+    });
+  };
+
+  const handleInvoiceModalCancel = () => {
+    setIsInvoiceModalVisible(false);
+    invoiceForm.resetFields();
+  };
+
+  const handlePrintInvoice = (invoiceNo: string, printType: string) => {
+    dispatch(printShipment({ shipment_id: row?.shipment_id })).then((response: any) => {
+      if (response?.payload?.success) {
+        printFunction(response?.payload?.data.buffer.data);
+      }
+    });
   };
 
   useEffect(() => {
@@ -156,18 +244,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       );
     }
   }, [submitSuccess]);
-
-  const handleInvoiceModalCancel = () => {
-    setIsInvoiceModalVisible(false);
-  };
-
-  const handlePrintOrder = async (orderId: string) => {
-    dispatch(printShipment({ shipment_id: orderId })).then((response: any) => {
-      if (response?.payload?.success) {
-        printFunction(response?.payload?.data.buffer.data);
-      }
-    });
-  };
 
   const materialListColumns: ColDef[] = [
     { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
@@ -184,7 +260,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       autoHeight: true,
       width: 300,
     },
-   
     {
       headerName: "Customer Part Number",
       field: "customer_part_no",
@@ -205,32 +280,24 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const menu = (
     <Menu>
-      <Menu.Item
-        key="approve"
-        onClick={() => handleshowMaterialListForApprove(row)}
-      >
+      <Menu.Item key="approve" onClick={() => handleshowMaterialListForApprove(row)} icon={<CheckCircleOutlined className="text-base" />}>
         View/Approve
       </Menu.Item>
-      <Menu.Item key="cancel" onClick={showCancelModal}>
+      <Menu.Item key="cancel" onClick={showCancelModal} icon={<CloseCircleOutlined className="text-base" />}>
         Cancel
       </Menu.Item>
       <Menu.Item
         key="update"
-        onClick={() => {
-          handleshowMaterialList(row);
-        }}
-        disabled={row?.approval_status === "P" || row?.material_status === "Y"}
+        onClick={() => handleshowMaterialList(row)}
+        // disabled={row?.approval_status === "P" || row?.material_status === "Y"}
+        icon={<EditOutlined className="text-base" />}
       >
         PickSlip
       </Menu.Item>
-      <Menu.Item
-        key="createInvoice"
-        onClick={showInvoiceModal}
-        disabled={isDisabled || row?.material_status !== "Y"}
-      >
+      <Menu.Item key="createInvoice" onClick={showInvoiceModal} disabled={isDisabled || row?.material_status !== "Y"} icon={<FileAddOutlined className="text-base" />}>
         Create Invoice
       </Menu.Item>
-      <Menu.Item key="print" onClick={() => handlePrintOrder(row?.shipment_id)}>
+      <Menu.Item key="print" onClick={() => handlePrintInvoice(row?.shipment_id, "Original")} icon={<PrinterOutlined className="text-base" />}>
         Print
       </Menu.Item>
     </Menu>
@@ -241,23 +308,14 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Dropdown overlay={menu} trigger={["click"]}>
         <Button icon={<MoreOutlined />} />
       </Dropdown>
-      <ConfirmCancellationDialog
-        isDialogVisible={isModalVisible}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        row={{ req_id: row?.so_id }}
-        form={form}
-        loading={loading}
-        module="Shipment "
-      />
-      <CreateInvoiceDialog
-        isDialogVisible={isInvoiceModalVisible}
-        handleOk={handleInvoiceModalOk}
-        handleCancel={handleInvoiceModalCancel}
+      <ConfirmCancellationDialog isDialogVisible={isModalVisible} handleOk={handleOk} handleCancel={handleCancel} row={{ req_id: row?.so_id }} form={form} loading={loading} module="Shipment" />
+      <ViewAndCreateInvModal
+        visible={isInvoiceModalVisible}
+        onClose={handleInvoiceModalCancel}
+        sellRequestDetails={invoiceModalData}
+        loading={loading || loading2}
         form={invoiceForm}
-        loading={loading}
-        heading="Create Invoice"
-        description={`Are you sure you want to create an invoice for SO ${row.so_id} and shipment ${row.shipment_id}? and cost center ${row.costcenter} ?`}
+        onSave={handleInvoiceModalOk}
       />
       <PickSlipModal
         visible={isMaterialListModalVisible}
@@ -296,9 +354,19 @@ export const columnDefs: ColDef<any>[] = [
     filter: "agTextColumnFilter",
   },
   {
+    headerName: "Shipment Status",
+    field: "shipment_status",
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => {
+      const v = params?.data?.shipment_status;
+      const label = v === "Y" ? "Active" : v === "C" ? "Cancelled" : "Pending";
+      return <StatusBadge value={label} />;
+    },
+  },
+  {
     headerName: "Shipment Date",
     field: "shipment_date",
-    filter: "agNumberColumnFilter",
+    filter: "agTextColumnFilter",
   },
   { headerName: "SO ID", field: "so_id", filter: "agTextColumnFilter" },
   {
@@ -309,52 +377,62 @@ export const columnDefs: ColDef<any>[] = [
   {
     headerName: "PO Date",
     field: "po_date",
-    filter: "agDateColumnFilter",
+    filter: "agTextColumnFilter",
   },
   {
     headerName: "Pickslip ID",
     field: "pickslip_id",
     filter: "agTextColumnFilter",
-     
   },
   {
     headerName: "Approval Status",
     field: "approval_status",
-    valueGetter: (params) =>
-      params?.data?.approval_status === "A" ? "Approved" : "Pending",
-  },
-  {
-    headerName: "Shipment Status",
-    field: "shipment_status",
-    valueGetter: (params) =>
-      params?.data?.shipment_status === "Y"
-        ? "Active"
-        : params?.data?.shipment_status === "C"
-        ? "Cancelled"
-        : "Pending",
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => {
+      const v = params?.data?.approval_status;
+      const label = v === "A" ? "Approved" : "Pending";
+      return <StatusBadge value={label} />;
+    },
   },
   {
     headerName: "Material Status",
     field: "material_status",
     filter: "agTextColumnFilter",
-    valueGetter: (params) =>
-      params?.data?.material_status === "Y" ? "Out" : "Pending",
+    cellRenderer: (params: any) => {
+      const v = params?.data?.material_status;
+      const label = v === "Y" ? "Out" : "Pending";
+      return <StatusBadge value={label} />;
+    },
   },
   {
-    headerName: "SuplierName",
+    headerName: "Supplier Name",
     field: "SuplierName",
     filter: "agTextColumnFilter",
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 160,
+    width: 180,
   },
   {
     headerName: "Supplier Address",
     field: "supplierAddress",
     cellRenderer: "truncateCellRenderer",
+    minWidth: 200,
+    width: 240,
   },
-  { headerName: "Client", field: "clientName", filter: "agTextColumnFilter" },
+  {
+    headerName: "Client",
+    field: "clientName",
+    filter: "agTextColumnFilter",
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 140,
+    width: 160,
+  },
   {
     headerName: "Client Address",
     field: "clientAddress",
     filter: "agTextColumnFilter",
     cellRenderer: "truncateCellRenderer",
+    minWidth: 200,
+    width: 240,
   },
 ];

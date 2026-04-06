@@ -1,6 +1,6 @@
 import { RowData } from "@/types/SalesOrderRegisterType";
 import { ColDef } from "ag-grid-community";
-import { MoreOutlined } from "@ant-design/icons";
+import { CarOutlined, CheckCircleOutlined, CloseCircleOutlined, EditOutlined, MoreOutlined, PrinterOutlined, StopOutlined } from "@ant-design/icons";
 import { Button, Menu, Dropdown, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
@@ -8,45 +8,67 @@ import { useMemo, useState } from "react";
 import CreateShipmentListModal from "@/config/agGrid/registerModule/CreateShipmentListModal";
 import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/ConfirmCancellationDialog";
 import { CreateInvoiceDialog } from "@/config/agGrid/registerModule/CreateInvoiceDialog";
-import {
-  approveSo,
-  cancelSalesOrder,
-  createShipment,
-  fetchMaterialList,
-  fetchSellRequestList,
-  printSellOrder,
-  rejectSo,
-  shortClose,
-} from "@/features/salesmodule/SalesSlice";
+import { approveSo, cancelSalesOrder, createShipment, fetchMaterialList, fetchSellRequestList, printSellOrder, rejectSo, shortClose } from "@/features/salesmodule/SalesSlice";
 import { printFunction } from "@/components/shared/PrintFunctions";
 import { useToast } from "@/components/ui/use-toast";
-import MaterialListModal from "@/config/agGrid/registerModule/MaterialListModal";
+import MaterialListModal from "./MaterialListModal";
 import { TruncateCellRenderer } from "@/General";
+import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+
+// Round status badge (invoice/shipment style)
+const StatusBadge: React.FC<{ value: string }> = ({ value }) => {
+  const status = (value || "").trim();
+  const lower = status.toLowerCase();
+  const config: Record<string, { pill: string; dot: string; label: string }> = {
+    "partially approved": { pill: "bg-sky-50 text-sky-700", dot: "bg-sky-500", label: "Partially Approved" },
+    partiallyapproved: { pill: "bg-sky-50 text-sky-700", dot: "bg-sky-500", label: "Partially Approved" },
+    approved: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Approved" },
+    rejected: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Rejected" },
+    active: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Active" },
+    open: { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500", label: "Open" },
+    closed: { pill: "bg-slate-100 text-slate-600", dot: "bg-slate-400", label: "Closed" },
+    cancelled: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    cancel: { pill: "bg-red-50 text-red-700", dot: "bg-red-500", label: "Cancelled" },
+    pending: { pill: "bg-amber-50 text-amber-700", dot: "bg-amber-500", label: "Pending" },
+  };
+  // Check "partially approved" before "approved" (since "partially approved".includes("approved") is true)
+  const key = Object.keys(config).find((k) => lower.includes(k)) || "pending";
+  const { pill, dot, label } = config[key] || { pill: "bg-slate-50 text-slate-700", dot: "bg-slate-400", label: status };
+  const displayLabel = config[key]?.label ?? status;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        pill
+      )}
+    >
+      <span className={cn("h-2 w-2 shrink-0 rounded-full", dot)} />
+      {displayLabel}
+    </span>
+  );
+};
 
 interface ActionMenuProps {
-  row: RowData; // Use the RowData type here
+  row: RowData; 
 }
 
 const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate(); 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [isMaterialListModalVisible, setIsMaterialListModalVisible] =
-    useState(false);
+  const [isMaterialListModalVisible, setIsMaterialListModalVisible] = useState(false);
   const [showHandleCloseModal, setShowHandleCloseModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [form] = Form.useForm();
   const [shortCloseForm] = Form.useForm(); // Form instance for the invoice modal
   const [rejectform] = Form.useForm(); // Form instance for the invoice modal
-  const { sellRequestList, loading } = useSelector(
-    (state: RootState) => state.sellRequest
-  );
-  const dateRange = useSelector(
-    (state: RootState) => state.sellRequest.dateRange
-  );
+  const { sellRequestList, loading } = useSelector((state: RootState) => state.sellRequest);
+  const dateRange = useSelector((state: RootState) => state.sellRequest.dateRange);
   const { toast } = useToast();
   const handleUpdate = (row: any) => {
-    const soId = row?.so_id; // Replace with actual key for employee ID
+    const soId = row?.so_id;
     window.open(`/sales/order/update/${soId.replaceAll("/", "_")}`, "_blank");
     // dispatch(fetchDataForUpdate({ clientCode: soId }));
   };
@@ -59,8 +81,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     setIsModalVisible(false);
   };
 
-  const handleMaterialListModalClose = () =>
-    setIsMaterialListModalVisible(false);
+  const handleMaterialListModalClose = () => setIsMaterialListModalVisible(false);
   // dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
 
   const handleshowMaterialList = (row: RowData) => {
@@ -68,30 +89,29 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     setIsMaterialListModalVisible(true);
   };
 
+  // const handleshowMaterialListForApprove = (row: RowData) => {
+  //   dispatch(fetchMaterialList({ so_id: row?.so_id }));
+  //   setShowConfirmationModal(true);
+  // };
   const handleshowMaterialListForApprove = (row: RowData) => {
-    dispatch(fetchMaterialList({ so_id: row?.so_id }));
-    setShowConfirmationModal(true);
+    // CHANGE: Navigate to the new approval page instead of opening modal
+      const url = `/sales/order/approve?so_id=${encodeURIComponent(row?.so_id)}`;
+     window.open(url, "_blank");
+     
   };
 
-  const confirmApprove = () => {
-    dispatch(approveSo({ so_id: row?.so_id })).then((response: any) => {
-      if (
-        response?.payload?.code == 200 ||
-        response?.payload?.success ||
-        response?.payload?.status == success
-      ) {
-        toast({
-          className: "bg-green-600 text-white items-center",
-          description:
-            response.payload.message || "Sales Order Approved successfully",
-        });
-        dispatch(
-          fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
-        );
-      }
-    });
-    setShowConfirmationModal(false);
-  };
+  // const confirmApprove = () => {
+  //   dispatch(approveSo({ so_id: row?.so_id })).then((response: any) => {
+  //     if (response?.payload?.code == 200 || response?.payload?.success || response?.payload?.status == success) {
+  //       toast({
+  //         className: "bg-green-600 text-white items-center",
+  //         description: response.payload.message || "Sales Order Approved successfully",
+  //       });
+  //       dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
+  //     }
+  //   });
+  //   setShowConfirmationModal(false);
+  // };
 
   const handleOkReject = () => {
     rejectform
@@ -103,7 +123,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         };
         dispatch(rejectSo(payload) as any).then((response: any) => {
           if (response?.payload?.code == 200 || response?.payload?.success) {
-            form.resetFields();
+            rejectform.resetFields();
             dispatch(
               fetchSellRequestList({
                 type: "date_wise",
@@ -162,9 +182,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         });
         setIsMaterialListModalVisible(false);
         handleMaterialListModalClose();
-        dispatch(
-          fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
-        );
+        dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
       }
     });
   };
@@ -182,9 +200,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       dispatch(shortClose(payload)).then((response: any) => {
         if (response?.payload?.code == 200 || response?.payload?.success) {
           setShowHandleCloseModal(false);
-          dispatch(
-            fetchSellRequestList({ type: "date_wise", data: dateRange }) as any
-          );
+          dispatch(fetchSellRequestList({ type: "date_wise", data: dateRange }) as any);
         }
       });
     });
@@ -192,13 +208,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
 
   const isDisabled = row?.approveStatus === "Approved";
 
-  const tableData = useMemo(
-    () =>
-      Array.isArray(sellRequestList)
-        ? sellRequestList.map((item) => ({ ...item }))
-        : [],
-    [sellRequestList]
-  );
+  const tableData = useMemo(() => (Array.isArray(sellRequestList) ? sellRequestList.map((item) => ({ ...item })) : []), [sellRequestList]);
 
   const menu = (
     <Menu>
@@ -207,44 +217,34 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         onClick={() => {
           handleUpdate(row);
         }}
-        disabled={isDisabled}
+        icon={<EditOutlined className="text-base" />}
+        // disabled={isDisabled}
       >
         Update
       </Menu.Item>
       <Menu.Item
         key="approve"
         onClick={() => handleshowMaterialListForApprove(row)}
+        icon={<CheckCircleOutlined className="text-base" />}
         // disabled={isDisabled}
       >
         View/Approve
       </Menu.Item>
-      <Menu.Item
-        key="cancel"
-        onClick={showCancelModal}
-        disabled={row?.soStatus === "Closed"}
-      >
+      <Menu.Item key="cancel" onClick={showCancelModal} disabled={row?.soStatus === "Closed"} icon={<CloseCircleOutlined className="text-base" />}>
         Cancel
       </Menu.Item>
       <Menu.Item
         key="materialList"
         onClick={() => handleshowMaterialList(row)}
-        disabled={
-          row?.approveStatus === "Pending" ||
-          row?.soStatus === "Closed" ||
-          row?.approveStatus === "Rejected" ||
-          row?.approveStatus === "Partially Approved"
-        }
+        disabled={row?.approveStatus === "Pending" || row?.soStatus === "Closed" || row?.approveStatus === "Rejected" || row?.approveStatus === "Partially Approved"}
+        icon={<CarOutlined className="text-base" />}
       >
         Create Shipment
       </Menu.Item>
-      <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)}>
+      <Menu.Item key="print" onClick={() => handlePrintOrder(row?.so_id)} icon={<PrinterOutlined className="text-base" />}>
         Print
       </Menu.Item>
-      <Menu.Item
-        key="shortClose"
-        onClick={() => handleShortClose()}
-        disabled={row?.soStatus === "Closed"}
-      >
+      <Menu.Item key="shortClose" onClick={() => handleShortClose()} disabled={row?.soStatus === "Closed"} icon={<StopOutlined className="text-base" />}>
         Short Close
       </Menu.Item>
     </Menu>
@@ -255,14 +255,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
       <Dropdown overlay={menu} trigger={["click"]}>
         <Button icon={<MoreOutlined />} />
       </Dropdown>
-      <ConfirmCancellationDialog
-        isDialogVisible={isModalVisible}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        row={{ req_id: row?.so_id }}
-        form={form}
-        loading={loading}
-      />
+      <ConfirmCancellationDialog isDialogVisible={isModalVisible} handleOk={handleOk} handleCancel={handleCancel} row={{ req_id: row?.so_id }} form={form} loading={loading} />
 
       <CreateShipmentListModal
         visible={isMaterialListModalVisible}
@@ -272,7 +265,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         loading={loading}
         onCreateShipment={onCreateShipment}
       />
-      <MaterialListModal
+      {/* <MaterialListModal
         visible={showConfirmationModal}
         onClose={() => setShowConfirmationModal(false)}
         sellRequestDetails={tableData}
@@ -283,8 +276,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
         submitText="Approve"
         handleSubmit={confirmApprove}
         handleReject={() => setShowRejectModal(true)}
-        disableStatus={row?.approveStatus === "Approved"||row?.approveStatus === "Rejected"}
-      />
+        disableStatus={row?.approveStatus === "Approved" || row?.approveStatus === "Rejected"}
+      /> */}
       <CreateInvoiceDialog
         isDialogVisible={showHandleCloseModal}
         handleOk={handleShortCloseModalOk}
@@ -306,6 +299,22 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ row }) => {
     </>
   );
 };
+
+// Custom cell renderer for SO ID with strike-through for cancelled orders
+const SoIdCellRenderer = (params: any) => {
+  const isCancelled = params.data?.soStatus === "Cancelled" || params.data?.approveStatus === "Rejected";
+  
+  
+  return (
+    <div style={{ 
+      textDecoration: isCancelled ? 'line-through' : 'none',
+      // color: isCancelled ? '#000' : 'inherit',
+      fontWeight: isCancelled ? '500' : 'normal'
+    }}>
+      {params.value}
+    </div>
+  );
+};
 export default ActionMenu;
 
 export const columnDefs: ColDef<any>[] = [
@@ -325,12 +334,13 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "SO ID",
     field: "so_id",
     filter: "agTextColumnFilter",
-     
+    cellRenderer: SoIdCellRenderer, 
   },
   {
     headerName: "Approve Status",
     field: "approveStatus",
     filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => <StatusBadge value={params?.data?.approveStatus ?? ""} />,
   },
   {
     headerName: "Created Date",
@@ -341,26 +351,37 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "PO ID",
     field: "po_number",
     filter: "agTextColumnFilter",
-     
   },
   {
     headerName: "PO Date",
     field: "po_date",
     filter: "agTextColumnFilter",
   },
-  { headerName: "Status", field: "soStatus", filter: "agTextColumnFilter" },
-
+  {
+    headerName: "Status",
+    field: "soStatus",
+    filter: "agTextColumnFilter",
+    cellRenderer: (params: any) => {
+      const v = params?.data?.soStatus ?? "";
+      const label = v === "A" ? "Active" : v === "P" ? "Pending" : v === "C" ? "Closed" : v;
+      return <StatusBadge value={label} />;
+    },
+  },
   {
     headerName: "Customer Name",
     field: "clintname",
     filter: "agTextColumnFilter",
-    width: 400,
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 180,
+    width: 280,
   },
   {
     headerName: "Supplier Name",
     field: "supplierName",
     filter: "agTextColumnFilter",
-    width: 300,
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 160,
+    width: 220,
   },
   {
     headerName: "Created By",
@@ -376,11 +397,13 @@ export const columnDefs: ColDef<any>[] = [
     headerName: "Reject Reason",
     field: "reject_reason",
     filter: "agTextColumnFilter",
-    cellRenderer: TruncateCellRenderer,
+    cellRenderer: "truncateCellRenderer",
+    minWidth: 140,
+    width: 180,
   },
 ];
 
-const materialListColumnDefs: ColDef[] = [
+export const materialListColumnDefs: ColDef[] = [
   { headerName: "#", valueGetter: "node.rowIndex + 1", maxWidth: 50 },
   // {
   //   headerName: "SO ID",
@@ -397,19 +420,16 @@ const materialListColumnDefs: ColDef[] = [
     field: "itemName",
     width: 300,
     // cellRenderer: "truncateCellRenderer",
-     
   },
   {
     headerName: "Specification",
     field: "itemSpecification",
     width: 350,
-
-     
   },
-  
+
   {
     headerName: "Customer Part No.",
-     
+
     field: "customer_part_no",
     width: 200,
     // cellRenderer: "truncateCellRenderer",

@@ -60,6 +60,8 @@ import R5 from "./pages/ReportsModule/R5";
 import R4 from "./pages/ReportsModule/R4";
 import R3 from "./pages/ReportsModule/R3";
 import R6 from "./pages/ReportsModule/R6";
+import R7 from "./pages/ReportsModule/R7";
+import R8 from "./pages/ReportsModule/R8";
 import ClientLayout from "./layouts/Master/ClientLayout";
 import Hsn from "./pages/masterModule/HSN/Hsn";
 import EditBom from "./pages/masterModule/Bom/EditBom";
@@ -112,6 +114,8 @@ import Profile from "@/components/shared/Api/Profile";
 import { useSelector } from "react-redux";
 import OtpPage from "@/pages/otpPage";
 import RecoveryPassword from "@/pages/RecoveryPassword";
+import ApproveSalesOrderPage from "./config/agGrid/ApproveSalesOrderPage";
+import R9 from "./pages/ReportsModule/R9";
 // Define the authenticated routes
 const router = createBrowserRouter([
   {
@@ -608,6 +612,45 @@ const router = createBrowserRouter([
     ),
     path: "/inventory/report/r6",
   },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <ReportaLayout>
+            <R7 />
+          </ReportaLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/inventory/report/r7",
+
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <ReportaLayout>
+            <R8 />
+          </ReportaLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/inventory/report/r8",
+
+  },
+  {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <ReportaLayout>
+            <R9 />
+          </ReportaLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/inventory/report/r9",
+
+  },
   ///////////////////////////////////////////////
   {
     element: (
@@ -644,6 +687,19 @@ const router = createBrowserRouter([
       </Protected>
     ),
     path: "/sales/order/register",
+  },
+  //approve sales order route
+   {
+    element: (
+      <Protected authentication>
+        <MainLayout>
+          <SOLayout>
+            <ApproveSalesOrderPage />
+          </SOLayout>
+        </MainLayout>
+      </Protected>
+    ),
+    path: "/sales/order/approve",
   },
   {
     element: (
@@ -1170,9 +1226,9 @@ const router = createBrowserRouter([
   {
     path: "/forgot-password",
     element: (
-      <MainLayout>
+      // <MainLayout>
         <ForgetPasswordNew />
-      </MainLayout>
+      // </MainLayout>
     ),
   },
   {

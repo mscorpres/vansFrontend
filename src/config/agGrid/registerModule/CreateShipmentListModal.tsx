@@ -54,11 +54,12 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
   const handleCreateShipment = () => {
     const itemDetails = {
       item: selectedItems.map((item) => item.item),
+      partno: selectedItems.map((item) => item.customer_part_no),
       qty: selectedItems.map((item) => item.qty),
       rate: selectedItems.map((item) => item.rate),
       currency: selectedItems.map((item) => item.currency || "USD"),
       exchange_rate: selectedItems.map((item) => item.exchange_rate || 1.0),
-      due_date: selectedItems.map((item) => item.due_date || "2024-12-31"),
+      due_date: selectedItems.map((item) => item.dueDate),
       hsn_code: selectedItems.map((item) => item.hsnCode),
       gst_type: selectedItems.map((item) => item.gst_type),
       gst_rate: selectedItems.map((item) => item.gstRate),
@@ -102,6 +103,12 @@ const CreateShipmentListModal: React.FC<CreateShipmentListModalProps> = ({
     {
       headerName: "Item Name",
       field: "itemName",
+      width: 300,
+      cellRenderer: "truncateCellRenderer",
+    },
+    {
+      headerName: "Due Date",
+      field: "dueDate",
       width: 300,
       cellRenderer: "truncateCellRenderer",
     },

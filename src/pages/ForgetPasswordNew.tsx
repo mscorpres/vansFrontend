@@ -101,7 +101,7 @@ const ForgetPasswordNew = () => {
     try {
       if (step === 1) {
         dispatch(getPasswordOtp({emailId:formData.email})).then((res: any) => {
-          if (res?.payload?.success) {
+          if (res?.payload?.data.success) {
             setStep(2);
           } 
         });

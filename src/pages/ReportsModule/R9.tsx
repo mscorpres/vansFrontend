@@ -1,29 +1,28 @@
-import React, { useMemo } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import socket from "@/components/shared/socket";
 
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Edit2, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import styled from "styled-components";
-import { DatePicker, Divider, Space } from "antd";
-import dayjs from "dayjs"; // Added dayjs import
+import { DatePicker, Space } from "antd";
 
 import { toast, useToast } from "@/components/ui/use-toast";
 import useApi from "@/hooks/useApi";
 
-import { exportDatepace } from "@/components/shared/Options";
-
+import {
+  exportDatepace,
+  exportDateRangespace,
+} from "@/components/shared/Options";
+import socket from "@/components/shared/socket";
 const FormSchema = z.object({
   date: z
     .union([z.date(), z.array(z.date()).length(2)]) // Either a single date or an array with exactly 2 dates
@@ -43,32 +42,30 @@ const FormSchema = z.object({
   types: z.string().optional(),
 });
 
-const R1 = () => {
+const R9 = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      date: new Date(), // Set default value to today's date
-    },
   });
   const { execFun, loading: loading1 } = useApi();
+  //   const { addToast } = useToastContainer()
+  const { RangePicker } = DatePicker;
+
+  const dateFormat = "YYYY/MM/DD";
 
   const fetchQueryResults = async (formData: z.infer<typeof FormSchema>) => {
     let { date } = formData;
 
-    let dataString = exportDatepace(formData?.date);
+    let dataString = exportDatepace(date);
 
-    socket.emit("stockPartBoxWise", {
-      reqFor: "downloade_trans_out",
+    socket.emit("allComponentAgingStock", {
       date: dataString,
     });
-
     toast({
       title: "Report will be sent to your email",
       className: "bg-cyan-700 text-white",
     });
   };
-
   useEffect(() => {
     // fetchComponentList();
   }, []);
@@ -98,12 +95,14 @@ const R1 = () => {
       filter: "agTextColumnFilter",
       width: 220,
     },
+
     {
       headerName: "TYPE",
       field: "TYPE",
       filter: "agTextColumnFilter",
       width: 190,
     },
+
     {
       headerName: "Part No",
       field: "PART",
@@ -128,12 +127,14 @@ const R1 = () => {
       filter: "agTextColumnFilter",
       width: 220,
     },
+
     {
       headerName: "UoM",
       field: "UNIT",
       filter: "agTextColumnFilter",
       width: 220,
     },
+
     {
       headerName: "Vendor Name",
       field: "CUSTOMER",
@@ -147,7 +148,6 @@ const R1 = () => {
       width: 190,
     },
   ];
-
   const type = [
     {
       label: "Pending",
@@ -164,64 +164,68 @@ const R1 = () => {
   ];
 
   return (
-    <Wrapper className="h-[calc(100vh-100px)] flex flex-col">
-      {/* Filter Section */}
-      <div className="bg-white p-4 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(fetchQueryResults)}
-              className="flex items-center gap-4"
-            >
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="w-[300px] m-0">
-                    <FormControl>
-                      <Space direction="vertical" size={12} className="w-full">
-                        <DatePicker
-                          format="DD-MM-YYYY" // Set the format to dd-mm-yyyy
-                          defaultValue={dayjs()} // Set today's date as default
-                          onChange={(date, dateString) => {
-                            form.setValue("date", date ? date.toDate() : null);
-                          }}
-                          className="w-[100%] border-gray-300 shadow-none py-[7px] hover:border-gray-400"
-                        />
-                      </Space>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="submit"
-                className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded"
-              >
-                Download
-              </Button>
-            </form>
-          </Form>
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+      <div className="bg-[#fff]">
+        {" "}
+        <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
+          <Filter className="h-[20px] w-[20px]" />
+          Filter
         </div>
+        <div className="p-[10px]"></div>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(fetchQueryResults)}
+            className="space-y-6 overflow-hidden p-[10px] h-[370px]"
+          >
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormControl>
+                    <Space direction="vertical" size={12} className="w-full">
+                      {/* <RangePicker
+                        className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
+                        onChange={(value) =>
+                          field.onChange(
+                            value ? value.map((date) => date!.toDate()) : []
+                          )
+                        }
+                        format={"DD/MM/YYYY"}
+                      /> */}
+                      <DatePicker
+                        format="DD-MM-YYYY" // Set the format to dd-mm-yyyy
+                        onChange={(date, dateString) => {
+                          // Use `date` to get the Date object, or `dateString` for formatted value
+                          form.setValue("date", date ? date.toDate() : null);
+                        }}
+                        className="w-[100%] border-slate-400 shadow-none mt-[2px]"
+                      />
+                    </Space>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* )} */}
+            <Button
+              type="submit"
+              className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              //   onClick={() => {
+              //     fetchBOMList();
+              //   }}
+            >
+              Search
+            </Button>
+          </form>
+        </Form>
       </div>
-
-      {/* Grid Section (Uncommented and Styled) */}
-      <div className="ag-theme-quartz flex-1">
-        {/* <AgGridReact
-          rowData={rowData}
-          columnDefs={columnDefs}
-          defaultColDef={{ filter: true, sortable: true }}
-          pagination={true}
-          paginationPageSize={10}
-          paginationAutoPageSize={true}
-        /> */}
-      </div>
+      <div className="ag-theme-quartz h-[calc(100vh-100px)]"></div>
     </Wrapper>
   );
 };
 
-export default R1;
-
+export default R9;
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;

@@ -243,6 +243,13 @@ export const fetchCountryList = async () => {
   const response = await spigenAxios.get("/others/countries");
   return response;
 };
+export const fetchCountryListByCode = async (search?: string) => {
+  const response = await spigenAxios.get(`/backend/countrieswithcode`, {
+    params: { search: search || undefined },
+  });
+  return response;
+};
+
 export const fetchState = async () => {
   const response = await spigenAxios.get("/others/states");
   return response;
@@ -392,8 +399,7 @@ export const fetchR2 = async (payload: any) => {
 };
 export const fetchR3 = async (payload: any) => {
   const response = await spigenAxios.get(
-    `report3?date=${payload.date}&product=${payload.product}&subject=${payload.subject}`
-    // payload
+    `/report3?wise=${payload.wise}&data=${payload.data}`
   );
   return response;
 };
@@ -404,6 +410,20 @@ export const fetchR4 = async (payload: any) => {
   );
   return response;
 };
+export const fetchR8 = async (payload: any) => {
+  const response = await spigenAxios.get(
+    `/report8?wise=${payload.wise}&data=${payload.data}`
+  );
+  return response;
+};
+
+//report 7 for sales order
+export const fetchR7 = async (payload: any) => {
+  const response= await spigenAxios.get(
+    `/report7?wise=${payload.wise}&data=${payload.data}`
+  );
+  return response;
+}
 export const fetchR4refreshed = async (payload: any) => {
   const response = await spigenAxios.get("/report/fetchCloseStockAll", payload);
   return response;

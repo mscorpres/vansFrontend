@@ -1,163 +1,274 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { AgGridReact } from "ag-grid-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
-import { Filter } from "lucide-react";
-import { RowData } from "@/types/SalesOrderAllocatedInvoicesType";
-import { columnDefs } from "@/config/agGrid/SalesOrderAllocatedTableColumns";
+import { Download, Filter } from "lucide-react";
+import {
+  columnDefs,
+  TruncateCellRenderer,
+} from "@/config/agGrid/SalesOrderAllocatedTableColumns";
 import styled from "styled-components";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { DatePicker, Space } from "antd";
 import { gridOptions } from "@/config/agGrid/ModuleRegistry";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { fetchCreditDebitRegisterList } from "@/features/salesmodule/creditDebitRegisterSlice";
+import FullPageLoading from "@/components/shared/FullPageLoading";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import moment from "moment";
+import CopyCellRenderer from "@/components/shared/CopyCellRenderer";
+import { CsvExportModule } from "ag-grid-community";
+import { OverlayNoRowsTemplate } from "@/shared/OverlayNoRowsTemplate";
+import { setDateRange, setWise } from "@/features/salesmodule/SalesSlice";
+import { rangePresets } from "@/General";
+// import GenerateNoteReport from "@/pages/salesModule/GenerateNoteReport";
+
 const { RangePicker } = DatePicker;
-const dateFormat = "DD/MM/YYYY";
-const languages = [
-  { label: "English", value: "en" },
-  { label: "French", value: "fr" },
-  { label: "German", value: "de" },
-  { label: "Spanish", value: "es" },
-  { label: "Portuguese", value: "pt" },
-  { label: "Russian", value: "ru" },
-  { label: "Japanese", value: "ja" },
-  { label: "Korean", value: "ko" },
-  { label: "Chinese", value: "zh" },
+const dateFormat = "DD-MM-YYYY";
+
+const wises = [
+  { label: "Date Wise", value: "date" },
+  // { label: "Number", value: "noteNo" }, // Uncomment if needed
 ] as const;
 
 const FormSchema = z.object({
   dateRange: z
     .array(z.date())
     .length(2)
-    .optional()
-    .refine((data) => data === undefined || data.length === 2, {
+    .refine((data) => data.length === 2, {
       message: "Please select a valid date range.",
-    }),
-  language: z.string().optional(),
+    })
+    .optional(),
+  number: z.string().optional(),
 });
+
+type FormSchemaType = z.infer<typeof FormSchema>;
+
+interface CreditNote {
+  invoice_id: string;
+  other_ref: string;
+  material: Record<string, any>;
+}
+
 const AllocatedInvoicesPage: React.FC = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const [rowData] = useState<RowData[]>([
-    { id: 1, couriarName: "DHL", invoiceDate: "2024-07-16", coInvoiceId: "INV001", billingAddress: "123 Main St", clientAddress: "456 Elm St", shippingAddress: "789 Oak St" },
-    // add more row data here
-  ]);
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const gridRef = useRef<AgGridReact<CreditNote>>(null);
+  const [wiseType, setWiseType] = useState<string>("date");
+  const [rowData, setRowData] = useState<CreditNote[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const [isSearchPerformed, setIsSearchPerformed] = useState<boolean>(false);
+  const { loading } = useSelector((state: RootState) => state.creditDebitRegister);
+
+  console.log("rowData", rowData);
+
+  const form = useForm<FormSchemaType>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      dateRange: [],
+      number: "",
+    },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-  }
+  const onSubmit: SubmitHandler<FormSchemaType> = async (formData) => {
+    const { dateRange, number } = formData;
+    let dataString = "";
+
+    if (wiseType === "date" && dateRange?.length === 2) {
+      const startDate = moment(dateRange[0]).format("DD-MM-YYYY");
+      const endDate = moment(dateRange[1]).format("DD-MM-YYYY");
+      dataString = `${startDate}-${endDate}`;
+      dispatch(setDateRange(dataString as any));
+    } else {
+      dataString = number || "";
+    }
+
+    try {
+      const resultAction = await dispatch(
+        fetchCreditDebitRegisterList({
+          wise: wiseType,
+          data: dataString,
+        })
+      ).unwrap();
+
+      if (resultAction.success) {
+        setRowData(resultAction.data);
+        setIsSearchPerformed(true);
+        toast({
+          title: "Credit notes fetched successfully",
+          className: "bg-green-600 text-white items-center",
+        });
+      } else {
+        toast({
+          title: resultAction.message || "Failed to fetch credit notes",
+          className: "bg-red-600 text-white items-center",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: error.message || "Failed to fetch credit notes",
+        className: "bg-red-600 text-white items-center",
+      });
+    }
+  };
+
+  const onBtExport = useCallback(() => {
+    if (gridRef.current) {
+      gridRef.current.api.exportDataAsCsv();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (wiseType) {
+      dispatch(setWise(wiseType));
+    }
+  }, [wiseType, dispatch]);
+
+  useEffect(() => {
+    setRowData([]);
+    setIsSearchPerformed(false);
+  }, [wiseType]);
+
   return (
-    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr] ">
-      <div className=" bg-[#fff]">
+    <Wrapper className="h-[calc(100vh-100px)] grid grid-cols-[350px_1fr]">
+      {loading && <FullPageLoading />}
+      <div className="bg-[#fff]">
         <div className="h-[49px] border-b border-slate-300 flex items-center gap-[10px] text-slate-600 font-[600] bg-hbg px-[10px]">
           <Filter className="h-[20px] w-[20px]" />
           Filter
         </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 overflow-hidden ] p-[10px]">
-            <FormField
-              control={form.control}
-              name="language"
-              render={({ field }) => (
-                <>
-                  <FormItem className="flex flex-col ">
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <Accordion type="single" collapsible>
-                        <AccordionItem value="item-1" className="">
-                          <AccordionTrigger className="w-full border-none text-slate-600 text-[15px]">Courier Name </AccordionTrigger>
-                          <AccordionContent className="flex justify-center">
-                            <PopoverTrigger asChild onClick={() => setOpen(true)}>
-                              <FormControl>
-                                <Button variant="outline" role="combobox" className={`${cn(" justify-between", !field.value && "text-muted-foreground")} text-slate-600 w-full ${field.value?"text-slate-600":"text-neutral-400 font-[350]"}`}>
-                                  {field.value ? languages.find((language) => language.value === field.value)?.label : "Courier Name"}
-                                  <CaretSortIcon className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                      <PopoverContent className="p-0 ">
-                        <Command>
-                          <CommandInput placeholder="Search framework..." className="h-9" />
-                          <CommandList className="max-h-[400px]">
-                            <CommandEmpty>No framework found.</CommandEmpty>
-                            <CommandGroup>
-                              {languages.map((language) => (
-                                <CommandItem
-                                  key={language.value}
-                                  value={language.value}
-                                  className="data-[disabled]:opacity-100 aria-selected:bg-cyan-600 aria-selected:text-white data-[disabled]:pointer-events-auto flex items-center gap-[10px]"
-                                  onSelect={() => {
-                                    form.setValue("language", language.value);
-                                    setOpen(false);
-                                  }}
-                                >
-                                  {language.label}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-1 overflow-hidden p-[10px]"
+          >
+            <div className="p-[10px]">
+              <Select
+                value={wiseType}
+                onValueChange={(value) => setWiseType(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a filter type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {wises.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {wiseType === "date" ? (
+              <FormField
+                control={form.control}
+                name="dateRange"
+                render={({ field }) => (
+                  <FormItem className="w-full p-[12px]">
+                    <FormControl>
+                      <Space direction="vertical" size={12} className="w-full">
+                        <RangePicker
+                          className="border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full"
+                          onChange={(value) =>
+                            field.onChange(
+                              value
+                                ? value.map((date: any) => date?.toDate())
+                                : []
+                            )
+                          }
+                          format={dateFormat}
+                          disabledDate={(current) =>
+                            current && current > moment().endOf("day")
+                          }
+                          presets={rangePresets}
+                        />
+                      </Space>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
-                  <FormField
-                    control={form.control}
-                    name="dateRange"
-                    render={() => (
-                      <FormItem className="w-full ">
-                        <FormControl>
-                          <Accordion type="single" collapsible>
-                            <AccordionItem value="item-1">
-                              <AccordionTrigger className="w-full border-none text-slate-600 text-[15px]">Date Wise</AccordionTrigger>
-                              <AccordionContent>
-                                <Space direction="vertical" size={12} className="w-full">
-                                  <RangePicker className=" border shadow-sm border-slate-400 py-[7px] hover:border-slate-300 w-full" onChange={(value) => form.setValue("dateRange", value ? value.map((date) => date!.toDate()) : [])} format={dateFormat} />
-                                </Space>
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>
+                )}
+              />
+            ) : (
+              <FormField
+                control={form.control}
+                name="number"
+                render={({ field }) => (
+                  <FormItem className="w-full p-[12px]">
+                    <FormControl>
+                      <Input {...field} placeholder="Invoice number" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            <div className="flex space-x-2 float-end pr-2">
+              {isSearchPerformed && (
+                <Button
+                  type="button"
+                  onClick={onBtExport}
+                  className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+                >
+                  <Download />
+                </Button>
               )}
-            />
-            <Button type="submit" className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500 ">
-              Submit
-            </Button>
+              <Button
+                type="submit"
+                className="shadow bg-cyan-700 hover:bg-cyan-600 shadow-slate-500"
+              >
+                Search
+              </Button>
+            </div>
           </form>
         </Form>
+        {/* <div>
+          <GenerateNoteReport />
+        </div> */}
       </div>
       <div className="ag-theme-quartz h-[calc(100vh-100px)]">
-        <AgGridReact gridOptions={gridOptions} rowData={rowData} columnDefs={columnDefs} defaultColDef={{ filter: true, sortable: true }} pagination={true} paginationPageSize={10} paginationAutoPageSize={true} enableCellTextSelection = {true}/>
+        <AgGridReact
+          ref={gridRef}
+          modules={[CsvExportModule]}
+          gridOptions={gridOptions}
+          rowData={rowData}
+          columnDefs={columnDefs}
+          defaultColDef={{ filter: true, sortable: true }}
+          pagination={true}
+          paginationPageSize={10}
+          paginationAutoPageSize={true}
+          suppressCellFocus={true}
+          components={{
+            truncateCellRenderer: TruncateCellRenderer,
+            copyCellRenderer: CopyCellRenderer,
+          }}
+          overlayNoRowsTemplate={OverlayNoRowsTemplate}
+        />
       </div>
     </Wrapper>
   );
 };
+
 const Wrapper = styled.div`
   .ag-theme-quartz .ag-root-wrapper {
     border-top: 0;
     border-bottom: 0;
   }
 `;
+
 export default AllocatedInvoicesPage;
