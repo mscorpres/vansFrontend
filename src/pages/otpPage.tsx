@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { getQRStatus, verifyOtpAsync } from "@/features/auth/authSlice";
 import { showToast } from "@/General";
+import { consumeValidatedReturnTo } from "@/utils/authReturnTo";
 
 const OtpPage: React.FC = () => {
   const { qrStatus } = useSelector((state) => state.auth);
@@ -36,7 +37,6 @@ const OtpPage: React.FC = () => {
       localStorage.setItem("token", qrStatus?.token ?? "");
         dispatch(getQRStatus({ crnId: qrStatus?.token ?? "" })).then(
           (res: any) => {
-            console.log(res.payload.data.data);
             if (res.payload.data.code === 200) {
               setQrCode(res.payload.data.data.url); // Set the QR code from the backend
               setSecretKey(res.payload.data.data.secret);
@@ -50,10 +50,10 @@ const OtpPage: React.FC = () => {
   const handleOtpSubmit = () => {
     if (!otp) return showToast("Please enter the OTP", "error");
     const username = localStorage.getItem("username");
-    dispatch(verifyOtpAsync({ otp: otp, secret: secretKey,username:username })).then((res: any) => {
+        dispatch(verifyOtpAsync({ otp: otp, secret: secretKey,username:username })).then((res: any) => {
       if (res?.payload?.data?.success) {
         showToast(res.payload?.data?.message, "success");
-        window.location.replace("/"); // Assuming "/dashboard" is the user landing page
+        window.location.replace(consumeValidatedReturnTo());
       } else {
         showToast(res.payload?.data?.message ?? "Invalid OTP, please try again", "error");
       }

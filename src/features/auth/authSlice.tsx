@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { spigenAxios } from "@/axiosIntercepter";
 import { AxiosResponse } from "axios";
 import { showToast } from "@/General";
+import { clearReturnTo } from "@/utils/authReturnTo";
 
 interface LoginCredentials {
   username: string;
@@ -131,6 +132,7 @@ const authSlice = createSlice({
       state.user = null;
       state.authStatus = false;
       state.token = null;
+      clearReturnTo();
       localStorage.clear();
       window.location.reload();
     },
