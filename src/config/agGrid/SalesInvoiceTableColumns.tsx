@@ -19,6 +19,7 @@ import { ConfirmCancellationDialog } from "@/config/agGrid/registerModule/Confir
 import ViewInvoiceModal from "@/config/agGrid/salesmodule/ViewInvoiceModal";
 import { downloadFunction, printFunction } from "@/components/shared/PrintFunctions";
 import AddFreightModal from "./salesmodule/AddFreightModal"; 
+import AddDocketNumberModal from "./salesmodule/AddDocketNumberModal";
 import CreditNote from "./invoiceModule/CreditNote";
 
 // Round status indicator for Invoice Status (elive/inventory style)
@@ -76,6 +77,7 @@ const ActionMenu: React.FC<any> = ({ row }) => {
   const [viewInvoice, setViewInvoice] = useState(false);
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [addFreightModalVisible, setAddFreightModalVisible] = useState(false); // New state for freight modal
+  const [addDocketModalVisible, setAddDocketModalVisible] = useState(false);
 
 const [viewCreditNote, setViewCreditNote] = useState(false);
   const [form] = Form.useForm();
@@ -167,6 +169,12 @@ const [viewCreditNote, setViewCreditNote] = useState(false);
       ), 
     },
     {
+      key: "addDocketNumber",
+      label: (
+        <div onClick={() => setAddDocketModalVisible(true)}>Add Docket Number</div>
+      ),
+    },
+    {
       key: "view",
       label: <div onClick={() => handleViewInvoice(row)}>View</div>,
     },
@@ -234,6 +242,11 @@ const [viewCreditNote, setViewCreditNote] = useState(false);
       <AddFreightModal
         visible={addFreightModalVisible}
         onClose={() => setAddFreightModalVisible(false)}
+        invoiceNo={row.invoiceNo}
+      />
+      <AddDocketNumberModal
+        visible={addDocketModalVisible}
+        onClose={() => setAddDocketModalVisible(false)}
         invoiceNo={row.invoiceNo}
       />
 
