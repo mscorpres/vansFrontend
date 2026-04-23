@@ -27,9 +27,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "@/components/ui/use-toast";
 import { loginUserAsync, loginWithGoogleAsync } from "@/features/auth/authSlice";
 import { z } from "zod";
-import React, { useState } from "react";
+import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { showToast } from "@/General";
+import { useNavigate } from "react-router-dom";
+import { consumeValidatedReturnTo } from "@/utils/authReturnTo";
 
 const LogningV2: React.FC = () => {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
@@ -39,6 +41,7 @@ const LogningV2: React.FC = () => {
   const googleInitializedRef = React.useRef(false);
 
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const data = useSelector((state: RootState) => state.auth);
   const formSchema = z.object({
     username: z.string().min(2, {
@@ -68,6 +71,12 @@ const LogningV2: React.FC = () => {
           description: "Now you can start your work",
           className: "bg-green-600 text-white items-center",
         });
+        const needsOtp =
+          response?.payload?.data?.isTwoStep === "Y" ||
+          localStorage.getItem("showOtpPage") === "Y";
+        if (!needsOtp) {
+          navigate(consumeValidatedReturnTo(), { replace: true });
+        }
       }
       else{
         setRecaptchaValue(null);
@@ -133,6 +142,12 @@ const LogningV2: React.FC = () => {
                   description: "Now you can start your work",
                   className: "bg-green-600 text-white items-center",
                 });
+                const needsOtp =
+                  action?.payload?.data?.isTwoStep === "Y" ||
+                  localStorage.getItem("showOtpPage") === "Y";
+                if (!needsOtp) {
+                  navigate(consumeValidatedReturnTo(), { replace: true });
+                }
               }
             });
           },
@@ -152,7 +167,7 @@ const LogningV2: React.FC = () => {
       .catch(() => {
         showToast("Failed to load Google Sign-In.", "error");
       });
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   return (
     <div className="h-[100vh]  w-full grid grid-cols-2">
