@@ -197,6 +197,36 @@ export const addfreight=createAsyncThunk(
     }
   }
 )
+export const addDocketNumber = createAsyncThunk(
+  "client/addDocketNumber",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const response = (await spigenAxios.put<any>(
+        "/salesOrder/addDocketNumber",
+        payload
+      )) as any;
+
+      if (response?.data?.success) {
+        toast({
+          title: response?.data?.message || "Docket number added successfully",
+          className: "bg-green-600 text-white items-center",
+        });
+      } else {
+        toast({
+          title: response?.data?.message || "Failed to add docket number",
+          className: "bg-red-600 text-white items-center",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
 export const downloadEInvoiceList = createAsyncThunk<
   ApiResponse<{ filePath: string }>,
   DownloadEInvoicePayload
@@ -476,6 +506,16 @@ const sellInvoiceSlice = createSlice({
         state.loading = false;
       })
       .addCase(addfreight.rejected, (state, action) => {
+        state.error = action.error?.message || null;
+        state.loading = false;
+      })
+      .addCase(addDocketNumber.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addDocketNumber.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(addDocketNumber.rejected, (state, action) => {
         state.error = action.error?.message || null;
         state.loading = false;
       })
