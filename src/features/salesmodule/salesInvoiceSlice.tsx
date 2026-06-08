@@ -123,6 +123,27 @@ export const printExportInvoice = createAsyncThunk(
     }
   }
 );
+export const printPackingList = createAsyncThunk(
+  "client/printPackingList",
+  async (payload: { invoiceNo: string }, { rejectWithValue }) => {
+    try {
+      const url =
+        spigenAxios.defaults.baseURL +
+        `/salesInvoice/printPackingList?invoiceNo=${encodeURIComponent(
+          payload.invoiceNo
+        )}`;
+
+      window.open(url, "_blank");
+      return;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 export const printEwayBill = createAsyncThunk(
   "client/Ewaybill",
   async (payload: any, { rejectWithValue }) => {
@@ -409,8 +430,7 @@ export const fetchNoteData = createAsyncThunk(
   async ({ note_no }: { note_no: string }, { rejectWithValue }) => {
     try {
       const response = await spigenAxios.get<any>(
-        `/enote/fetchCreditNoteEinvoice?so_note_id=${note_no}`,
-     
+        `/enote/fetchCreditNoteEinvoice?so_note_id=${encodeURIComponent(note_no)}`
       );
 
       if (!response.data) {

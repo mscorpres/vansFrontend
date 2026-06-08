@@ -11,6 +11,7 @@ import {
   fetchInvoiceDetail,
   fetchSalesOrderInvoiceList,
   printExportInvoice,
+  printPackingList,
   printSellInvoice,
 } from "@/features/salesmodule/salesInvoiceSlice";
 import { AppDispatch, RootState } from "@/store";
@@ -95,9 +96,14 @@ const [viewCreditNote, setViewCreditNote] = useState(false);
     dispatch(fetchInvoiceDetail({ invoiceNo: row.invoiceNo }));
   };
     const handleViewCreditNote = (row: any) => {
-      console.log(row.shipment_id);
-    dispatch(fetchDataNotes({ shipment_id: row.shipmentId}));
-    setViewCreditNote(true);
+    if (!row?.shipmentId) {
+      return;
+    }
+    dispatch(fetchDataNotes({ shipment_id: row.shipmentId })).then((res: any) => {
+      if (res?.payload?.success) {
+        setViewCreditNote(true);
+      }
+    });
   };
 
   const handleAddFreight = (so_inv_id: string, freight: string) => {
@@ -124,13 +130,14 @@ const [viewCreditNote, setViewCreditNote] = useState(false);
       }
     });
   };
-    const handlePrintClick = () => {
+  const handlePrintClick = () => {
     if (row?.approveStatus !== "PENDING") {
       handleViewCreditNote(row);
-      console.log("rrrrrrrrrrrrr",row);
-      
-      
     }
+  };
+
+  const handleDownloadPackingList = () => {
+    dispatch(printPackingList({ invoiceNo: row.invoiceNo }));
   };
 
   const handleOk = () => {
@@ -177,6 +184,12 @@ const [viewCreditNote, setViewCreditNote] = useState(false);
     {
       key: "view",
       label: <div onClick={() => handleViewInvoice(row)}>View</div>,
+    },
+    {
+      key: "packingList",
+      label: (
+        <div onClick={handleDownloadPackingList}>Package List</div>
+      ),
     },
     {
       key: "materialList",
@@ -253,7 +266,7 @@ const [viewCreditNote, setViewCreditNote] = useState(false);
       <CreditNote
         visible={viewCreditNote}
         onClose={() => setViewCreditNote(false)}
-        sellRequestDetails={dataNotes || []}
+        sellRequestDetails={dataNotes || {}}
         row={{ req_id: row.invoiceNo }}
        
       />
