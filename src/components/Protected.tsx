@@ -23,7 +23,7 @@ const Protected: React.FC<ProtectedProps> = ({
 
   /** Save before redirect; do not mount protected children (avoids API 401 clearing sessionStorage). */
   useLayoutEffect(() => {
-    if (shouldRedirectToLogin && location.pathname !== "/login") {
+    if (shouldRedirectToLogin && !location.pathname.startsWith("/login")) {
       saveReturnTo(`${location.pathname}${location.search}`);
     }
   }, [shouldRedirectToLogin, location.pathname, location.search]);

@@ -15,7 +15,7 @@ import "@ag-grid-community/styles/ag-grid.css";
 import "@ag-grid-community/styles/ag-theme-quartz.css";
 import "./font.css";
 import Protected from "./components/Protected";
-import Custom404Page from "./pages/Custom404Page";
+import AppCatchAll from "./components/AppCatchAll";
 import SalesShipmentPage from "./pages/salesModule/SalesShipmentPage";
 import SalesInvoicePage from "./pages/salesModule/SalesInvoicePage";
 import AllocatedInvoicesPage from "./pages/salesModule/AllocatedInvoicesPage";
@@ -1249,11 +1249,7 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    element: (
-      <MainLayout>
-        <Custom404Page />
-      </MainLayout>
-    ),
+    element: <AppCatchAll />,
   },
 ]);
 

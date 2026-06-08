@@ -16,8 +16,10 @@ import { transformOptionData } from "@/helper/transform";
 import ReusableAsyncSelect from "@/components/shared/ReusableAsyncSelect";
 
 import { toast } from "@/components/ui/use-toast";
-import { Edit2, Filter } from "lucide-react";
+import { Download, Edit2, Filter } from "lucide-react";
 import FullPageLoading from "@/components/shared/FullPageLoading";
+import CustomTooltip from "@/components/shared/CustomTooltip";
+import { downloadCSV } from "@/components/shared/ExportToCSV";
 import { RowData } from "@/data";
 import {
   AlertDialog,
@@ -96,6 +98,17 @@ const CustomerComponent = () => {
   useEffect(() => {
     fetchComponentMap();
   }, []);
+
+  const handleDownloadCustomerMap = () => {
+    if (!rowData.length) {
+      toast({
+        title: "No data to download",
+        className: "bg-red-600 text-white items-center",
+      });
+      return;
+    }
+    downloadCSV(rowData, columnDefs, "Customer_Component_Map");
+  };
 
   const columnDefs: ColDef<RowData>[] = [
     { 
@@ -260,20 +273,38 @@ const CustomerComponent = () => {
           {/* </form> */}
         </Form>
       </div>
-      <div className="ag-theme-quartz">
-        {loading1("fetch") && <FullPageLoading />}
-        <AgGridReact
-          //   loadingCellRenderer={loadingCellRenderer}
-          rowData={rowData}
-          columnDefs={columnDefs}
-          defaultColDef={{ filter: true, sortable: true }}
-          pagination={true}
-          paginationPageSize={10}
-          paginationAutoPageSize={true}
-          suppressCellFocus={true}
-          overlayNoRowsTemplate={OverlayNoRowsTemplate}
-          enableCellTextSelection = {true}
-        />
+      <div className="flex flex-col min-h-0 min-w-0">
+        <div className="h-[49px] border-b border-slate-300 flex items-center justify-end px-[10px] bg-white gap-[10px] shrink-0">
+          <CustomTooltip
+            message="Download customer component map data"
+            side="top"
+            className="bg-cyan-700"
+          >
+            <Button
+              type="button"
+              className="bg-cyan-700 hover:bg-cyan-600 p-0 h-[30px] w-[30px] flex justify-center items-center shadow-slate-500"
+              onClick={handleDownloadCustomerMap}
+              aria-label="Download customer component map data"
+            >
+              <Download className="h-[20px] w-[20px]" />
+            </Button>
+          </CustomTooltip>
+        </div>
+        <div className="ag-theme-quartz flex-1 min-h-0">
+          {loading1("fetch") && <FullPageLoading />}
+          <AgGridReact
+            //   loadingCellRenderer={loadingCellRenderer}
+            rowData={rowData}
+            columnDefs={columnDefs}
+            defaultColDef={{ filter: true, sortable: true }}
+            pagination={true}
+            paginationPageSize={10}
+            paginationAutoPageSize={true}
+            suppressCellFocus={true}
+            overlayNoRowsTemplate={OverlayNoRowsTemplate}
+            enableCellTextSelection={true}
+          />
+        </div>
       </div>
       <AlertDialog open={resetModel} onOpenChange={setResetModel}>
         <AlertDialogContent>

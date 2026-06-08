@@ -30,8 +30,12 @@ import { z } from "zod";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { showToast } from "@/General";
-import { useNavigate } from "react-router-dom";
-import { consumeValidatedReturnTo } from "@/utils/authReturnTo";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  consumeValidatedReturnTo,
+  isSafeReturnPath,
+  saveReturnTo,
+} from "@/utils/authReturnTo";
 
 const LogningV2: React.FC = () => {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
@@ -42,7 +46,25 @@ const LogningV2: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const data = useSelector((state: RootState) => state.auth);
+
+  React.useEffect(() => {
+    const keys = ["redirectTo", "redirect_to", "returnTo", "return_to"] as const;
+    for (const key of keys) {
+      const raw = searchParams.get(key);
+      if (!raw) continue;
+      try {
+        const decoded = decodeURIComponent(raw.trim());
+        if (decoded && isSafeReturnPath(decoded)) {
+          saveReturnTo(decoded);
+          break;
+        }
+      } catch {
+        /* malformed encoding */
+      }
+    }
+  }, [searchParams]);
   const formSchema = z.object({
     username: z.string().min(2, {
       message: "Username must be at least 2 characters.",
